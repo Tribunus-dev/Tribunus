@@ -5,7 +5,7 @@
 use std::path::Path;
 use std::time::Instant;
 
-use crate::arena::ArenaInfo;
+use crate::arena_info::ArenaInfo;
 use crate::coreml_bridge::{CoreMlComputeUnits, CoreMlModel};
 use crate::coreml_pipeline;
 use crate::decode_attribution::graph_catalog::{self, is_identity_family};

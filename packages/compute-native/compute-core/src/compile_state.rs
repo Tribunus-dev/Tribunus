@@ -165,21 +165,21 @@ pub enum CompileStage {
 
 impl CompileState {
     /// Serialize self to `compile.state.json` inside `output_dir`.
-    pub fn write(&self, output_dir: &std::path::Path) -> napi::Result<()> {
+    pub fn write(&self, output_dir: &std::path::Path) -> crate::Result<()> {
         let path = output_dir.join("compile.state.json");
         let json = serde_json::to_string_pretty(self)
-            .map_err(|e| napi::Error::from_reason(format!("json: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("json: {}", e)))?;
         std::fs::write(&path, json)
-            .map_err(|e| napi::Error::from_reason(format!("write state: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("write state: {}", e)))?;
         Ok(())
     }
 
     /// Deserialize from `compile.state.json` inside `output_dir`.
-    pub fn read(output_dir: &std::path::Path) -> napi::Result<Self> {
+    pub fn read(output_dir: &std::path::Path) -> crate::Result<Self> {
         let path = output_dir.join("compile.state.json");
         let json = std::fs::read_to_string(&path)
-            .map_err(|e| napi::Error::from_reason(format!("read state: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("read state: {}", e)))?;
         serde_json::from_str(&json)
-            .map_err(|e| napi::Error::from_reason(format!("parse state: {}", e)))
+            .map_err(|e| crate::Error::from_reason(format!("parse state: {}", e)))
     }
 }

@@ -71,6 +71,39 @@
       "type": "array",
       "description": "List of tags",
       "items": { "type": "string" }
+    },
+    "component_imports": {
+      "type": "array",
+      "description": "Reusable architecture component IDs imported by this ADR",
+      "items": { "type": "string" }
+    },
+    "component_extensions": {
+      "type": "array",
+      "description": "Bounded specializations of imported architecture components",
+      "items": {
+        "type": "object",
+        "required": ["component_id", "extension"],
+        "properties": {
+          "component_id": { "type": "string" },
+          "extension": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "component_overrides": {
+      "type": "array",
+      "description": "Rare explicit overrides of imported architecture components",
+      "items": { "type": "string" }
+    },
+    "component_definitions": {
+      "type": "array",
+      "description": "New architecture component IDs defined by this ADR",
+      "items": { "type": "string" }
+    },
+    "component_conflicts": {
+      "type": "array",
+      "description": "Explicit conflicts with imported or prior components",
+      "items": { "type": "string" }
     }
   },
   "required": ["schema", "id", "title", "status", "date", "context", "decision", "consequences"],

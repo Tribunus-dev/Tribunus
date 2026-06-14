@@ -7,7 +7,7 @@
 //!
 //! Output: tab-separated rows suitable for the bottleneck ledger.
 
-use tribunus_compute_native::native_kernel;
+use tribunus_compute_core::native_kernel;
 
 fn main() {
     let k: usize = std::env::var("TRIBUNUS_NATIVE_K")

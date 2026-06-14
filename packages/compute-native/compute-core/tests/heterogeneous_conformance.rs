@@ -4,15 +4,15 @@
 //! transitions, transfer records, contract enforcement, immutability,
 //! and transactional semantics.
 
-use tribunus_compute_native::backend::routing::{
+use tribunus_compute_core::backend::routing::{
     BackendId, LogicalShape, PhysicalLayout, TensorId, TensorMaterializationId, TensorShape,
     TensorTransferReceipt, TensorVersion,
 };
-use tribunus_compute_native::backend::tensor_registry::{
+use tribunus_compute_core::backend::tensor_registry::{
     MaterializedTensor, TensorContract, TensorMutability, TensorRegistry, TensorRole,
     TensorTransferRecord,
 };
-use tribunus_compute_native::backend::DType;
+use tribunus_compute_core::backend::DType;
 
 fn mlx_id() -> BackendId {
     BackendId(0)

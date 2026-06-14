@@ -10,11 +10,11 @@
 use std::path::PathBuf;
 use std::time::Instant;
 
-use tribunus_compute_native::decode_attribution::backend_adapters::BackendKind;
-use tribunus_compute_native::decode_attribution::decode_microphase_shape_map::ALL_DECODE_SHAPES;
-use tribunus_compute_native::decode_attribution::suite_manifest::tier2_batch1_manifest;
-use tribunus_compute_native::pipeline_parity::decode_microphase_support_for;
-use tribunus_compute_native::pipeline_parity::kv_contracts_for_backend;
+use tribunus_compute_core::decode_attribution::backend_adapters::BackendKind;
+use tribunus_compute_core::decode_attribution::decode_microphase_shape_map::ALL_DECODE_SHAPES;
+use tribunus_compute_core::decode_attribution::suite_manifest::tier2_batch1_manifest;
+use tribunus_compute_core::pipeline_parity::decode_microphase_support_for;
+use tribunus_compute_core::pipeline_parity::kv_contracts_for_backend;
 
 #[derive(serde::Serialize)]
 struct SupportMatrixEntry {
@@ -123,17 +123,17 @@ fn main() {
             let backend = backend_kind_from_str(&row.backend);
             let status = decode_microphase_support_for(&row.family, backend);
             let (support_status, execution_kind_if_supported, reason) = match &status {
-                tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Native => (
+                tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Native => (
                     "supported_native".to_string(),
                     Some(row.backend.clone()),
                     None,
                 ),
-                tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Composed => (
+                tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Composed => (
                     "supported_domain_adapter".to_string(),
                     Some(row.backend.clone()),
                     None,
                 ),
-                tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Unsupported {
+                tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Unsupported {
                     code,
                     reason,
                 } => (
@@ -141,7 +141,7 @@ fn main() {
                     None,
                     Some(reason.to_string()),
                 ),
-                tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Pending {
+                tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Pending {
                     code,
                     reason,
                 } => (
@@ -182,17 +182,17 @@ fn main() {
         let backend = backend_kind_from_str(&row.backend);
         let status = decode_microphase_support_for(&row.family, backend);
         let (status_str, reason) = match &status {
-            tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Native => {
+            tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Native => {
                 ("supported_native".to_string(), None)
             }
-            tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Composed => {
+            tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Composed => {
                 ("supported_domain_adapter".to_string(), None)
             }
-            tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Unsupported {
+            tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Unsupported {
                 code,
                 reason,
             } => (format!("unsupported_{:?}", code), Some(reason.to_string())),
-            tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Pending {
+            tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Pending {
                 code,
                 reason,
             } => (format!("pending_{:?}", code), Some(reason.to_string())),
@@ -273,18 +273,16 @@ fn main() {
             let backend = backend_kind_from_str(&row.backend);
             let status = decode_microphase_support_for(&row.family, backend);
             let (is_blocked, is_eligible) = match &status {
-                tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Native => {
+                tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Native => (false, true),
+                tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Composed => {
                     (false, true)
                 }
-                tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Composed => {
-                    (false, true)
+                tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Unsupported {
+                    ..
+                } => (true, false),
+                tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Pending { .. } => {
+                    (true, false)
                 }
-                tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Unsupported {
-                    ..
-                } => (true, false),
-                tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Pending {
-                    ..
-                } => (true, false),
             };
             ReceiptIndexEntry {
                 row_id: row.row_id.clone(),
@@ -297,16 +295,16 @@ fn main() {
                 backend: row.backend.clone(),
                 backend_policy: row.backend_policy.clone(),
                 support_status: match &status {
-                    tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Native => {
+                    tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Native => {
                         "supported_native"
                     }
-                    tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Composed => {
+                    tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Composed => {
                         "supported_domain_adapter"
                     }
-                    tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Unsupported {
+                    tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Unsupported {
                         ..
                     } => "unsupported",
-                    tribunus_compute_native::pipeline_parity::PhaseSupportStatus::Pending {
+                    tribunus_compute_core::pipeline_parity::PhaseSupportStatus::Pending {
                         ..
                     } => "pending",
                 }

@@ -3,8 +3,8 @@
 //! These tests verify that pipeline phase identity propagates correctly
 //! through suite manifest rows and decode attribution receipts.
 
-use tribunus_compute_native::decode_attribution::suite_manifest::{tier0_manifest, tier1_manifest};
-use tribunus_compute_native::pipeline_parity::PipelinePhase;
+use tribunus_compute_core::decode_attribution::suite_manifest::{tier0_manifest, tier1_manifest};
+use tribunus_compute_core::pipeline_parity::PipelinePhase;
 
 // ── Suite manifest phase propagation ──────────────────────────────────────
 
@@ -88,7 +88,7 @@ fn manifest_phases_are_valid_pipeline_phases() {
 /// Phase strings must match the canonical snake_case format from PipelinePhase::Display.
 #[test]
 fn manifest_phase_variants_match_expected() {
-    use tribunus_compute_native::pipeline_parity::graph_family_phase_variant;
+    use tribunus_compute_core::pipeline_parity::graph_family_phase_variant;
     let m = tier0_manifest();
     for row in &m.rows {
         let expected_variant = graph_family_phase_variant(&row.family);
@@ -103,7 +103,7 @@ fn manifest_phase_variants_match_expected() {
 /// Every manifest family maps to a distinct semantic contract ID.
 #[test]
 fn manifest_semantic_contract_ids_are_deterministic() {
-    use tribunus_compute_native::pipeline_parity::graph_family_semantic_contract_id;
+    use tribunus_compute_core::pipeline_parity::graph_family_semantic_contract_id;
     let m = tier0_manifest();
     for row in &m.rows {
         let expected_id = graph_family_semantic_contract_id(&row.family);
@@ -118,7 +118,7 @@ fn manifest_semantic_contract_ids_are_deterministic() {
 /// Default decode attribution receipt must have None pipeline_phase for backward compat.
 #[test]
 fn receipt_default_has_empty_phase() {
-    use tribunus_compute_native::decode_attribution::receipt::DecodeAttributionReceipt;
+    use tribunus_compute_core::decode_attribution::receipt::DecodeAttributionReceipt;
     let r = DecodeAttributionReceipt::default();
     // Legacy default: pipeline_phase is None.
     assert!(

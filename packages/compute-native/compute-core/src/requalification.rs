@@ -228,12 +228,12 @@ impl Requalifier {
 
     /// Serialize a slice of evidence as pretty-printed JSON and write to
     /// `path`.
-    pub fn write_evidence(evidence: &[ProfileEvidence], path: &Path) -> napi::Result<()> {
+    pub fn write_evidence(evidence: &[ProfileEvidence], path: &Path) -> crate::Result<()> {
         let json = serde_json::to_string_pretty(evidence).map_err(|e| {
-            napi::Error::from_reason(format!("failed to serialize evidence: {}", e))
+            crate::Error::from_reason(format!("failed to serialize evidence: {}", e))
         })?;
         std::fs::write(path, &json).map_err(|e| {
-            napi::Error::from_reason(format!(
+            crate::Error::from_reason(format!(
                 "failed to write evidence to {}: {}",
                 path.display(),
                 e
@@ -246,13 +246,13 @@ impl Requalifier {
     ///
     /// Returns an empty `Vec` when the file does not exist (first-use
     /// convention).  Propagates other I/O and parse errors.
-    pub fn read_evidence(path: &Path) -> napi::Result<Vec<ProfileEvidence>> {
+    pub fn read_evidence(path: &Path) -> crate::Result<Vec<ProfileEvidence>> {
         if !path.exists() {
             return Ok(Vec::new());
         }
 
         let json = std::fs::read_to_string(path).map_err(|e| {
-            napi::Error::from_reason(format!(
+            crate::Error::from_reason(format!(
                 "failed to read evidence from {}: {}",
                 path.display(),
                 e
@@ -260,7 +260,7 @@ impl Requalifier {
         })?;
 
         serde_json::from_str(&json).map_err(|e| {
-            napi::Error::from_reason(format!(
+            crate::Error::from_reason(format!(
                 "failed to parse evidence from {}: {}",
                 path.display(),
                 e

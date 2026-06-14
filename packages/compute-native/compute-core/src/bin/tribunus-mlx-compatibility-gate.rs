@@ -2,15 +2,15 @@
 //! Performs smoke and authority-mode hardware benchmarking, environment telemetry,
 //! and writes structured JSON evidence and decisions.
 
+use serde::Serialize;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
 use std::time::Instant;
-use serde::Serialize;
 
 use mlx_rs::{Array, Device, Stream};
-use tribunus_compute_native::mlx_api_compat::{MlxApiCompat, CompatAttentionMask};
-use tribunus_compute_native::mlx_runtime_probe::MlxRuntimeProbeReport;
+use tribunus_compute_core::mlx_api_compat::{CompatAttentionMask, MlxApiCompat};
+use tribunus_compute_core::mlx_runtime_probe::MlxRuntimeProbeReport;
 
 // ── Evidence structures ───────────────────────────────────────────────────
 
@@ -50,14 +50,14 @@ fn calculate_stats(seq_len: u32, mut samples: Vec<f64>) -> BenchStats {
     let sample_count = samples.len();
     let min_us = samples[0];
     let max_us = samples[sample_count - 1];
-    
+
     // Median
     let median_us = if sample_count % 2 == 0 {
         (samples[sample_count / 2 - 1] + samples[sample_count / 2]) / 2.0
     } else {
         samples[sample_count / 2]
     };
-    
+
     // P90
     let p90_idx = (sample_count as f64 * 0.90).round() as usize;
     let p90_us = samples[p90_idx.min(sample_count - 1)];
@@ -81,7 +81,14 @@ fn main() {
 
     println!("============================================================");
     println!("TRIBUNUS MLX COMPATIBILITY & SHORT DECODE GATE-0001");
-    println!("Mode: {}", if authority_mode { "AUTHORITY (Full Sweep)" } else { "SMOKE (Fast Verification)" });
+    println!(
+        "Mode: {}",
+        if authority_mode {
+            "AUTHORITY (Full Sweep)"
+        } else {
+            "SMOKE (Fast Verification)"
+        }
+    );
     println!("============================================================");
 
     // 1. Compile-time check / API validation
@@ -95,7 +102,10 @@ fn main() {
     println!("[2/4] Gathering system and MLX runtime telemetry...");
     let report = MlxRuntimeProbeReport::probe();
     println!("      -> macOS: {}", report.os_version);
-    println!("      -> Metal forced fallback: {}", report.metal_fallback_forced);
+    println!(
+        "      -> Metal forced fallback: {}",
+        report.metal_fallback_forced
+    );
     println!("      -> NAX checks bypassed: {}", report.nax_disabled);
     println!("      -> Python in path: {}", report.python_present);
 
@@ -106,7 +116,7 @@ fn main() {
 
     // Sequence lengths to benchmark
     let seq_lens = vec![1, 8, 16, 32, 64, 127, 128, 129, 256, 512];
-    
+
     let warmup_count = if authority_mode { 10 } else { 2 };
     let sample_count = if authority_mode { 50 } else { 5 };
 
@@ -117,10 +127,20 @@ fn main() {
     let scale = 1.0f32 / (head_dim as f64).sqrt() as f32;
 
     for &len in &seq_lens {
-        let q = Array::from_slice(&vec![0.1f32; (num_heads * len * head_dim) as usize], &[1, num_heads, len, head_dim]);
-        let k = Array::from_slice(&vec![0.1f32; (num_heads * len * head_dim) as usize], &[1, num_heads, len, head_dim]);
-        let v = Array::from_slice(&vec![0.1f32; (num_heads * len * head_dim) as usize], &[1, num_heads, len, head_dim]);
-        let (mask_mode, mask_arr) = MlxApiCompat::get_sdpa_mask_params(&CompatAttentionMask::Causal);
+        let q = Array::from_slice(
+            &vec![0.1f32; (num_heads * len * head_dim) as usize],
+            &[1, num_heads, len, head_dim],
+        );
+        let k = Array::from_slice(
+            &vec![0.1f32; (num_heads * len * head_dim) as usize],
+            &[1, num_heads, len, head_dim],
+        );
+        let v = Array::from_slice(
+            &vec![0.1f32; (num_heads * len * head_dim) as usize],
+            &[1, num_heads, len, head_dim],
+        );
+        let (mask_mode, mask_arr) =
+            MlxApiCompat::get_sdpa_mask_params(&CompatAttentionMask::Causal);
 
         // Warmup
         for _ in 0..warmup_count {
@@ -171,23 +191,36 @@ fn main() {
     // Family 2: decode_microphase_like (Simulating query/key/value projections + attention)
     let mut decode_like_results = Vec::new();
     for &len in &seq_lens {
-        let x = Array::from_slice(&vec![0.1f32; (len * head_dim) as usize], &[1, len, head_dim]);
-        let w_q = Array::from_slice(&vec![0.2f32; (head_dim * head_dim) as usize], &[head_dim, head_dim]);
-        let w_k = Array::from_slice(&vec![0.2f32; (head_dim * head_dim) as usize], &[head_dim, head_dim]);
-        let w_v = Array::from_slice(&vec![0.2f32; (head_dim * head_dim) as usize], &[head_dim, head_dim]);
+        let x = Array::from_slice(
+            &vec![0.1f32; (len * head_dim) as usize],
+            &[1, len, head_dim],
+        );
+        let w_q = Array::from_slice(
+            &vec![0.2f32; (head_dim * head_dim) as usize],
+            &[head_dim, head_dim],
+        );
+        let w_k = Array::from_slice(
+            &vec![0.2f32; (head_dim * head_dim) as usize],
+            &[head_dim, head_dim],
+        );
+        let w_v = Array::from_slice(
+            &vec![0.2f32; (head_dim * head_dim) as usize],
+            &[head_dim, head_dim],
+        );
 
         // Warmup
         for _ in 0..warmup_count {
             let q_proj = x.matmul(&w_q).unwrap();
             let k_proj = x.matmul(&w_k).unwrap();
             let v_proj = x.matmul(&w_v).unwrap();
-            
+
             // Reshape for attention
             let q_att = q_proj.reshape(&[1, 1, len, head_dim]).unwrap();
             let k_att = k_proj.reshape(&[1, 1, len, head_dim]).unwrap();
             let v_att = v_proj.reshape(&[1, 1, len, head_dim]).unwrap();
 
-            let (mask_mode, mask_arr) = MlxApiCompat::get_sdpa_mask_params(&CompatAttentionMask::Causal);
+            let (mask_mode, mask_arr) =
+                MlxApiCompat::get_sdpa_mask_params(&CompatAttentionMask::Causal);
             let mut res = unsafe { mlx_sys::mlx_array_new() };
             unsafe {
                 mlx_sys::mlx_fast_scaled_dot_product_attention(
@@ -213,12 +246,13 @@ fn main() {
             let q_proj = x.matmul(&w_q).unwrap();
             let k_proj = x.matmul(&w_k).unwrap();
             let v_proj = x.matmul(&w_v).unwrap();
-            
+
             let q_att = q_proj.reshape(&[1, 1, len, head_dim]).unwrap();
             let k_att = k_proj.reshape(&[1, 1, len, head_dim]).unwrap();
             let v_att = v_proj.reshape(&[1, 1, len, head_dim]).unwrap();
 
-            let (mask_mode, mask_arr) = MlxApiCompat::get_sdpa_mask_params(&CompatAttentionMask::Causal);
+            let (mask_mode, mask_arr) =
+                MlxApiCompat::get_sdpa_mask_params(&CompatAttentionMask::Causal);
             let mut res = unsafe { mlx_sys::mlx_array_new() };
             unsafe {
                 mlx_sys::mlx_fast_scaled_dot_product_attention(
@@ -244,15 +278,26 @@ fn main() {
     // Print summary stats
     println!("\nBenchmark results (sdpa_causal_mask_only):");
     for s in &sdpa_results {
-        println!("  Sequence Length {}: median={:.2}us, p90={:.2}us", s.seq_len, s.median_us, s.p90_us);
+        println!(
+            "  Sequence Length {}: median={:.2}us, p90={:.2}us",
+            s.seq_len, s.median_us, s.p90_us
+        );
     }
 
     // 4. Decision classification logic
     println!("\n[4/4] Generating compatibility decision...");
-    
+
     // Check 127/128 ratio
-    let median_127 = sdpa_results.iter().find(|s| s.seq_len == 127).map(|s| s.median_us).unwrap_or(1.0);
-    let median_128 = sdpa_results.iter().find(|s| s.seq_len == 128).map(|s| s.median_us).unwrap_or(1.0);
+    let median_127 = sdpa_results
+        .iter()
+        .find(|s| s.seq_len == 127)
+        .map(|s| s.median_us)
+        .unwrap_or(1.0);
+    let median_128 = sdpa_results
+        .iter()
+        .find(|s| s.seq_len == 128)
+        .map(|s| s.median_us)
+        .unwrap_or(1.0);
     let ratio = median_127 / median_128;
     println!("      -> SDPA Latency Ratio (127 / 128): {:.4}", ratio);
 
@@ -300,14 +345,16 @@ fn main() {
     });
     fs::write(
         compat_path.join("short_decode_bench.json"),
-        serde_json::to_string_pretty(&bench_json).unwrap()
-    ).unwrap();
+        serde_json::to_string_pretty(&bench_json).unwrap(),
+    )
+    .unwrap();
 
     // 3. Write compatibility_decision.json
     fs::write(
         compat_path.join("compatibility_decision.json"),
-        serde_json::to_string_pretty(&decision).unwrap()
-    ).unwrap();
+        serde_json::to_string_pretty(&decision).unwrap(),
+    )
+    .unwrap();
 
     // 4. Write short_decode_gate.md summary report
     let md_summary = format!(

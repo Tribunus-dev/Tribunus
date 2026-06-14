@@ -13,13 +13,11 @@ use std::time::Duration;
 
 use tokio::sync::{mpsc, oneshot};
 
-use tribunus_compute_native::backend::{
-    MlxBackend, TensorBackend,
-};
+use tribunus_compute_core::backend::{MlxBackend, TensorBackend};
 
-use tribunus_compute_native::compute_lane::{
-    spawn_lane, CancellationReason, ComputeCommand, ComputeErrorKind, ComputeLaneId,
-    ComputeLease, ComputeLeaseId, DeviceIdentity, LaneLifecycle, LaneStatus, RequestId, SessionId,
+use tribunus_compute_core::compute_lane::{
+    spawn_lane, CancellationReason, ComputeCommand, ComputeErrorKind, ComputeLaneId, ComputeLease,
+    ComputeLeaseId, DeviceIdentity, LaneLifecycle, LaneStatus, RequestId, SessionId,
     ShutdownReason,
 };
 
@@ -219,7 +217,7 @@ async fn cancel_prevents_subsequent_decode() {
 
     // Now send a Decode — the lane should see the cancelled flag
     let (decode_tx, mut decode_rx) =
-        mpsc::channel::<tribunus_compute_native::compute_lane::DecodeEvent>(1);
+        mpsc::channel::<tribunus_compute_core::compute_lane::DecodeEvent>(1);
     handle
         .send(ComputeCommand::Decode {
             request_id: RequestId(5),
@@ -289,7 +287,7 @@ fn lease_admission_and_expiry() {
     let lease = ComputeLease {
         lease_id: ComputeLeaseId(1),
         lane_id: ComputeLaneId(5),
-        model_id: tribunus_compute_native::compute_lane::ModelRuntimeId(1),
+        model_id: tribunus_compute_core::compute_lane::ModelRuntimeId(1),
         session_id: SessionId(1),
         reserved_kv_bytes: 1024 * 1024,
         reserved_scratch_bytes: 512 * 1024,

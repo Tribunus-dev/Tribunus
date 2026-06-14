@@ -3,13 +3,11 @@
 //! Runs identical input tensors through MLX, Accelerate, and Core ML,
 //! compares outputs pairwise and against an F64 scalar oracle.
 
-use tribunus_compute_native::backend::accelerate::AccelerateBackend;
-use tribunus_compute_native::backend::coreml::CoreMlBackend;
-use tribunus_compute_native::backend::graph::GraphBackend;
-use tribunus_compute_native::backend::routing::{
-    CompiledRegionHandle, GraphRegion, OperationFamily,
-};
-use tribunus_compute_native::backend::{MatmulOp, MlxBackend, TensorBackend};
+use tribunus_compute_core::backend::accelerate::AccelerateBackend;
+use tribunus_compute_core::backend::coreml::CoreMlBackend;
+use tribunus_compute_core::backend::graph::GraphBackend;
+use tribunus_compute_core::backend::routing::{CompiledRegionHandle, GraphRegion, OperationFamily};
+use tribunus_compute_core::backend::{MatmulOp, MlxBackend, TensorBackend};
 
 // ── Fixtures ──────────────────────────────────────────────────────────
 

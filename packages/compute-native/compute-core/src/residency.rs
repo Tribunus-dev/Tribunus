@@ -6,7 +6,7 @@
 //! supply byte sizes at admission time and the manager tracks identity,
 //! not cumulative byte counters.
 
-use napi::Status;
+use crate::Status;
 
 /// Lifecycle state of a segment lease.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -111,15 +111,15 @@ impl ResidencyManager {
     ///
     /// # Errors
     ///
-    /// Returns `napi::Error` with `InvalidArgument` if the segment is not in
+    /// Returns `crate::Error` with `InvalidArgument` if the segment is not in
     /// the prefetched list.
-    pub fn bind_segment(&mut self, segment_id: &str) -> napi::Result<()> {
+    pub fn bind_segment(&mut self, segment_id: &str) -> crate::Result<()> {
         let idx = self
             .prefetched
             .iter()
             .position(|id| id == segment_id)
             .ok_or_else(|| {
-                napi::Error::new(
+                crate::Error::new(
                     Status::InvalidArg,
                     format!(
                         "segment '{}' is not in prefetched state; cannot bind",
@@ -139,15 +139,15 @@ impl ResidencyManager {
     ///
     /// # Errors
     ///
-    /// Returns `napi::Error` with `InvalidArgument` if the segment is not
+    /// Returns `crate::Error` with `InvalidArgument` if the segment is not
     /// bound, or `Conflict` if another segment is already in-flight.
-    pub fn mark_in_flight(&mut self, segment_id: &str) -> napi::Result<()> {
+    pub fn mark_in_flight(&mut self, segment_id: &str) -> crate::Result<()> {
         let idx = self
             .bound
             .iter()
             .position(|id| id == segment_id)
             .ok_or_else(|| {
-                napi::Error::new(
+                crate::Error::new(
                     Status::InvalidArg,
                     format!(
                         "segment '{}' is not in bound state; cannot mark in-flight",
@@ -157,7 +157,7 @@ impl ResidencyManager {
             })?;
 
         if self.in_flight.is_some() {
-            return Err(napi::Error::new(
+            return Err(crate::Error::new(
                 Status::GenericFailure,
                 "a segment is already in-flight; retire it first".to_string(),
             ));

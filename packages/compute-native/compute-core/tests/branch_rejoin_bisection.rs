@@ -9,9 +9,9 @@
 //!   B: Vary n with fixed k=4
 //!   C: Vary both together (default)
 
-use tribunus_compute_native::decode_attribution::backend_adapters::coreml_adapter;
-use tribunus_compute_native::decode_attribution::graph_catalog;
-use tribunus_compute_native::decode_attribution::shape_profiles::ShapeProfile;
+use tribunus_compute_core::decode_attribution::backend_adapters::coreml_adapter;
+use tribunus_compute_core::decode_attribution::graph_catalog;
+use tribunus_compute_core::decode_attribution::shape_profiles::ShapeProfile;
 
 fn run_mode(shapes: &[(u32, u32)], mode_name: &str) -> Vec<(u32, u32, bool, String)> {
     let mut results = Vec::new();

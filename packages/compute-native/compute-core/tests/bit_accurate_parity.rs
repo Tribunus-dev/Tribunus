@@ -1,8 +1,8 @@
 //! Bit-accurate parity tests validating MLX references vs Core ML predictions.
 
-use tribunus_compute_native::arena::Arena;
-use tribunus_compute_native::coreml_bridge::CoreMlModel;
-use tribunus_compute_native::coreml_state::CoreMlStateHandle;
+use tribunus_compute_core::arena::Arena;
+use tribunus_compute_core::coreml_bridge::CoreMlModel;
+use tribunus_compute_core::coreml_state::CoreMlStateHandle;
 
 fn f32_to_f16_bits(x: f32) -> u16 {
     let bits = x.to_bits();

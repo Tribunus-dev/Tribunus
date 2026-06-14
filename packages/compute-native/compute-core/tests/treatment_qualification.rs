@@ -4,11 +4,11 @@
 //! data — no 12B model required.  Every tensor, plan, manifest, and sidecar
 //! is constructed in-process from scratch.
 
-use tribunus_compute_native::config::LayerPlan;
-use tribunus_compute_native::sidecar::{
+use tribunus_compute_core::config::LayerPlan;
+use tribunus_compute_core::sidecar::{
     derive_kernel_signatures, derive_residency_groups, ExecutionConditioningSidecar,
 };
-use tribunus_compute_native::treatment::{PrefetchCoordinator, ReadinessManager, ScratchArena};
+use tribunus_compute_core::treatment::{PrefetchCoordinator, ReadinessManager, ScratchArena};
 use tribunus_evidence_schema::mission0007::AttentionKind;
 use tribunus_evidence_schema::{
     ArtifactRange, ConditioningArm, ConditioningFallbackPolicy, ExecutionConditioningPolicy,

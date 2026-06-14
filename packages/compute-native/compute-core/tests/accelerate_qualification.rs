@@ -4,9 +4,9 @@
 //! and memory accounting.  Must run under inference-research profile
 //! for native FFI behavior.
 
-use tribunus_compute_native::backend::accelerate::AccelerateBackend;
-use tribunus_compute_native::backend::MatmulOp;
-use tribunus_compute_native::backend::TensorBackend;
+use tribunus_compute_core::backend::accelerate::AccelerateBackend;
+use tribunus_compute_core::backend::MatmulOp;
+use tribunus_compute_core::backend::TensorBackend;
 
 fn accel() -> AccelerateBackend {
     AccelerateBackend::new()

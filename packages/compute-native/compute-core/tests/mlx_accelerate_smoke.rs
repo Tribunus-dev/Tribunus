@@ -3,10 +3,10 @@
 //! Runs identical input tensors through both backends and verifies
 //! output correctness.  No timing claims — this is correctness only.
 
-use tribunus_compute_native::backend::accelerate::AccelerateBackend;
-use tribunus_compute_native::backend::MatmulOp;
-use tribunus_compute_native::backend::MlxBackend;
-use tribunus_compute_native::backend::TensorBackend;
+use tribunus_compute_core::backend::accelerate::AccelerateBackend;
+use tribunus_compute_core::backend::MatmulOp;
+use tribunus_compute_core::backend::MlxBackend;
+use tribunus_compute_core::backend::TensorBackend;
 
 fn known_2x3() -> Vec<f32> {
     vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]

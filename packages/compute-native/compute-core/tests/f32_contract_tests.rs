@@ -1,10 +1,10 @@
 //! Experiment artifact authority tests — recursive sealing, layout payloads,
 //! tensor data verification, per-contract datasets, build attestation.
 
-use tribunus_compute_native::backend::routing::{OperationId, PhysicalLayout};
-use tribunus_compute_native::experiment::{
-    conformance_shapes, representative_shapes, ExperimentManifest, F32MatmulContract,
-    InputDataset, MachineProfile, SealedExperimentProfile,
+use tribunus_compute_core::backend::routing::{OperationId, PhysicalLayout};
+use tribunus_compute_core::experiment::{
+    conformance_shapes, representative_shapes, ExperimentManifest, F32MatmulContract, InputDataset,
+    MachineProfile, SealedExperimentProfile,
 };
 
 // ── Contract digest ──────────────────────────────────────────────────
@@ -148,7 +148,7 @@ fn sealed_profiles_verify() {
 fn sealed_profile_tamper_detected() {
     let c = F32MatmulContract::new(OperationId(0), 2, 4, 3);
     let mut p = SealedExperimentProfile::mlx_control(&c);
-    p.backend = tribunus_compute_native::backend::routing::BackendId(99);
+    p.backend = tribunus_compute_core::backend::routing::BackendId(99);
     assert!(!p.verify());
 }
 

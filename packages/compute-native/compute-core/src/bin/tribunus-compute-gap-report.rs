@@ -2,7 +2,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use serde_json::Value;
-use tribunus_compute_native::decode_attribution::gap_report::{
+use tribunus_compute_core::decode_attribution::gap_report::{
     build_backend_gap_matrix, load_cargo_build_log, load_cargo_clippy_log, load_cargo_test_log,
     load_kv_contracts, load_python_reference, load_support_matrix, load_tier1_defects,
     load_tier2_manifest, normalize_gaps, write_gap_report_artifacts, ComputeGap,
@@ -216,13 +216,13 @@ fn main() {
 
     let accounting = GapReportAccounting {
         observed_tier1_total: count_json_rows(&tier1_run_dir.join("clustering").join("tier1_defect_clusters.json")),
-        tier1_pass_count: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_native::decode_attribution::gap_report::GapSource::Tier1DefectCluster) && !gap.blocks_promotion).count() as u32,
-        tier1_nonpass_count: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_native::decode_attribution::gap_report::GapSource::Tier1DefectCluster) && gap.blocks_promotion).count() as u32,
-        tier1_gap_rows: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_native::decode_attribution::gap_report::GapSource::Tier1DefectCluster)).count() as u32,
+        tier1_pass_count: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_core::decode_attribution::gap_report::GapSource::Tier1DefectCluster) && !gap.blocks_promotion).count() as u32,
+        tier1_nonpass_count: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_core::decode_attribution::gap_report::GapSource::Tier1DefectCluster) && gap.blocks_promotion).count() as u32,
+        tier1_gap_rows: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_core::decode_attribution::gap_report::GapSource::Tier1DefectCluster)).count() as u32,
         observed_tier2_manifest_rows: count_json_rows(&tier2_output_dir.join("decode_microphase_support_matrix.json")),
-        tier2_gap_rows: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_native::decode_attribution::gap_report::GapSource::Tier2Manifest)).count() as u32,
+        tier2_gap_rows: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_core::decode_attribution::gap_report::GapSource::Tier2Manifest)).count() as u32,
         observed_kv_contract_rows: count_json_rows(&tier2_output_dir.join("kv_contracts.json")),
-        kv_contract_gap_rows: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_native::decode_attribution::gap_report::GapSource::KvContract)).count() as u32,
+        kv_contract_gap_rows: gaps.iter().filter(|gap| matches!(gap.source, tribunus_compute_core::decode_attribution::gap_report::GapSource::KvContract)).count() as u32,
     };
     let (gaps, receipt) = normalize_gaps(&gaps, accounting);
     let backend_matrix = build_backend_gap_matrix();
@@ -238,11 +238,11 @@ fn main() {
     eprintln!(
         "Total gaps: {} (S0: {}, S1: {}, S2: {}, S3: {}, S4: {}) | Tier1 observed/pass/nonpass/gaps: {}/{}/{}/{} | Tier2 observed/gaps: {}/{} | KV observed/gaps: {}/{} | False qualification risks: {} | Artifacts: {}",
         gaps.len(),
-        gaps.iter().filter(|gap| gap.severity == tribunus_compute_native::decode_attribution::gap_report::GapSeverity::S0).count(),
-        gaps.iter().filter(|gap| gap.severity == tribunus_compute_native::decode_attribution::gap_report::GapSeverity::S1).count(),
-        gaps.iter().filter(|gap| gap.severity == tribunus_compute_native::decode_attribution::gap_report::GapSeverity::S2).count(),
-        gaps.iter().filter(|gap| gap.severity == tribunus_compute_native::decode_attribution::gap_report::GapSeverity::S3).count(),
-        gaps.iter().filter(|gap| gap.severity == tribunus_compute_native::decode_attribution::gap_report::GapSeverity::S4).count(),
+        gaps.iter().filter(|gap| gap.severity == tribunus_compute_core::decode_attribution::gap_report::GapSeverity::S0).count(),
+        gaps.iter().filter(|gap| gap.severity == tribunus_compute_core::decode_attribution::gap_report::GapSeverity::S1).count(),
+        gaps.iter().filter(|gap| gap.severity == tribunus_compute_core::decode_attribution::gap_report::GapSeverity::S2).count(),
+        gaps.iter().filter(|gap| gap.severity == tribunus_compute_core::decode_attribution::gap_report::GapSeverity::S3).count(),
+        gaps.iter().filter(|gap| gap.severity == tribunus_compute_core::decode_attribution::gap_report::GapSeverity::S4).count(),
         receipt.observed_tier1_total,
         receipt.tier1_pass_count,
         receipt.tier1_nonpass_count,
