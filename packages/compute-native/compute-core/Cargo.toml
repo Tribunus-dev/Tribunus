@@ -124,13 +124,14 @@ async-trait = "0.1"
 coreml-proto = "0.1.0"
 prost = "0.14.4"
 prost-types = "0.14.4"
-tempfile = "3"
-tokio-postgres = "0.7"
-redis = { version = "0.27", features = ["tokio-comp"] }
-duckdb = { version = "1.1", features = ["bundled"] }
+tempfile = { version = "3" }
+tokio-postgres = { version = "0.7", optional = true }
+redis = { version = "0.27", features = ["tokio-comp"], optional = true }
+duckdb = { version = "1.1", features = ["bundled"], optional = true }
 
 [features]
 default = []
+storage-adapters = ["dep:tokio-postgres", "dep:redis", "dep:duckdb"]
 
 [build-dependencies]
 cc = "1.2"

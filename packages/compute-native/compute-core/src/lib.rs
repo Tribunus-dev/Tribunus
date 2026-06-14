@@ -1,7 +1,6 @@
 #[cfg(not(all(target_os = "macos", target_arch = "aarch64")))]
-compile_error!(
-    "Compute authority requires Apple Silicon (macOS arm64). Platform is explicitly unsupported."
-);
+#[cfg(not(any(feature = "mlx", feature = "storage-adapters")))]
+compile_error!("Compute authority requires Apple Silicon (macOS arm64).");
 
 extern crate self as tribunus_compute_core;
 
@@ -84,6 +83,7 @@ pub mod runtime_orchestration;
 pub mod runtime_trace;
 pub mod session;
 pub mod sidecar;
+
 pub mod storage_adapters;
 pub mod storage_kernel;
 pub mod streaming;
