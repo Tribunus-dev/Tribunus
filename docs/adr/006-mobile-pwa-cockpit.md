@@ -9,6 +9,8 @@ Tribunus is a native macOS desktop application. It spawns child processes (Valke
 
 However, a mobile PWA can serve as a remote cockpit: observing the desktop's state, sending operator intents, and receiving push notifications when the user is away from their machine.
 
+This cockpit is a projection layer, not an authority source; durable truth and receipts remain on the desktop side of the shared spine.
+
 ## Decision
 
 ### Architecture

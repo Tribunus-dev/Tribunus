@@ -10,13 +10,13 @@ Rig Relay is a Python 3.12+ desktop coding assistant with a 550-schema governanc
 
 550+ typed JSON schemas. Every artifact — events, decisions, receipts, projections, patches, leases, missions — has a canonical schema. Every schema has `additionalProperties: false` at every nesting level. Forbidden field names are explicitly banned (`prompt`, `stdout`, `stderr`, `content`, `diff`, `patch`, `secret`, `argv`, `snippet`).
 
-Port to Tribunus: Diagnostic packets, dharma receipts, codex entries, design council verdicts, mission descriptors — everything gets a canonical schema. Effect Schema (already in the repo) as the implementation substrate.
+Port to Tribunus: Diagnostic packets, dharma receipts, codex entries, design council verdicts, mission descriptors — everything gets a canonical schema. Effect Schema (already in the repo) remains the implementation substrate, but schema shape is not authority by itself.
 
 **2. Content-Light Doctrine**
 
 Fleet queue items carry only summary text, hashes, and refs. Never raw prompts, stdout, stderr, content, diffs, patches, secrets. `PatchProposal` stores `touched_paths`, hashes, and `artifact_refs` — never embedded diffs. Projection models have `ConfigDict(extra="forbid")`.
 
-Port to Tribunus: Diagnostic packets reference commit hashes, not full diffs. Error signatures are hashed stack traces, not raw call stacks. File involvement is paths, not contents. This maps to the privacy/disclosure gate from the Codex spec.
+Port to Tribunus: Diagnostic packets reference commit hashes, not full diffs. Error signatures are hashed stack traces, not raw call stacks. File involvement is paths, not contents. This maps to the privacy/disclosure gate from the Codex spec and keeps projections lighter than durable truth.
 
 **3. Append-Only Event Sourcing**
 

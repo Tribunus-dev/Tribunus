@@ -5,7 +5,7 @@ Accepted — June 2026
 
 ## Context
 
-Tribunus requires a stable public contract for external tools, extensions, agents, project spaces, and eventual federation. The existing architecture establishes PGlite as durable truth (ADR 003), Valkey as coordination kernel (ADR 004), and a Cell-based federation model (ADR 014). OpenCode has an agent-control SDK. Tribunus needs a different boundary: a runtime-contract client that exposes semantic operations without exposing PGlite/Valkey/DuckDB implementation. The plugin system must be capability-scoped with governed authority, never ambient access. The Developer Graph (ADR 017) uses AT Protocol DIDs for portable identity. The Cell model (ADR 014) aligns with UCAN scoped authority. The event-sourced graph pattern is used throughout the Tribunus architecture.
+Tribunus requires a stable public contract for external tools, extensions, agents, project spaces, and eventual federation. The existing architecture establishes PGlite as durable truth (ADR 003), Valkey as coordination kernel (ADR 004), and a Cell-based federation model (ADR 014). OpenCode is the compatibility baseline, not the doctrine. Tribunus needs a different boundary: a runtime-contract client that exposes semantic operations without exposing PGlite/Valkey/DuckDB implementation. The plugin system must be capability-scoped with governed authority, never ambient access. The Developer Graph (ADR 017) uses AT Protocol DIDs for portable identity. The Cell model (ADR 014) aligns with UCAN scoped authority. The event-sourced graph pattern is used throughout the Tribunus architecture. This ADR imports the shared truth spine so the SDK remains a contract surface over durable truth, receipts, and projections, not a separate authority model.
 
 **This ADR is an ARCHITECTURE SPINE, not an implementation contract.** It defines the strategic boundary and major components. Concrete schemas, lifecycles, and process models will be specified in follow-up artifacts (Plugin Runtime Contract v1, Extension Trust Kernel v1).
 
@@ -15,7 +15,9 @@ Tribunus requires a stable public contract for external tools, extensions, agent
 
 The Tribunus SDK is the governed interface for interacting with project runtime state. Unlike OpenCode agent-control SDK (which focuses on controlling an agent server), the Tribunus SDK exposes semantic operations that represent the durable coordination spine: create project, open session, enqueue governed work, observe lifecycle, subscribe to receipts, request capability, attach artifact, publish projection, join project room, export audit packet. Internally, these operations may touch PGlite, Valkey, DuckDB, MCP tools, or UI state, but externally they remain stable contracts.
 
-The key distinction: OpenCode SDK is an agent-control client. Tribunus SDK is a runtime-contract client.
+The SDK is an integration surface over the shared spine, not a parallel authority layer. That means compatibility, adapters, and plugin affordances are transitional surfaces only; they do not redefine runtime truth.
+
+The key distinction: the legacy OpenCode SDK is an agent-control client. Tribunus SDK is a runtime-contract client.
 
 ### Architecture Layers
 
@@ -59,7 +61,7 @@ Equivalent of OpenCode SDK but with Tribunus concepts. Talks to a local or remot
 
 Enables third parties to add views, commands, tools, project templates, task processors, importers, exporters, or social/project-space features. This layer must be heavily governed.
 
-**Core Principle:** Plugins should not get raw DB access. They should receive capability-scoped handles and emit typed intents.
+**Core Principle:** Plugins should not get raw DB access. They should receive capability-scoped handles and emit typed intents. The plugin surface is therefore a projection over the runtime spine, not a place to mint new authority.
 
 ### Implementation Sequence
 

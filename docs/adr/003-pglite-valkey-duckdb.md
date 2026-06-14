@@ -12,12 +12,13 @@ Tribunus requires three distinct runtime capabilities that no single database pr
 3. **Retrospective analysis** — The system must answer product questions: which packet families propagate fastest, which frameworks produce repeated failures, which agent routes produce bad matches.
 
 SQLite was the initial local store. It was replaced with PGlite for vector search (`pgvector`), JSON document support (`JSONB`), and extension capabilities. Valkey was added for distributed coordination. DuckDB was added for columnar analytics. This ADR defines the contract between them.
+It participates in the shared runtime spine rather than introducing a separate authority model.
 
 ## Decision
 
 ### PGlite — Local Durable Intelligence
 
-PGlite owns all durable state. Nothing in Valkey or DuckDB is authoritative.
+PGlite owns all durable authority truth. Nothing in Valkey or DuckDB is authoritative.
 
 **What lives here:**
 - Diagnostic packets (JSONB documents with full schema)
@@ -35,7 +36,7 @@ PGlite owns all durable state. Nothing in Valkey or DuckDB is authoritative.
 
 ### Valkey — Live Coordination Layer
 
-Valkey owns shared, ephemeral, coordination-heavy state. Nothing in Valkey is authoritative — all durable truth lives in PGlite.
+Valkey owns shared, ephemeral, coordination-heavy state. Nothing in Valkey is authoritative — all durable truth lives in PGlite and is receipted before coordination advances.
 
 **Streams (with consumer groups) for processing rails:**
 - Agent work queues (diagnostic packet submission, disclosure approval, dharma receipt issuance)
@@ -63,6 +64,7 @@ Only for events where loss is acceptable — no audit trail needed, no durable s
 ### DuckDB — Analytical Reflection Layer
 
 DuckDB does not own product state. It consumes snapshots and events from the other two layers.
+Its outputs are projections over durable truth, not durable truth itself.
 
 **What DuckDB answers:**
 

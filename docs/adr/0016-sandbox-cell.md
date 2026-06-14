@@ -7,6 +7,9 @@ Accepted — June 2026
 
 ADR 014 defined the Tribunus Cell as a sovereign local authority domain. This ADR extends the model to multi-user collaboration through a browser sandbox Cell. The owning Cell must never let other Cells mutate the original project workspace directly. Instead, it publishes a controlled working copy into a browser-executable sandbox, lets collaborators operate inside that copy, and receives back a reviewable change envelope. The owning Cell remains the authority that decides whether those changes become part of the real local project.
 
+The sandbox is a projection and proposal surface, not a source of durable truth or authority by itself.
+It inherits the owning Cell's authority model and only projects temporary execution state.
+
 ## Decision
 
 ### Three Planes
@@ -63,6 +66,7 @@ No sandbox change is authoritative until the owning Cell imports it. The browser
 ### Base Invariant
 
 If the owner project has moved since the sandbox was exported, the owner Cell must not blindly apply the patch. It must classify: `base_current`, `base_stale_but_cleanly_applies`, `base_stale_with_conflicts`, or `origin_missing`. This classification belongs in lifecycle/projection, not hidden in an error log.
+That classification is advisory to the owner Cell; it never becomes independent authority inside the sandbox.
 
 ### Cell Authority Semantics
 

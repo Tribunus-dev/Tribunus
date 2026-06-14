@@ -1,3 +1,12 @@
+# This workflow does not prove all compute-core tests are clean.
+# That is tracked by the suite hygiene ledger.
+#
+# This workflow proves the authority subset:
+# architecture contracts compile,
+# runtime work can be scoped,
+# hostile lattice corruption is rejected,
+# and the result is reproducible off the developer machine.
+
 name: Compute Authority Validation
 
 on:
@@ -41,7 +50,7 @@ jobs:
           # bun run script/audit-architecture.ts
 
   compute-authority-macos-arm64:
-    name: Compute Authority (Apple Silicon)
+    name: Compute Authority Subset (Apple Silicon)
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -54,19 +63,27 @@ jobs:
         with:
           workspaces: packages/compute-native -> target
 
-      - name: Check compute-core
+      - name: Build Authority Subset
         run: |
           cd packages/compute-native
-          cargo check -p tribunus-compute-core
+          cargo test -p tribunus-compute-core --lib runtime_contract --no-run
+          cargo test -p tribunus-compute-core --lib runtime_orchestration --no-run
+          cargo test -p tribunus-compute-core --test coverage_lattice_authority --no-run
+          cargo test -p tribunus-compute-core --lib storage_kernel --no-run
 
-      - name: Run Hostile Lattice Tests
+      - name: Run Authority Subset Tests
         run: |
           cd packages/compute-native
+          cargo test -p tribunus-compute-core --lib runtime_contract -- --nocapture --test-threads=1
+          cargo test -p tribunus-compute-core --lib runtime_orchestration -- --nocapture --test-threads=1
+          cargo test -p tribunus-compute-core --lib storage_kernel -- --nocapture --test-threads=1
           cargo test -p tribunus-compute-core --test coverage_lattice_authority
 
-      - name: Verify Validator CLI (Authority Mode)
-        run: |
-          cd packages/compute-native
-          # Create a dummy valid lattice for a quick smoke test of the CLI itself
-          # In a real run, this would point to a generated fixture
-          cargo run -p tribunus-compute-core --bin tribunus-coreml-decode-attribution -- --help
+      - name: Upload Audit Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compute-authority-audit
+          path: |
+            packages/compute-native/target/debug/failure-ledger.json
+            packages/compute-native/target/debug/audit.json

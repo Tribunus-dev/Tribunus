@@ -14,6 +14,8 @@ Tribunus currently has four distinct surfaces, each with its own personality pro
 
 Building each surface independently guarantees visual fragmentation. The desktop app carries inherited opencode styling that doesn't match the landing page. The mobile PWA would bring a third visual grammar. The tablet would be a fourth. This is unsustainable for a product with a strong identity.
 
+The design language is a presentation system, not a runtime authority system; it follows the product spine rather than redefining it.
+
 ## Decision
 
 ### One Component System, Four Shells

@@ -42,6 +42,8 @@ All schemas must include the following metadata:
 - **Maintain `schemas/index.json`** listing all schemas with metadata
 - **Add new schemas** to the registry when created
 - **Deprecate old schemas** by marking them in the registry
+Schema registry entries describe artifacts, not runtime authority. Any schema that models durable truth must import the runtime spine instead of becoming a parallel truth source.
+Schema registry entries describe artifacts, not runtime authority. Any schema that models durable truth must import the runtime spine instead of becoming a parallel truth source.
 
 ### 6. Validation
 - **Validate all schemas** using `ajv-cli` and `spectral`
@@ -74,6 +76,10 @@ All schemas must include the following metadata:
 ## Compliance
 
 All new schemas must comply with this ADR. Existing schemas should be migrated to comply as time and priorities allow.
+
+Schema governance is an artifact governance layer, not an authority source. It standardizes shape, versioning, validation, and migration policy; durable truth and receipts remain owned by the runtime spine.
+
+OpenCode-era schema paths and aliases remain transitional migration affordances only.
 
 ## New Schema: Relational Roadmap
 

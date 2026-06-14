@@ -1,3 +1,9 @@
+//! Runtime Contract
+//!
+//! This module defines the schemas and policies for Tribunus compute work.
+//! It establishes the boundaries for what can be receipted and what requires
+//! authority validation.
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

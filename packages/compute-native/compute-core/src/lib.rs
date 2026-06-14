@@ -84,6 +84,8 @@ pub mod runtime_orchestration;
 pub mod runtime_trace;
 pub mod session;
 pub mod sidecar;
+pub mod storage_adapters;
+pub mod storage_kernel;
 pub mod streaming;
 pub mod toolchain_attest;
 pub mod transform_recipe;

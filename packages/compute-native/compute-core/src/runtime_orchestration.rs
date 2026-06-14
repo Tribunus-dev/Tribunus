@@ -1,3 +1,9 @@
+//! Runtime Orchestration
+//!
+//! This module handles the coordination of work items across the lifecycle.
+//! It enforces the invariant that an acknowledgment (ack) cannot occur
+//! without a durable receipt from the storage authority.
+
 use std::collections::{HashMap, HashSet};
 
 use async_trait::async_trait;
