@@ -16,6 +16,7 @@ import { RunDirectory } from "../src/recorder/run-dir.js";
 import { finalizeRun } from "../src/recorder/finalize.js";
 import { normalizeRun } from "../src/normalize/normalize.js";
 import { buildDuckDb } from "../src/normalize/duckdb.js";
+import { NORMALIZED_TABLE_SCHEMAS } from "../src/normalize/schema.js";
 import { runComparison } from "../src/compare/index.js";
 import { bootstrapIndependentCI, bootstrapPairedCI } from "../src/compare/statistics.js";
 
@@ -114,6 +115,44 @@ function createCompareRun(rootDir: string, runId: string, latencyValues: number[
   return rd;
 }
 
+function writeComparisonReceipt(
+  rd: InstanceType<typeof RunDirectory>,
+  fileName: string,
+  steadyMeanNs: number,
+  fileReadBytes: number,
+): void {
+  writeFileSync(
+    join(rd.receiptsDir, fileName),
+    JSON.stringify(
+      {
+        schema_version: "1",
+        run_id: rd.runId,
+        timestamp: "2026-06-09T01:00:00Z",
+        backend: "mlx",
+        backend_support_status: "supported_native",
+        graph_family: "matmul",
+        pipeline_phase: "steady",
+        status: "pass",
+        predict_status: "pass",
+        load_status: "pass",
+        compile_status: "pass",
+        warmup_status: "pass",
+        steady_status: "pass",
+        matches_tolerance: true,
+        reference_output_hashes_populated: true,
+        steady_mean_ns: steadyMeanNs,
+        steady_p50_ns: steadyMeanNs,
+        file_read_bytes: fileReadBytes,
+        load_duration_ns: 2_000_000,
+        materialize_duration_ns: 1_000_000,
+        process_rss_after_steady_kb: 128,
+      },
+      null,
+      2,
+    ) + "\n",
+  );
+}
+
 describe("Pipeline E2E", () => {
   const tmpRoots: string[] = [];
   afterAll(() => { for (const d of tmpRoots) rmrf(d); });
@@ -193,6 +232,41 @@ describe("Pipeline E2E", () => {
     expect(compRecord.treatmentSummary.mean).toBeCloseTo(95, 0);
   }, 60_000);
 
+  test("comparison prefers structured receipts over event fallbacks", async () => {
+    const root = tempDir();
+    tmpRoots.push(root);
+
+    const baselineRd = createCompareRun(root, "receipt-baseline", [100, 101, 99]);
+    const treatmentRd = createCompareRun(root, "receipt-treatment", [95, 96, 94]);
+    writeComparisonReceipt(baselineRd, "receipt.json", 11, 4096);
+    writeComparisonReceipt(baselineRd, "secondary.json", 12, 8192);
+    writeComparisonReceipt(baselineRd, "tertiary.json", 10, 2048);
+    writeComparisonReceipt(treatmentRd, "receipt.json", 7, 1024);
+    writeComparisonReceipt(treatmentRd, "secondary.json", 8, 2048);
+    writeComparisonReceipt(treatmentRd, "tertiary.json", 6, 4096);
+    finalizeRun(baselineRd);
+    finalizeRun(treatmentRd);
+
+    const compRecord = await runComparison("receipt-baseline", "receipt-treatment", {
+      baselineRoot: root,
+      treatmentRoot: root,
+      outputRoot: join(root, "comparison-results"),
+      primaryMetric: "steady_mean_ns",
+      paired: true,
+      randomSeed: 7,
+    });
+
+    expect(compRecord.baselineSummary.n).toBe(3);
+    expect(compRecord.treatmentSummary.n).toBe(3);
+    expect(compRecord.baselineSummary.mean).toBeCloseTo(11, 0);
+    expect(compRecord.treatmentSummary.mean).toBeCloseTo(7, 0);
+    expect(compRecord.correctness.tokenMatch.pass).toBe(true);
+    expect(compRecord.correctness.handleCleanup.pass).toBe(true);
+    expect(compRecord.correctness.fileIO.pass).toBe(true);
+    expect(compRecord.correctness.workerContainment.pass).toBe(true);
+    expect(compRecord.evidenceComplete).toBe(true);
+  });
+
   test("structurally invalid provenance rejected at finalization", () => {
     const root = tempDir();
     tmpRoots.push(root);
@@ -263,6 +337,41 @@ describe("Pipeline E2E", () => {
     expect(normResult.files.length).toBe(0);
   });
 
+  test("duplicate top-level JSON keys rejected in finalization", () => {
+    const dupRoot = tempDir();
+    tmpRoots.push(dupRoot);
+
+    const dupId = "dup-key-run";
+    const rd = new RunDirectory(dupId, dupRoot);
+    rd.writeRunManifest({
+      run_id: dupId, experiment_id: "exp-001", run_grade: "controlled", status: "completed",
+      model_identity: { image_hash: "sha256:deadbeef" },
+      machine_profile: { anon_id: "m1", chip: "M1", memory: "16GB" },
+  });
+    // Write a provenance.json with a duplicate key in raw text
+    const fs = require("fs");
+    const provPath = join(rd.partialRoot, "provenance.json");
+    fs.writeFileSync(provPath,
+      '{\n' +
+      '  "schema_version": "1",\n' +
+      '  "schema_version": "1",\n' +  // DUPLICATE — should be caught
+      '  "source": { "repo_url": "x", "commit_sha": "a", "branch": "b", "commit_timestamp": "2026-01-01T00:00:00Z", "dirty": false, "tree_hash": "c" },\n' +
+      '  "toolchain": { "rust_version": "1", "target_triple": "a", "linker": "l", "opt_profile": "r" },\n' +
+      '  "model": { "image_hash": "h", "storage_abi": "v1", "runtime_abi": "v1", "manifest_hash": "m", "execution_plan_hash": "e", "arch_hash": "a", "quant_hash": "q", "tokenizer_hash": "t", "model_revision": "r" },\n' +
+      '  "machine": { "anon_id": "x", "model_identifier": "M", "chip_family": "A", "perf_cores": 1, "eff_cores": 1, "gpu_cores": 1, "physical_memory": "1 GB", "os_version": "1", "kernel_version": "1" },\n' +
+      '  "environment": { "variables": {}, "redacted_paths": [], "redaction_metadata": {} }\n' +
+      '}\n'
+    );
+    rd.flush();
+    rd.close();
+
+    const rec = finalizeRun(rd);
+    const provVal = rec.validations.find(v => v.file.includes("provenance.json"));
+    expect(provVal).toBeDefined();
+    expect(provVal!.valid).toBe(false);
+    expect(provVal!.errors.some(e => e.includes("duplicate JSON keys"))).toBe(true);
+    expect(provVal!.errors.some(e => e.includes("schema_version"))).toBe(true);
+  });
   test("zero-effect CI blocks promotion", async () => {
     const zeroRoot = tempDir();
     tmpRoots.push(zeroRoot);
@@ -286,6 +395,39 @@ describe("Pipeline E2E", () => {
     expect(compRecord.ci.upper).toBeGreaterThanOrEqual(0);
     expect(compRecord.recommendation).not.toBe("promoted");
     expect(compRecord.evidenceComplete).toBe(true);
+  });
+
+  test("same-length samples default to independent bootstrap unless paired is explicit", async () => {
+    const root = tempDir();
+    tmpRoots.push(root);
+
+    const baselineValues = [100, 200, 300, 400, 500];
+    const treatmentValues = [92, 208, 294, 412, 518];
+    const baselineRd = createCompareRun(root, "default-independent-baseline", baselineValues);
+    const treatmentRd = createCompareRun(root, "default-independent-treatment", treatmentValues);
+    finalizeRun(baselineRd);
+    finalizeRun(treatmentRd);
+
+    const compRecord = await runComparison("default-independent-baseline", "default-independent-treatment", {
+      baselineRoot: root,
+      treatmentRoot: root,
+      outputRoot: join(root, "comparisons"),
+      primaryMetric: "token_latency_ms",
+      randomSeed: 123,
+      nBootstrap: 2_000,
+    });
+
+    const expected = bootstrapIndependentCI(baselineValues, treatmentValues, 0.95, 2_000, 123);
+    expect(compRecord.analysis_method).toBe("independent");
+    expect(compRecord.ci.lower).toBe(expected.lower);
+    expect(compRecord.ci.upper).toBe(expected.upper);
+  });
+
+  test("normalized runs contract exposes projection_stage_count consistently", () => {
+    expect(Object.keys(NORMALIZED_TABLE_SCHEMAS.runs)).toContain("projection_stage_count");
+    const viewsSql = readFileSync(join(process.cwd(), "..", "..", "research", "sql", "views.sql"), "utf-8");
+    expect(viewsSql).toContain("projection_stage_count");
+    expect(viewsSql).toContain("projection_stage_events");
   });
 
   test("bootstrap: independent vs paired produces different CIs for correlated data", () => {

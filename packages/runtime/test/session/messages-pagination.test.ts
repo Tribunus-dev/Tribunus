@@ -310,7 +310,7 @@ describe("MessageV2.stream", () => {
       Effect.gen(function* () {
         const ids = yield* fill(sessionID, 5)
 
-        const items = Array.from(MessageV2.stream(sessionID))
+        const items = yield* MessageV2.stream(sessionID)
         expect(items.map((item) => item.info.id)).toEqual(ids.slice().reverse())
       }),
     ),
@@ -319,7 +319,7 @@ describe("MessageV2.stream", () => {
   it.instance("yields nothing for empty session", () =>
     withSession(({ sessionID }) =>
       Effect.gen(function* () {
-        const items = Array.from(MessageV2.stream(sessionID))
+        const items = yield* MessageV2.stream(sessionID)
         expect(items).toHaveLength(0)
       }),
     ),
@@ -330,7 +330,7 @@ describe("MessageV2.stream", () => {
       Effect.gen(function* () {
         const ids = yield* fill(sessionID, 1)
 
-        const items = Array.from(MessageV2.stream(sessionID))
+        const items = yield* MessageV2.stream(sessionID)
         expect(items).toHaveLength(1)
         expect(items[0].info.id).toBe(ids[0])
       }),
@@ -342,7 +342,7 @@ describe("MessageV2.stream", () => {
       Effect.gen(function* () {
         yield* fill(sessionID, 3)
 
-        const items = Array.from(MessageV2.stream(sessionID))
+        const items = yield* MessageV2.stream(sessionID)
         for (const item of items) {
           expect(item.parts).toHaveLength(1)
           expect(item.parts[0].type).toBe("text")
@@ -356,25 +356,10 @@ describe("MessageV2.stream", () => {
       Effect.gen(function* () {
         const ids = yield* fill(sessionID, 60)
 
-        const items = Array.from(MessageV2.stream(sessionID))
+        const items = yield* MessageV2.stream(sessionID)
         expect(items).toHaveLength(60)
         expect(items[0].info.id).toBe(ids[ids.length - 1])
         expect(items[59].info.id).toBe(ids[0])
-      }),
-    ),
-  )
-
-  it.instance("is a sync generator", () =>
-    withSession(({ sessionID }) =>
-      Effect.gen(function* () {
-        yield* fill(sessionID, 1)
-
-        const gen = MessageV2.stream(sessionID)
-        const first = gen.next()
-        // sync generator returns { value, done } directly, not a Promise
-        expect(first).toHaveProperty("value")
-        expect(first).toHaveProperty("done")
-        expect(first.done).toBe(false)
       }),
     ),
   )
@@ -386,7 +371,7 @@ describe("MessageV2.parts", () => {
       Effect.gen(function* () {
         const [id] = yield* fill(sessionID, 1)
 
-        const result = MessageV2.parts(id)
+        const result = yield* MessageV2.parts(id)
         expect(result).toHaveLength(1)
         expect(result[0].type).toBe("text")
         expect((result[0] as MessageV2.TextPart).text).toBe("m0")
@@ -399,7 +384,7 @@ describe("MessageV2.parts", () => {
       Effect.gen(function* () {
         const id = yield* addUser(sessionID)
 
-        const result = MessageV2.parts(id)
+        const result = yield* MessageV2.parts(id)
         expect(result).toEqual([])
       }),
     ),
@@ -425,7 +410,7 @@ describe("MessageV2.parts", () => {
           text: "third",
         })
 
-        const result = MessageV2.parts(id)
+        const result = yield* MessageV2.parts(id)
         expect(result).toHaveLength(3)
         expect((result[0] as MessageV2.TextPart).text).toBe("m0")
         expect((result[1] as MessageV2.TextPart).text).toBe("second")
@@ -437,7 +422,7 @@ describe("MessageV2.parts", () => {
   it.instance("returns empty for non-existent message id", () =>
     Effect.gen(function* () {
       yield* SessionNs.Service
-      const result = MessageV2.parts(MessageID.ascending())
+      const result = yield* MessageV2.parts(MessageID.ascending())
       expect(result).toEqual([])
     }),
   )
@@ -447,7 +432,7 @@ describe("MessageV2.parts", () => {
       Effect.gen(function* () {
         const [id] = yield* fill(sessionID, 1)
 
-        const result = MessageV2.parts(id)
+        const result = yield* MessageV2.parts(id)
         expect(result[0].sessionID).toBe(sessionID)
         expect(result[0].messageID).toBe(id)
       }),
@@ -604,7 +589,7 @@ describe("MessageV2.filterCompacted", () => {
       Effect.gen(function* () {
         const ids = yield* fill(sessionID, 5)
 
-        const result = MessageV2.filterCompacted(MessageV2.stream(sessionID))
+        const result = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
         expect(result).toHaveLength(5)
         // reversed from newest-first to chronological
         expect(result.map((item) => item.info.id)).toEqual(ids)
@@ -638,7 +623,7 @@ describe("MessageV2.filterCompacted", () => {
           text: "new response",
         })
 
-        const result = MessageV2.filterCompacted(MessageV2.stream(sessionID))
+        const result = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
         // Includes compaction boundary: u1, a1, u2, a2
         expect(result[0].info.id).toBe(u1)
         expect(result.length).toBe(4)
@@ -660,7 +645,7 @@ describe("MessageV2.filterCompacted", () => {
         yield* addCompactionPart(sessionID, u1)
         yield* addUser(sessionID, "world")
 
-        const result = MessageV2.filterCompacted(MessageV2.stream(sessionID))
+        const result = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
         expect(result).toHaveLength(2)
       }),
     ),
@@ -679,7 +664,7 @@ describe("MessageV2.filterCompacted", () => {
         yield* addAssistant(sessionID, u1, { summary: true, finish: "end_turn", error })
         yield* addUser(sessionID, "retry")
 
-        const result = MessageV2.filterCompacted(MessageV2.stream(sessionID))
+        const result = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
         // Error assistant doesn't add to completed, so compaction boundary never triggers
         expect(result).toHaveLength(3)
       }),
@@ -696,7 +681,7 @@ describe("MessageV2.filterCompacted", () => {
         yield* addAssistant(sessionID, u1, { summary: true })
         yield* addUser(sessionID, "next")
 
-        const result = MessageV2.filterCompacted(MessageV2.stream(sessionID))
+        const result = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
         expect(result).toHaveLength(3)
       }),
     ),
@@ -746,7 +731,7 @@ describe("MessageV2.filterCompacted", () => {
           text: "third reply",
         })
 
-        const result = MessageV2.filterCompacted(MessageV2.stream(sessionID))
+        const result = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
 
         expect(result.map((item) => item.info.id)).toEqual([c1, s1, u2, a2, u3, a3])
       }),
@@ -799,11 +784,11 @@ describe("MessageV2.filterCompacted", () => {
         text: "third reply",
       })
 
-      const parentFiltered = MessageV2.filterCompacted(MessageV2.stream(created.id))
+      const parentFiltered = MessageV2.filterCompacted(yield* MessageV2.stream(created.id))
       expect(parentFiltered.map((item) => item.info.id)).toEqual([c1, s1, u2, a2, u3, a3])
 
       const forked = yield* session.fork({ sessionID: created.id })
-      const childFiltered = MessageV2.filterCompacted(MessageV2.stream(forked.id))
+      const childFiltered = MessageV2.filterCompacted(yield* MessageV2.stream(forked.id))
       expect(childFiltered).toHaveLength(parentFiltered.length)
 
       const tailPart = childFiltered.flatMap((m) => m.parts).find((p) => p.type === "compaction")
@@ -869,7 +854,7 @@ describe("MessageV2.filterCompacted", () => {
           text: "third reply",
         })
 
-        const result = MessageV2.filterCompacted(MessageV2.stream(sessionID))
+        const result = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
 
         expect(result.map((item) => item.info.id)).toEqual([c1, s1, a3, u3, a4])
       }),
@@ -941,7 +926,7 @@ describe("MessageV2.filterCompacted", () => {
           text: "fourth reply",
         })
 
-        const result = MessageV2.filterCompacted(MessageV2.stream(sessionID))
+        const result = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
 
         expect(result.map((item) => item.info.id)).toEqual([c2, s2, u3, a3, u4, a4])
       }),
@@ -1014,7 +999,7 @@ describe("MessageV2 consistency", () => {
         const [id] = yield* fill(sessionID, 1)
 
         const got = yield* MessageV2.get({ sessionID, messageID: id })
-        const standalone = MessageV2.parts(id)
+        const standalone = yield* MessageV2.parts(id)
         expect(got.parts).toEqual(standalone)
       }),
     ),
@@ -1025,7 +1010,7 @@ describe("MessageV2 consistency", () => {
       Effect.gen(function* () {
         yield* fill(sessionID, 7)
 
-        const streamed = Array.from(MessageV2.stream(sessionID))
+        const streamed = yield* MessageV2.stream(sessionID)
 
         const paged = [] as MessageV2.WithParts[]
         let cursor: string | undefined
@@ -1046,10 +1031,10 @@ describe("MessageV2 consistency", () => {
   it.instance("filterCompacted of full stream returns same as Array.from when no compaction", () =>
     withSession(({ sessionID }) =>
       Effect.gen(function* () {
-        yield* fill(sessionID, 4)
+        const ids = yield* fill(sessionID, 4)
 
-        const filtered = MessageV2.filterCompacted(MessageV2.stream(sessionID))
-        const all = Array.from(MessageV2.stream(sessionID)).reverse()
+        const filtered = MessageV2.filterCompacted(yield* MessageV2.stream(sessionID))
+        const all = (yield* MessageV2.stream(sessionID)).slice().reverse()
 
         expect(filtered.map((m) => m.info.id)).toEqual(all.map((m) => m.info.id))
       }),

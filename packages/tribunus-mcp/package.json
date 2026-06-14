@@ -1,0 +1,36 @@
+{
+  "name": "@tribunus/mcp",
+  "version": "0.4.0",
+  "description": "Tribunus Model Context Protocol (MCP) server for repository intelligence and compute evidence.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "tribunus-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --clean --minify --shims --dts",
+    "dev": "tsup src/index.ts --format esm --watch --shims",
+    "start": "node dist/index.js",
+    "serve": "bun src/index.ts",
+    "typecheck": "tsgo --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.1",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "duckdb": "^1.2.0",
+    "oxc-parser": "^0.134.0",
+    "oxc-resolver": "^11.20.0",
+    "tree-sitter-typescript": "^0.23.2",
+    "typescript": "^5.8.2",
+    "web-tree-sitter": "^0.26.9"
+  },
+  "devDependencies": {
+    "@types/emscripten": "1.41.5",
+    "@types/node": "latest",
+    "tsup": "^8.4.0"
+  }
+}

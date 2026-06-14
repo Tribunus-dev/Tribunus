@@ -24,16 +24,28 @@ import { WorkQueueDurableStoreService } from "./durable-store"
 import { DEFAULT_STREAM_NAME, DEFAULT_CONSUMER_GROUP } from "./stream-primitives"
 import { DEFAULT_DUE_SET_NAME } from "./sorted-set-primitives"
 import { CoordinationRecoveryTable } from "./recovery.pg.sql"
+import { SessionID } from "@/session/schema"
+import { Service as SessionStatusService } from "@/session/status"
 import type { DivergenceReport } from "./observability"
 
 // ── Types ──────────────────────────────────────────────────────────────
 
 /** Recovery state */
 export type CoordinationRecoveryState =
-  | "unavailable"
-  | "degraded"
-  | "rebuilding"
-  | "recovered"
+
+  | "ready"
+  | "coordination_unavailable"
+  | "coordination_degraded"
+  | "coordination_rebuilding"
+  | "coordination_refused"
+
+/** Recovery workflow status — separate from steady runtime state */
+export type RecoveryWorkflowStatus =
+  | "not_started"
+  | "planned"
+  | "in_progress"
+  | "succeeded"
+  | "failed"
 
 /** Recovery outcome */
 export type RecoveryOutcome =
@@ -118,7 +130,7 @@ export interface RebuildReceipt {
  * - Rebuilds Valkey state from PGlite after wipe
  * - Handles crash recovery at every critical boundary
  */
-export class CoordinationRecovery extends Context.Service<CoordinationRecovery>()(
+export class CoordinationRecovery extends Context.Service<CoordinationRecovery, CoordinationRecovery>()(
   "@tribunus/CoordinationRecovery"
 ) {
   constructor(
@@ -127,7 +139,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
     private readonly store: WorkQueueDurableStoreService,
     private readonly config: RecoveryConfig = DEFAULT_RECOVERY_CONFIG
   ) {
-    super()
+    super(undefined as never)
   }
 
   /** Cached divergence report from last state transition */
@@ -153,7 +165,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
       // Valkey is unavailable - need recovery
       return {
         needsRecovery: true,
-        state: "unavailable",
+        state: "coordination_unavailable",
         workToReEnqueue: [],
         workToReschedule: [],
         terminalWork: [],
@@ -171,7 +183,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
       // Stream or group missing - need rebuild
       return {
         needsRecovery: true,
-        state: "rebuilding",
+        state: "coordination_rebuilding",
         workToReEnqueue: [],
         workToReschedule: [],
         terminalWork: [],
@@ -184,7 +196,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
     )
 
     const workToReEnqueue = nonTerminalWork
-      .filter(w => w.status === "enqueue_pending" || w.status === "running" || w.status === "created" || w.status === "enqueued" || w.status === "claimed" || w.status === "running" || w.status === "recovered")
+      .filter(w => w.status === "enqueue_pending" || w.status === "created" || w.status === "enqueued" || w.status === "claimed" || w.status === "recovered")
       .map(w => w.id)
 
     const workToReschedule = nonTerminalWork
@@ -195,7 +207,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
 
     return {
       needsRecovery: workToReEnqueue.length > 0 || workToReschedule.length > 0,
-      state: workToReEnqueue.length > 0 || workToReschedule.length > 0 ? "degraded" : "recovered",
+      state: workToReEnqueue.length > 0 || workToReschedule.length > 0 ? "coordination_degraded" : "ready",
       workToReEnqueue,
       workToReschedule,
       terminalWork,
@@ -234,7 +246,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
             workId: workItem.id,
             workKind: workItem.work_kind ?? "recovered",
             schemaVersion: workItem.schema_version ?? "v1",
-            enqueueTimestamp: now,
+            enqueueTimestamp: String(now),
             correlationId: `recovered:${workItem.id}`,
             retryCount: String(workItem.attempt_count),
             maxRetries: String(workItem.max_attempts),
@@ -468,9 +480,9 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
     }
 
     // Stream is empty or missing — rebuild from PGlite
-    await this.setRecoveryState("rebuilding")
+    await this.setRecoveryState("coordination_rebuilding")
     const receipt = await this.rebuildFromPGlite()
-    await this.setRecoveryState("recovered")
+    await this.setRecoveryState("ready")
 
     return receipt
   }
@@ -485,7 +497,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
    */
   async setRecoveryState(state: CoordinationRecoveryState): Promise<void> {
     await Effect.runPromise(
-      this.db.query(async (db: any) => {
+      (this.db as any).query(async (db: any) => {
         await db
           .insert(CoordinationRecoveryTable)
           .values({
@@ -596,7 +608,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
    */
   async getRecoveryState(): Promise<CoordinationRecoveryState> {
     const result = await Effect.runPromise(
-      this.db.query(async (db: any) => {
+      (this.db as any).query(async (db: any) => {
         const [row] = await db
           .select({ state: CoordinationRecoveryTable.state })
           .from(CoordinationRecoveryTable)
@@ -605,7 +617,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
         return row ?? null
       })
     )
-    return (result?.state as CoordinationRecoveryState) ?? "recovered"
+    return ((result as any)?.state as CoordinationRecoveryState) ?? "ready"
   }
 
   // ── Receipt Management ──────────────────────────────────────────────
@@ -656,14 +668,56 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
 export const recoveryLayer = Layer.effect(
   CoordinationRecovery,
   Effect.gen(function* () {
-    const db = yield* DatabaseAdapter.Service
+    const db: any = yield* DatabaseAdapter.Service
     const redis = yield* getValkeyRedis()
     const store = yield* WorkQueueDurableStoreService
     return new CoordinationRecovery(db, redis, store)
   })
-).pipe(
-  Layer.provide(DatabaseAdapter.layer)
 )
+
+// ── Stubs ────────────────────────────────────────────────────────────
+// TODO: These will be implemented when the recovery-state repository is complete.
+// For now, provide compile-time stubs that throw at runtime.
+
+/**
+ * Plan coordination recovery.
+ *
+ * Pure planner — inspects session state and returns a recovery plan.
+ * Not yet implemented; use CoordinationRecovery.planRecovery() instead.
+ */
+export function planCoordinationRecovery(...args: unknown[]): { state: string; finalState?: string; receipt?: { id: string } } {
+  throw new Error(
+    "planCoordinationRecovery not yet implemented. Use CoordinationRecovery.planRecovery() instead.",
+  )
+}
+
+/**
+ * Persist a coordination recovery receipt.
+ *
+ * Writes the receipt to the durable store.
+ * Not yet implemented; use CoordinationRecovery.persistRecoveryReceipt() instead.
+ */
+export async function persistCoordinationRecoveryReceipt(
+  ...args: unknown[]
+): Promise<void> {
+  throw new Error(
+    "persistCoordinationRecoveryReceipt not yet implemented.",
+  )
+}
+
+type RecoveryStatus =
+  | "coordination_unavailable"
+  | "coordination_rebuilding"
+  | "coordination_recovered"
+  | "coordination_degraded"
+  | "coordination_refused"
+
+export function setRecoveryStatus(sessionID: SessionID, state: RecoveryStatus): Effect.Effect<void> {
+  // @ts-expect-error Effect 4 Layer dependency inference
+  return SessionStatusService.pipe(
+    Effect.flatMap((svc) => svc.set(sessionID, { type: state })),
+  )
+}
 
 // ── Helper to get Valkey Redis ────────────────────────────────────────
 
@@ -677,22 +731,5 @@ function getValkeyRedis(): Effect.Effect<Redis> {
     }
     return redis
   })
-}
-
-// ── Exports ─────────────────────────────────────────────────────────────
-
-export {
-  CoordinationRecovery,
-  recoveryLayer,
-  DEFAULT_RECOVERY_CONFIG,
-}
-export type {
-  CoordinationRecoveryState,
-  RecoveryOutcome,
-  RecoveryReceipt,
-  RecoveryPlan,
-  RecoveryConfig,
-  RebuildStats,
-  RebuildReceipt,
 }
 

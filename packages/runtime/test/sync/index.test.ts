@@ -5,7 +5,7 @@ import { CrossSpawnSpawner } from "@tribunus/core/cross-spawn-spawner"
 import { Bus } from "../../src/bus"
 import { GlobalBus, type GlobalEvent } from "../../src/bus/global"
 import { SyncEvent } from "../../src/sync"
-import { DatabaseAdapter } from "@/storage/adapter"
+import { DatabaseAdapter, one } from "@/storage/adapter"
 import { Database, eq } from "@/storage/db"
 import { EventSequenceTable, EventTable } from "../../src/sync/event.pg.sql"
 import { MessageID } from "../../src/session/schema"
@@ -73,7 +73,7 @@ describe("SyncEvent", () => {
           const { Created } = setup()
           yield* SyncEvent.use.run(Created, { id: "evt_1", name: "first" })
           const adapter = yield* DatabaseAdapter.Service
-          const rows = yield* adapter.query((db) => db.select().from(EventTable).all())
+          const rows = yield* adapter.query((db) => db.select().from(EventTable).execute())
           expect(rows).toHaveLength(1)
           expect(rows[0].type).toBe("item.created.1")
           expect(rows[0].aggregate_id).toBe("evt_1")
@@ -89,7 +89,7 @@ describe("SyncEvent", () => {
           yield* SyncEvent.use.run(Created, { id: "evt_1", name: "first" })
           yield* SyncEvent.use.run(Created, { id: "evt_1", name: "second" })
           const adapter = yield* DatabaseAdapter.Service
-          const rows = yield* adapter.query((db) => db.select().from(EventTable).all())
+          const rows = yield* adapter.query((db) => db.select().from(EventTable).execute())
           expect(rows).toHaveLength(2)
           expect(rows[1].seq).toBe(rows[0].seq + 1)
         }),
@@ -103,7 +103,7 @@ describe("SyncEvent", () => {
           const { Sent } = setup()
           yield* SyncEvent.use.run(Sent, { item_id: "evt_1", to: "james" })
           const adapter = yield* DatabaseAdapter.Service
-          const rows = yield* adapter.query((db) => db.select().from(EventTable).all())
+          const rows = yield* adapter.query((db) => db.select().from(EventTable).execute())
           expect(rows).toHaveLength(1)
           expect(rows[0].aggregate_id).toBe("evt_1")
         }),
@@ -198,7 +198,7 @@ describe("SyncEvent", () => {
             data: { id, name: "replayed" },
           })
           const adapter = yield* DatabaseAdapter.Service
-          const rows = yield* adapter.query((db) => db.select().from(EventTable).all())
+          const rows = yield* adapter.query((db) => db.select().from(EventTable).execute())
           expect(rows).toHaveLength(1)
           expect(rows[0].aggregate_id).toBe(id)
         }),
@@ -294,7 +294,7 @@ describe("SyncEvent", () => {
           expect(two).toBe(id)
 
           const adapter = yield* DatabaseAdapter.Service
-          const rows = yield* adapter.query((db) => db.select().from(EventTable).all())
+          const rows = yield* adapter.query((db) => db.select().from(EventTable).execute())
           expect(rows.map((row: typeof EventTable.$inferSelect) => row.seq)).toEqual([0, 1, 2, 3])
         }),
       ),
@@ -320,10 +320,11 @@ describe("SyncEvent", () => {
 
           const adapter = yield* DatabaseAdapter.Service
           const row = yield* adapter.query((db) =>
-            (db as any)
-              .select({ seq: EventSequenceTable.seq, ownerID: EventSequenceTable.owner_id })
-              .from(EventSequenceTable)
-              .get(),
+            one(
+              db
+                .select({ seq: EventSequenceTable.seq, ownerID: EventSequenceTable.owner_id })
+                .from(EventSequenceTable)
+            )
           )
           expect(row).toEqual({ seq: 0, ownerID: "owner-1" })
         }),
@@ -359,12 +360,13 @@ describe("SyncEvent", () => {
           )
 
           const adapter = yield* DatabaseAdapter.Service
-          const events = yield* adapter.query((db) => db.select().from(EventTable).all())
+          const events = yield* adapter.query((db) => db.select().from(EventTable).execute())
           const sequence = yield* adapter.query((db) =>
-            (db as any)
-              .select({ seq: EventSequenceTable.seq, ownerID: EventSequenceTable.owner_id })
-              .from(EventSequenceTable)
-              .get(),
+            one(
+              db
+                .select({ seq: EventSequenceTable.seq, ownerID: EventSequenceTable.owner_id })
+                .from(EventSequenceTable)
+            )
           )
           expect(events).toHaveLength(1)
           expect(events[0].id).toBe("evt_1")
@@ -386,11 +388,12 @@ describe("SyncEvent", () => {
 
           const adapter = yield* DatabaseAdapter.Service
           const row = yield* adapter.query((db) =>
-            (db as any)
-              .select({ seq: EventSequenceTable.seq, ownerID: EventSequenceTable.owner_id })
-              .from(EventSequenceTable)
-              .where(eq(EventSequenceTable.aggregate_id, id))
-              .get(),
+            one(
+              db
+                .select({ seq: EventSequenceTable.seq, ownerID: EventSequenceTable.owner_id })
+                .from(EventSequenceTable)
+                .where(eq(EventSequenceTable.aggregate_id, id))
+            )
           )
           expect(row).toEqual({ seq: 0, ownerID: "owner-2" })
         }),

@@ -43,7 +43,7 @@ import { InstanceState } from "@/effect/instance-state"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { CrossSpawnSpawner } from "@tribunus/core/cross-spawn-spawner"
 import { HealthRegistry, HealthStatus } from "@/server/health"
-import { CapabilityToolRegistry, normalizeMcpToolDefinition } from "@/capability/tool-registry"
+import { CapabilityToolRegistry, liveRegistryLayer, normalizeMcpToolDefinition } from "@/capability/tool-registry"
 
 const log = Log.create({ service: "mcp" })
 const DEFAULT_TIMEOUT = 30_000
@@ -1179,6 +1179,7 @@ export const defaultLayer = layer.pipe(
   Layer.provide(Config.defaultLayer),
   Layer.provide(CrossSpawnSpawner.defaultLayer),
   Layer.provide(AppFileSystem.defaultLayer),
+  Layer.provide(liveRegistryLayer),
 )
 
 export * as MCP from "."

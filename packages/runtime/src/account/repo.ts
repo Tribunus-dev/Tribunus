@@ -99,22 +99,22 @@ export const layer: Layer.Layer<Service> = Layer.effect(
     )
 
     const list = Effect.fn("AccountRepo.list")(() =>
-      query((db) =>
-        db
+      query(async (db) => {
+        const rows = await db
           .select()
           .from(AccountTable)
           .execute()
-          .map((row: AccountRow) => decode({ ...row, active_org_id: null })) as any,
-      ),
+        return rows.map((row: AccountRow) => decode({ ...row, active_org_id: null })) as any
+      }),
     )
 
     const remove = Effect.fn("AccountRepo.remove")((accountID: AccountID) =>
-      tx((db) => {
-        db.update(AccountStateTable)
+      tx(async (db) => {
+        await db.update(AccountStateTable)
           .set({ active_account_id: null, active_org_id: null })
           .where(eq(AccountStateTable.active_account_id, accountID))
           .execute()
-        db.delete(AccountTable).where(eq(AccountTable.id, accountID)).execute()
+        await db.delete(AccountTable).where(eq(AccountTable.id, accountID)).execute()
       }).pipe(Effect.asVoid) as any,
     )
 
@@ -143,10 +143,10 @@ export const layer: Layer.Layer<Service> = Layer.effect(
     )
 
     const persistAccount = Effect.fn("AccountRepo.persistAccount")((input) =>
-      tx((db) => {
+      tx(async (db) => {
         const url = normalizeServerUrl(input.url)
 
-        db.insert(AccountTable)
+        await db.insert(AccountTable)
           .values({
             id: input.id,
             email: input.email,
@@ -166,7 +166,7 @@ export const layer: Layer.Layer<Service> = Layer.effect(
             },
           })
           .execute()
-        void state(db, input.id, input.orgID)
+        await state(db, input.id, input.orgID)
       }).pipe(Effect.asVoid) as any,
     )
 

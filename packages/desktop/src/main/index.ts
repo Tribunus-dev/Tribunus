@@ -29,9 +29,11 @@ import { registerIpcHandlers, sendDeepLinks, sendMenuCommand, sendStorageMigrati
 import { exportDebugLogs, initCrashReporter, initLogging, startNetLog, write as writeLog } from "./logging"
 import { parseMarkdown } from "./markdown"
 import { createMenu } from "./menu"
+import { createMenuBarHelper } from "./menu-bar-helper"
 import {
   getDefaultServerUrl,
   getWslConfig,
+  getSidecarStatus,
   preferAppEnv,
   setDefaultServerUrl,
   setWslConfig,
@@ -53,7 +55,7 @@ import { Deferred, Effect, Fiber, ManagedRuntime } from "effect"
 import { makeDesktopRuntime } from "./effect/desktop-runtime"
 import { registerQualificationDriver } from "./qualification-driver"
 import * as Sentry from "@sentry/electron"
-import { makeCoordinationProjectionService } from "./coordination-projection"
+import { coordinationProjection } from "./coordination-projection"
 
 const APP_NAMES: Record<string, string> = {
   dev: "Tribunus Dev",
@@ -66,6 +68,7 @@ const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
 let logger: ReturnType<typeof initLogging>
 let mainWindow: BrowserWindow | null = null
 let server: SidecarListener | null = null
+let diagnosticsInterval: NodeJS.Timeout | null = null
 
 const initEmitter = new EventEmitter()
 let initStep: InitStep = { phase: "server_waiting" }
@@ -94,6 +97,10 @@ function setInitStep(step: InitStep) {
 }
 
 async function killSidecar() {
+  if (diagnosticsInterval) {
+    clearInterval(diagnosticsInterval)
+    diagnosticsInterval = null
+  }
   const lockPath = join(electronPlatformPaths.getPath("userData"), ".crash_lock")
   try { unlinkSync(lockPath) } catch { /* ignore */ }
   if (!server) return
@@ -129,8 +136,6 @@ function ensureLoopbackNoProxy() {
 registerQualificationDriver()
 
 const desktopRuntime = makeDesktopRuntime()
-
-const coordinationProjection = makeCoordinationProjectionService()
 
 const main = Effect.gen(function* () {
   contextMenu({ showSaveImageAs: true, showLookUpSelection: false, showSearchWithGoogle: false })
@@ -462,6 +467,59 @@ const main = Effect.gen(function* () {
       ),
     )
 
+    yield* Effect.sync(() => {
+      const auth = Buffer.from(`tribunus:${password}`).toString("base64")
+      const diagnosticsUrl = `http://${hostname}:${port}/global/diagnostics`
+
+      const pollDiagnostics = async () => {
+        try {
+          const res = await fetch(diagnosticsUrl, {
+            headers: {
+              "Authorization": `Basic ${auth}`
+            },
+            signal: AbortSignal.timeout(3000)
+          })
+          if (res.ok) {
+            const data = await res.json() as any
+            if (data && data.coordination) {
+              const coord = data.coordination
+              coordinationProjection.updateMetrics({
+                available: true,
+                backendMode: coord.backend,
+                schedulerState: "running",
+                consumerHealth: coord.valkeyReady ? "healthy" : "unavailable",
+                readyCount: coord.readyCount,
+                quarantineCount: coord.quarantineCount,
+                calculatedAt: new Date().toISOString(),
+              })
+            }
+          } else {
+            coordinationProjection.updateMetrics({
+              available: false,
+              backendMode: "unavailable",
+              schedulerState: "unavailable",
+              consumerHealth: "unavailable",
+              calculatedAt: new Date().toISOString(),
+            })
+          }
+        } catch (err) {
+          coordinationProjection.updateMetrics({
+            available: false,
+            backendMode: "unavailable",
+            schedulerState: "unavailable",
+            consumerHealth: "unavailable",
+            calculatedAt: new Date().toISOString(),
+          })
+        }
+      }
+
+      void pollDiagnostics()
+      diagnosticsInterval = setInterval(pollDiagnostics, 5000)
+      coordinationProjection.registerResyncHandler(() => {
+        void pollDiagnostics()
+      })
+    })
+
     logger.log("loading task finished")
   }).pipe(Effect.forkChild)
   }
@@ -515,6 +573,29 @@ const main = Effect.gen(function* () {
       },
     })
   }
+
+  createMenuBarHelper({
+    showWindow: () => {
+      if (mainWindow) {
+        mainWindow.show()
+        mainWindow.focus()
+      }
+    },
+    restartSidecar: () => {
+      void killSidecar()
+        .then(() => desktopRuntime.dispose())
+        .finally(() => {
+          app.relaunch()
+          app.exit(0)
+        })
+    },
+    quit: () => {
+      void killSidecar()
+        .then(() => desktopRuntime.dispose())
+        .finally(() => app.exit(0))
+    },
+    getSidecarStatus,
+  })
 
   overlay?.close()
 })

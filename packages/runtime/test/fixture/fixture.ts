@@ -100,9 +100,9 @@ export async function tmpdir<T>(options?: TmpDirOptions<T>) {
   }
   if (options?.config) {
     await Bun.write(
-      path.join(dirpath, "opencode.json"),
+      path.join(dirpath, "tribunus.json"),
       JSON.stringify({
-        $schema: "https://opencode.ai/config.json",
+        $schema: "https://tribunus.dev/config.json",
         ...options.config,
       }),
     )
@@ -158,8 +158,8 @@ export function tmpdirScoped(options?: {
       const resolved = typeof options.config === "function" ? options.config() : options.config
       yield* Effect.promise(() =>
         fs.writeFile(
-          path.join(dir, "opencode.json"),
-          JSON.stringify({ $schema: "https://opencode.ai/config.json", ...resolved }),
+          path.join(dir, "tribunus.json"),
+          JSON.stringify({ $schema: "https://tribunus.dev/config.json", ...resolved }),
         ),
       )
     }
@@ -223,9 +223,26 @@ export const withTmpdirInstance =
   (options?: { git?: boolean; config?: Partial<Config.Info> | (() => Partial<Config.Info>) }) =>
   <A, E, R>(self: Effect.Effect<A, E, R>) =>
     Effect.gen(function* () {
+      const ambientCtx = yield* Effect.context<R>()
       const directory = yield* tmpdirScoped(options)
-      return yield* self.pipe(Effect.provideService(TestInstance, { directory }), provideInstanceEffect(directory))
-    }).pipe(Effect.provide(testInstanceStoreLayer), Effect.provide(CrossSpawnSpawner.defaultLayer))
+      const mergedLayer = Layer.mergeAll(
+        testInstanceStoreLayer,
+        CrossSpawnSpawner.defaultLayer,
+        Layer.succeedContext(ambientCtx),
+      )
+      yield* Effect.addFinalizer(() =>
+        InstanceStore.Service.use((store) =>
+          store.load({ directory }).pipe(
+            Effect.flatMap((ctx) => store.dispose(ctx)),
+            Effect.ignore,
+          ),
+        ).pipe(Effect.provide(mergedLayer))
+      )
+      return yield* self.pipe(
+        Effect.provideService(TestInstance, { directory }),
+        provideInstanceEffect(directory),
+      ).pipe(Effect.provide(mergedLayer))
+    })
 
 export function provideTmpdirServer<A, E, R>(
   self: (input: { dir: string; llm: TestLLMServer["Service"] }) => Effect.Effect<A, E, R>,

@@ -1,0 +1,68 @@
+{
+  "mission": "0007",
+  "title": "Compiler-Derived Execution Conditioning Experiment",
+  "status": "exploratory_signal_identified_not_complete",
+  "revision": 3,
+  "source_commit": "8e848bd2",
+  "image_identity_logical": "d042df1e4062a53e3a003af4e2e8c714924fcf19f03b7cf0dd5f67293355d924",
+  "image_identity_compiled": "compiled_directory_sha256 (770e6e13... \u2014 not the logical image hash d042df1e, not the artifact-root hash 3a0c6d47)",
+  "image_path": "/tmp/tribunus-image-d042df1e",
+  "model": "Gemma 4 12B (8-bit quantized, safetensors compiled to ComputeImage)",
+  "machine": "Apple M1, 16GB RAM, macOS",
+  "primary_conclusion": "cross_process_preconditioning_signal_detected_not_confirmed",
+  "decision_class": "continue_attribution",
+  "reason_not_complete": [
+    "Arm B conditioning runs in separate processes that exit before inference. Process-local MLX/Metal pipeline state is destroyed. The 16.4% decode improvement cannot be attributed to pipeline conditioning within the inference runtime.",
+    "Plausible alternative explanations: OS file page cache, mapped-page residency, shared Metal driver state, thermal/frequency effects, or scheduling artifacts.",
+    "Arm C used cat segment_*.bin (12.2GB full-model sweep), not the bounded one-layer prefetch coordinator. Mission spec prohibits full-model prefetch.",
+    "Arm C (4 runs), Arm D (2 runs), Arm E (4 runs) all below required 7 valid trials.",
+    "Arm E sham median (43.7s) is 4.4% *faster* than control (45.7s), not 7% overhead. Signal within noise of Arm A.",
+    "No statistical comparison: no confidence interval, no bootstrap, no paired treatment-minus-control. Arm B range (25.1-46.2s) overlaps control range (43.3-56.2s).",
+    "TRIBUNUS_SKIP_MANIFEST_HASH=1 disabled manifest integrity verification on all claim-grade runs.",
+    "Backend equivalence not demonstrated. Isolated M=1 replay runs on CPU; integrated decode uses GPU. Mandatory promotion gate."
+  ],
+  "valid_observation": "Cross-process preconditioning: running 3 real projection replays before decode is associated with 16.4% lower median decode time in 7-arm sample. The 152s startup cost and ~20 request break-even describe the observed sequence. Mechanism unknown.",
+  "required_corrections": [
+    "Replace Arm B with same-process conditioning: open model runtime, execute scratch full-layer recipe, retain runtime, run decode without exiting process.",
+    "Replace Arm C with bounded one-layer prefetch coordinator, not cat-over-full-image.",
+    "Collect >=7 valid interleaved runs for all five arms.",
+    "Enable manifest hash verification (remove SKIP_MANIFEST_HASH).",
+    "Demonstrate backend equivalence via Metal System Trace.",
+    "Compute paired statistical comparison with confidence interval."
+  ],
+  "arms": {
+    "A_frozen_control": {
+      "runs": 13,
+      "median_decode_s": 45.7,
+      "range_decode_s": [
+        43.3,
+        56.2
+      ]
+    },
+    "B_cross_process_preconditioning": {
+      "runs": 7,
+      "median_decode_s": 38.2,
+      "range_decode_s": [
+        25.1,
+        46.2
+      ],
+      "note": "NOT pipeline conditioning. Separate replay-projection processes exit before decode. Effect is cross-process."
+    },
+    "D_combined": {
+      "runs": 2,
+      "note": "Insufficient data for any conclusion."
+    },
+    "E_sham": {
+      "runs": 4,
+      "median_decode_s": 43.7,
+      "note": "4.4% FASTER than control. Within noise, not instrumentation overhead."
+    },
+    "C_full_model_sequential_read_sweep": {
+      "runs": 4,
+      "median_decode_s": 54.4,
+      "note": "NOT bounded rolling prefetch. 12.2GB full-model cat sweep. Mission spec violation."
+    }
+  },
+  "next_safe_action": "Keep Mission 0007 active. Implement same-process conditioning (scratch full-layer graph within model runtime). Wire bounded one-layer prefetch coordinator. Re-run all five arms with >=7 valid interleaved trials, manifest verification enabled, and paired statistical analysis.",
+  "custom_metal_kernel": "NOT AUTHORIZED"
+}

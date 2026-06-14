@@ -54,6 +54,8 @@ import { lazy } from "@/util/lazy"
 import { Vcs } from "@/project/vcs"
 import { Worktree } from "@/worktree"
 import { Workspace } from "@/control-plane/workspace"
+import { DatabaseAdapter } from "@/storage/adapter"
+import { liveRegistryLayer } from "@/capability/tool-registry"
 import { CorsConfig, isAllowedCorsOrigin, type CorsOptions } from "@/server/cors"
 import { serveUIEffect } from "@/server/shared/ui"
 import { ServerAuth } from "@/server/auth"
@@ -200,6 +202,8 @@ export function createRoutes(
       Auth.defaultLayer,
       Command.defaultLayer,
       Config.defaultLayer,
+      DatabaseAdapter.defaultLayer,
+      liveRegistryLayer,
       File.defaultLayer,
       FileWatcher.defaultLayer,
       Format.defaultLayer,

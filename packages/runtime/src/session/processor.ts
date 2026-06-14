@@ -68,6 +68,7 @@ type ToolCall = {
   sessionID: MessageV2.ToolPart["sessionID"]
   done: Deferred.Deferred<void>
   inputEnded: boolean
+  completed: boolean
 }
 
 interface ProcessorContext extends Input {
@@ -173,9 +174,9 @@ export const layer = Layer.effect(
       ) {
         const match = yield* readToolCall(toolCallID)
         if (!match) return // already settled — first writer wins
-        // Re-check inputEnded flag after yield point — concurrent fiber may have completed it
-        if (match.call.inputEnded) return
-        match.call.inputEnded = true
+        // Re-check completed flag after yield point — concurrent fiber may have completed it
+        if (match.call.completed) return
+        match.call.completed = true
         // Narrow from ToolState union: only running calls can be finished
         if (match.part.state.status !== "running") return
         if (outcome.status === "completed") {
@@ -284,6 +285,7 @@ export const layer = Layer.effect(
           messageID: part.messageID,
           sessionID: part.sessionID,
           inputEnded: false,
+          completed: false,
         }
         return { call: ctx.toolcalls[input.id], part }
       })
@@ -432,7 +434,7 @@ export const layer = Layer.effect(
                 : value.providerMetadata,
             }))
 
-            const parts = MessageV2.parts(ctx.assistantMessage.id)
+            const parts = yield* MessageV2.parts(ctx.assistantMessage.id)
             const recentParts = parts.slice(-DOOM_LOOP_THRESHOLD)
 
             if (

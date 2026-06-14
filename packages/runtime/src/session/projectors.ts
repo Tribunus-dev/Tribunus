@@ -24,9 +24,9 @@ export type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T
 
 type Usage = Pick<MessageV2.StepFinishPart, "cost" | "tokens">
 
-function usage(part: MessageV2.Part | (typeof PartTable.$inferSelect)["data"]): Usage | undefined {
-  if (part.type !== "step-finish") return undefined
-  if (!("cost" in part) || !("tokens" in part)) return undefined
+function usage(part: any): Usage | undefined {
+  if (!part || part.type !== "step-finish") return undefined
+  if (part.cost === undefined || part.tokens === undefined) return undefined
   return { cost: part.cost, tokens: part.tokens }
 }
 
@@ -125,7 +125,7 @@ export default [
   }),
 
   SyncEvent.project(MessageV2.Event.Updated, (db, data) => {
-    const time_created = data.info.time.created
+    const time_created = Math.round(data.info.time.created)
     const { id, sessionID, ...rest } = data.info
 
     try {
@@ -183,13 +183,13 @@ export default [
           id,
           message_id: messageID,
           session_id: sessionID,
-          time_created: data.time,
+          time_created: Math.round(data.time),
           data: rest,
         })
         .onConflictDoUpdate({ target: PartTable.id, set: { data: rest } })
         .execute()
       const previous = row && usage(row.data)
-      const next = usage(data.part)
+      const next = usage(row ? { ...row.data, ...data.part } : data.part)
       if (previous) applyUsage(db, row.session_id, previous, -1)
       if (next) applyUsage(db, sessionID, next)
     } catch (err) {

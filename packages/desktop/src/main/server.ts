@@ -40,6 +40,13 @@ let sidecarState: SidecarState = {
   lastExitCode: null, restartCount: 0, startupPhases: [],
 }
 
+export function getSidecarStatus(): SidecarState {
+  return {
+    ...sidecarState,
+    startupPhases: sidecarState.startupPhases.map((phase) => ({ ...phase })),
+  }
+}
+
 let currentSidecarChild: ReturnType<typeof utilityProcess.fork> | null = null
 let lastSpawnParams: { hostname: string; port: number; password: string; options: SpawnLocalServerOptions } | null = null
 

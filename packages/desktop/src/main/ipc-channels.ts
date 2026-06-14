@@ -76,6 +76,7 @@ export const IPC = {
     GET_SAFE_MODE_DIAGNOSTICS: "tribunus:get-safe-mode-diagnostics",
     SAFE_MODE_ACTION: "tribunus:safe-mode-action",
     OPEN_PROJECT: "tribunus:open-project",
+    GET_COORDINATION_SNAPSHOT: "tribunus:coordination:get-snapshot",
     // ── Secrets ────────────────────────────────────────────
     SECRETS_SET: "tribunus:secrets-set",
     SECRETS_GET: "tribunus:secrets-get",
@@ -95,6 +96,7 @@ export const IPC = {
     LOADING_WINDOW_COMPLETE: "tribunus:loading-window-complete",
     PLUGIN_SEND: "tribunus:plugin:send",
     RENDERER_READY: "tribunus:renderer-ready",
+    REQUEST_COORDINATION_RESYNC: "tribunus:coordination:request-resync",
   } as const,
   push: {
     INIT_STEP: "tribunus:init-step",
@@ -104,6 +106,7 @@ export const IPC = {
     PINCH_ZOOM_ENABLED_CHANGED: "tribunus:pinch-zoom-enabled-changed",
     ZOOM_FACTOR_CHANGED: "tribunus:zoom-factor-changed",
     PLUGIN_PUSH: "tribunus:plugin:push",
+    COORDINATION_DELTA: "tribunus:coordination:delta",
   } as const,
 
   store: {

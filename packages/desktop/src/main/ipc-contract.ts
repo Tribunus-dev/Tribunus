@@ -38,6 +38,7 @@ import type {
   PluginTransportUnsub,
 } from "../preload/types"
 import type { DesktopCapabilities } from "./ipc-capabilities"
+import type { CoordinationSnapshot } from "./coordination-projection"
 
 // ──────────────────────────────────────────────────────────────
 //  IpcResult — result envelope for all IPC operations
@@ -200,6 +201,10 @@ export const CHANNELS = {
   capabilities: {
     get: IPC.handle.GET_CAPABILITIES,
   },
+  coordination: {
+    getSnapshot: IPC.handle.GET_COORDINATION_SNAPSHOT,
+    requestResync: IPC.send.REQUEST_COORDINATION_RESYNC,
+  },
 } as const
 
 // ──────────────────────────────────────────────────────────────
@@ -273,6 +278,7 @@ export interface IpcHandleContract {
   [IPC.handle.GET_LOCALE_PREFERENCE]: { params: []; returns: Promise<string | null> }
   [IPC.handle.PLUGIN_INVOKE]: { params: [channel: string, data?: unknown]; returns: Promise<unknown> }
   [IPC.handle.GET_CAPABILITIES]: { params: []; returns: Promise<DesktopCapabilities> }
+  [IPC.handle.GET_COORDINATION_SNAPSHOT]: { params: []; returns: Promise<CoordinationSnapshot> }
   [IPC.handle.GET_GIT_STATUS]: { params: []; returns: Promise<{ uncommitted: number; unpushed: number; mergeConflicts: number; branch: string | null } | null> }
   [IPC.handle.GET_SAFE_MODE_DIAGNOSTICS]: { params: []; returns: Promise<SafeModeDiagnostics> }
   [IPC.handle.SAFE_MODE_ACTION]: { params: [action: SafeModeAction]; returns: Promise<void> }
@@ -299,6 +305,7 @@ export interface IpcSendContract {
   [IPC.send.OPEN_LINK]: { params: [url: string] }
   [IPC.send.SHOW_NOTIFICATION]: { params: [title: string, body?: string] }
   [IPC.send.RELAUNCH]: { params: [] }
+  [IPC.send.REQUEST_COORDINATION_RESYNC]: { params: [] }
   [IPC.send.LOADING_WINDOW_COMPLETE]: { params: [] }
   [IPC.send.PLUGIN_SEND]: { params: [channel: string, data?: unknown] }
   [IPC.send.RENDERER_READY]: { params: [] }
@@ -434,6 +441,7 @@ interface BridgeHandleMap {
   getLocalePreference: typeof IPC.handle.GET_LOCALE_PREFERENCE
   getGitStatus: typeof IPC.handle.GET_GIT_STATUS
   getCapabilities: typeof IPC.handle.GET_CAPABILITIES
+  getCoordinationSnapshot: typeof IPC.handle.GET_COORDINATION_SNAPSHOT
   openProject: typeof IPC.handle.OPEN_PROJECT
   // ── Secrets ──────────────────────────────────────────────
   secretsSet: typeof IPC.handle.SECRETS_SET
@@ -452,6 +460,7 @@ interface BridgeSendMap {
   openLink: typeof IPC.send.OPEN_LINK
   showNotification: typeof IPC.send.SHOW_NOTIFICATION
   relaunch: typeof IPC.send.RELAUNCH
+  requestCoordinationResync: typeof IPC.send.REQUEST_COORDINATION_RESYNC
   loadingWindowComplete: typeof IPC.send.LOADING_WINDOW_COMPLETE
 }
 
@@ -623,6 +632,7 @@ export const IPC_METHOD_REGISTRY: {
 
   // ── Capabilities ───────────────────────────────────────
   { channel: IPC.handle.GET_CAPABILITIES, usesIpcResult: true, returns: "IpcResult<DesktopCapabilities>", rendererSees: "DesktopCapabilities" },
+  { channel: IPC.handle.GET_COORDINATION_SNAPSHOT, usesIpcResult: true, returns: "IpcResult<CoordinationSnapshot>", rendererSees: "CoordinationSnapshot" },
 
   // ── Git ────────────────────────────────────────────────
   { channel: IPC.handle.GET_GIT_STATUS, usesIpcResult: true, returns: "IpcResult<GitCheck | null>", rendererSees: "GitCheck | null" },

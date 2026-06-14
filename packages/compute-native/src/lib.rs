@@ -1,64 +1,8 @@
 //! Tribunus Compute Kernel — native MLX backend via napi-rs.
 
-mod attention;
-pub mod arena;
-pub mod arena_lifecycle;
-pub mod arena_pool;
-mod bridge;
-pub mod capability;
-pub mod compute_image;
-pub mod compile_pipeline;
-pub mod copy_ledger;
-pub mod compile_progress;
-pub mod compute_ir;
-pub mod compile_state;
-pub mod config;
-pub mod coreml_audit;
-pub mod coreml_pipeline;
-pub mod coreml_bridge;
-pub mod coreml_state;
-pub mod cpu_benchmarks;
-pub mod errors;
-pub mod engine;
-pub mod engine_error;
-pub mod engine_policy;
-pub mod engine_receipts;
-pub mod executor;
-pub mod external_array;
-pub mod fusion_region;
-mod gemma;
-pub mod gpu_worker;
-pub mod mlx_executor;
-pub mod hybrid_profile;
-pub mod transform_recipe;
-pub mod kv_cache;
-pub mod layout_compiler;
-pub mod mapped_image;
-pub mod model_store;
-pub mod model_runtime;
-pub mod placement_profile;
-pub mod profile_compiler;
-pub mod profiled_executor;
-mod loader;
-mod model;
-pub mod operation_catalog;
-pub mod primitives;
-pub mod quantized;
-pub mod requalification;
-pub mod mlx_inventory;
-pub mod mlx_patch_register;
-pub mod residency;
-pub mod runtime_trace;
-pub mod streaming;
-pub mod receipts;
-pub mod research_trace;
-pub mod research_metrics;
-mod session;
-pub mod validator;
-pub mod worker_memory;
-pub mod worker_protocol;
-pub mod worker_supervisor;
-pub mod cli;
+use tribunus_compute_core::{
+    bridge, compute_image, config, engine, gemma, loader, validator,
+};
 
 use mlx_rs::Array;
 use napi_derive::napi;
@@ -262,7 +206,12 @@ pub fn validate_from_metadata(config_path: String, shard_jsons: String) -> napi:
 /// Outputs manifest.json, receipt.json, and execution-ordered segment files.
 #[napi]
 pub fn compile_image(source_dir: String, output_dir: String) -> napi::Result<String> {
-    let image = compute_image::compile_with_authority(&source_dir, &output_dir, compute_image::CompilationAuthority::SealedComputeImage)?;
+    let image = compute_image::compile_with_authority(
+        &source_dir,
+        &output_dir,
+        compute_image::CompilationAuthority::SealedComputeImage,
+        false,
+    )?;
     serde_json::to_string_pretty(&image)
         .map_err(|e| napi::Error::from_reason(format!("json: {}", e)))
 }
@@ -311,10 +260,7 @@ pub fn mlx_clear_cache() -> napi::Result<u32> {
 
 /// Install a model for the compute engine.
 #[napi]
-pub fn engine_install_model(
-    image_dir: String,
-    profile: String,
-) -> napi::Result<String> {
+pub fn engine_install_model(image_dir: String, profile: String) -> napi::Result<String> {
     Ok(format!(
         "engine_install_model: image_dir={}, profile={}",
         image_dir, profile
@@ -382,10 +328,7 @@ pub fn engine_generate(
 /// failure.  The real cancellation path requires a persistent engine
 /// instance exposed as a napi external.
 #[napi]
-pub fn engine_cancel_generation(
-    image_hash: String,
-    job_id: String,
-) -> napi::Result<String> {
+pub fn engine_cancel_generation(image_hash: String, job_id: String) -> napi::Result<String> {
     let mut engine = engine::ComputeEngine::new()?;
 
     if let Ok(path) = std::env::var("TRIBUNUS_WORKER_BINARY") {

@@ -26,41 +26,44 @@ function encodeMessageData(value: unknown): SessionMessageData {
   return encodeDateTimes(value) as SessionMessageData
 }
 
-function project(db: Database.TxOrDb, sessionID: SessionID): SessionMessageUpdater.Adapter<void> {
-  return {
-    getCurrentAssistant() {
-      return db
-        .select()
-        .from(SessionMessageTable)
-        .where(and(eq(SessionMessageTable.session_id, sessionID), eq(SessionMessageTable.type, "assistant")))
-        .orderBy(desc(SessionMessageTable.id))
+async function update(db: Database.TxOrDb, event: SessionEvent.Event) {
+  const sessionID = event.data.sessionID as SessionID
+
+  const rows = await db
+    .select()
+    .from(SessionMessageTable)
+    .where(eq(SessionMessageTable.session_id, sessionID))
+    .orderBy(SessionMessageTable.id)
+    .execute()
+
+  const originalMap = new Map<string, SessionMessage.Message>()
+  const messages: SessionMessage.Message[] = []
+
+  for (const row of rows) {
+    const msg = decodeMessage({ ...row.data, id: row.id, type: row.type })
+    messages.push(msg)
+    originalMap.set(row.id, msg)
+  }
+
+  const adapter = SessionMessageUpdater.memory({ messages })
+  SessionMessageUpdater.update(adapter, event)
+
+  for (const msg of messages) {
+    const original = originalMap.get(msg.id)
+    const { id, type, ...data } = msg
+
+    if (!original) {
+      await db.insert(SessionMessageTable)
+        .values({
+          id,
+          session_id: sessionID,
+          type,
+          time_created: DateTime.toEpochMillis(msg.time.created),
+          data: encodeMessageData(data),
+        })
         .execute()
-        .map((row: typeof SessionMessageTable.$inferSelect) => decodeMessage({ ...row.data, id: row.id, type: row.type }))
-        .find((message: SessionMessage.Message): message is SessionMessage.Assistant => message.type === "assistant" && !message.time.completed)
-    },
-    getCurrentCompaction() {
-      return db
-        .select()
-        .from(SessionMessageTable)
-        .where(and(eq(SessionMessageTable.session_id, sessionID), eq(SessionMessageTable.type, "compaction")))
-        .orderBy(desc(SessionMessageTable.id))
-        .execute()
-        .map((row: typeof SessionMessageTable.$inferSelect) => decodeMessage({ ...row.data, id: row.id, type: row.type }))
-        .find((message: SessionMessage.Message): message is SessionMessage.Compaction => message.type === "compaction")
-    },
-    getCurrentShell(callID) {
-      return db
-        .select()
-        .from(SessionMessageTable)
-        .where(and(eq(SessionMessageTable.session_id, sessionID), eq(SessionMessageTable.type, "shell")))
-        .orderBy(desc(SessionMessageTable.id))
-        .execute()
-        .map((row: typeof SessionMessageTable.$inferSelect) => decodeMessage({ ...row.data, id: row.id, type: row.type }))
-        .find((message: SessionMessage.Message): message is SessionMessage.Shell => message.type === "shell" && message.callID === callID)
-    },
-    updateAssistant(assistant) {
-      const { id, type, ...data } = assistant
-      db.update(SessionMessageTable)
+    } else if (JSON.stringify(original) !== JSON.stringify(msg)) {
+      await db.update(SessionMessageTable)
         .set({ data: encodeMessageData(data) })
         .where(
           and(
@@ -70,135 +73,88 @@ function project(db: Database.TxOrDb, sessionID: SessionID): SessionMessageUpdat
           ),
         )
         .execute()
-    },
-    updateCompaction(compaction) {
-      const { id, type, ...data } = compaction
-      db.update(SessionMessageTable)
-        .set({ data: encodeMessageData(data) })
-        .where(
-          and(
-            eq(SessionMessageTable.id, id),
-            eq(SessionMessageTable.session_id, sessionID),
-            eq(SessionMessageTable.type, type),
-          ),
-        )
-        .execute()
-    },
-    updateShell(shell) {
-      const { id, type, ...data } = shell
-      db.update(SessionMessageTable)
-        .set({ data: encodeMessageData(data) })
-        .where(
-          and(
-            eq(SessionMessageTable.id, id),
-            eq(SessionMessageTable.session_id, sessionID),
-            eq(SessionMessageTable.type, type),
-          ),
-        )
-        .execute()
-    },
-    appendMessage(message) {
-      const { id, type, ...data } = message
-      db.insert(SessionMessageTable)
-        .values([
-          {
-            id,
-            session_id: sessionID,
-            type,
-            time_created: DateTime.toEpochMillis(message.time.created),
-            data: encodeMessageData(data),
-          },
-        ])
-        .execute()
-    },
-    finish() {},
+    }
   }
 }
 
-function update(db: Database.TxOrDb, event: SessionEvent.Event) {
-  SessionMessageUpdater.update(project(db, event.data.sessionID), event)
-}
-
 export default [
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.AgentSwitched), (db, data, event) => {
-    db.update(SessionTable)
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.AgentSwitched), async (db, data, event) => {
+    await db.update(SessionTable)
       .set({
         agent: data.agent,
         time_updated: DateTime.toEpochMillis(data.timestamp),
       })
       .where(eq(SessionTable.id, data.sessionID))
       .execute()
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.agent.switched", data })
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.agent.switched", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.ModelSwitched), (db, data, event) => {
-    db.update(SessionTable)
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.ModelSwitched), async (db, data, event) => {
+    await db.update(SessionTable)
       .set({
         model: data.model,
         time_updated: DateTime.toEpochMillis(data.timestamp),
       })
       .where(eq(SessionTable.id, data.sessionID))
       .execute()
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.model.switched", data })
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.model.switched", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Prompted), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.prompted", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Prompted), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.prompted", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Synthetic), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.synthetic", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Synthetic), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.synthetic", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Shell.Started), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.shell.started", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Shell.Started), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.shell.started", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Shell.Ended), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.shell.ended", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Shell.Ended), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.shell.ended", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Step.Started), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.step.started", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Step.Started), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.step.started", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Step.Ended), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.step.ended", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Step.Ended), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.step.ended", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Step.Failed), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.step.failed", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Step.Failed), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.step.failed", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Text.Started), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.text.started", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Text.Started), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.text.started", data })
   }),
   SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Text.Delta), () => {}),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Text.Ended), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.text.ended", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Text.Ended), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.text.ended", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Input.Started), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.input.started", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Input.Started), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.input.started", data })
   }),
   SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Input.Delta), () => {}),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Input.Ended), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.input.ended", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Input.Ended), (db, data, event) => {}),
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Called), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.called", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Called), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.called", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Success), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.success", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Success), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.success", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Failed), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.failed", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Tool.Failed), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.tool.failed", data })
-  }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Reasoning.Started), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.reasoning.started", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Reasoning.Started), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.reasoning.started", data })
   }),
   SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Reasoning.Delta), () => {}),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Reasoning.Ended), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.reasoning.ended", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Reasoning.Ended), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.reasoning.ended", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Retried), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.retried", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Retried), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.retried", data })
   }),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Compaction.Started), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.compaction.started", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Compaction.Started), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.compaction.started", data })
   }),
   SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Compaction.Delta), () => {}),
-  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Compaction.Ended), (db, data, event) => {
-    update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.compaction.ended", data })
+  SyncEvent.project(EventV2Bridge.toSyncDefinition(SessionEvent.Compaction.Ended), async (db, data, event) => {
+    await update(db, { id: SessionMessage.ID.make(event.id), type: "session.next.compaction.ended", data })
   }),
 ]

@@ -15,7 +15,9 @@ import { HttpApiBuilder } from "effect/unstable/httpapi"
 import * as Sse from "effect/unstable/encoding/Sse"
 import { RootHttpApi } from "../api"
 import { GlobalUpgradeInput } from "../groups/global"
-import { Database } from "@/storage/db"
+import { CoordinationClaimTable, CoordinationReservationTable } from "@/tool/coordination"
+import { sql } from "drizzle-orm"
+import * as Database from "@/storage/db"
 
 const log = Log.create({ service: "server" })
 
@@ -170,6 +172,31 @@ export const globalHandlers = HttpApiBuilder.group(RootHttpApi, "global", (handl
         }
       }
       const config = yield* Config.Service
+
+      let claimCount = 0
+      let reservationCount = 0
+      try {
+        const claimRows = Database.use((db) =>
+          db.select({ count: sql`count(*)` }).from(CoordinationClaimTable).execute()
+        )
+        claimCount = Number(claimRows[0]?.count ?? 0)
+      } catch {
+        // Table may not exist yet
+      }
+
+      try {
+        const reservationRows = Database.use((db) =>
+          db.select({ count: sql`count(*)` }).from(CoordinationReservationTable).execute()
+        )
+        reservationCount = Number(reservationRows[0]?.count ?? 0)
+      } catch {
+        // Table may not exist yet
+      }
+
+      const valkeyUrl = process.env.TRIBUNUS_VALKEY_URL || process.env.OPENCODE_VALKEY_URL || null
+      const valkeyReady = !!valkeyUrl
+      const backendMode = valkeyReady ? "local-valkey" : "local"
+
       return {
         classification: instanceCount === 0 ? "fresh_empty_db" : instanceHealthy === instanceCount ? "all_healthy" : "degraded",
         recommendation: instanceCount === 0 ? "open_project" : instanceHealthy < instanceCount ? "inspect_failing_instances" : null,
@@ -187,14 +214,16 @@ export const globalHandlers = HttpApiBuilder.group(RootHttpApi, "global", (handl
         client: process.env.OPENCODE_CLIENT ?? "unknown",
         warnings: [] as { code: string; message: string }[],
         coordination: {
-          backend: "local",
-          valkeyReady: false,
-          url: null,
+          backend: backendMode,
+          valkeyReady,
+          url: valkeyUrl,
           pid: null,
           mode: "ephemeral",
           persistence: "disabled",
           lastError: null,
           featureFlag: process.env.OPENCODE_COORDINATION_BACKEND ?? "local",
+          readyCount: claimCount,
+          quarantineCount: reservationCount, // using reservationCount for quarantineCount / detail tracking
         },
       }
     })

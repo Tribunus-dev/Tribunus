@@ -115,7 +115,7 @@ export function shadowWrite(
   entityType: string,
   entityId: string,
   data: Record<string, unknown>,
-  adapter: DatabaseAdapter,
+  adapter: DatabaseAdapter.Interface,
   config: ShadowWriteConfig = DEFAULT_SHADOW_CONFIG
 ): Effect.Effect<ShadowWriteResult, Error> {
   return Effect.gen(function* () {
@@ -157,11 +157,11 @@ export function shadowWrite(
     if (fsOk && pgOk && config.enabled) {
       divergences = yield* characterizeEntity(entityType, entityId, async () => {
         // Read back from PGlite
-        const rows = await adapter.query((db) => {
+        const rows = await Effect.runPromise(adapter.query((db) => {
           const table = getTableForEntity(entityType)
           if (!table) throw new Error(`Unknown entity type: ${entityType}`)
           return db.select().from(table).where({ id: entityId } as any).execute()
-        })
+        })) as any
         return (rows[0] as Record<string, unknown>) || null
       })
     }

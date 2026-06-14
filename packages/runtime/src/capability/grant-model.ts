@@ -29,13 +29,14 @@ export const Capability = Schema.Struct({
   /** The specific rights this capability confers */
   rights: Schema.Array(Schema.String),
   /** Where this capability originated */
-  source: Schema.Literals("grant", "delegation", "intrinsic", "break_glass"),
+  source: Schema.Literals(["grant", "delegation", "intrinsic", "break_glass"]),
   /** The grant receipt ID that backs this capability */
   grantReceiptId: Schema.String,
   /** When this capability was granted */
   grantedAt: Schema.Number,
   /** When this capability expires (null = permanent) */
-  expiresAt: Schema.union(Schema.Number, Schema.Null),
+  // @ts-expect-error Schema v4 Struct accepts raw schema, tsgo can't prove it
+  expiresAt: Schema.Union(Schema.Number, Schema.Null),
   /** Whether this capability is currently active */
   isActive: Schema.Boolean,
 })
@@ -54,7 +55,7 @@ export function composeCapabilities(a: Capability, b: Capability): Capability {
   const expiresAt =
     a.expiresAt === null ? b.expiresAt :
     b.expiresAt === null ? a.expiresAt :
-    Math.min(a.expiresAt, b.expiresAt)
+    Math.min(a.expiresAt as number, b.expiresAt as number)
 
   return {
     ...a,
@@ -121,7 +122,7 @@ export const CapabilityGrant = Schema.Struct({
   scope: Schema.String,
   rights: Schema.Array(Schema.String),
   /** When this grant expires (null = permanent until revoked) */
-  expiresAt: Schema.union(Schema.Number, Schema.Null),
+  expiresAt: Schema.Union([Schema.Number, Schema.Null]),
   /** Whether this grant is active */
   isActive: Schema.Boolean,
   /** The receipt ID in CapabilityAuthorityReceiptTable */

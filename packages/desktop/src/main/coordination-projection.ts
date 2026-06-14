@@ -53,6 +53,7 @@ export function makeCoordinationProjectionService() {
   let sequence = 0
   const streamId = `coordination-projection-${Date.now()}`
   const listeners = new Set<DeltaListener>()
+  let resyncHandler: (() => void) | null = null
 
   function emitChange(changed: string[], update: Partial<CoordinationSnapshot>) {
     revision++
@@ -83,6 +84,16 @@ export function makeCoordinationProjectionService() {
       return () => { listeners.delete(listener) }
     },
 
+    registerResyncHandler(handler: () => void) {
+      resyncHandler = handler
+    },
+
+    requestResync() {
+      if (resyncHandler) {
+        resyncHandler()
+      }
+    },
+
     setSidecarReady(ready: boolean) {
       emitChange(["available", "backendMode", "schedulerState", "consumerHealth"], {
         available: ready,
@@ -99,8 +110,15 @@ export function makeCoordinationProjectionService() {
       })
     },
 
+    updateMetrics(metrics: Partial<CoordinationSnapshot>) {
+      const keys = Object.keys(metrics)
+      emitChange(keys, metrics)
+    },
+
     dispose() {
       listeners.clear()
     },
   }
 }
+
+export const coordinationProjection = makeCoordinationProjectionService()

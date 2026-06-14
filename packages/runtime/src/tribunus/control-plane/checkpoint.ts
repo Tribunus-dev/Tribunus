@@ -211,7 +211,7 @@ export async function tribunusCheckpointCreateWithMemory(
     throw new Error(`Failed to create checkpoint: ${checkpointReceipt.error}`);
   }
 
-  const createdCheckpoint = checkpointReceipt.output as Checkpoint;
+  const createdCheckpoint = checkpointReceipt.output as unknown as Checkpoint;
 
   // Create receipt — verdict reflects overall status
   const receiptVerdict: "pass" | "fail" | "warning" = 
@@ -259,7 +259,7 @@ export async function tribunusCheckpointCreateWithMemory(
     operationalState,
     memoryContext: memoryRecall.results.map(r => ({ ...r, bank: memoryBank })),
     memoryContextStatus: memoryRecall.status,
-    receipt: receiptReceipt.success ? (receiptReceipt.output as ReceiptType) : receiptReceipt,
+    receipt: receiptReceipt.success ? (receiptReceipt.output as unknown as ReceiptType) : receiptReceipt,
   };
 
   return resumePacket;
@@ -272,13 +272,13 @@ export async function tribunusCheckpointCreateWithMemory(
 function getGitState(): GitStateResult {
   try {
     const commitProc = Bun.spawnSync(["git", "rev-parse", "HEAD"], { stdout: "pipe", stderr: "pipe", cwd: process.cwd() });
-    const commit = commitProc.stdout?.text().trim() || undefined;
+    const commit = commitProc.stdout?.toString().trim() || undefined;
 
     const branchProc = Bun.spawnSync(["git", "branch", "--show-current"], { stdout: "pipe", stderr: "pipe", cwd: process.cwd() });
-    const branch = branchProc.stdout?.text().trim() || undefined;
+    const branch = branchProc.stdout?.toString().trim() || undefined;
 
     const statusProc = Bun.spawnSync(["git", "status", "--porcelain"], { stdout: "pipe", stderr: "pipe", cwd: process.cwd() });
-    const status = statusProc.stdout?.text().trim() || "";
+    const status = statusProc.stdout?.toString().trim() || "";
     const dirty = status.length > 0;
 
     if (!commit && !branch) {

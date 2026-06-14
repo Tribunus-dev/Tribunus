@@ -167,6 +167,9 @@ export async function applyMigrations(db: PgClient): Promise<void> {
   try {
     await promise
   } catch (e: unknown) {
+    if (rawClient) {
+      delete rawClient.__migrationPromise
+    }
     if (isBenignIdempotencyError(e, "")) {
       return
     }

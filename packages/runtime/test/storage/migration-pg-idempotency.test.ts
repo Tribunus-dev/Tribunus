@@ -26,6 +26,10 @@
 
 import { describe, test, expect } from "bun:test"
 import { init, applyMigrations } from "#db"
+import { readMigrationFiles } from "drizzle-orm/migrator"
+
+const folder = new URL("../../migration-pg", import.meta.url).pathname
+const expectedCount = readMigrationFiles({ migrationsFolder: folder }).length
 
 // ── helpers ───────────────────────────────────────────────────
 
@@ -91,7 +95,7 @@ describe("applyMigrations idempotency", () => {
       expect(tables).toContain("__drizzle_migrations")
 
       const count = await getMigrationCount(client)
-      expect(count).toBe(5)
+      expect(count).toBe(expectedCount)
 
       // Verify user-facing tables exist
       expect(tables).toContain("session")
@@ -113,8 +117,8 @@ describe("applyMigrations idempotency", () => {
       const hashes1 = await getMigrationHashes(client)
       const tables1 = await getTables(client)
 
-      expect(count1).toBe(5)
-      expect(hashes1).toHaveLength(5)
+      expect(count1).toBe(expectedCount)
+      expect(hashes1).toHaveLength(expectedCount)
 
       // Second run — should be a complete no-op
       await applyMigrations(client)
@@ -170,12 +174,12 @@ describe("applyMigrations idempotency", () => {
       // Second run — should succeed now
       await applyMigrations(client)
 
-      // All 5 hashes recorded
+      // All hashes recorded
       const countAfterRetry = await getMigrationCount(client)
-      expect(countAfterRetry).toBe(5)
+      expect(countAfterRetry).toBe(expectedCount)
 
       const hashes = await getMigrationHashes(client)
-      expect(hashes).toHaveLength(5)
+      expect(hashes).toHaveLength(expectedCount)
 
       // All user tables should exist after successful retry
       const tablesAfterRetry = await getTables(client)
@@ -204,7 +208,7 @@ describe("applyMigrations idempotency", () => {
       await applyMigrations(client)
 
       const countAfter = await getMigrationCount(client)
-      expect(countAfter).toBe(5)
+      expect(countAfter).toBe(expectedCount)
 
       const tablesAfter = await getTables(client)
       expect(tablesAfter).toContain("session")
@@ -220,15 +224,18 @@ describe("applyMigrations idempotency", () => {
       // Apply once
       await applyMigrations(client)
       const hashesBefore = await getMigrationHashes(client)
-      expect(hashesBefore).toHaveLength(5)
+      expect(hashesBefore).toHaveLength(expectedCount)
 
       // Simulate loss of tracking state (e.g. someone manually
       // cleared the tracking table rows).  Re-running should
-      // re-record all 5 hashes — the per-statement idempotency
+      // re-record all hashes — the per-statement idempotency
       // classifier handles "already exists" errors gracefully.
       // This test validates that clearing rows and re-applying
       // recovers tracking state without throwing.
       await clearTrackingRows(client)
+      const raw = (client as any).$client ?? client
+      delete raw.__migrationPromise
+      delete (client as any).__migrationPromise
 
       const countCleared = await getMigrationCount(client)
       expect(countCleared).toBe(0)
@@ -238,12 +245,12 @@ describe("applyMigrations idempotency", () => {
       // are re-recorded.
       await applyMigrations(client)
 
-      // All 5 hashes re-recorded
+      // All hashes re-recorded
       const countAfterRetry = await getMigrationCount(client)
-      expect(countAfterRetry).toBe(5)
+      expect(countAfterRetry).toBe(expectedCount)
 
       const hashesAfter = await getMigrationHashes(client)
-      expect(hashesAfter).toHaveLength(5)
+      expect(hashesAfter).toHaveLength(expectedCount)
       expect(hashesAfter).toEqual(hashesBefore)
     } finally {
       await closeClient(client)
@@ -310,7 +317,7 @@ describe("applyMigrations idempotency", () => {
       // First call: apply everything
       await applyMigrations(client)
       const count = await getMigrationCount(client)
-      expect(count).toBe(5)
+      expect(count).toBe(expectedCount)
 
       // Second call: every migration is skipped, loop body never
       // executes any exec/query beyond the initial SELECT.
@@ -318,7 +325,7 @@ describe("applyMigrations idempotency", () => {
       await applyMigrations(client)
 
       // Hash count unchanged
-      expect(await getMigrationCount(client)).toBe(5)
+      expect(await getMigrationCount(client)).toBe(expectedCount)
     } finally {
       await closeClient(client)
     }

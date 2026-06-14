@@ -90,3 +90,31 @@ void Log.init({
 })
 
 initProjectors()
+
+import { afterEach } from "bun:test"
+
+afterEach(async () => {
+  try {
+    const { Server } = await import("../src/server/server")
+    const { HttpApiApp } = await import("../src/server/routes/instance/httpapi/server")
+    const { memoMap } = await import("@tribunus/core/effect/memo-map")
+
+    if (HttpApiApp.webHandler.loaded()) {
+      const val = HttpApiApp.webHandler()
+      if (val && typeof val.dispose === "function") {
+        await val.dispose()
+      }
+    }
+
+    Server.Default.reset()
+    HttpApiApp.webHandler.reset()
+    if (memoMap && (memoMap as any).map) {
+      ;(memoMap as any).map.clear()
+    }
+  } catch (e) {
+    // Ignore errors during import/reset if some modules are not loaded
+  }
+})
+
+
+

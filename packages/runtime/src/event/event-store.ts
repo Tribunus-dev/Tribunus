@@ -137,4 +137,4 @@ export const layer = Layer.effect(
 
     return Service.of({ record, query } as Interface)
   }),
-)
+).pipe(Layer.provide(DatabaseAdapter.defaultLayer))

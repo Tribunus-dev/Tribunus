@@ -4,7 +4,7 @@ import { tokens } from "../tokens.js"
 
 type Mode = "public" | "authenticated"
 
-interface RelayStatus {
+interface RelayStatusData {
   id: string
   name: string
   connectedLanes: number
@@ -12,14 +12,14 @@ interface RelayStatus {
   status: "active" | "degraded" | "down"
 }
 
-const DEMO_RELAYS: RelayStatus[] = [
+const DEMO_RELAYS: RelayStatusData[] = [
   { id: "relay-01", name: "Primary Relay", connectedLanes: 12, throughput: 342, status: "active" },
   { id: "relay-02", name: "Backup Relay", connectedLanes: 8, throughput: 187, status: "active" },
   { id: "relay-03", name: "EU-West Relay", connectedLanes: 5, throughput: 42, status: "degraded" },
   { id: "relay-04", name: "APAC Relay", connectedLanes: 0, throughput: 0, status: "down" },
 ]
 
-const STATUS_STYLE: Record<RelayStatus["status"], { color: string; bg: string; label: string }> = {
+const STATUS_STYLE: Record<RelayStatusData["status"], { color: string; bg: string; label: string }> = {
   active: { color: tokens.color.success.$value, bg: `${tokens.color.success.$value}18`, label: "Active" },
   degraded: { color: tokens.color.warning.$value, bg: `${tokens.color.warning.$value}18`, label: "Degraded" },
   down: { color: tokens.color.error.$value, bg: `${tokens.color.error.$value}18`, label: "Down" },
@@ -27,7 +27,7 @@ const STATUS_STYLE: Record<RelayStatus["status"], { color: string; bg: string; l
 
 @customElement("tribunus-relay-status")
 export class RelayStatus extends LitElement {
-  static override styles = css`
+  static override styles = (css as any)`
     :host {
       display: block;
       container-type: inline-size;
@@ -119,9 +119,9 @@ export class RelayStatus extends LitElement {
   mode: Mode = "public"
 
   @property({ type: Array })
-  relays?: RelayStatus[]
+  relays?: RelayStatusData[]
 
-  private get _relays(): RelayStatus[] {
+  private get _relays(): RelayStatusData[] {
     if (this.mode === "public" || !this.relays) return DEMO_RELAYS
     return this.relays
   }

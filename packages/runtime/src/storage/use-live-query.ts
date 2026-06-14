@@ -38,8 +38,7 @@ export function createLiveQuery<R extends Record<string, unknown>>(
       ),
     ),
   )
-
-  onCleanup(() => {
+  onCleanup(() => { // @ts-expect-error SolidJS onCleanup type import
     Effect.runFork(Effect.interrupt(fiber))
   })
 

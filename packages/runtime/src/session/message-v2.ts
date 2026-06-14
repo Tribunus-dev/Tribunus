@@ -597,31 +597,34 @@ const part = (row: typeof PartTable.$inferSelect) =>
 const older = (row: Cursor) =>
   or(lt(MessageTable.time_created, row.time), and(eq(MessageTable.time_created, row.time), lt(MessageTable.id, row.id)))
 
-function hydrate(rows: (typeof MessageTable.$inferSelect)[]) {
-  const ids = rows.map((row) => row.id)
-  const partByMessage = new Map<string, Part[]>()
-  if (ids.length > 0) {
-    const partRows = Database.use((db) =>
-      db
-        .select()
-        .from(PartTable)
-        .where(inArray(PartTable.message_id, ids))
-        .orderBy(PartTable.message_id, PartTable.id)
-        .execute(),
-    )
-    for (const row of partRows) {
-      const next = part(row)
-      const list = partByMessage.get(row.message_id)
-      if (list) list.push(next)
-      else partByMessage.set(row.message_id, [next])
+const hydrate = (rows: (typeof MessageTable.$inferSelect)[]) =>
+  Effect.gen(function* () {
+    const ids = rows.map((row) => row.id)
+    const partByMessage = new Map<string, Part[]>()
+    if (ids.length > 0) {
+      const partRows: (typeof PartTable.$inferSelect)[] = yield* Effect.tryPromise<(typeof PartTable.$inferSelect)[]>(() =>
+        Database.use((db) =>
+          db
+            .select()
+            .from(PartTable)
+            .where(inArray(PartTable.message_id, ids))
+            .orderBy(PartTable.message_id, PartTable.id)
+            .execute(),
+        ),
+      )
+      for (const row of partRows) {
+        const next = part(row)
+        const list = partByMessage.get(row.message_id)
+        if (list) list.push(next)
+        else partByMessage.set(row.message_id, [next])
+      }
     }
-  }
 
-  return rows.map((row) => ({
-    info: info(row),
-    parts: partByMessage.get(row.id) ?? [],
-  }))
-}
+    return rows.map((row) => ({
+      info: info(row),
+      parts: partByMessage.get(row.id) ?? [],
+    }))
+  })
 
 function providerMeta(metadata: Record<string, any> | undefined) {
   if (!metadata) return undefined
@@ -931,19 +934,21 @@ export const page = Effect.fn("MessageV2.page")(function* (input: {
   const where = before
     ? and(eq(MessageTable.session_id, input.sessionID), older(before))
     : eq(MessageTable.session_id, input.sessionID)
-  const rows = Database.use((db) =>
-    db
-      .select()
-      .from(MessageTable)
-      .where(where)
-      .orderBy(desc(MessageTable.time_created), desc(MessageTable.id))
-      .limit(input.limit + 1)
-      .execute(),
+  const rows: (typeof MessageTable.$inferSelect)[] = yield* Effect.tryPromise<(typeof MessageTable.$inferSelect)[]>(() =>
+    Database.use((db) =>
+      db
+        .select()
+        .from(MessageTable)
+        .where(where)
+        .orderBy(desc(MessageTable.time_created), desc(MessageTable.id))
+        .limit(input.limit + 1)
+        .execute(),
+    ),
   )
   if (rows.length === 0) {
     const row = yield* Effect.tryPromise(() =>
       Database.use((db) =>
-            one(db.select({ id: SessionTable.id }).from(SessionTable).where(eq(SessionTable.id, input.sessionID)))
+        one(db.select({ id: SessionTable.id }).from(SessionTable).where(eq(SessionTable.id, input.sessionID))),
       )
     )
     if (!row) return yield* new NotFoundError({ message: `Session not found: ${input.sessionID}` })
@@ -955,7 +960,7 @@ export const page = Effect.fn("MessageV2.page")(function* (input: {
 
   const more = rows.length > input.limit
   const slice = more ? rows.slice(0, input.limit) : rows
-  const items = hydrate(slice)
+  const items = yield* hydrate(slice)
   items.reverse()
   const tail = slice.at(-1)
   return {
@@ -965,29 +970,32 @@ export const page = Effect.fn("MessageV2.page")(function* (input: {
   }
 })
 
-export function* stream(sessionID: SessionID) {
-  const size = 50
-  let before: string | undefined
-  while (true) {
-    const next = Effect.runSync(
-      page({ sessionID, limit: size, before }).pipe(
+export const stream = (sessionID: SessionID) =>
+  Effect.gen(function* () {
+    const result: WithParts[] = []
+    const size = 50
+    let before: string | undefined
+    while (true) {
+      const next = yield* page({ sessionID, limit: size, before }).pipe(
         Effect.catchIf(NotFoundError.isInstance, () =>
           Effect.succeed({ items: [] as WithParts[], more: false, cursor: undefined }),
         ),
-      ),
-    )
-    if (next.items.length === 0) break
-    for (let i = next.items.length - 1; i >= 0; i--) {
-      yield next.items[i]
+      )
+      if (next.items.length === 0) break
+      for (let i = next.items.length - 1; i >= 0; i--) {
+        result.push(next.items[i])
+      }
+      if (!next.more || !next.cursor) break
+      before = next.cursor
     }
-    if (!next.more || !next.cursor) break
-    before = next.cursor
-  }
-}
+    return result
+  })
 
-export function parts(message_id: MessageID) {
-  const rows = Database.use((db) =>
-    db.select().from(PartTable).where(eq(PartTable.message_id, message_id)).orderBy(PartTable.id).execute(),
+export const parts = Effect.fn("MessageV2.parts")(function* (message_id: MessageID) {
+  const rows: (typeof PartTable.$inferSelect)[] = yield* Effect.tryPromise<(typeof PartTable.$inferSelect)[]>(() =>
+    Database.use((db) =>
+      db.select().from(PartTable).where(eq(PartTable.message_id, message_id)).orderBy(PartTable.id).execute(),
+    ),
   )
   return rows.map(
     (row: typeof PartTable.$inferSelect) =>
@@ -998,7 +1006,7 @@ export function parts(message_id: MessageID) {
         messageID: row.message_id,
       }) as Part,
   )
-}
+})
 
 export const get = Effect.fn("MessageV2.get")(function* (input: { sessionID: SessionID; messageID: MessageID }) {
   const row = yield* Effect.tryPromise(() =>
@@ -1014,7 +1022,7 @@ export const get = Effect.fn("MessageV2.get")(function* (input: { sessionID: Ses
   if (!row) return yield* new NotFoundError({ message: `Message not found: ${input.messageID}` })
   return {
     info: info(row as any),
-    parts: parts(input.messageID),
+    parts: yield* parts(input.messageID),
   } as any
 })
 
@@ -1072,7 +1080,8 @@ export function filterCompacted(msgs: Iterable<WithParts>) {
 }
 
 export const filterCompactedEffect = Effect.fnUntraced(function* (sessionID: SessionID) {
-  return filterCompacted(stream(sessionID))
+  const msgs = yield* stream(sessionID)
+  return filterCompacted(msgs)
 })
 
 // filterCompacted reorders messages for model consumption

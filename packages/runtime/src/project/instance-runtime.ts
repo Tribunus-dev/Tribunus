@@ -34,7 +34,9 @@ export const layer: Layer.Layer<
         yield* Effect.logDebug(`forking instance work`).pipe(
           Effect.annotateLogs("label", label),
         )
+        const ctx = yield* Effect.context()
         const fiber = yield* effect.pipe(
+          Effect.provide(ctx),
           Effect.forkIn(scope, { startImmediately: true }),
         )
         return fiber

@@ -11,9 +11,9 @@ import { MessageID, PartID } from "../../src/session/schema"
 import { PartTable } from "@/session/session.pg.sql"
 import { resetDatabase } from "../fixture/db"
 import { disposeAllInstances, TestInstance } from "../fixture/fixture"
-import { testEffect } from "../lib/effect"
+import { testEffectShared } from "../lib/effect"
 
-const it = testEffect(Session.defaultLayer)
+const it = testEffectShared(Session.defaultLayer)
 
 afterEach(async () => {
   await disposeAllInstances()
@@ -56,7 +56,7 @@ const seedCorruptStepFinishPart = Effect.gen(function* () {
           } as never, // drizzle's .set() can't narrow the discriminated union
         })
         .where(eq(PartTable.id, partID))
-        .run(),
+        .execute(),
     ),
   )
   return info.id

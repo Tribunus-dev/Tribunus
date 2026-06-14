@@ -278,10 +278,10 @@ export class WorkScheduler {
           workId: work.workId,
           workKind: "scheduled",
           schemaVersion: "v1",
-          enqueueTimestamp: now,
+          enqueueTimestamp: String(now),
           correlationId: `scheduled:${work.workId}`,
-          retryCount: work.retryCount,
-          maxRetries: work.maxRetries,
+          retryCount: String(work.retryCount),
+          maxRetries: String(work.maxRetries),
           reason: work.reason,
         })
         
@@ -406,16 +406,3 @@ export function createWorkSchedulerWith(
 }
 
 
-// ── Exports ─────────────────────────────────────────────────────────────
-
-export {
-  WorkScheduler,
-  createWorkScheduler,
-  createWorkSchedulerWith,
-  DEFAULT_SCHEDULER_CONFIG,
-}
-export type {
-  SchedulerConfig,
-  ScheduledWork,
-  SchedulerMetrics,
-}

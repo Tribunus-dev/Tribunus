@@ -4,11 +4,13 @@ import * as Scope from "effect/Scope"
 import * as TestClock from "effect/testing/TestClock"
 import * as TestConsole from "effect/testing/TestConsole"
 import { DatabaseAdapter } from "@/storage/adapter"
+import { liveRegistryLayer } from "@/capability/tool-registry"
 import { memoMap } from "@tribunus/core/effect/memo-map"
 import type { Config } from "@/config/config"
 import { layer as EventStoreLayer } from "../../src/event/event-store"
 import { layer as InstanceHealthStoreLayer } from "../../src/project/instance-health"
 import { TestInstance, withTmpdirInstance } from "../fixture/fixture"
+import { CrossSpawnSpawner } from "@tribunus/core/cross-spawn-spawner"
 
 type Body<A, E, R> = Effect.Effect<A, E, R> | (() => Effect.Effect<A, E, R>)
 type InstanceOptions = { git?: boolean; config?: Partial<Config.Info> | (() => Partial<Config.Info>) }
@@ -130,15 +132,19 @@ const testEnv = Layer.mergeAll(
   TestConsole.layer,
   TestClock.layer(),
   DatabaseAdapter.LocalPgAdapter,
+  liveRegistryLayer,
   InstanceHealthStoreLayer,
+  CrossSpawnSpawner.defaultLayer,
 ) as any
 
 const liveEnv = Layer.mergeAll(
   TestConsole.layer,
   configProviderLayer,
   DatabaseAdapter.LocalPgAdapter,
+  liveRegistryLayer,
   EventStoreLayer,
   InstanceHealthStoreLayer,
+  CrossSpawnSpawner.defaultLayer,
 ) as any
 
 export const it = make(testEnv, liveEnv)

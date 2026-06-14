@@ -129,6 +129,7 @@ export async function createServerTestCell(): Promise<ServerTestCell> {
         name: "global reset",
         run: () => {
           Database.Client.reset()
+          Flag.OPENCODE_DB = ":memory:"
         },
       },
       {

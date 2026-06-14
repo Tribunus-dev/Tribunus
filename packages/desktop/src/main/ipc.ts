@@ -18,6 +18,7 @@ import type { DesktopRuntime } from "./effect/desktop-runtime"
 import { registerNotificationIpcHandlers } from "./desktop-notification-service"
 import { validateRegisteredIpcHandlers } from "./ipc-registration"
 import { checkSender } from "./ipc-sender"
+import { registerCoordinationIpcHandlers } from "./ipc-coordination"
 let registered = false
 
 export function registerIpcHandlers(deps: InitDeps, runtime: DesktopRuntime) {
@@ -37,6 +38,7 @@ export function registerIpcHandlers(deps: InitDeps, runtime: DesktopRuntime) {
   registerGitIpcHandlers()
   registerSecretIpcHandlers(runtime)
   registerNotificationIpcHandlers()
+  registerCoordinationIpcHandlers()
 
   const issues = validateRegisteredIpcHandlers()
   if (issues.length > 0) {

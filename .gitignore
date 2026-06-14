@@ -97,12 +97,20 @@ docs/adr/017-developer-graph.md
 tribunus-source-review.zip
 tribunus-gemini-code-review.zip
 tribunus-gemini-ir.zip
+tribunus-source-review/
 compute-kernel-review.zip
 compute-kernel-review-manifest.json
+tribunus-gap-report-review-bundle.zip
+tribunus-source-review-prefixed.zip
 # Session recording HTML exports
 omp-session-*.html
 # Compute-native build artifacts and models
 packages/compute-native/models/
+packages/compute-native/COREML-BRANCH-SCALE-REPRO-0001/
+packages/compute-native/COREML-MIL-LOGISTIC-FIX-0001/
+packages/compute-native/COREML-REPRO-0001/
+packages/compute-native/decode_attribution_runs/
+packages/compute-native/code-review/*.zip
 packages/compute-native/tribunus-compute-native.darwin-arm64.node
 packages/compute-native/index.js
 packages/compute-native/index.d.ts
@@ -110,3 +118,15 @@ packages/compute-native/index.d.ts
 packages/opencode/scratch-temp*.ts
 packages/opencode/scratch-temp-test.ts
 .research-data/
+packages/compute-native/models/
+
+# Tribunus Compute Image artifacts
+/.tribunus/artifacts/compute-images/*
+!/.tribunus/artifacts/compute-images/.gitkeep
+/.tribunus/artifacts/compute-images~*
+packages/desktop/resources/valkey/**/bin/valkey-server
+packages/desktop/native/build/Release/mac_window.node
+artifacts/
+instance-startup.jsonl
+packages/compute-native/models
+packages/compute-native/research-data/

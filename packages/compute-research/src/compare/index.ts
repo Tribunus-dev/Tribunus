@@ -6,6 +6,7 @@
 
 import type { StageShare, BottleneckLedger } from "./bottleneck.js";
 import { buildBottleneckLedger } from "./bottleneck.js";
+import { loadComparisonDataset, type ComparisonObservation } from "./receipts.js";
 import {
   bootstrapIndependentCI,
   bootstrapPairedCI,
@@ -15,19 +16,9 @@ import {
 } from "./statistics.js";
 import type { PairedDifference } from "./statistics.js";
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
-import { join, resolve } from "path";
+import { basename, join, resolve } from "path";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-
-/** An event logged during a run (one line of the events JSONL file). */
-export interface Event {
-  /** Event category or stage label, e.g. `"inference"`, `"tokenize"`. */
-  stage?: string;
-  /** Wall-clock duration in milliseconds (when applicable). */
-  durationMs?: number;
-  /** Arbitrary metadata attached at record time. */
-  [key: string]: unknown;
-}
 
 /** Configuration for a comparison operation. */
 export interface ComparisonConfig {
@@ -49,10 +40,52 @@ export interface ComparisonConfig {
   readonly confidence?: number;
   /** Number of bootstrap resamples (default 10_000). */
   readonly nBootstrap?: number;
-  /** Force paired analysis (default: auto-detect when lengths match). */
+  /** Force paired analysis when observations are known to be aligned. */
   readonly paired?: boolean;
   /** Seed for reproducible bootstrap resampling. */
   readonly randomSeed?: number;
+}
+
+export interface ComparisonRunSnapshot {
+  readonly runDir: string;
+  readonly runId: string;
+  readonly manifest: Record<string, unknown> | null;
+  readonly workload: Record<string, unknown> | null;
+  readonly provenance: Record<string, unknown> | null;
+  readonly dataset: ReturnType<typeof loadComparisonDataset>;
+}
+
+export interface RunReader {
+  read(runDir: string): ComparisonRunSnapshot;
+}
+
+export interface MetricExtractor {
+  extract(records: ComparisonObservation[], metric: string): number[];
+}
+
+export interface CorrectnessGate {
+  evaluate(
+    records: ComparisonObservation[],
+    sourceKind: "receipt" | "event",
+    manifest: Record<string, unknown> | null,
+    config: ComparisonConfig,
+  ): Record<string, CorrectnessGateResult>;
+}
+
+export interface RecommendationPolicy {
+  derive(input: {
+    readonly correctness: Record<string, CorrectnessGateResult>;
+    readonly evidenceComplete: boolean;
+    readonly effectSize: number;
+    readonly ci: { lower: number; upper: number };
+  }): ComparisonRecommendation;
+}
+
+export interface ComparisonPipeline {
+  readonly runReader: RunReader;
+  readonly metricExtractor: MetricExtractor;
+  readonly correctnessGate: CorrectnessGate;
+  readonly recommendationPolicy: RecommendationPolicy;
 }
 
 export type ComparisonRecommendation =
@@ -138,47 +171,37 @@ export async function runComparison(
   treatmentRunId: string,
   config: ComparisonConfig,
 ): Promise<ComparisonRecord> {
+  return runComparisonWithPipeline(baselineRunId, treatmentRunId, config, DEFAULT_COMPARISON_PIPELINE);
+}
+
+export async function runComparisonWithPipeline(
+  baselineRunId: string,
+  treatmentRunId: string,
+  config: ComparisonConfig,
+  pipeline: ComparisonPipeline,
+): Promise<ComparisonRecord> {
   // 1. Load run manifests & metadata
   const baselineDir = resolve(config.baselineRoot, baselineRunId);
   const treatmentDir = resolve(config.treatmentRoot, treatmentRunId);
-
-  const baselineManifest = readJsonFile<Record<string, unknown>>(
-    join(baselineDir, "run-manifest.json"),
-  );
-  const treatmentManifest = readJsonFile<Record<string, unknown>>(
-    join(treatmentDir, "run-manifest.json"),
-  );
-  const baselineWorkload = readJsonFile<Record<string, unknown>>(
-    join(baselineDir, "workload.json"),
-  );
-  const treatmentWorkload = readJsonFile<Record<string, unknown>>(
-    join(treatmentDir, "workload.json"),
-  );
-  const baselineEvents = readEvents(baselineDir);
-  const treatmentEvents = readEvents(treatmentDir);
-  const baselineProvenance = readJsonFile<Record<string, unknown>>(
-    join(baselineDir, "provenance.json"),
-  );
-  const treatmentProvenance = readJsonFile<Record<string, unknown>>(
-    join(treatmentDir, "provenance.json"),
-  );
+  const baseline = pipeline.runReader.read(baselineDir);
+  const treatment = pipeline.runReader.read(treatmentDir);
 
   // 2. Extract metadata
   const workload = String(
-    baselineWorkload?.name ?? treatmentWorkload?.name ?? "unknown",
+    baseline.workload?.name ?? treatment.workload?.name ?? "unknown",
   );
-  const machine = extractMachine(baselineProvenance, treatmentProvenance);
+  const machine = extractMachine(baseline.provenance, treatment.provenance);
   const instrumentation = String(
-    baselineManifest?.instrumentation ?? treatmentManifest?.instrumentation ?? "unknown",
+    baseline.manifest?.instrumentation ?? treatment.manifest?.instrumentation ?? "unknown",
   );
   const warmupClass = String(
-    baselineManifest?.warmupClass ?? baselineManifest?.warmup_class ?? treatmentManifest?.warmupClass ?? "none",
+    baseline.manifest?.warmupClass ?? baseline.manifest?.warmup_class ?? treatment.manifest?.warmupClass ?? "none",
   );
 
   // 3. Extract primary metric values
   const primaryMetric = config.primaryMetric;
-  const baselineValues = extractMetric(baselineEvents, primaryMetric);
-  const treatmentValues = extractMetric(treatmentEvents, primaryMetric);
+  const baselineValues = pipeline.metricExtractor.extract(baseline.dataset.records, primaryMetric);
+  const treatmentValues = pipeline.metricExtractor.extract(treatment.dataset.records, primaryMetric);
 
   // 4. Compute summary statistics
   const baselineSummary = computeSummaryStats(baselineValues);
@@ -192,8 +215,7 @@ export async function runComparison(
       : 0;
 
   // 6. Bootstrap CI on the difference of means (treatment - baseline)
-  const isPaired =
-    config.paired ?? (baselineValues.length === treatmentValues.length);
+  const isPaired = config.paired === true;
   const nBootstrap = config.nBootstrap ?? 10_000;
   const confidenceLevel = config.confidence ?? 0.95;
 
@@ -201,6 +223,11 @@ export async function runComparison(
   if (baselineValues.length < 2 || treatmentValues.length < 2) {
     ci = { lower: 0, upper: 0 };
   } else if (isPaired) {
+    if (baselineValues.length !== treatmentValues.length) {
+      throw new Error(
+        `paired comparison requires equal-length samples, got ${baselineValues.length} and ${treatmentValues.length}`,
+      );
+    }
     const diffs = baselineValues.map((b, i) => treatmentValues[i]! - b);
     ci = bootstrapPairedCI(
       diffs,
@@ -243,28 +270,32 @@ export async function runComparison(
   const outlierIndices = outlierDetect(treatmentValues, "iqr");
 
   // 10. Bottleneck analysis
-  const bottleneckLedger = buildBottleneckLedger(baselineEvents, treatmentEvents);
+  const bottleneckLedger = buildBottleneckLedger(
+    baseline.dataset.records,
+    treatment.dataset.records,
+  );
 
   // 11. Correctness gates
-  const correctness = checkCorrectnessGates(
-    treatmentEvents,
-    treatmentManifest,
+  const correctness = pipeline.correctnessGate.evaluate(
+    treatment.dataset.records,
+    treatment.dataset.sourceKind,
+    treatment.manifest,
     config,
   );
 
   // 12. Evidence completeness
   const evidenceComplete = checkEvidenceComplete(
-    { manifest: baselineManifest, workload: baselineWorkload, provenance: baselineProvenance, events: baselineEvents.length },
-    { manifest: treatmentManifest, workload: treatmentWorkload, provenance: treatmentProvenance, events: treatmentEvents.length },
+    {
+      manifest: baseline.manifest,
+      workload: baseline.workload,
+      provenance: baseline.provenance,
+      records: baseline.dataset.records.length,
+    },
+    { manifest: treatment.manifest, workload: treatment.workload, provenance: treatment.provenance, records: treatment.dataset.records.length },
   );
 
   // 13. Recommendation
-  const recommendation = deriveRecommendation(
-    correctness,
-    evidenceComplete,
-    effectSize,
-    ci,
-  );
+  const recommendation = pipeline.recommendationPolicy.derive({ correctness, evidenceComplete, effectSize, ci });
 
   const record: ComparisonRecord = {
     timestamp: new Date().toISOString(),
@@ -308,24 +339,47 @@ export async function runComparison(
 // ── Correctness gates ─────────────────────────────────────────────────────────
 
 function checkCorrectnessGates(
-  events: Event[],
+  records: ComparisonObservation[],
+  sourceKind: "receipt" | "event",
   manifest: Record<string, unknown> | null,
   config: ComparisonConfig,
 ): Record<string, CorrectnessGateResult> {
   const gates: Record<string, CorrectnessGateResult> = {};
 
-  // Token match: check for tokenization events that match expected counts
-  gates.tokenMatch = checkGate(
-    events.some((e) => {
-      const stage = (e as Record<string, unknown>).stage;
-      return stage != null && String(stage).includes("token");
-    }),
-    "No token events found; token match not verifiable",
-  );
+  if (sourceKind === "receipt") {
+    const hasTolerance = records.some((record) => record.matches_tolerance === true);
+    const hasReferenceHashes = records.some((record) => record.reference_output_hashes_populated === true);
+    const hasPassStatus = records.some((record) =>
+      isSuccessStatus(record.status) ||
+      isSuccessStatus(record.predict_status) ||
+      isSuccessStatus(record.load_status) ||
+      isSuccessStatus(record.compile_status) ||
+      isSuccessStatus(record.steady_status) ||
+      isSuccessStatus(record.warmup_status),
+    );
+    gates.tokenMatch = checkGate(
+      hasTolerance || hasReferenceHashes || hasPassStatus,
+      hasTolerance
+        ? "Structured receipts reported tolerance satisfaction"
+        : hasReferenceHashes
+          ? "Structured receipts reported reference hashes"
+          : hasPassStatus
+            ? "Structured receipts reported a terminal success status"
+            : "No structured receipt evidence for tolerance or reference hashes",
+    );
+  } else {
+    gates.tokenMatch = checkGate(
+      records.some((record) => {
+        const stage = record.stage;
+        return stage != null && String(stage).includes("token");
+      }),
+      "No token events found; token match not verifiable",
+    );
+  }
 
   // Numerical tolerance: flag if any value is NaN or Infinity
   const metric = config.primaryMetric;
-  const values = extractMetric(events, metric);
+  const values = extractMetric(records, metric);
   const hasInvalid = values.some((v) => !Number.isFinite(v));
   gates.numericalTolerance = checkGate(
     !hasInvalid,
@@ -335,26 +389,45 @@ function checkCorrectnessGates(
   );
 
   // Handle cleanup: check for start/finish events
-  const hasStart = events.some(
-    (e) => (e as Record<string, unknown>).event === "start" || (e as Record<string, unknown>).stage === "start",
-  );
-  const hasFinish = events.some(
-    (e) => (e as Record<string, unknown>).event === "finish" || (e as Record<string, unknown>).stage === "finish",
-  );
-  gates.handleCleanup = checkGate(
-    hasStart && hasFinish,
-    hasStart
-      ? "Run started but no finish event found"
-      : hasFinish
-        ? "Run has finish event but no start event"
-        : "No start or finish events — handle lifecycle incomplete",
-  );
+  if (sourceKind === "receipt") {
+    const hasTerminalSuccess = records.some((record) =>
+      isSuccessStatus(record.status) ||
+      isSuccessStatus(record.predict_status) ||
+      isSuccessStatus(record.load_status) ||
+      isSuccessStatus(record.compile_status) ||
+      isSuccessStatus(record.cold_status) ||
+      isSuccessStatus(record.warmup_status) ||
+      isSuccessStatus(record.steady_status) ||
+      isSuccessStatus(record.reference_status),
+    );
+    gates.handleCleanup = checkGate(
+      hasTerminalSuccess,
+      hasTerminalSuccess
+        ? "Structured receipts reached a terminal success status"
+        : "Structured receipts did not report a terminal success status",
+    );
+  } else {
+    const hasStart = records.some(
+      (record) => record.event === "start" || record.stage === "start",
+    );
+    const hasFinish = records.some(
+      (record) => record.event === "finish" || record.stage === "finish",
+    );
+    gates.handleCleanup = checkGate(
+      hasStart && hasFinish,
+      hasStart
+        ? "Run started but no finish event found"
+        : hasFinish
+          ? "Run has finish event but no start event"
+          : "No start or finish events — handle lifecycle incomplete",
+    );
+  }
 
   // Wall-clock budget
   if (config.wallClockBudgetMs != null) {
     // Sum durations from timed events as a proxy for wall clock
-    const totalTime = events.reduce(
-      (sum, e) => sum + ((e as Record<string, unknown>).durationMs as number ?? 0),
+    const totalTime = records.reduce(
+      (sum, record) => sum + (record.durationMs ?? 0),
       0,
     );
     gates.wallClockBudget = checkGate(
@@ -368,7 +441,7 @@ function checkCorrectnessGates(
   // Memory ceiling
   if (config.memoryCeilingBytes != null) {
     const maxMem = Math.max(
-      ...events.map((e) => (e as Record<string, unknown>).memoryBytes as number ?? 0),
+      ...records.map((record) => record.memoryBytes ?? 0),
     );
     gates.memoryCeiling = checkGate(
       maxMem <= config.memoryCeilingBytes,
@@ -379,31 +452,94 @@ function checkCorrectnessGates(
   }
 
   // Worker containment: check for worker-related events
-  const workerCount = events.filter(
-    (e) => String((e as Record<string, unknown>).stage ?? "").includes("worker"),
+  const workerCount = records.filter(
+    (record) => String(record.stage ?? "").includes("worker"),
   ).length;
   gates.workerContainment = checkGate(
-    workerCount > 0,
-    workerCount === 0
-      ? "No worker events — worker containment not verified"
-      : `${workerCount} worker events recorded`,
+    sourceKind === "receipt" ? records.some((record) => isSupportedBackendStatus(record.backend_support_status)) : workerCount > 0,
+    sourceKind === "receipt"
+      ? "Structured receipts reported backend support status"
+      : workerCount === 0
+        ? "No worker events — worker containment not verified"
+        : `${workerCount} worker events recorded`,
   );
 
   // File I/O: check for I/O events
-  const ioEvents = events.filter(
-    (e) =>
-      String((e as Record<string, unknown>).stage ?? "").includes("io") ||
-      String((e as Record<string, unknown>).stage ?? "").includes("file"),
-  );
-  gates.fileIO = checkGate(
-    ioEvents.length > 0,
-    ioEvents.length === 0
-      ? "No file I/O events recorded"
-      : `${ioEvents.length} file I/O events recorded`,
-  );
+  if (sourceKind === "receipt") {
+    const fileReadBytes = records.some((record) => (numericField(record, "file_read_bytes") ?? 0) > 0);
+    const loadBytes = records.some((record) => (numericField(record, "load_duration_ns") ?? 0) > 0);
+    const materializationBytes = records.some((record) => (numericField(record, "materialize_duration_ns") ?? 0) > 0);
+    gates.fileIO = checkGate(
+      fileReadBytes || loadBytes || materializationBytes,
+      fileReadBytes
+        ? "Structured receipts reported file read bytes"
+        : loadBytes
+          ? "Structured receipts reported load duration"
+          : materializationBytes
+            ? "Structured receipts reported materialization duration"
+            : "Structured receipts did not expose file I/O evidence",
+    );
+  } else {
+    const ioEvents = records.filter(
+      (record) =>
+        String(record.stage ?? "").includes("io") ||
+        String(record.stage ?? "").includes("file"),
+    );
+    gates.fileIO = checkGate(
+      ioEvents.length > 0,
+      ioEvents.length === 0
+        ? "No file I/O events recorded"
+        : `${ioEvents.length} file I/O events recorded`,
+    );
+  }
 
   return gates;
 }
+
+const DEFAULT_COMPARISON_PIPELINE: ComparisonPipeline = {
+  runReader: {
+    read(runDir: string): ComparisonRunSnapshot {
+      return {
+        runDir,
+        runId: basename(runDir),
+        manifest: readJsonFile<Record<string, unknown>>(join(runDir, "run-manifest.json")),
+        workload: readJsonFile<Record<string, unknown>>(join(runDir, "workload.json")),
+        provenance: readJsonFile<Record<string, unknown>>(join(runDir, "provenance.json")),
+        dataset: loadComparisonDataset(runDir),
+      };
+    },
+  },
+  metricExtractor: {
+    extract(records: ComparisonObservation[], metric: string): number[] {
+      return extractMetric(records, metric);
+    },
+  },
+  correctnessGate: {
+    evaluate(
+      records: ComparisonObservation[],
+      sourceKind: "receipt" | "event",
+      manifest: Record<string, unknown> | null,
+      config: ComparisonConfig,
+    ): Record<string, CorrectnessGateResult> {
+      return checkCorrectnessGates(records, sourceKind, manifest, config);
+    },
+  },
+  recommendationPolicy: {
+    derive(input: {
+      readonly correctness: Record<string, CorrectnessGateResult>;
+      readonly evidenceComplete: boolean;
+      readonly effectSize: number;
+      readonly ci: { lower: number; upper: number };
+    }): ComparisonRecommendation {
+      return deriveRecommendation(
+        input.correctness,
+        input.evidenceComplete,
+        input.effectSize,
+        input.ci,
+      );
+    },
+  },
+};
 
 // ── Evidence completeness ─────────────────────────────────────────────────────
 
@@ -412,24 +548,24 @@ function checkEvidenceComplete(
     manifest: Record<string, unknown> | null;
     workload: Record<string, unknown> | null;
     provenance: Record<string, unknown> | null;
-    events: number;
+    records: number;
   },
   treatment: {
     manifest: Record<string, unknown> | null;
     workload: Record<string, unknown> | null;
     provenance: Record<string, unknown> | null;
-    events: number;
+    records: number;
   },
 ): boolean {
   return (
     baseline.manifest != null &&
     baseline.workload != null &&
     baseline.provenance != null &&
-    baseline.events > 0 &&
+    baseline.records > 0 &&
     treatment.manifest != null &&
     treatment.workload != null &&
     treatment.provenance != null &&
-    treatment.events > 0
+    treatment.records > 0
   );
 }
 
@@ -483,39 +619,18 @@ function readJsonFile<T>(path: string): T | null {
   }
 }
 
-function readEvents(runDir: string): Event[] {
-  try {
-    const raw = readFileSync(join(runDir, "events.jsonl"), "utf-8");
-    const lines = raw.trim().split("\n");
-    const events: Event[] = [];
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed) {
-        try {
-          events.push(JSON.parse(trimmed) as Event);
-        } catch {
-          // skip malformed lines
-        }
-      }
-    }
-    return events;
-  } catch {
-    return [];
-  }
-}
-
 /** Extract numeric values for a named metric from the event stream. */
-function extractMetric(events: Event[], metric: string): number[] {
+function extractMetric(events: ComparisonObservation[], metric: string): number[] {
   const values: number[] = [];
   for (const ev of events) {
-    const v = (ev as Record<string, unknown>)[metric];
+    const v = ev[metric];
     if (typeof v === "number" && Number.isFinite(v)) {
       values.push(v);
     }
   }
   // Also check for a nested `metrics` object
   for (const ev of events) {
-    const metrics = (ev as Record<string, unknown>).metrics as Record<string, unknown> | undefined;
+    const metrics = ev.metrics as Record<string, unknown> | undefined;
     if (metrics && typeof metrics[metric] === "number") {
       values.push(metrics[metric] as number);
     }
@@ -615,6 +730,26 @@ function extractMachine(
       tMachine.model_identifier ??
       "unknown",
   );
+}
+
+function isSuccessStatus(value: unknown): boolean {
+  if (typeof value !== "string") {
+    return false;
+  }
+  const normalized = value.toLowerCase();
+  return normalized === "pass" || normalized === "ok" || normalized === "completed" || normalized === "success";
+}
+
+function isSupportedBackendStatus(value: unknown): boolean {
+  if (typeof value !== "string") {
+    return false;
+  }
+  return value.toLowerCase().includes("supported");
+}
+
+function numericField(record: ComparisonObservation, field: string): number | undefined {
+  const value = record[field];
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
 
 // ── Re-exports ────────────────────────────────────────────────────────────────

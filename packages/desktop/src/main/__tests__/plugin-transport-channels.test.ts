@@ -18,9 +18,9 @@ import { describe, expect, test } from "bun:test"
 
 import { IPC } from "../ipc-channels"
 
-const EXPECTED_PLUGIN_SEND = "opencode:plugin:send"
-const EXPECTED_PLUGIN_INVOKE = "opencode:plugin:invoke"
-const EXPECTED_PLUGIN_PUSH = "opencode:plugin:push"
+const EXPECTED_PLUGIN_SEND = "tribunus:plugin:send"
+const EXPECTED_PLUGIN_INVOKE = "tribunus:plugin:invoke"
+const EXPECTED_PLUGIN_PUSH = "tribunus:plugin:push"
 
 describe("IPC channel values match expected wire format", () => {
   test("IPC.send.PLUGIN_SEND", () => {
@@ -43,9 +43,9 @@ describe("IPC wire protocol consistency", () => {
     expect(IPC.push.PLUGIN_PUSH).toBeDefined()
   })
 
-  test("channels follow the opencode:plugin:* namespace convention", () => {
-    expect(IPC.send.PLUGIN_SEND).toMatch(/^opencode:plugin:/)
-    expect(IPC.handle.PLUGIN_INVOKE).toMatch(/^opencode:plugin:/)
-    expect(IPC.push.PLUGIN_PUSH).toMatch(/^opencode:plugin:/)
+  test("channels follow the tribunus:plugin:* namespace convention", () => {
+    expect(IPC.send.PLUGIN_SEND).toMatch(/^tribunus:plugin:/)
+    expect(IPC.handle.PLUGIN_INVOKE).toMatch(/^tribunus:plugin:/)
+    expect(IPC.push.PLUGIN_PUSH).toMatch(/^tribunus:plugin:/)
   })
 })

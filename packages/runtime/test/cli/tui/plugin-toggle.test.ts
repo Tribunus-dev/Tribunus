@@ -60,7 +60,7 @@ test("toggles plugin runtime state by exported id", async () => {
       },
     ],
   })
-  const wait = spyOn(TuiConfig, "waitForDependencies").mockResolvedValue(undefined)()
+  const wait = spyOn(TuiConfig, "waitForDependencies").mockResolvedValue(undefined)
   const cwd = spyOn(process, "cwd").mockImplementation(() => tmp.path)
   const api = createTuiPluginApi()
 
@@ -142,7 +142,7 @@ test("deactivating plugin pops pushed mode", async () => {
     plugin: [tmp.extra.spec],
     plugin_origins: [{ spec: tmp.extra.spec, scope: "local", source: path.join(tmp.path, "tui.json") }],
   })
-  const wait = spyOn(TuiConfig, "waitForDependencies").mockResolvedValue(undefined)()
+  const wait = spyOn(TuiConfig, "waitForDependencies").mockResolvedValue(undefined)
   const cwd = spyOn(process, "cwd").mockImplementation(() => tmp.path)
 
   try {
@@ -201,7 +201,7 @@ test("kv plugin_enabled overrides tui config on startup", async () => {
       },
     ],
   })
-  const wait = spyOn(TuiConfig, "waitForDependencies").mockResolvedValue(undefined)()
+  const wait = spyOn(TuiConfig, "waitForDependencies").mockResolvedValue(undefined)
   const cwd = spyOn(process, "cwd").mockImplementation(() => tmp.path)
   const api = createTuiPluginApi()
   api.kv.set("plugin_enabled", {
@@ -231,7 +231,7 @@ test("kv plugin_enabled overrides tui config on startup", async () => {
 test("loads disabled-by-default internal plugin inactive and activates on demand", async () => {
   await using tmp = await tmpdir()
   const config = createTuiResolvedConfig()
-  const wait = spyOn(TuiConfig, "waitForDependencies").mockResolvedValue(undefined)()
+  const wait = spyOn(TuiConfig, "waitForDependencies").mockResolvedValue(undefined)
   const cwd = spyOn(process, "cwd").mockImplementation(() => tmp.path)
   const api = createTuiPluginApi()
 

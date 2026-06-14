@@ -4,7 +4,7 @@ import { tokens } from "../tokens.js"
 
 type Mode = "public" | "authenticated"
 
-interface CodexNode {
+interface CodexNodeData {
   id: string
   title: string
   category: "architecture" | "protocol" | "pattern" | "decision" | "reference" | "guide"
@@ -12,14 +12,14 @@ interface CodexNode {
   summary?: string
 }
 
-const DEMO_NODES: CodexNode[] = [
+const DEMO_NODES: CodexNodeData[] = [
   { id: "cx1", title: "Zero-Trust IPC Channel Design", category: "architecture", lastUpdated: new Date(Date.now() - 3600000).toISOString(), summary: "Design doc for inter-agent IPC with hardware attestation and mTLS." },
   { id: "cx2", title: "Agent Handshake Protocol v2", category: "protocol", lastUpdated: new Date(Date.now() - 7200000).toISOString(), summary: "Mutual authentication flow using ephemeral key exchange." },
   { id: "cx3", title: "State Machine Replication Pattern", category: "pattern", lastUpdated: new Date(Date.now() - 10800000).toISOString(), summary: "Raft-inspired consensus for distributed agent state." },
   { id: "cx4", title: "ADDR-0012: Use Lit for Web Components", category: "decision", lastUpdated: new Date(Date.now() - 14400000).toISOString(), summary: "ADR selecting LitElement as the UI component framework." },
 ]
 
-const CATEGORY_STYLE: Record<CodexNode["category"], { color: string; label: string }> = {
+const CATEGORY_STYLE: Record<CodexNodeData["category"], { color: string; label: string }> = {
   architecture: { color: tokens.color.primary.$value, label: "Architecture" },
   protocol: { color: tokens.color.accent.$value, label: "Protocol" },
   pattern: { color: tokens.color.success.$value, label: "Pattern" },
@@ -118,9 +118,9 @@ export class CodexNode extends LitElement {
   mode: Mode = "public"
 
   @property({ type: Array })
-  nodes?: CodexNode[]
+  nodes?: CodexNodeData[]
 
-  private get _nodes(): CodexNode[] {
+  private get _nodes(): CodexNodeData[] {
     if (this.mode === "public" || !this.nodes) return DEMO_NODES
     return this.nodes
   }

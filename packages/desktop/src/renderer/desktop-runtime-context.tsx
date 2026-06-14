@@ -1,5 +1,13 @@
-import { createSignal, createContext, useContext, type JSX } from "solid-js"
+import { createSignal, createContext, useContext, onCleanup, type JSX } from "solid-js"
 import { createCoordinationStore, type CoordinationStore } from "./coordination-store"
+
+export interface IpcError {
+  requestId: string
+  code: string
+  message: string
+  recoverability: string
+  timestamp: number
+}
 
 /** Sidecar lifecycle state */
 export interface SidecarState {
@@ -15,6 +23,7 @@ export interface IpcState {
   protocolVersion: number
   connected: boolean
   lastError: string | null
+  errors: IpcError[]
 }
 
 /** Update state */
@@ -46,6 +55,7 @@ const DesktopRuntimeContext = createContext<{
   setShutdown: (s: boolean) => void
   setIpc: (i: Partial<IpcState>) => void
   setUpdate: (u: Partial<UpdateState>) => void
+  dismissIpcError: (requestId: string) => void
   coordination: CoordinationStore
 }>()
 
@@ -72,6 +82,7 @@ export function DesktopRuntimeProvider(props: { children: JSX.Element }) {
     protocolVersion: 1,
     connected: true,
     lastError: null,
+    errors: [],
   })
   const [update, setUpdateSignal] = createSignal<UpdateState>({
     status: "idle",
@@ -79,6 +90,22 @@ export function DesktopRuntimeProvider(props: { children: JSX.Element }) {
     error: null,
   })
   const coordination = createCoordinationStore()
+
+  // Listen for IPC failures from the preload and register them in the centralized state
+  const cleanup = window.api.onIpcFailure?.((error: IpcError) => {
+    setIpcSignal((prev) => ({
+      ...prev,
+      errors: [error, ...prev.errors].slice(0, 10),
+    }))
+  })
+  onCleanup(() => cleanup?.())
+
+  const dismissIpcError = (requestId: string) => {
+    setIpcSignal((prev) => ({
+      ...prev,
+      errors: prev.errors.filter((e) => e.requestId !== requestId),
+    }))
+  }
 
   const state: DesktopRuntimeState = {
     get sidecar() { return sidecar() },
@@ -103,6 +130,7 @@ export function DesktopRuntimeProvider(props: { children: JSX.Element }) {
         setShutdown,
         setIpc: (i) => setIpcSignal((prev) => ({ ...prev, ...i })),
         setUpdate: (u) => setUpdateSignal((prev) => ({ ...prev, ...u })),
+        dismissIpcError,
         coordination,
       }}
     >

@@ -153,7 +153,7 @@ export interface CompletionReceipt {
  * 
  * No naked ack(entryId) is available to ordinary runtime code.
  */
-export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue>()(
+export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue, CoordinationWorkQueue>()(
   "@tribunus/CoordinationWorkQueue"
 ) {
   constructor(
@@ -163,7 +163,7 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
     private readonly consumerId: string,
     private readonly store: WorkQueueDurableStoreService
   ) {
-    super()
+    super(undefined as never)
   }
 
   // ── Queue Management ────────────────────────────────────────────────

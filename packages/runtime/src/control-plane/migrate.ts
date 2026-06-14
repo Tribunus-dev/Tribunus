@@ -76,7 +76,7 @@ function readEntityFiles(entityType: string): Record<string, any>[] {
 // ── Migration Functions ──────────────────────────────────────────────────────
 
 function migrateCampaigns(
-  adapter: DatabaseAdapter,
+  adapter: DatabaseAdapter.Interface,
   dryRun: boolean
 ): Effect.Effect<MigrationProgress, Error> {
   return Effect.gen(function* () {
@@ -154,7 +154,7 @@ function migrateCampaigns(
 }
 
 function migrateMissions(
-  adapter: DatabaseAdapter,
+  adapter: DatabaseAdapter.Interface,
   dryRun: boolean
 ): Effect.Effect<MigrationProgress, Error> {
   return Effect.gen(function* () {
@@ -244,7 +244,7 @@ function migrateMissions(
 // ── Migration Orchestrator ───────────────────────────────────────────────────
 
 export function migrateAll(
-  adapter: DatabaseAdapter,
+  adapter: DatabaseAdapter.Interface,
   dryRun = false
 ): Effect.Effect<MigrationReport, Error> {
   return Effect.gen(function* () {
@@ -254,7 +254,7 @@ export function migrateAll(
     const completedMigrations = yield* adapter.query((db) =>
       db.select({ name: DataMigrationTable.name }).from(DataMigrationTable).execute()
     )
-    const completed = new Set(completedMigrations.map((r) => r.name))
+    const completed = new Set(completedMigrations.map((r: { name: string }) => r.name))
 
     const progress: MigrationProgress[] = []
 

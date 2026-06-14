@@ -4,7 +4,7 @@ import { tokens } from "../tokens.js"
 
 type Mode = "public" | "authenticated"
 
-interface GateRequest {
+interface GateRequestData {
   id: string
   gateName: string
   status: "pending" | "approved" | "denied" | "changes-requested"
@@ -12,7 +12,7 @@ interface GateRequest {
   timestamp: string
 }
 
-const DEMO_GATE: GateRequest = {
+const DEMO_GATE: GateRequestData = {
   id: "gate-001",
   gateName: "Architecture Review Board",
   status: "pending",
@@ -20,7 +20,7 @@ const DEMO_GATE: GateRequest = {
   timestamp: new Date().toISOString(),
 }
 
-const STATUS_STYLE: Record<GateRequest["status"], { color: string; label: string }> = {
+const STATUS_STYLE: Record<GateRequestData["status"], { color: string; label: string }> = {
   pending: { color: tokens.color.warning.$value, label: "Pending" },
   approved: { color: tokens.color.success.$value, label: "Approved" },
   denied: { color: tokens.color.error.$value, label: "Denied" },
@@ -29,7 +29,7 @@ const STATUS_STYLE: Record<GateRequest["status"], { color: string; label: string
 
 @customElement("tribunus-gate-request")
 export class GateRequest extends LitElement {
-  static override styles = css`
+  static override styles = (css as any)`
     :host {
       display: block;
       container-type: inline-size;
@@ -132,9 +132,9 @@ export class GateRequest extends LitElement {
   mode: Mode = "public"
 
   @property({ type: Object })
-  gate?: GateRequest
+  gate?: GateRequestData
 
-  private get _gate(): GateRequest {
+  private get _gate(): GateRequestData {
     if (this.mode === "public" || !this.gate) return DEMO_GATE
     return this.gate
   }
