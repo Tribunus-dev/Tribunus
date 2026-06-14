@@ -52,9 +52,7 @@ pub fn monotonic_now() -> u64 {
 /// allocation, no serialization logic.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct MemorySnapshot {
-    /// MLX Metal active allocator bytes.
     pub mlx_active: u64,
-    /// MLX Metal cache allocator bytes.
     pub mlx_cache: u64,
     /// Process resident set size (RSS).
     pub rss: u64,

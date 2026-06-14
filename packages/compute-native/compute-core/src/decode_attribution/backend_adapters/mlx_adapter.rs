@@ -235,7 +235,7 @@ pub fn prepare_graph<'a>(
             let w = weight_arr.clone();
             let prepare = Box::new(move || {
                 let mm = inp.matmul(&w).map_err(|e| format!("mlx matmul: {:?}", e))?;
-                ops::softmax(&mm, None).map_err(|e| format!("mlx softmax: {:?}", e))
+                ops::softmax_axes(&mm, &[-1], None).map_err(|e| format!("mlx softmax: {:?}", e))
             });
             Ok((vec![input_arr, weight_arr], prepare))
         }

@@ -33,6 +33,26 @@ fn main() {
     forward("TARGET");
     forward("DEBUG");
 
+    // Record RUSTFLAGS
+    if let Ok(flags) = std::env::var("RUSTFLAGS") {
+        println!("cargo:rustc-env=TRIBUNUS_RUSTFLAGS={}", flags);
+    }
+
+    // Record linker if set
+    if let Ok(ld) = std::env::var("RUSTC_LINKER") {
+        println!("cargo:rustc-env=TRIBUNUS_LINKER={}", ld);
+    }
+
+    // Record host info
+    println!("cargo:rustc-env=TRIBUNUS_HOST_OS={}", std::env::consts::OS);
+    println!(
+        "cargo:rustc-env=TRIBUNUS_HOST_ARCH={}",
+        std::env::consts::ARCH
+    );
+
+    // MLX identity (fixed for this gate - pointing to the new published fork)
+    println!("cargo:rustc-env=TRIBUNUS_MLX_IDENTITY=Tribunus-dev/mlx-rs-fork@main");
+
     // Compile the ObjC++ Core ML / IOSurface bridge.
     #[cfg(target_os = "macos")]
     {

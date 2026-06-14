@@ -11,7 +11,7 @@ use mlx_rs::Array;
 /// Standard learned RMSNorm: x * rsqrt(mean(x^2) + eps) * weight
 pub fn rms_norm(x: &Array, weight: &Array, eps: f32) -> MlxResult<Array> {
     let x_f32 = x.as_dtype(mlx_rs::Dtype::Float32)?;
-    let mean_sq = mlx_rs::ops::mean_axes(&x_f32.multiply(&x_f32)?, &[-1], Some(true))?;
+    let mean_sq = mlx_rs::ops::mean_axes(&x_f32.multiply(&x_f32)?, &[-1], true)?;
     let rsqrt = mlx_rs::ops::rsqrt(&mean_sq.add(&Array::from_f32(eps))?)?;
     x.multiply(&rsqrt.as_dtype(mlx_rs::Dtype::Float32)?)?
         .multiply(weight)
@@ -20,7 +20,7 @@ pub fn rms_norm(x: &Array, weight: &Array, eps: f32) -> MlxResult<Array> {
 /// Scale-free RMSNorm (no learned weight) — used for Q/K normalization in Gemma 4.
 pub fn rms_norm_scale_free(x: &Array, eps: f32) -> MlxResult<Array> {
     let x_f32 = x.as_dtype(mlx_rs::Dtype::Float32)?;
-    let mean_sq = mlx_rs::ops::mean_axes(&x_f32.multiply(&x_f32)?, &[-1], Some(true))?;
+    let mean_sq = mlx_rs::ops::mean_axes(&x_f32.multiply(&x_f32)?, &[-1], true)?;
     let rsqrt = mlx_rs::ops::rsqrt(&mean_sq.add(&Array::from_f32(eps))?)?;
     x.multiply(&rsqrt.as_dtype(mlx_rs::Dtype::Float32)?)
 }

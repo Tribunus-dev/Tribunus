@@ -64,7 +64,7 @@ dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "itertools 0.13.0",
+ "itertools 0.10.5",
  "log",
  "prettyplease",
  "proc-macro2",
@@ -664,15 +664,6 @@ dependencies = [
 
 [[package]]
 name = "itertools"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
-dependencies = [
- "either",
-]
-
-[[package]]
-name = "itertools"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
@@ -780,6 +771,7 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 [[package]]
 name = "mlx-internal-macros"
 version = "0.25.3-tribunus.1"
+source = "git+https://github.com/Tribunus-dev/mlx-rs-fork.git?branch=main#78f4fb16d0f36bc09dfc4196449b433884504d6d"
 dependencies = [
  "darling",
  "itertools 0.14.0",
@@ -791,6 +783,7 @@ dependencies = [
 [[package]]
 name = "mlx-macros"
 version = "0.25.3-tribunus.1"
+source = "git+https://github.com/Tribunus-dev/mlx-rs-fork.git?branch=main#78f4fb16d0f36bc09dfc4196449b433884504d6d"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -801,6 +794,7 @@ dependencies = [
 [[package]]
 name = "mlx-rs"
 version = "0.25.3-tribunus.1"
+source = "git+https://github.com/Tribunus-dev/mlx-rs-fork.git?branch=main#78f4fb16d0f36bc09dfc4196449b433884504d6d"
 dependencies = [
  "bytemuck",
  "dyn-clone",
@@ -825,6 +819,7 @@ dependencies = [
 [[package]]
 name = "mlx-sys"
 version = "0.6.0-tribunus.1"
+source = "git+https://github.com/Tribunus-dev/mlx-rs-fork.git?branch=main#78f4fb16d0f36bc09dfc4196449b433884504d6d"
 dependencies = [
  "bindgen",
  "cc",
@@ -1452,8 +1447,6 @@ dependencies = [
  "libc",
  "mlx-rs",
  "mlx-sys",
- "napi",
- "napi-derive",
  "parking_lot",
  "prost",
  "prost-types",

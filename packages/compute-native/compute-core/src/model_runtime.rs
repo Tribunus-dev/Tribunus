@@ -157,22 +157,22 @@ impl ModelRuntime {
     ///
     /// Returns an error if the manifest cannot be read, the plan is invalid,
     /// the storage ABI is unknown, or any segment file is missing/unreadable.
-    pub fn open(image_dir: &Path) -> napi::Result<Self> {
+    pub fn open(image_dir: &Path) -> crate::Result<Self> {
         let manifest_path = image_dir.join("manifest.json");
         let manifest: Manifest =
             serde_json::from_str(&std::fs::read_to_string(&manifest_path).map_err(|e| {
-                napi::Error::from_reason(format!(
+                crate::Error::from_reason(format!(
                     "read manifest {}: {}",
                     manifest_path.display(),
                     e
                 ))
             })?)
-            .map_err(|e| napi::Error::from_reason(format!("parse manifest: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("parse manifest: {}", e)))?;
 
         // Validate the execution plan.
         let execution_plan = manifest.execution_plan.clone();
         execution_plan.validate().map_err(|errors| {
-            napi::Error::from_reason(format!(
+            crate::Error::from_reason(format!(
                 "execution plan validation failed: {}",
                 errors.join("; ")
             ))
@@ -183,7 +183,7 @@ impl ModelRuntime {
         match storage_abi.as_str() {
             "copied-v0" | "mapped-no-copy-v1" => {}
             other => {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "unsupported storage ABI '{other}'; expected 'copied-v0' or 'mapped-no-copy-v1'"
                 )));
             }
@@ -194,7 +194,7 @@ impl ModelRuntime {
         for segment in &manifest.segments {
             let seg_path = image_dir.join(&segment.filename);
             let file = File::open(&seg_path).map_err(|e| {
-                napi::Error::from_reason(format!(
+                crate::Error::from_reason(format!(
                     "open segment {} ({}): {}",
                     segment.id,
                     seg_path.display(),
@@ -241,7 +241,7 @@ impl ModelRuntime {
             match MappedImage::open_mapped(image_dir, &views) {
                 Ok(img) => Some(img),
                 Err(e) => {
-                    return Err(napi::Error::from_reason(format!(
+                    return Err(crate::Error::from_reason(format!(
                         "failed to mmap segments for mapped-no-copy-v1: {}",
                         e
                     )));
@@ -426,7 +426,7 @@ impl ModelRuntime {
 
     /// Execute the full 48-layer model from the installed ComputeImage.
     /// Returns the next token ID. Uses the copied segment backend.
-    pub fn run_full_model(&self, token_ids: &[i32]) -> napi::Result<u32> {
+    pub fn run_full_model(&self, token_ids: &[i32]) -> crate::Result<u32> {
         use crate::compute_image::{CompiledImageReader, StorageBackend};
         let reader = CompiledImageReader::open(&self.image_dir)?;
         let mut runtime = reader.open_runtime(StorageBackend::Copied)?;

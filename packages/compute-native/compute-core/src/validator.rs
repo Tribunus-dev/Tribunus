@@ -162,9 +162,9 @@ fn classify_unexpected(name: &str) -> &str {
 
 // ── Hash a file ────────────────────────────────────────────────────────────
 
-fn sha256_file(path: &str) -> napi::Result<String> {
+fn sha256_file(path: &str) -> crate::Result<String> {
     let data = std::fs::read(path)
-        .map_err(|e| napi::Error::from_reason(format!("Cannot read {}: {}", path, e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("Cannot read {}: {}", path, e)))?;
     let mut hasher = Sha256::new();
     hasher.update(&data);
     Ok(format!("{:x}", hasher.finalize()))
@@ -179,7 +179,7 @@ fn sha256_file(path: &str) -> napi::Result<String> {
 /// 3. Cross-checks every expected tensor.
 /// 4. Classifies unexpected tensors (multimodal wrappers are OK).
 /// 5. Returns a report with executable/not-executable verdict.
-pub fn validate_bindings(model_dir: &str, spec: &ExecutionSpec) -> napi::Result<ValidationReport> {
+pub fn validate_bindings(model_dir: &str, spec: &ExecutionSpec) -> crate::Result<ValidationReport> {
     use std::path::Path;
 
     let dir = Path::new(model_dir);
@@ -201,7 +201,7 @@ pub fn validate_bindings(model_dir: &str, spec: &ExecutionSpec) -> napi::Result<
 
     let names: Vec<String> = all_meta.iter().map(|m| m.name.clone()).collect();
     let namespace = crate::config::resolve_namespace(&names).ok_or_else(|| {
-        napi::Error::from_reason(
+        crate::Error::from_reason(
             "Could not resolve text model namespace — no candidate matched anchors",
         )
     })?;
@@ -446,16 +446,16 @@ fn fmt_shape(s: &[u32]) -> String {
 
 // ── Safetensors header reading ────────────────────────────────────────────
 
-fn read_safetensors_header(path: &std::path::Path) -> napi::Result<Vec<TensorMeta>> {
+fn read_safetensors_header(path: &std::path::Path) -> crate::Result<Vec<TensorMeta>> {
     eprintln!("[header] opening {:?}", path);
     use std::io::Read;
     let mut file = std::fs::File::open(path)
-        .map_err(|e| napi::Error::from_reason(format!("Cannot open {}: {}", path.display(), e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("Cannot open {}: {}", path.display(), e)))?;
 
     eprintln!("[header] reading header size");
     let mut header_size_buf = [0u8; 8];
     file.read_exact(&mut header_size_buf).map_err(|e| {
-        napi::Error::from_reason(format!(
+        crate::Error::from_reason(format!(
             "Cannot read header size from {}: {}",
             path.display(),
             e
@@ -467,12 +467,12 @@ fn read_safetensors_header(path: &std::path::Path) -> napi::Result<Vec<TensorMet
     eprintln!("[header] reading header body");
     let mut header_buf = vec![0u8; header_size];
     file.read_exact(&mut header_buf).map_err(|e| {
-        napi::Error::from_reason(format!("Cannot read header from {}: {}", path.display(), e))
+        crate::Error::from_reason(format!("Cannot read header from {}: {}", path.display(), e))
     })?;
 
     eprintln!("[header] parsing metadata");
     let (_n, metadata) = safetensors::SafeTensors::read_metadata(&header_buf).map_err(|e| {
-        napi::Error::from_reason(format!(
+        crate::Error::from_reason(format!(
             "Bad safetensors header {}: {:?}",
             path.display(),
             e
@@ -492,14 +492,14 @@ fn read_safetensors_header(path: &std::path::Path) -> napi::Result<Vec<TensorMet
     Ok(metas)
 }
 
-pub fn discover_shards(dir: &std::path::Path) -> napi::Result<Vec<std::path::PathBuf>> {
+pub fn discover_shards(dir: &std::path::Path) -> crate::Result<Vec<std::path::PathBuf>> {
     // Try index.json first, then glob for model-*.safetensors
     let index_path = dir.join("model.safetensors.index.json");
     if index_path.exists() {
         let index_json = std::fs::read_to_string(&index_path)
-            .map_err(|e| napi::Error::from_reason(format!("Cannot read index: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("Cannot read index: {}", e)))?;
         let index: SafetensorsIndex = serde_json::from_str(&index_json)
-            .map_err(|e| napi::Error::from_reason(format!("Bad index JSON: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("Bad index JSON: {}", e)))?;
 
         let mut paths: Vec<std::path::PathBuf> =
             index.weight_map.values().map(|f| dir.join(f)).collect();
@@ -527,7 +527,7 @@ pub fn discover_shards(dir: &std::path::Path) -> napi::Result<Vec<std::path::Pat
 pub fn validate_bindings_from_map(
     name_map: &std::collections::HashMap<String, TensorMeta>,
     spec: &crate::config::ExecutionSpec,
-) -> napi::Result<ValidationReport> {
+) -> crate::Result<ValidationReport> {
     // Build a &str→&TensorMeta lookup
     let lookup: std::collections::HashMap<&str, &TensorMeta> =
         name_map.iter().map(|(k, v)| (k.as_str(), v)).collect();

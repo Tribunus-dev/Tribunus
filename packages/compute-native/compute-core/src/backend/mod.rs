@@ -295,7 +295,6 @@ pub trait TensorBackend {
 ///
 /// Stores arrays in generational slot-maps indexed by `TensorHandle`. A free
 /// list recycles slots from released handles. Slot generations are bumped
-/// on reuse so stale handles are detected.
 pub struct MlxBackend {
     arrays: Vec<Option<Array>>,
     generations: Vec<u32>,
@@ -688,8 +687,8 @@ impl TensorBackend for MlxBackend {
 
     fn softmax(&mut self, x: TensorHandle, axis: i32) -> Result<TensorHandle, String> {
         let x_arr = self.get(x)?;
-        let out =
-            ops::softmax_axis(x_arr, axis, None).map_err(|e| format!("softmax failed: {:?}", e))?;
+        let out = ops::softmax_axes(x_arr, &[axis], false)
+            .map_err(|e| format!("softmax failed: {:?}", e))?;
         Ok(self.alloc(out))
     }
 

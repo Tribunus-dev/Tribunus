@@ -115,7 +115,7 @@ pub struct WeightMap {
     tensors: std::collections::HashMap<String, u64>,
 }
 
-fn napi_to_mlx(e: napi::Error) -> mlx_rs::error::Exception {
+fn core_to_mlx(e: crate::Error) -> mlx_rs::error::Exception {
     mlx_rs::error::Exception::custom(format!("{}", e))
 }
 
@@ -128,19 +128,19 @@ impl WeightMap {
         }
     }
 
-    fn get(&self, name: &str) -> napi::Result<Array> {
+    fn get(&self, name: &str) -> crate::Result<Array> {
         let handle = self
             .tensors
             .get(name)
-            .ok_or_else(|| napi::Error::from_reason(format!("Weight not found: {}", name)))?;
+            .ok_or_else(|| crate::Error::from_reason(format!("Weight not found: {}", name)))?;
         let registry = ARRAY_REGISTRY.read();
         registry
             .get(*handle)
             .cloned()
-            .ok_or_else(|| napi::Error::from_reason(format!("Handle not in registry: {}", handle)))
+            .ok_or_else(|| crate::Error::from_reason(format!("Handle not in registry: {}", handle)))
     }
 
-    fn layer_weight(&self, layer: u32, component: &str) -> napi::Result<Array> {
+    fn layer_weight(&self, layer: u32, component: &str) -> crate::Result<Array> {
         let name = format!("model.layers.{}.{}", layer, component);
         self.get(&name)
     }
@@ -150,7 +150,7 @@ impl WeightMap {
 
 fn rms_norm(x: &Array, weight: &Array, eps: f32) -> MlxResult<Array> {
     let x_f32 = x.as_dtype(mlx_rs::Dtype::Float32)?;
-    let mean_sq = ops::mean_axes(&x_f32.multiply(&x_f32)?, &[-1], Some(true))?;
+    let mean_sq = x_f32.multiply(&x_f32)?.mean_axes(&[-1], true)?;
     let rsqrt = ops::rsqrt(&mean_sq.add(&Array::from_f32(eps))?)?;
     let normed = x.multiply(&rsqrt.as_dtype(mlx_rs::Dtype::Float32)?)?;
     normed.multiply(weight)
@@ -226,21 +226,21 @@ fn gemma_attention(
 
     let q_w = weights
         .layer_weight(layer, "self_attn.q_proj.weight")
-        .map_err(napi_to_mlx)?;
+        .map_err(core_to_mlx)?;
     let k_w = weights
         .layer_weight(layer, "self_attn.k_proj.weight")
-        .map_err(napi_to_mlx)?;
+        .map_err(core_to_mlx)?;
     let v_w = if is_global {
         // Global layers alias v_proj → k_proj (k_eq_v)
         k_w.clone()
     } else {
         weights
             .layer_weight(layer, "self_attn.v_proj.weight")
-            .map_err(napi_to_mlx)?
+            .map_err(core_to_mlx)?
     };
     let o_w = weights
         .layer_weight(layer, "self_attn.o_proj.weight")
-        .map_err(napi_to_mlx)?;
+        .map_err(core_to_mlx)?;
 
     let q = x.matmul(&ops::transpose_axes(&q_w, &[1, 0])?)?.reshape(&[
         batch_size,
@@ -308,13 +308,13 @@ fn repeat_kv(x: &Array, n_rep: u32) -> MlxResult<Array> {
 fn gemma_mlp(x: &Array, weights: &WeightMap, layer: u32) -> MlxResult<Array> {
     let gate_w = weights
         .layer_weight(layer, "mlp.gate_proj.weight")
-        .map_err(napi_to_mlx)?;
+        .map_err(core_to_mlx)?;
     let up_w = weights
         .layer_weight(layer, "mlp.up_proj.weight")
-        .map_err(napi_to_mlx)?;
+        .map_err(core_to_mlx)?;
     let down_w = weights
         .layer_weight(layer, "mlp.down_proj.weight")
-        .map_err(napi_to_mlx)?;
+        .map_err(core_to_mlx)?;
 
     let gate = x.matmul(&ops::transpose_axes(&gate_w, &[1, 0])?)?;
     let up = x.matmul(&ops::transpose_axes(&up_w, &[1, 0])?)?;
@@ -335,7 +335,7 @@ fn gemma_decoder_layer(
 ) -> MlxResult<Array> {
     let attn_norm = weights
         .layer_weight(layer, "input_layernorm.weight")
-        .map_err(napi_to_mlx)?;
+        .map_err(core_to_mlx)?;
     let residual = x;
     let normed = rms_norm(x, &attn_norm, weights.config.rms_norm_eps)?;
     let attn_out = gemma_attention(&normed, weights, layer, rope_cos, rope_sin, kv_offset, mask)?;
@@ -343,7 +343,7 @@ fn gemma_decoder_layer(
 
     let ffn_norm = weights
         .layer_weight(layer, "post_attention_layernorm.weight")
-        .map_err(napi_to_mlx)?;
+        .map_err(core_to_mlx)?;
     let residual = &x;
     let normed = rms_norm(&x, &ffn_norm, weights.config.rms_norm_eps)?;
     let ffn_out = gemma_mlp(&normed, weights, layer)?;
@@ -375,10 +375,10 @@ pub struct GemmaModel {
 }
 
 impl GemmaModel {
-    pub fn new(config: GemmaConfig, weight_tensors: Vec<(String, u64)>) -> napi::Result<Self> {
+    pub fn new(config: GemmaConfig, weight_tensors: Vec<(String, u64)>) -> crate::Result<Self> {
         let (cos, sin) =
             precompute_rope_freqs(config.head_dim, config.max_seq_len, config.rope_theta)
-                .map_err(|e| napi::Error::from_reason(format!("RoPE precompute: {:?}", e)))?;
+                .map_err(|e| crate::Error::from_reason(format!("RoPE precompute: {:?}", e)))?;
 
         Ok(Self {
             config: config.clone(),
@@ -395,7 +395,7 @@ impl GemmaModel {
         let embed_weight = self
             .weights
             .get("model.embed_tokens.weight")
-            .map_err(napi_to_mlx)?;
+            .map_err(core_to_mlx)?;
         let scale = (self.config.hidden_size as f32).sqrt();
         let mut hidden = ops::indexing::take_axis(&embed_weight, input_ids, 0)?
             .multiply(&Array::from_f32(scale))?;
@@ -424,26 +424,26 @@ impl GemmaModel {
             )?;
         }
 
-        let final_norm = self.weights.get("model.norm.weight").map_err(napi_to_mlx)?;
+        let final_norm = self.weights.get("model.norm.weight").map_err(core_to_mlx)?;
         hidden = rms_norm(&hidden, &final_norm, self.config.rms_norm_eps)?;
 
-        let lm_head = self.weights.get("lm_head.weight").map_err(napi_to_mlx)?;
+        let lm_head = self.weights.get("lm_head.weight").map_err(core_to_mlx)?;
         hidden.matmul(&ops::transpose_axes(&lm_head, &[1, 0])?)
     }
 
     #[allow(dead_code)]
     /// Run forward pass and sample the next token ID via argmax.
     /// Returns the token ID directly — no logits cross the FFI boundary.
-    pub fn sample_token(&self, input_ids: &Array, kv_offset: u32) -> napi::Result<u32> {
+    pub fn sample_token(&self, input_ids: &Array, kv_offset: u32) -> crate::Result<u32> {
         let logits = self
             .forward(input_ids, kv_offset)
-            .map_err(|e| napi::Error::from_reason(format!("Forward error: {:?}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("Forward error: {:?}", e)))?;
         let last_logits = logits.index((0..1, (logits.shape()[1] - 1)..logits.shape()[1], ..));
-        let token_arr = ops::indexing::argmax_axis(&last_logits, -1, None)
-            .map_err(|e| napi::Error::from_reason(format!("Argmax error: {:?}", e)))?;
+        let token_arr = ops::indexing::argmax_axis(&last_logits, -1, false)
+            .map_err(|e| crate::Error::from_reason(format!("Argmax error: {:?}", e)))?;
         let values = token_arr
             .try_as_slice::<i32>()
-            .map_err(|e| napi::Error::from_reason(format!("Read error: {:?}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("Read error: {:?}", e)))?;
         Ok(values.first().copied().unwrap_or(0) as u32)
     }
 }

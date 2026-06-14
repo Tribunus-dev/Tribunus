@@ -87,13 +87,13 @@ impl crate::external_array::ExternalStorage for SegmentSlice {
 pub(crate) fn load_tensor_from_mapped_segment(
     segment: &std::sync::Arc<crate::mapped_image::MappedSegment>,
     entry: &TensorEntry,
-) -> napi::Result<(mlx_rs::Array, CopyClassification)> {
+) -> crate::Result<(mlx_rs::Array, CopyClassification)> {
     let mapping = segment.data_slice();
     let offset = entry.offset as usize;
     let len = entry.byte_length as usize;
     let end = offset + len;
     if end > mapping.len() {
-        return Err(napi::Error::from_reason(format!(
+        return Err(crate::Error::from_reason(format!(
             "tensor {} at offset {} len {} exceeds mapping len {}",
             entry.name,
             offset,
@@ -114,19 +114,19 @@ pub(crate) fn load_tensor_from_mapped_segment(
         "U8" | "Uint8" => unsafe {
             let arr =
                 crate::external_array::new_external_array(storage, &dims, mlx_rs::Dtype::Uint8)
-                    .map_err(|e| napi::Error::from_reason(e))?;
+                    .map_err(|e| crate::Error::from_reason(e))?;
             Ok((arr, CopyClassification::MappedNoCopy))
         },
         "F32" | "Float32" => unsafe {
             let arr =
                 crate::external_array::new_external_array(storage, &dims, mlx_rs::Dtype::Float32)
-                    .map_err(|e| napi::Error::from_reason(e))?;
+                    .map_err(|e| crate::Error::from_reason(e))?;
             Ok((arr, CopyClassification::MappedNoCopy))
         },
         "BF16" | "BFloat16" => unsafe {
             let arr =
                 crate::external_array::new_external_array(storage, &dims, mlx_rs::Dtype::Bfloat16)
-                    .map_err(|e| napi::Error::from_reason(e))?;
+                    .map_err(|e| crate::Error::from_reason(e))?;
             Ok((arr, CopyClassification::MappedNoCopy))
         },
         "I8" | "Int8" => {
@@ -139,10 +139,10 @@ pub(crate) fn load_tensor_from_mapped_segment(
         "U32" | "Uint32" => unsafe {
             let arr =
                 crate::external_array::new_external_array(storage, &dims, mlx_rs::Dtype::Uint32)
-                    .map_err(|e| napi::Error::from_reason(e))?;
+                    .map_err(|e| crate::Error::from_reason(e))?;
             Ok((arr, CopyClassification::MappedNoCopy))
         },
-        other => Err(napi::Error::from_reason(format!(
+        other => Err(crate::Error::from_reason(format!(
             "unsupported storage dtype in profiled executor: {}",
             other
         ))),
@@ -151,13 +151,13 @@ pub(crate) fn load_tensor_from_mapped_segment(
 
 fn build_rope_tables(
     arch: &crate::config::TextArchitecture,
-) -> napi::Result<(Arc<Array>, Arc<Array>, Arc<Array>, Arc<Array>)> {
+) -> crate::Result<(Arc<Array>, Arc<Array>, Arc<Array>, Arc<Array>)> {
     let (rope_cos, rope_sin) = crate::primitives::rope_freqs(
         arch.head_dim,
         arch.max_position_embeddings,
         arch.rope_local.theta as f32,
     )
-    .map_err(|e| napi::Error::from_reason(format!("rope local: {:?}", e)))?;
+    .map_err(|e| crate::Error::from_reason(format!("rope local: {:?}", e)))?;
 
     let full_rope = arch.rope_global.as_ref().unwrap_or(&arch.rope_local);
     let (full_cos, full_sin) = crate::primitives::rope_freqs(
@@ -165,7 +165,7 @@ fn build_rope_tables(
         arch.max_position_embeddings,
         full_rope.theta as f32,
     )
-    .map_err(|e| napi::Error::from_reason(format!("rope global: {:?}", e)))?;
+    .map_err(|e| crate::Error::from_reason(format!("rope global: {:?}", e)))?;
 
     Ok((
         Arc::new(rope_cos),
@@ -315,7 +315,7 @@ pub struct LoadedProfiledModel {
 }
 
 impl LoadedProfiledModel {
-    pub fn new(image_dir: &Path) -> napi::Result<Self> {
+    pub fn new(image_dir: &Path) -> crate::Result<Self> {
         let handle_baseline = crate::bridge::handle_count();
         let reader = CompiledImageReader::open(image_dir)?;
         if !high_memory_override_enabled() {
@@ -324,7 +324,7 @@ impl LoadedProfiledModel {
             if total_memory > 0
                 && estimated_peak > total_memory.saturating_sub(2 * 1024 * 1024 * 1024)
             {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "refusing to load profiled model: estimated peak {} exceeds safe budget on this machine (total memory {})",
                     estimated_peak,
                     total_memory,
@@ -351,14 +351,14 @@ impl LoadedProfiledModel {
             })
             .collect();
         let mapped_image = crate::mapped_image::MappedImage::open_mapped(image_dir, &segment_views)
-            .map_err(|e| napi::Error::from_reason(format!("open mapped image: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("open mapped image: {}", e)))?;
 
         let mut mapped_weight_bytes = 0;
         let mut copied_weight_bytes = 0;
         let mut materialized_bytes = 0;
         let mut tensor_cache: HashMap<String, Arc<Array>> = HashMap::new();
 
-        let mut load_tensor = |name: &str| -> napi::Result<Arc<Array>> {
+        let mut load_tensor = |name: &str| -> crate::Result<Arc<Array>> {
             if let Some(arr) = tensor_cache.get(name) {
                 return Ok(arr.clone());
             }
@@ -367,10 +367,10 @@ impl LoadedProfiledModel {
                 .tensor_table
                 .iter()
                 .find(|e| e.name == name)
-                .ok_or_else(|| napi::Error::from_reason(format!("tensor not found: {}", name)))?;
+                .ok_or_else(|| crate::Error::from_reason(format!("tensor not found: {}", name)))?;
             let seg_id = &entry.segment;
             let segment = mapped_image.segments.get(seg_id).ok_or_else(|| {
-                napi::Error::from_reason(format!("segment not found: {}", seg_id))
+                crate::Error::from_reason(format!("segment not found: {}", seg_id))
             })?;
             let (arr, classification) = load_tensor_from_mapped_segment(segment, entry)?;
             let byte_len = entry.byte_length;
@@ -1027,7 +1027,7 @@ pub fn execute_profiled_cold_once(
     cancel_flag: Option<&AtomicBool>,
     _sampler: &crate::session::SamplerConfig,
     kv_offset: u32,
-) -> napi::Result<(u32, ProfiledReceipt)> {
+) -> crate::Result<(u32, ProfiledReceipt)> {
     let model = LoadedProfiledModel::new(image_dir)?;
     let plan = &model.reader.manifest.execution_plan;
 
@@ -1068,12 +1068,12 @@ pub fn execute_profiled_cold_once(
     let token = if is_prefill {
         session
             .prefill(&prompt, &model)
-            .map_err(|e| napi::Error::from_reason(format!("cold prefill: {}", e)))?
+            .map_err(|e| crate::Error::from_reason(format!("cold prefill: {}", e)))?
     } else {
         // Single-token prompt: still run it through prefill (which handles 1 token).
         session
             .prefill(&prompt, &model)
-            .map_err(|e| napi::Error::from_reason(format!("cold first decode: {}", e)))?
+            .map_err(|e| crate::Error::from_reason(format!("cold first decode: {}", e)))?
     };
 
     let step_elapsed_ms = 0;

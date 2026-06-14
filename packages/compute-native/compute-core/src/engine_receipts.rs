@@ -5,7 +5,7 @@
 //! exit summaries. Each receipt type carries a builder following the
 //! `new()` + `with_*()` + `build() -> Self` pattern.
 //!
-//! No napi or mlx-rs imports — pure serde/serde_json.
+//! No mlx-rs imports — pure serde/serde_json.
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

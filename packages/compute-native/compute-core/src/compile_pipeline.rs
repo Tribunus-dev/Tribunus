@@ -45,7 +45,7 @@ pub struct PipelineResources {
 pub async fn run_relocation_pipeline(
     plan: &CompilationPlan,
     resources: PipelineResources,
-) -> napi::Result<HashMap<String, String>> {
+) -> crate::Result<HashMap<String, String>> {
     // Channel capacities: 64 permits per stage keeps ~128 MiB of
     // in-flight data under typical tensor sizes.
     let capacity = 64usize;
@@ -86,17 +86,17 @@ pub async fn run_relocation_pipeline(
     // Await completion — if any lane panicked, surface it as an error.
     let source_result = source_read_handle
         .await
-        .map_err(|e| napi::Error::from_reason(format!("source read lane panicked: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("source read lane panicked: {}", e)))?;
     source_result?;
 
     let relocate_result = relocate_handle
         .await
-        .map_err(|e| napi::Error::from_reason(format!("relocate lane panicked: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("relocate lane panicked: {}", e)))?;
     relocate_result?;
 
     writer_handle
         .await
-        .map_err(|e| napi::Error::from_reason(format!("write lane panicked: {}", e)))?
+        .map_err(|e| crate::Error::from_reason(format!("write lane panicked: {}", e)))?
 }
 
 // ── Lane implementation ────────────────────────────────────────────────────
@@ -107,7 +107,7 @@ fn source_read_lane(
     tensors: Arc<Vec<PlannedTensor>>,
     _source_dir: Arc<PathBuf>,
     tx: mpsc::Sender<RelocationUnit>,
-) -> napi::Result<()> {
+) -> crate::Result<()> {
     for tensor in tensors.iter() {
         if matches!(tensor.disposition, TensorDisposition::AliasOnly { .. }) {
             continue;
@@ -128,7 +128,7 @@ fn source_read_lane(
             destination_offset: tensor.destination_offset,
             disposition: format!("{:?}", tensor.disposition),
         })
-        .map_err(|_| napi::Error::from_reason("source read lane: channel closed"))?;
+        .map_err(|_| crate::Error::from_reason("source read lane: channel closed"))?;
     }
     Ok(())
 }
@@ -141,12 +141,12 @@ fn source_read_lane(
 fn relocate_lane(
     mut rx: mpsc::Receiver<RelocationUnit>,
     tx: mpsc::Sender<(RelocationUnit, Vec<u8>)>,
-) -> napi::Result<()> {
+) -> crate::Result<()> {
     while let Some(unit) = rx.blocking_recv() {
         // Placeholder payload — Phase 4 will read real source bytes.
         let data = vec![0u8; unit.source_length as usize];
         tx.blocking_send((unit, data))
-            .map_err(|_| napi::Error::from_reason("relocate lane: channel closed"))?;
+            .map_err(|_| crate::Error::from_reason("relocate lane: channel closed"))?;
     }
     Ok(())
 }
@@ -157,7 +157,7 @@ fn write_lane(
     mut rx: mpsc::Receiver<(RelocationUnit, Vec<u8>)>,
     output_dir: Arc<PathBuf>,
     segments: Arc<Vec<PlannedSegment>>,
-) -> napi::Result<HashMap<String, String>> {
+) -> crate::Result<HashMap<String, String>> {
     use std::io::{Seek, SeekFrom, Write};
 
     // Open every segment file upfront so writes never touch the VFS
@@ -166,9 +166,9 @@ fn write_lane(
     for seg in segments.iter() {
         let path = output_dir.join("segments").join(&seg.filename);
         std::fs::create_dir_all(path.parent().expect("segment path has no parent"))
-            .map_err(|e| napi::Error::from_reason(format!("mkdir: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("mkdir: {}", e)))?;
         let file = std::fs::File::create(&path)
-            .map_err(|e| napi::Error::from_reason(format!("create {}: {}", path.display(), e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("create {}: {}", path.display(), e)))?;
         segment_files.insert(seg.id.clone(), file);
     }
 
@@ -181,13 +181,13 @@ fn write_lane(
         let file = segment_files
             .get_mut(&unit.destination_segment)
             .ok_or_else(|| {
-                napi::Error::from_reason(format!("unknown segment: {}", unit.destination_segment))
+                crate::Error::from_reason(format!("unknown segment: {}", unit.destination_segment))
             })?;
 
         file.seek(SeekFrom::Start(unit.destination_offset))
-            .map_err(|e| napi::Error::from_reason(format!("seek: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("seek: {}", e)))?;
         file.write_all(&data)
-            .map_err(|e| napi::Error::from_reason(format!("write: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("write: {}", e)))?;
 
         if let Some(h) = hashers.get_mut(&unit.destination_segment) {
             h.update(&data);

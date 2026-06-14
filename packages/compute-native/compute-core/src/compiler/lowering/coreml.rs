@@ -37,7 +37,7 @@ pub struct ConstantKey {
 }
 
 impl ConstantKey {
-    pub fn from_f32(data: &[f32], shape: &[u32]) -> Self {
+    pub fn from(data: &[f32], shape: &[u32]) -> Self {
         let mut h = Sha256::new();
         for &v in data {
             h.update(v.to_le_bytes());
@@ -283,7 +283,7 @@ impl OpBuilder {
         };
         let (data, shape) = attrs;
 
-        let key = ConstantKey::from_f32(data, shape);
+        let key = ConstantKey::from(data, shape);
         if let Some(existing) = ctx.constant_pool.get(&key) {
             // Constant already exists — reuse
             let output_id = op.outputs[0];
@@ -1543,9 +1543,9 @@ mod tests {
     #[test]
     fn constant_pool_dedup_by_content() {
         let mut pool = ConstantPool::new();
-        let key1 = ConstantKey::from_f32(&[1.0, 2.0, 3.0, 4.0], &[4]);
-        let key2 = ConstantKey::from_f32(&[1.0, 2.0, 3.0, 4.0], &[4]); // same payload
-        let key3 = ConstantKey::from_f32(&[5.0, 6.0], &[2]); // different
+        let key1 = ConstantKey::from(&[1.0, 2.0, 3.0, 4.0], &[4]);
+        let key2 = ConstantKey::from(&[1.0, 2.0, 3.0, 4.0], &[4]); // same payload
+        let key3 = ConstantKey::from(&[5.0, 6.0], &[2]); // different
 
         let vt = value_type_tensor(tensor_type(mil_spec::DataType::Float32, &[4]));
         let ref1 = MilValueRef::new("c1".into(), vt.clone(), "const");

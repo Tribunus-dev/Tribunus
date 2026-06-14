@@ -413,8 +413,8 @@ impl RunInstrumentationContext {
 
 fn sample_process_memory(counters: CounterSnapshot) -> MemorySnapshot {
     MemorySnapshot {
-        mlx_active: compute_image::mlx_active_memory_bytes(),
-        mlx_cache: compute_image::mlx_cache_memory_bytes(),
+        mlx_active: crate::compute_image::mlx_active_memory_bytes(),
+        mlx_cache: crate::compute_image::mlx_cache_memory_bytes(),
         rss: crate::worker_memory::sample_process_rss_self(),
         materialized: counters.materialized,
         file_read: counters.file_read,

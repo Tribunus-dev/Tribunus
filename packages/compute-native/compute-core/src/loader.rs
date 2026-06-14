@@ -20,20 +20,21 @@ pub struct LoadedTensor {
 ///
 /// Tensors are loaded via the safetensors crate and converted to
 /// MLX arrays using `Array::try_from(TensorView)`.
-pub fn load_safetensors(path: &str) -> napi::Result<Vec<LoadedTensor>> {
+pub fn load_safetensors(path: &str) -> crate::Result<Vec<LoadedTensor>> {
     let path = Path::new(path);
     if !path.exists() {
-        return Err(napi::Error::from_reason(format!(
+        return Err(crate::Error::from_reason(format!(
             "Safetensors file not found: {}",
             path.display()
         )));
     }
 
-    let buffer = std::fs::read(path)
-        .map_err(|e| napi::Error::from_reason(format!("Failed to read safetensors file: {}", e)))?;
+    let buffer = std::fs::read(path).map_err(|e| {
+        crate::Error::from_reason(format!("Failed to read safetensors file: {}", e))
+    })?;
 
     let tensors = safetensors::SafeTensors::deserialize(&buffer)
-        .map_err(|e| napi::Error::from_reason(format!("Failed to parse safetensors: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("Failed to parse safetensors: {:?}", e)))?;
 
     let mut registry = ARRAY_REGISTRY.write();
     let mut results = Vec::with_capacity(tensors.names().len());
@@ -41,7 +42,7 @@ pub fn load_safetensors(path: &str) -> napi::Result<Vec<LoadedTensor>> {
     for name in tensors.names() {
         let view = tensors
             .tensor(name)
-            .map_err(|e| napi::Error::from_reason(format!("Tensor not found: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("Tensor not found: {}", e)))?;
 
         let _data = view.data();
         let _shape: Vec<i32> = view.shape().iter().map(|&d| d as i32).collect();
@@ -64,12 +65,11 @@ pub fn load_safetensors(path: &str) -> napi::Result<Vec<LoadedTensor>> {
 
 /// Load a safetensors file and return a JSON summary (name → handle mapping).
 ///
-/// This is the napi-friendly version that returns a JSON-serializable result
-/// so TypeScript can consume it directly.
-pub fn load_safetensors_json(path: &str) -> napi::Result<String> {
+/// Returns a JSON-serializable result.
+pub fn load_safetensors_json(path: &str) -> crate::Result<String> {
     let tensors = load_safetensors(path)?;
     serde_json::to_string(&tensors)
-        .map_err(|e| napi::Error::from_reason(format!("JSON serialization error: {}", e)))
+        .map_err(|e| crate::Error::from_reason(format!("JSON serialization error: {}", e)))
 }
 
 /// Information about a safetensors file (header only, no tensor loading).
@@ -89,20 +89,21 @@ pub struct TensorInfo {
 
 /// Read only the header of a safetensors file (no tensor data loaded).
 /// Useful for inspecting available weights before deciding which to load.
-pub fn inspect_safetensors(path: &str) -> napi::Result<String> {
+pub fn inspect_safetensors(path: &str) -> crate::Result<String> {
     let path = Path::new(path);
     if !path.exists() {
-        return Err(napi::Error::from_reason(format!(
+        return Err(crate::Error::from_reason(format!(
             "Safetensors file not found: {}",
             path.display()
         )));
     }
 
-    let buffer = std::fs::read(path)
-        .map_err(|e| napi::Error::from_reason(format!("Failed to read safetensors file: {}", e)))?;
+    let buffer = std::fs::read(path).map_err(|e| {
+        crate::Error::from_reason(format!("Failed to read safetensors file: {}", e))
+    })?;
 
     let parsed = safetensors::SafeTensors::deserialize(&buffer).map_err(|e| {
-        napi::Error::from_reason(format!("Failed to parse safetensors header: {:?}", e))
+        crate::Error::from_reason(format!("Failed to parse safetensors header: {:?}", e))
     })?;
 
     let tensor_infos: Vec<TensorInfo> = parsed
@@ -122,5 +123,5 @@ pub fn inspect_safetensors(path: &str) -> napi::Result<String> {
     };
 
     serde_json::to_string(&info)
-        .map_err(|e| napi::Error::from_reason(format!("JSON serialization error: {}", e)))
+        .map_err(|e| crate::Error::from_reason(format!("JSON serialization error: {}", e)))
 }

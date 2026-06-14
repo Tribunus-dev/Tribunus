@@ -14,12 +14,16 @@ members = [
     "compute-core",
 ]
 
+[workspace.dependencies]
+mlx-rs = { git = "https://github.com/Tribunus-dev/mlx-rs-fork.git", branch = "main", features = ["metal", "accelerate", "safetensors"] }
+mlx-sys = { git = "https://github.com/Tribunus-dev/mlx-rs-fork.git", branch = "main" }
+
 [dependencies]
-tribunus-compute-core = { path = "compute-core", features = ["napi"] }
+tribunus-compute-core = { path = "compute-core" }
 napi = { version = "3.9.0", features = ["napi8", "serde-json"], default-features = false }
 napi-derive = "3.5.6"
-mlx-rs = { path = "/Users/user/Developer/GitHub/Tribunus Compute/mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
-mlx-sys = { path = "/Users/user/Developer/GitHub/Tribunus Compute/mlx-rs-fork/mlx-sys" }
+mlx-rs = { workspace = true }
+mlx-sys = { workspace = true }
 safetensors = "0.5"
 sha2 = { version = "0.10", features = ["asm"] }
 uuid = { version = "1", features = ["v4", "serde"] }

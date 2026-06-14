@@ -55,13 +55,13 @@ pub fn compile_with_authority(
     output_dir: &str,
     authority: CompilationAuthority,
     skip_validation: bool,
-) -> napi::Result<CompiledImage> {
+) -> crate::Result<CompiledImage> {
     match authority {
         CompilationAuthority::TestFixture => {
             let profile = option_env!("TRIBUNUS_PROFILE").unwrap_or("unknown");
             if profile == "image-build" {
-                return Err(napi::Error::new(
-                    napi::Status::GenericFailure,
+                return Err(crate::Error::new(
+                    crate::Status::GenericFailure,
                     "TestFixture must not use image-build profile. Use cargo test or cargo build.",
                 ));
             }
@@ -77,7 +77,7 @@ pub fn compile_with_authority(
 
 /// Verify the current binary was compiled with production optimization settings.
 /// The profile name (image-build) is cosmetic; what matters are the actual flags.
-pub fn verify_image_build_profile() -> napi::Result<()> {
+pub fn verify_image_build_profile() -> crate::Result<()> {
     let opt_level = option_env!("TRIBUNUS_OPT_LEVEL").unwrap_or("0");
     let debug_assertions = cfg!(debug_assertions);
     let target = option_env!("TRIBUNUS_TARGET").unwrap_or("unknown");
@@ -100,12 +100,12 @@ pub fn verify_image_build_profile() -> napi::Result<()> {
             "Refusing production ComputeImage compilation.\nBuild with: cargo build --locked --profile image-build --bin tribunus-compute-image\n{}",
             failures.join("\n")
         );
-        return Err(napi::Error::new(napi::Status::GenericFailure, msg));
+        return Err(crate::Error::new(crate::Status::GenericFailure, msg));
     }
     Ok(())
 }
 
-fn verify_fixture_ceiling(source_dir: &str) -> napi::Result<()> {
+fn verify_fixture_ceiling(source_dir: &str) -> crate::Result<()> {
     use std::fs;
     let dir = std::path::Path::new(source_dir);
     if !dir.exists() {
@@ -116,19 +116,19 @@ fn verify_fixture_ceiling(source_dir: &str) -> napi::Result<()> {
     if config_path.exists() {
         let config: serde_json::Value = serde_json::from_str(
             &fs::read_to_string(&config_path)
-                .map_err(|e| napi::Error::from_reason(format!("read config: {e}")))?,
+                .map_err(|e| crate::Error::from_reason(format!("read config: {e}")))?,
         )
-        .map_err(|e| napi::Error::from_reason(format!("parse config: {e}")))?;
+        .map_err(|e| crate::Error::from_reason(format!("parse config: {e}")))?;
         if let Some(n) = config["num_hidden_layers"].as_u64() {
             if n > 4 {
-                return Err(napi::Error::new(napi::Status::GenericFailure,
+                return Err(crate::Error::new(crate::Status::GenericFailure,
                     format!("TestFixture ceiling: max 4 layers, found {n}. Use SealedComputeImage for production models.")));
             }
         }
         if let Some(n) = config["vocab_size"].as_u64() {
             if n > 65536 {
-                return Err(napi::Error::new(
-                    napi::Status::GenericFailure,
+                return Err(crate::Error::new(
+                    crate::Status::GenericFailure,
                     format!("TestFixture ceiling: max 65536 vocab, found {n}"),
                 ));
             }
@@ -138,9 +138,9 @@ fn verify_fixture_ceiling(source_dir: &str) -> napi::Result<()> {
     let mut total_bytes: u64 = 0;
     let max_fixture_bytes: u64 = 128 * 1024 * 1024; // 128 MB
     for entry in
-        fs::read_dir(dir).map_err(|e| napi::Error::from_reason(format!("read_dir: {e}")))?
+        fs::read_dir(dir).map_err(|e| crate::Error::from_reason(format!("read_dir: {e}")))?
     {
-        let entry = entry.map_err(|e| napi::Error::from_reason(format!("entry: {e}")))?;
+        let entry = entry.map_err(|e| crate::Error::from_reason(format!("entry: {e}")))?;
         let path = entry.path();
         if path
             .extension()
@@ -152,8 +152,8 @@ fn verify_fixture_ceiling(source_dir: &str) -> napi::Result<()> {
         }
     }
     if total_bytes > max_fixture_bytes {
-        return Err(napi::Error::new(
-            napi::Status::GenericFailure,
+        return Err(crate::Error::new(
+            crate::Status::GenericFailure,
             format!("TestFixture source ceiling: {max_fixture_bytes} bytes, found {total_bytes}"),
         ));
     }
@@ -842,7 +842,10 @@ impl ImageBuilder {
             manifest: Manifest {
                 image_version: "0.1.0".into(),
                 compiler_version: env!("CARGO_PKG_VERSION").into(),
-                runtime_abi: "mlx-rs/0.21.0 napi-rs/3.9.0 safetensors/0.5.3".into(),
+                runtime_abi: format!(
+                    "mlx-rs/0.21.0 core/{} safetensors/0.5.3",
+                    env!("CARGO_PKG_VERSION")
+                ),
                 source,
                 architecture: arch,
                 segments: Vec::new(),
@@ -942,16 +945,16 @@ impl ImageBuilder {
     }
 
     /// Finalize and return the complete manifest.
-    pub fn finalize(mut self, output_dir: &Path) -> napi::Result<Manifest> {
+    pub fn finalize(mut self, output_dir: &Path) -> crate::Result<Manifest> {
         self.flush_segment();
         std::fs::create_dir_all(output_dir)
-            .map_err(|e| napi::Error::from_reason(format!("mkdir: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("mkdir: {}", e)))?;
 
         // Write segments to disk
         for (seg, payload) in self.segments.iter().zip(self.segment_payloads.iter()) {
             let path = output_dir.join(&seg.filename);
             std::fs::write(&path, payload).map_err(|e| {
-                napi::Error::from_reason(format!("write segment {}: {}", seg.filename, e))
+                crate::Error::from_reason(format!("write segment {}: {}", seg.filename, e))
             })?;
         }
 
@@ -965,9 +968,9 @@ impl ImageBuilder {
         // Write manifest
         let manifest_path = output_dir.join("manifest.json");
         let manifest_json = serde_json::to_string_pretty(&self.manifest)
-            .map_err(|e| napi::Error::from_reason(format!("json: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("json: {}", e)))?;
         std::fs::write(&manifest_path, manifest_json)
-            .map_err(|e| napi::Error::from_reason(format!("write manifest: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("write manifest: {}", e)))?;
 
         Ok(self.manifest)
     }
@@ -1024,7 +1027,7 @@ impl ImageBuilder {
     ///
     /// Updates tensor metadata and sets manifest.prepacked_layout.
     /// Must be called before finalize().
-    pub fn prepack_quantized_weights(&mut self) -> napi::Result<()> {
+    pub fn prepack_quantized_weights(&mut self) -> crate::Result<()> {
         use crate::layout_transform;
 
         // Identify weight/scale/bias triplets.
@@ -1249,13 +1252,13 @@ fn sha256_bytes(bytes: &[u8]) -> String {
     format!("{:x}", hasher.finalize())
 }
 
-fn hash_file(path: &Path) -> napi::Result<String> {
+fn hash_file(path: &Path) -> crate::Result<String> {
     let bytes = std::fs::read(path)
-        .map_err(|e| napi::Error::from_reason(format!("read {}: {}", path.display(), e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("read {}: {}", path.display(), e)))?;
     Ok(sha256_bytes(&bytes))
 }
 
-fn optional_hash(path: &Path) -> napi::Result<Option<ShardHash>> {
+fn optional_hash(path: &Path) -> crate::Result<Option<ShardHash>> {
     if !path.exists() {
         return Ok(None);
     }
@@ -1266,14 +1269,14 @@ fn optional_hash(path: &Path) -> napi::Result<Option<ShardHash>> {
     }))
 }
 
-fn load_source(source_dir: &Path, skip_validation: bool) -> napi::Result<LoadedSource> {
+fn load_source(source_dir: &Path, skip_validation: bool) -> crate::Result<LoadedSource> {
     use crate::{config, validator};
 
     let config_path = source_dir.join("config.json");
     let (arch, quant, manifest) = config::parse_config(
         config_path
             .to_str()
-            .ok_or_else(|| napi::Error::from_reason("invalid config path"))?,
+            .ok_or_else(|| crate::Error::from_reason("invalid config path"))?,
     )?;
 
     let shard_paths = validator::discover_shards(source_dir)?;
@@ -1283,18 +1286,18 @@ fn load_source(source_dir: &Path, skip_validation: bool) -> napi::Result<LoadedS
 
     for shard_path in shard_paths {
         let bytes = std::fs::read(&shard_path).map_err(|e| {
-            napi::Error::from_reason(format!("read {}: {}", shard_path.display(), e))
+            crate::Error::from_reason(format!("read {}: {}", shard_path.display(), e))
         })?;
         let source_sha256 = sha256_bytes(&bytes);
         let (_, metadata) = safetensors::SafeTensors::read_metadata(&bytes).map_err(|e| {
-            napi::Error::from_reason(format!(
+            crate::Error::from_reason(format!(
                 "bad safetensors header {}: {:?}",
                 shard_path.display(),
                 e
             ))
         })?;
         let safetensors = safetensors::SafeTensors::deserialize(&bytes).map_err(|e| {
-            napi::Error::from_reason(format!(
+            crate::Error::from_reason(format!(
                 "bad safetensors file {}: {:?}",
                 shard_path.display(),
                 e
@@ -1306,7 +1309,7 @@ fn load_source(source_dir: &Path, skip_validation: bool) -> napi::Result<LoadedS
 
         for (name, info) in entries {
             if source_tensors.contains_key(&name) {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "duplicate tensor name: {}",
                     name
                 )));
@@ -1314,7 +1317,7 @@ fn load_source(source_dir: &Path, skip_validation: bool) -> napi::Result<LoadedS
 
             let view = safetensors
                 .tensor(&name)
-                .map_err(|e| napi::Error::from_reason(format!("tensor {}: {:?}", name, e)))?;
+                .map_err(|e| crate::Error::from_reason(format!("tensor {}: {:?}", name, e)))?;
 
             source_tensors.insert(
                 name.clone(),
@@ -1355,7 +1358,7 @@ fn load_source(source_dir: &Path, skip_validation: bool) -> napi::Result<LoadedS
                 Err(err) => Some(Err(err)),
             }
         })
-        .collect::<napi::Result<Vec<_>>>()?;
+        .collect::<crate::Result<Vec<_>>>()?;
 
     let auxiliary_hashes = [
         "generation_config.json",
@@ -1372,10 +1375,10 @@ fn load_source(source_dir: &Path, skip_validation: bool) -> napi::Result<LoadedS
             Err(err) => Some(Err(err)),
         }
     })
-    .collect::<napi::Result<Vec<_>>>()?;
+    .collect::<crate::Result<Vec<_>>>()?;
 
     let namespace = config::resolve_namespace(&all_names)
-        .ok_or_else(|| napi::Error::from_reason("namespace not resolved"))?;
+        .ok_or_else(|| crate::Error::from_reason("namespace not resolved"))?;
     let spec = config::compile(&arch, &namespace, quant.as_ref());
 
     let tensor_meta = source_tensors
@@ -1394,7 +1397,7 @@ fn load_source(source_dir: &Path, skip_validation: bool) -> napi::Result<LoadedS
 
     let validation = validator::validate_bindings_from_map(&tensor_meta, &spec)?;
     if !skip_validation && !validation.verdict.executable {
-        return Err(napi::Error::from_reason(format!(
+        return Err(crate::Error::from_reason(format!(
             "source checkpoint failed validation: {} errors across {} expected tensors",
             validation.verdict.errors, validation.verdict.total_expected,
         )));
@@ -1422,10 +1425,10 @@ fn emit_tensor(
     logical_dtype: String,
     logical_shape: Vec<u32>,
     quantization: Option<QuantizationDesc>,
-) -> napi::Result<u32> {
+) -> crate::Result<u32> {
     let tensor = source_tensors
         .get(name)
-        .ok_or_else(|| napi::Error::from_reason(format!("missing tensor: {}", name)))?;
+        .ok_or_else(|| crate::Error::from_reason(format!("missing tensor: {}", name)))?;
 
     Ok(builder.add_tensor(
         name.to_string(),
@@ -1452,7 +1455,7 @@ fn emit_quantized_binding(
     logical_shape: Vec<u32>,
     packed: &crate::config::PackedLinearShapes,
     logical_dtype: String,
-) -> napi::Result<u32> {
+) -> crate::Result<u32> {
     let stem = weight_name.strip_suffix(".weight").unwrap_or(weight_name);
     let scales_name = format!("{}.scales", stem);
     let biases_name = format!("{}.biases", stem);
@@ -1522,7 +1525,7 @@ fn emit_binding_set(
     source_tensors: &HashMap<String, SourceTensor>,
     binding: &crate::config::TensorBinding,
     layer: Option<u32>,
-) -> napi::Result<u32> {
+) -> crate::Result<u32> {
     let role = format!("{:?}", binding.role);
     match &binding.packed_shape {
         Some(packed) => emit_quantized_binding(
@@ -1661,13 +1664,13 @@ fn build_compile_receipt(
     }
 }
 
-fn dtype_to_array(bytes: &[u8], dtype: &str, shape: &[u32]) -> napi::Result<Array> {
+fn dtype_to_array(bytes: &[u8], dtype: &str, shape: &[u32]) -> crate::Result<Array> {
     let dims = shape.iter().map(|&dim| dim as i32).collect::<Vec<_>>();
     match dtype {
         "U8" | "Uint8" => Ok(Array::from_slice(bytes, &dims)),
         "U32" | "Uint32" => {
             if bytes.len() % 4 != 0 {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "u32 payload length is not a multiple of 4: {}",
                     bytes.len()
                 )));
@@ -1684,7 +1687,7 @@ fn dtype_to_array(bytes: &[u8], dtype: &str, shape: &[u32]) -> napi::Result<Arra
         }
         "I32" | "Int32" => {
             if bytes.len() % 4 != 0 {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "i32 payload length is not a multiple of 4: {}",
                     bytes.len()
                 )));
@@ -1697,7 +1700,7 @@ fn dtype_to_array(bytes: &[u8], dtype: &str, shape: &[u32]) -> napi::Result<Arra
         }
         "F32" | "Float32" => {
             if bytes.len() % 4 != 0 {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "f32 payload length is not a multiple of 4: {}",
                     bytes.len()
                 )));
@@ -1710,7 +1713,7 @@ fn dtype_to_array(bytes: &[u8], dtype: &str, shape: &[u32]) -> napi::Result<Arra
         }
         "BF16" | "BFloat16" => {
             if bytes.len() % 2 != 0 {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "bf16 payload length is not a multiple of 2: {}",
                     bytes.len()
                 )));
@@ -1726,7 +1729,7 @@ fn dtype_to_array(bytes: &[u8], dtype: &str, shape: &[u32]) -> napi::Result<Arra
                 .collect::<Vec<_>>();
             Ok(Array::from_slice(&data, &dims))
         }
-        other => Err(napi::Error::from_reason(format!(
+        other => Err(crate::Error::from_reason(format!(
             "unsupported tensor storage dtype: {}",
             other
         ))),
@@ -1743,18 +1746,18 @@ pub struct CompiledImageReader {
 }
 
 impl CompiledImageReader {
-    pub fn open(image_dir: &Path) -> napi::Result<Self> {
+    pub fn open(image_dir: &Path) -> crate::Result<Self> {
         let manifest_path = image_dir.join("manifest.json");
         let receipt_path = image_dir.join("receipt.json");
         let manifest: Manifest =
             serde_json::from_str(&std::fs::read_to_string(&manifest_path).map_err(|e| {
-                napi::Error::from_reason(format!(
+                crate::Error::from_reason(format!(
                     "read manifest {}: {}",
                     manifest_path.display(),
                     e
                 ))
             })?)
-            .map_err(|e| napi::Error::from_reason(format!("parse manifest: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("parse manifest: {}", e)))?;
         let receipt: CompileReceipt =
             match serde_json::from_str(&std::fs::read_to_string(&receipt_path).unwrap_or_default())
             {
@@ -1775,14 +1778,14 @@ impl CompiledImageReader {
 
     /// Read a segment file from disk and return its bytes. Used by verify()
     /// and tensor_bytes() (fixture test path). Not used during execution.
-    fn read_segment_bytes(&self, filename: &str) -> napi::Result<Vec<u8>> {
+    fn read_segment_bytes(&self, filename: &str) -> crate::Result<Vec<u8>> {
         let path = self.image_dir.join(filename);
         std::fs::read(&path).map_err(|e| {
-            napi::Error::from_reason(format!("read segment {}: {}", path.display(), e))
+            crate::Error::from_reason(format!("read segment {}: {}", path.display(), e))
         })
     }
 
-    pub fn verify(&self) -> napi::Result<ManifestVerification> {
+    pub fn verify(&self) -> crate::Result<ManifestVerification> {
         let skip = std::env::var("TRIBUNUS_SKIP_MANIFEST_HASH").is_ok();
         let manifest_hash_matches =
             self.manifest.image_hash == compute_manifest_hash(&self.manifest) || skip;
@@ -1808,7 +1811,7 @@ impl CompiledImageReader {
         // all segments are read together; execution reads one segment at a time.
         for segment in &self.manifest.segments {
             let bytes = self.read_segment_bytes(&segment.filename).map_err(|e| {
-                napi::Error::from_reason(format!("segment hash mismatch check - {}", e))
+                crate::Error::from_reason(format!("segment hash mismatch check - {}", e))
             })?;
             let actual_hash = sha256_bytes(&bytes);
             if actual_hash != segment.sha256 {
@@ -1827,17 +1830,17 @@ impl CompiledImageReader {
         }
 
         if !manifest_hash_matches {
-            return Err(napi::Error::from_reason(
+            return Err(crate::Error::from_reason(
                 "compiled image manifest hash mismatch",
             ));
         }
         if !receipt_matches_manifest {
-            return Err(napi::Error::from_reason(
+            return Err(crate::Error::from_reason(
                 "compiled image receipt does not match manifest",
             ));
         }
         if !segment_hashes_match {
-            return Err(napi::Error::from_reason(
+            return Err(crate::Error::from_reason(
                 "compiled image segment hash mismatch",
             ));
         }
@@ -1846,13 +1849,13 @@ impl CompiledImageReader {
             for segment in &self.manifest.segments {
                 let seg_path = self.image_dir.join(&segment.filename);
                 if !seg_path.exists() {
-                    return Err(napi::Error::from_reason(format!(
+                    return Err(crate::Error::from_reason(format!(
                         "mapped-no-copy: segment file does not exist: {}",
                         seg_path.display()
                     )));
                 }
                 let meta = seg_path.metadata().map_err(|e| {
-                    napi::Error::from_reason(format!(
+                    crate::Error::from_reason(format!(
                         "mapped-no-copy: stat {}: {}",
                         seg_path.display(),
                         e
@@ -1860,7 +1863,7 @@ impl CompiledImageReader {
                 })?;
                 let actual_len = meta.len();
                 if actual_len != segment.byte_size {
-                    return Err(napi::Error::from_reason(format!(
+                    return Err(crate::Error::from_reason(format!(
                         "mapped-no-copy: segment {} size mismatch: manifest says {} but file is {}",
                         segment.filename, segment.byte_size, actual_len
                     )));
@@ -1868,13 +1871,13 @@ impl CompiledImageReader {
                 // alignment_bytes must be a power of two >= 4096 and divide byte_size
                 let ab = segment.alignment_bytes;
                 if ab < 4096 || ab & (ab.wrapping_sub(1)) != 0 {
-                    return Err(napi::Error::from_reason(format!(
+                    return Err(crate::Error::from_reason(format!(
                     "mapped-no-copy: segment {} alignment_bytes {} is not a power of two >= 4096",
                     segment.filename, ab
                 )));
                 }
                 if segment.byte_size % ab != 0 {
-                    return Err(napi::Error::from_reason(format!(
+                    return Err(crate::Error::from_reason(format!(
                         "mapped-no-copy: segment {} byte_size {} is not aligned to {}",
                         segment.filename, segment.byte_size, segment.alignment_bytes
                     )));
@@ -1894,7 +1897,7 @@ impl CompiledImageReader {
                 };
                 // tensor_alignment_bytes must be non-zero and the offset must be aligned
                 if tab == 0 || tensor.offset % tab != 0 {
-                    return Err(napi::Error::from_reason(format!(
+                    return Err(crate::Error::from_reason(format!(
                         "mapped-no-copy: tensor {} offset {} not aligned to {}",
                         tensor.name, tensor.offset, tab
                     )));
@@ -1903,7 +1906,7 @@ impl CompiledImageReader {
                 if let Some(seg) = seg_map.get(tensor.segment.as_str()) {
                     let tensor_end = tensor.offset.saturating_add(tensor.byte_length);
                     if tensor_end > seg.byte_size {
-                        return Err(napi::Error::from_reason(format!(
+                        return Err(crate::Error::from_reason(format!(
                         "mapped-no-copy: tensor {} offset {} + byte_length {} exceeds segment {} byte_size {}",
                         tensor.name, tensor.offset, tensor.byte_length, seg.id, seg.byte_size
                     )));
@@ -1911,7 +1914,7 @@ impl CompiledImageReader {
                 }
             }
         } else if !is_valid_storage_abi(&self.manifest.required_storage_abi) {
-            return Err(napi::Error::from_reason(format!(
+            return Err(crate::Error::from_reason(format!(
                 "unknown storage ABI: {}",
                 self.manifest.required_storage_abi
             )));
@@ -1927,14 +1930,14 @@ impl CompiledImageReader {
 
     /// Read a single tensor's bytes from its segment file on disk.
     /// Used by fixture-test TensorLookup; not called during segment-scoped execution.
-    fn tensor_bytes(&self, name: &str) -> napi::Result<(Vec<u8>, String, Vec<u32>)> {
+    fn tensor_bytes(&self, name: &str) -> crate::Result<(Vec<u8>, String, Vec<u32>)> {
         let entry = self
             .manifest
             .tensor_table
             .iter()
             .find(|entry| entry.name == name)
             .ok_or_else(|| {
-                napi::Error::from_reason(format!("tensor not found in manifest: {}", name))
+                crate::Error::from_reason(format!("tensor not found in manifest: {}", name))
             })?;
 
         let segment = self
@@ -1943,7 +1946,7 @@ impl CompiledImageReader {
             .iter()
             .find(|segment| segment.id == entry.segment)
             .ok_or_else(|| {
-                napi::Error::from_reason(format!("segment not found for tensor: {}", name))
+                crate::Error::from_reason(format!("segment not found for tensor: {}", name))
             })?;
 
         let payload = self.read_segment_bytes(&segment.filename)?;
@@ -1951,7 +1954,7 @@ impl CompiledImageReader {
         let start = entry.offset as usize;
         let end = start + entry.byte_length as usize;
         if end > payload.len() {
-            return Err(napi::Error::from_reason(format!(
+            return Err(crate::Error::from_reason(format!(
                 "tensor {} exceeds segment bounds",
                 name
             )));
@@ -1973,9 +1976,9 @@ impl crate::model::TensorLookup for CompiledImageReader {
 }
 
 impl CompiledImageReader {
-    pub fn open_runtime(&self, backend: StorageBackend) -> napi::Result<ImageRuntime> {
+    pub fn open_runtime(&self, backend: StorageBackend) -> crate::Result<ImageRuntime> {
         if backend == StorageBackend::MappedNoCopy {
-            return Err(napi::Error::from_reason(
+            return Err(crate::Error::from_reason(
                 "mapped_no_copy backend is not implemented yet",
             ));
         }
@@ -1986,7 +1989,7 @@ impl CompiledImageReader {
             if total_memory > 0
                 && estimated_peak > total_memory.saturating_sub(2 * 1024 * 1024 * 1024)
             {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "refusing to open runtime: estimated peak {} exceeds safe budget on this machine (total memory {})",
                     estimated_peak,
                     total_memory,
@@ -2439,7 +2442,7 @@ impl NativeCapabilityReport {
 impl ImageRuntime {
     /// Load all persistent segment tensors into ARRAY_REGISTRY.
     /// Called once during open_runtime. Layer tensors are NOT loaded here.
-    fn activate_persistent(&mut self) -> napi::Result<()> {
+    fn activate_persistent(&mut self) -> crate::Result<()> {
         let persistent_segment_ids: Vec<String> =
             self.manifest.residency_plan.persistent_segments.clone();
 
@@ -2450,11 +2453,11 @@ impl ImageRuntime {
                 .iter()
                 .find(|s| &s.id == seg_id)
                 .ok_or_else(|| {
-                    napi::Error::from_reason(format!("persistent segment not found: {}", seg_id))
+                    crate::Error::from_reason(format!("persistent segment not found: {}", seg_id))
                 })?;
 
             let bytes = std::fs::read(self.image_dir.join(&segment.filename)).map_err(|e| {
-                napi::Error::from_reason(format!(
+                crate::Error::from_reason(format!(
                     "read persistent segment {}: {}",
                     segment.filename, e
                 ))
@@ -2468,7 +2471,7 @@ impl ImageRuntime {
                     .iter()
                     .find(|e| e.id == tensor_id)
                     .ok_or_else(|| {
-                        napi::Error::from_reason(format!("tensor {} not in table", tensor_id))
+                        crate::Error::from_reason(format!("tensor {} not in table", tensor_id))
                     })?;
 
                 let slice = Self::slice_tensor_bytes(&bytes, entry)?;
@@ -2486,7 +2489,7 @@ impl ImageRuntime {
     /// Activate the tensors for a single layer by reading its segment from disk.
     /// Returns a LayerLease whose Drop impl releases the tensors from ARRAY_REGISTRY.
     /// IMPORTANT: the caller MUST call `hidden.eval()` before dropping the lease.
-    pub fn activate_layer(&self, layer_index: u32) -> napi::Result<LayerLease> {
+    pub fn activate_layer(&self, layer_index: u32) -> crate::Result<LayerLease> {
         let seg_id = format!("layer_{}", layer_index);
         let segment = self
             .manifest
@@ -2494,11 +2497,11 @@ impl ImageRuntime {
             .iter()
             .find(|s| s.id == seg_id)
             .ok_or_else(|| {
-                napi::Error::from_reason(format!("layer segment not found: {}", seg_id))
+                crate::Error::from_reason(format!("layer segment not found: {}", seg_id))
             })?;
 
         let bytes = std::fs::read(self.image_dir.join(&segment.filename)).map_err(|e| {
-            napi::Error::from_reason(format!("read layer segment {}: {}", segment.filename, e))
+            crate::Error::from_reason(format!("read layer segment {}: {}", segment.filename, e))
         })?;
         let bytes_read = bytes.len() as u64;
 
@@ -2510,7 +2513,7 @@ impl ImageRuntime {
                 .iter()
                 .find(|e| e.id == tensor_id)
                 .ok_or_else(|| {
-                    napi::Error::from_reason(format!("tensor {} not in table", tensor_id))
+                    crate::Error::from_reason(format!("tensor {} not in table", tensor_id))
                 })?;
 
             let slice = Self::slice_tensor_bytes(&bytes, entry)?;
@@ -2531,11 +2534,11 @@ impl ImageRuntime {
     fn slice_tensor_bytes<'a>(
         segment_bytes: &'a [u8],
         entry: &TensorEntry,
-    ) -> napi::Result<&'a [u8]> {
+    ) -> crate::Result<&'a [u8]> {
         let start = entry.offset as usize;
         let end = start + entry.byte_length as usize;
         if end > segment_bytes.len() {
-            return Err(napi::Error::from_reason(format!(
+            return Err(crate::Error::from_reason(format!(
                 "tensor {} offset {}..{} exceeds segment length {}",
                 entry.name,
                 start,
@@ -2573,17 +2576,17 @@ impl ImageRuntime {
         &self,
         layer_index: u32,
         lease: &LayerLease,
-    ) -> napi::Result<HashMap<String, Array>> {
+    ) -> crate::Result<HashMap<String, Array>> {
         let seg_id = format!("layer_{}", layer_index);
         let segment = self
             .manifest
             .segments
             .iter()
             .find(|s| s.id == seg_id)
-            .ok_or_else(|| napi::Error::from_reason(format!("segment {} not found", seg_id)))?;
+            .ok_or_else(|| crate::Error::from_reason(format!("segment {} not found", seg_id)))?;
 
         if segment.tensor_ids.len() != lease.handles.len() {
-            return Err(napi::Error::from_reason(format!(
+            return Err(crate::Error::from_reason(format!(
                 "layer {} segment has {} tensors but lease has {} handles",
                 layer_index,
                 segment.tensor_ids.len(),
@@ -2600,10 +2603,10 @@ impl ImageRuntime {
                 .iter()
                 .find(|e| e.id == tensor_id)
                 .ok_or_else(|| {
-                    napi::Error::from_reason(format!("tensor {} not in table", tensor_id))
+                    crate::Error::from_reason(format!("tensor {} not in table", tensor_id))
                 })?;
             let array = reg.get(handle).cloned().ok_or_else(|| {
-                napi::Error::from_reason(format!(
+                crate::Error::from_reason(format!(
                     "handle {} not in registry for {}",
                     handle, entry.name
                 ))
@@ -2614,7 +2617,7 @@ impl ImageRuntime {
     }
 
     /// Rebuild quantized bindings from the currently active persistent handles.
-    fn rebuild_quantized_bindings_from_persistent(&mut self) -> napi::Result<()> {
+    fn rebuild_quantized_bindings_from_persistent(&mut self) -> crate::Result<()> {
         self.quantized_bindings.clear();
         for entry in &self.manifest.tensor_table {
             // Only build bindings for tensors in persistent segments and that have quantization.
@@ -2634,7 +2637,10 @@ impl ImageRuntime {
                     .iter()
                     .find(|e| e.id == quantization.scale_tensor_id)
                     .ok_or_else(|| {
-                        napi::Error::from_reason(format!("missing scale tensor for {}", entry.name))
+                        crate::Error::from_reason(format!(
+                            "missing scale tensor for {}",
+                            entry.name
+                        ))
                     })?;
                 let biases_entry = self
                     .manifest
@@ -2642,18 +2648,18 @@ impl ImageRuntime {
                     .iter()
                     .find(|e| e.id == quantization.bias_tensor_id)
                     .ok_or_else(|| {
-                        napi::Error::from_reason(format!("missing bias tensor for {}", entry.name))
+                        crate::Error::from_reason(format!("missing bias tensor for {}", entry.name))
                     })?;
 
                 let w_handle = *self.persistent_handles.get(&entry.name).ok_or_else(|| {
-                    napi::Error::from_reason(format!("missing persistent handle: {}", entry.name))
+                    crate::Error::from_reason(format!("missing persistent handle: {}", entry.name))
                 })?;
                 let s_handle =
                     *self
                         .persistent_handles
                         .get(&scales_entry.name)
                         .ok_or_else(|| {
-                            napi::Error::from_reason(format!(
+                            crate::Error::from_reason(format!(
                                 "missing persistent scale handle: {}",
                                 scales_entry.name
                             ))
@@ -2663,7 +2669,7 @@ impl ImageRuntime {
                         .persistent_handles
                         .get(&biases_entry.name)
                         .ok_or_else(|| {
-                            napi::Error::from_reason(format!(
+                            crate::Error::from_reason(format!(
                                 "missing persistent bias handle: {}",
                                 biases_entry.name
                             ))
@@ -2709,9 +2715,9 @@ impl ImageRuntime {
     ///   4. Drop the LayerLease, releasing that layer's arrays.
     ///
     /// Per-layer telemetry is emitted to stderr for residency verification.
-    pub fn run_six_layer_prefix(&mut self) -> napi::Result<Array> {
+    pub fn run_six_layer_prefix(&mut self) -> crate::Result<Array> {
         if self.released {
-            return Err(napi::Error::from_reason("image runtime already released"));
+            return Err(crate::Error::from_reason("image runtime already released"));
         }
 
         let arch = self.manifest.architecture.clone();
@@ -2730,45 +2736,45 @@ impl ImageRuntime {
             let reg = crate::bridge::ARRAY_REGISTRY.read();
             let emb_w = reg
                 .get(*self.persistent_handles.get(&emb_w_name).ok_or_else(|| {
-                    napi::Error::from_reason(format!("missing persistent tensor: {}", emb_w_name))
+                    crate::Error::from_reason(format!("missing persistent tensor: {}", emb_w_name))
                 })?)
                 .cloned()
-                .ok_or_else(|| napi::Error::from_reason("embed weight handle invalid"))?;
+                .ok_or_else(|| crate::Error::from_reason("embed weight handle invalid"))?;
             let emb_s = reg
                 .get(*self.persistent_handles.get(&emb_s_name).ok_or_else(|| {
-                    napi::Error::from_reason(format!("missing persistent tensor: {}", emb_s_name))
+                    crate::Error::from_reason(format!("missing persistent tensor: {}", emb_s_name))
                 })?)
                 .cloned()
-                .ok_or_else(|| napi::Error::from_reason("embed scales handle invalid"))?;
+                .ok_or_else(|| crate::Error::from_reason("embed scales handle invalid"))?;
             let emb_b = reg
                 .get(*self.persistent_handles.get(&emb_b_name).ok_or_else(|| {
-                    napi::Error::from_reason(format!("missing persistent tensor: {}", emb_b_name))
+                    crate::Error::from_reason(format!("missing persistent tensor: {}", emb_b_name))
                 })?)
                 .cloned()
-                .ok_or_else(|| napi::Error::from_reason("embed biases handle invalid"))?;
+                .ok_or_else(|| crate::Error::from_reason("embed biases handle invalid"))?;
             (emb_w, emb_s, emb_b)
         };
 
         let tok = Array::from_slice(&[2i32], &[1]);
         let mut hidden =
             crate::primitives::quantized_embedding_lookup(&tok, &emb_w, &emb_s, &emb_b)
-                .map_err(|e| napi::Error::from_reason(format!("embed lookup: {:?}", e)))?
+                .map_err(|e| crate::Error::from_reason(format!("embed lookup: {:?}", e)))?
                 .multiply(&Array::from_f32((arch.hidden_size as f32).sqrt()))
-                .map_err(|e| napi::Error::from_reason(format!("embed scale: {:?}", e)))?;
+                .map_err(|e| crate::Error::from_reason(format!("embed scale: {:?}", e)))?;
 
         let (rope_cos, rope_sin) = crate::primitives::rope_freqs(
             arch.head_dim,
             arch.max_position_embeddings,
             arch.rope_local.theta as f32,
         )
-        .map_err(|e| napi::Error::from_reason(format!("rope local: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("rope local: {:?}", e)))?;
         let full_rope = arch.rope_global.as_ref().unwrap_or(&arch.rope_local);
         let (full_cos, full_sin) = crate::primitives::rope_freqs(
             arch.global_head_dim.unwrap_or(arch.head_dim),
             arch.max_position_embeddings,
             full_rope.theta as f32,
         )
-        .map_err(|e| napi::Error::from_reason(format!("rope global: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("rope global: {:?}", e)))?;
 
         for layer in 0..layer_count {
             let t0 = Instant::now();
@@ -2779,7 +2785,7 @@ impl ImageRuntime {
 
             // Activate this layer's segment (reads from disk).
             let lease = self.activate_layer(layer as u32).map_err(|e| {
-                napi::Error::from_reason(format!("activate layer {}: {}", layer, e))
+                crate::Error::from_reason(format!("activate layer {}: {}", layer, e))
             })?;
             let bytes_read = lease.bytes_read;
 
@@ -2787,17 +2793,17 @@ impl ImageRuntime {
             let layer_map = self.build_layer_arrays_from_lease(layer as u32, &lease)?;
 
             // Helper closure to look up a tensor by name.
-            let get_tensor = |name: &str| -> napi::Result<Array> {
+            let get_tensor = |name: &str| -> crate::Result<Array> {
                 if let Some(arr) = layer_map.get(name) {
                     return Ok(arr.clone());
                 }
                 if let Some(&h) = self.persistent_handles.get(name) {
                     let reg = crate::bridge::ARRAY_REGISTRY.read();
                     return reg.get(h).cloned().ok_or_else(|| {
-                        napi::Error::from_reason(format!("persistent handle invalid for {}", name))
+                        crate::Error::from_reason(format!("persistent handle invalid for {}", name))
                     });
                 }
-                Err(napi::Error::from_reason(format!(
+                Err(crate::Error::from_reason(format!(
                     "tensor not found for layer {}: {}",
                     layer, name
                 )))
@@ -2891,7 +2897,7 @@ impl ImageRuntime {
                     &full_sin,
                     0,
                 )
-                .map_err(|e| napi::Error::from_reason(format!("layer {} full: {:?}", layer, e)))?
+                .map_err(|e| crate::Error::from_reason(format!("layer {} full: {:?}", layer, e)))?
             } else {
                 crate::model::run_sliding_layer_arrays(
                     &hidden,
@@ -2902,7 +2908,7 @@ impl ImageRuntime {
                     0,
                 )
                 .map_err(|e| {
-                    napi::Error::from_reason(format!("layer {} sliding: {:?}", layer, e))
+                    crate::Error::from_reason(format!("layer {} sliding: {:?}", layer, e))
                 })?
             };
 
@@ -2912,7 +2918,7 @@ impl ImageRuntime {
             // backing storage.
             hidden
                 .eval()
-                .map_err(|e| napi::Error::from_reason(format!("eval layer {}: {:?}", layer, e)))?;
+                .map_err(|e| crate::Error::from_reason(format!("eval layer {}: {:?}", layer, e)))?;
 
             let elapsed_ms = t0.elapsed().as_millis();
             let rss_after = process_rss_bytes();
@@ -2960,48 +2966,47 @@ impl ImageRuntime {
         let fn_w = {
             let reg = crate::bridge::ARRAY_REGISTRY.read();
             reg.get(*self.persistent_handles.get(&fn_w_name).ok_or_else(|| {
-                napi::Error::from_reason(format!("missing persistent tensor: {}", fn_w_name))
+                crate::Error::from_reason(format!("missing persistent tensor: {}", fn_w_name))
             })?)
             .cloned()
-            .ok_or_else(|| napi::Error::from_reason("norm weight handle invalid"))?
+            .ok_or_else(|| crate::Error::from_reason("norm weight handle invalid"))?
         };
         let final_hidden = crate::primitives::rms_norm(&hidden, &fn_w, 1e-6)
-            .map_err(|e| napi::Error::from_reason(format!("final norm: {:?}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("final norm: {:?}", e)))?;
 
         // LM head aliases embed_tokens (tie_word_embeddings); reuse emb_w.
-        let out =
-            {
-                let reg = crate::bridge::ARRAY_REGISTRY.read();
-                let ew = reg
-                    .get(*self.persistent_handles.get(&emb_w_name).ok_or_else(|| {
-                        napi::Error::from_reason("embed weight gone before lm_head")
-                    })?)
-                    .cloned()
-                    .ok_or_else(|| {
-                        napi::Error::from_reason("embed weight handle invalid at lm_head")
-                    })?;
-                let es = reg
-                    .get(*self.persistent_handles.get(&emb_s_name).ok_or_else(|| {
-                        napi::Error::from_reason("embed scales gone before lm_head")
-                    })?)
-                    .cloned()
-                    .ok_or_else(|| {
-                        napi::Error::from_reason("embed scales handle invalid at lm_head")
-                    })?;
-                let eb = reg
-                    .get(*self.persistent_handles.get(&emb_b_name).ok_or_else(|| {
-                        napi::Error::from_reason("embed biases gone before lm_head")
-                    })?)
-                    .cloned()
-                    .ok_or_else(|| {
-                        napi::Error::from_reason("embed biases handle invalid at lm_head")
-                    })?;
-                let gs = (ew.shape()[1] as i32 * 4) / es.shape()[1];
-                mlx_rs::ops::quantized_matmul(&final_hidden, &ew, &es, &eb, true, gs, 8)
-                    .map_err(|e| napi::Error::from_reason(format!("lm_head matmul: {:?}", e)))?
-            };
+        let out = {
+            let reg = crate::bridge::ARRAY_REGISTRY.read();
+            let ew =
+                reg.get(*self.persistent_handles.get(&emb_w_name).ok_or_else(|| {
+                    crate::Error::from_reason("embed weight gone before lm_head")
+                })?)
+                .cloned()
+                .ok_or_else(|| {
+                    crate::Error::from_reason("embed weight handle invalid at lm_head")
+                })?;
+            let es =
+                reg.get(*self.persistent_handles.get(&emb_s_name).ok_or_else(|| {
+                    crate::Error::from_reason("embed scales gone before lm_head")
+                })?)
+                .cloned()
+                .ok_or_else(|| {
+                    crate::Error::from_reason("embed scales handle invalid at lm_head")
+                })?;
+            let eb =
+                reg.get(*self.persistent_handles.get(&emb_b_name).ok_or_else(|| {
+                    crate::Error::from_reason("embed biases gone before lm_head")
+                })?)
+                .cloned()
+                .ok_or_else(|| {
+                    crate::Error::from_reason("embed biases handle invalid at lm_head")
+                })?;
+            let gs = (ew.shape()[1] as i32 * 4) / es.shape()[1];
+            mlx_rs::ops::quantized_matmul(&final_hidden, &ew, &es, &eb, true, gs, 8)
+                .map_err(|e| crate::Error::from_reason(format!("lm_head matmul: {:?}", e)))?
+        };
         out.eval()
-            .map_err(|e| napi::Error::from_reason(format!("final eval: {:?}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("final eval: {:?}", e)))?;
 
         self.release();
         Ok(out)
@@ -3020,14 +3025,14 @@ impl ImageRuntime {
     ///
     /// Returns a u32 token ID — no logits cross the boundary.
     /// Per-layer receipts are emitted to stderr.
-    pub fn run_full_model(&mut self, token_ids: &[i32]) -> napi::Result<u32> {
+    pub fn run_full_model(&mut self, token_ids: &[i32]) -> crate::Result<u32> {
         if self.released {
-            return Err(napi::Error::from_reason("image runtime already released"));
+            return Err(crate::Error::from_reason("image runtime already released"));
         }
 
         let plan = &self.manifest.execution_plan;
         plan.validate().map_err(|errors| {
-            napi::Error::from_reason(format!(
+            crate::Error::from_reason(format!(
                 "execution plan validation failed: {}",
                 errors.join("; ")
             ))
@@ -3042,29 +3047,28 @@ impl ImageRuntime {
         let emb_s_name = format!("{}.embed_tokens.scales", root);
         let emb_b_name = format!("{}.embed_tokens.biases", root);
 
-        let (emb_w, emb_s, emb_b) =
-            {
-                let reg = crate::bridge::ARRAY_REGISTRY.read();
-                let w = reg
-                    .get(*self.persistent_handles.get(&emb_w_name).ok_or_else(|| {
-                        napi::Error::from_reason(format!("missing: {}", emb_w_name))
-                    })?)
-                    .cloned()
-                    .ok_or_else(|| napi::Error::from_reason("embed weight invalid"))?;
-                let s = reg
-                    .get(*self.persistent_handles.get(&emb_s_name).ok_or_else(|| {
-                        napi::Error::from_reason(format!("missing: {}", emb_s_name))
-                    })?)
-                    .cloned()
-                    .ok_or_else(|| napi::Error::from_reason("embed scales invalid"))?;
-                let b = reg
-                    .get(*self.persistent_handles.get(&emb_b_name).ok_or_else(|| {
-                        napi::Error::from_reason(format!("missing: {}", emb_b_name))
-                    })?)
-                    .cloned()
-                    .ok_or_else(|| napi::Error::from_reason("embed biases invalid"))?;
-                (w, s, b)
-            };
+        let (emb_w, emb_s, emb_b) = {
+            let reg = crate::bridge::ARRAY_REGISTRY.read();
+            let w =
+                reg.get(*self.persistent_handles.get(&emb_w_name).ok_or_else(|| {
+                    crate::Error::from_reason(format!("missing: {}", emb_w_name))
+                })?)
+                .cloned()
+                .ok_or_else(|| crate::Error::from_reason("embed weight invalid"))?;
+            let s =
+                reg.get(*self.persistent_handles.get(&emb_s_name).ok_or_else(|| {
+                    crate::Error::from_reason(format!("missing: {}", emb_s_name))
+                })?)
+                .cloned()
+                .ok_or_else(|| crate::Error::from_reason("embed scales invalid"))?;
+            let b =
+                reg.get(*self.persistent_handles.get(&emb_b_name).ok_or_else(|| {
+                    crate::Error::from_reason(format!("missing: {}", emb_b_name))
+                })?)
+                .cloned()
+                .ok_or_else(|| crate::Error::from_reason("embed biases invalid"))?;
+            (w, s, b)
+        };
 
         let tok = Array::from_slice(token_ids, &[1, seq_len]);
         let mut hidden = crate::executor::run_prologue(
@@ -3075,11 +3079,11 @@ impl ImageRuntime {
             &plan.prologue,
             (arch.hidden_size as f32).sqrt(),
         )
-        .map_err(|e| napi::Error::from_reason(format!("prologue: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("prologue: {:?}", e)))?;
 
         hidden
             .eval()
-            .map_err(|e| napi::Error::from_reason(format!("prologue eval: {:?}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("prologue eval: {:?}", e)))?;
 
         // Precompute RoPE tables
         let (rope_cos, rope_sin) = crate::primitives::rope_freqs(
@@ -3087,14 +3091,14 @@ impl ImageRuntime {
             arch.max_position_embeddings,
             arch.rope_local.theta as f32,
         )
-        .map_err(|e| napi::Error::from_reason(format!("rope local: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("rope local: {:?}", e)))?;
         let full_rope = arch.rope_global.as_ref().unwrap_or(&arch.rope_local);
         let (full_cos, full_sin) = crate::primitives::rope_freqs(
             arch.global_head_dim.unwrap_or(arch.head_dim),
             arch.max_position_embeddings,
             full_rope.theta as f32,
         )
-        .map_err(|e| napi::Error::from_reason(format!("rope global: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("rope global: {:?}", e)))?;
 
         // Build per-layer KV caches for single-pass validation
         let max_seq_len = arch.max_position_embeddings.min(8192);
@@ -3133,24 +3137,24 @@ impl ImageRuntime {
             // Activate the layer segment
             let lease = self
                 .activate_layer(l)
-                .map_err(|e| napi::Error::from_reason(format!("activate layer {}: {}", l, e)))?;
+                .map_err(|e| crate::Error::from_reason(format!("activate layer {}: {}", l, e)))?;
             let bytes_read = lease.bytes_read;
 
             // Build layer tensor map from the lease
             let layer_map = self.build_layer_arrays_from_lease(l, &lease)?;
 
             // Helper to look up a tensor
-            let get_tensor = |name: &str| -> napi::Result<Array> {
+            let get_tensor = |name: &str| -> crate::Result<Array> {
                 if let Some(arr) = layer_map.get(name) {
                     return Ok(arr.clone());
                 }
                 if let Some(&h) = self.persistent_handles.get(name) {
                     let reg = crate::bridge::ARRAY_REGISTRY.read();
                     return reg.get(h).cloned().ok_or_else(|| {
-                        napi::Error::from_reason(format!("persistent handle invalid for {}", name))
+                        crate::Error::from_reason(format!("persistent handle invalid for {}", name))
                     });
                 }
-                Err(napi::Error::from_reason(format!(
+                Err(crate::Error::from_reason(format!(
                     "tensor not found for layer {}: {}",
                     l, name
                 )))
@@ -3256,12 +3260,12 @@ impl ImageRuntime {
                     attention_kind: projection_identity::AttentionKind::Sliding,
                 },
             )
-            .map_err(|e| napi::Error::from_reason(format!("layer {}: {:?}", l, e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("layer {}: {:?}", l, e)))?;
 
             // *** CRITICAL: eval BEFORE dropping lease ***
             hidden
                 .eval()
-                .map_err(|e| napi::Error::from_reason(format!("eval layer {}: {:?}", l, e)))?;
+                .map_err(|e| crate::Error::from_reason(format!("eval layer {}: {:?}", l, e)))?;
 
             let elapsed_ms = t0.elapsed().as_millis();
             let handles_after = crate::bridge::handle_count();
@@ -3313,10 +3317,10 @@ impl ImageRuntime {
                 *self
                     .persistent_handles
                     .get(&fn_w_name)
-                    .ok_or_else(|| napi::Error::from_reason(format!("missing: {}", fn_w_name)))?,
+                    .ok_or_else(|| crate::Error::from_reason(format!("missing: {}", fn_w_name)))?,
             )
             .cloned()
-            .ok_or_else(|| napi::Error::from_reason("norm weight invalid"))?
+            .ok_or_else(|| crate::Error::from_reason("norm weight invalid"))?
         };
 
         let epi = crate::executor::run_epilogue(
@@ -3330,15 +3334,15 @@ impl ImageRuntime {
             arch.tie_word_embeddings,
             &crate::session::SamplerConfig::default(),
         )
-        .map_err(|e| napi::Error::from_reason(format!("epilogue: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("epilogue: {:?}", e)))?;
 
         epi.selected_token
             .eval()
-            .map_err(|e| napi::Error::from_reason(format!("epilogue eval: {:?}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("epilogue eval: {:?}", e)))?;
         let token_id = epi
             .selected_token
             .try_as_slice::<u32>()
-            .map_err(|e| napi::Error::from_reason(format!("epilogue token: {:?}", e)))?
+            .map_err(|e| crate::Error::from_reason(format!("epilogue token: {:?}", e)))?
             .first()
             .copied()
             .unwrap_or(0);
@@ -3369,7 +3373,7 @@ impl ImageRuntime {
 fn plan(
     source_dir: &Path,
     skip_validation: bool,
-) -> napi::Result<(crate::config::CompilationPlan, LoadedSource)> {
+) -> crate::Result<(crate::config::CompilationPlan, LoadedSource)> {
     use crate::config::{CompilationPlan, PlannedSegment, PlannedTensor};
 
     let loaded = load_source(source_dir, skip_validation)?;
@@ -3521,7 +3525,7 @@ fn compile_unchecked(
     source_dir: &str,
     output_dir: &str,
     skip_validation: bool,
-) -> napi::Result<CompiledImage> {
+) -> crate::Result<CompiledImage> {
     let source_dir = Path::new(source_dir);
     let output_dir = Path::new(output_dir);
     let started_at = std::time::Instant::now();
@@ -3547,7 +3551,7 @@ fn compile_sequential(
     loaded: LoadedSource,
     started_at: Instant,
     source_load_ms: u64,
-) -> napi::Result<CompiledImage> {
+) -> crate::Result<CompiledImage> {
     let source = build_source_identity(
         &loaded.manifest,
         loaded.shard_hashes.clone(),
@@ -3571,7 +3575,7 @@ fn compile_sequential(
         let physical_id = emitted_ids
             .get(&embed_name)
             .copied()
-            .ok_or_else(|| napi::Error::from_reason("embed_tokens.weight was not emitted"))?;
+            .ok_or_else(|| crate::Error::from_reason("embed_tokens.weight was not emitted"))?;
         builder.add_alias("lm_head.weight", physical_id, "tie_word_embeddings=true");
     }
 
@@ -3651,18 +3655,18 @@ fn compile_sequential(
     );
     let receipt_path = output_dir.join("receipt.json");
     let receipt_json = serde_json::to_string_pretty(&receipt)
-        .map_err(|e| napi::Error::from_reason(format!("json: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("json: {}", e)))?;
     std::fs::write(&receipt_path, receipt_json)
-        .map_err(|e| napi::Error::from_reason(format!("write receipt: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("write receipt: {}", e)))?;
 
     Ok(CompiledImage { manifest, receipt })
 }
 
-pub fn read(image_dir: &str) -> napi::Result<CompiledImageReader> {
+pub fn read(image_dir: &str) -> crate::Result<CompiledImageReader> {
     CompiledImageReader::open(Path::new(image_dir))
 }
 
-pub fn verify(image_dir: &str) -> napi::Result<ManifestVerification> {
+pub fn verify(image_dir: &str) -> crate::Result<ManifestVerification> {
     read(image_dir)?.verify()
 }
 
@@ -3673,10 +3677,10 @@ pub fn verify(image_dir: &str) -> napi::Result<ManifestVerification> {
 ///    when the rename crosses filesystem boundaries).
 /// 3. On failure the staging directory is left intact with a `.failed` marker
 ///    so that the caller can inspect or retry.
-pub fn publish_image(staging: &Path, destination: &Path) -> napi::Result<()> {
+pub fn publish_image(staging: &Path, destination: &Path) -> crate::Result<()> {
     let publishing_marker = staging.join(".publishing");
     std::fs::write(&publishing_marker, b"")
-        .map_err(|e| napi::Error::from_reason(format!("write .publishing: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("write .publishing: {}", e)))?;
 
     let result = std::fs::rename(staging, destination);
     match result {
@@ -3688,12 +3692,12 @@ pub fn publish_image(staging: &Path, destination: &Path) -> napi::Result<()> {
                 if let Err(write_err) =
                     std::fs::write(&failed_marker, format!("rename failed: {}", e))
                 {
-                    return Err(napi::Error::from_reason(format!(
+                    return Err(crate::Error::from_reason(format!(
                         "write .failed marker: {} (original rename: {})",
                         write_err, e
                     )));
                 }
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "rename crosses devices: {}. Staging left in place with .failed marker.",
                     e
                 )));
@@ -3701,12 +3705,12 @@ pub fn publish_image(staging: &Path, destination: &Path) -> napi::Result<()> {
             let failed_marker = staging.join(".failed");
             if let Err(write_err) = std::fs::write(&failed_marker, format!("rename failed: {}", e))
             {
-                return Err(napi::Error::from_reason(format!(
+                return Err(crate::Error::from_reason(format!(
                     "write .failed marker: {} (original rename: {})",
                     write_err, e
                 )));
             }
-            Err(napi::Error::from_reason(format!(
+            Err(crate::Error::from_reason(format!(
                 "rename {} -> {}: {}",
                 staging.display(),
                 destination.display(),
@@ -4641,10 +4645,10 @@ mod tests {
         )
         .expect("compile abi fixture");
         let manifest_path = abi_dir.join("manifest.json");
-        let manifest = fs::read_to_string(&manifest_path).expect("manifest");
+        let manifest = fs::read_to_string(&manifest_path).expect("read manifest");
         let mutated = manifest.replace(
-            "\"runtime_abi\": \"mlx-rs/0.21.0 napi-rs/3.9.0 safetensors/0.5.3\"",
-            "\"runtime_abi\": \"mlx-rs/0.21.0 napi-rs/3.9.0 safetensors/0.5.3-mutated\"",
+            "\"runtime_abi\": \"mlx-rs/0.21.0 core/",
+            "\"runtime_abi\": \"mlx-rs/0.21.0 core-mutated/",
         );
         fs::write(&manifest_path, mutated).expect("rewrite manifest");
         let err = match read(abi_dir.to_str().expect("output dir")) {

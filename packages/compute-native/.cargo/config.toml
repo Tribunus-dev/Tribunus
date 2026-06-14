@@ -4,7 +4,12 @@
 jobs = 8
 
 [target.'cfg(target_os = "macos")']
-rustflags = ["-C", "target-cpu=apple-m1"]
+rustflags = []
+
+# ── Research / Development Loop ──────────────────────────────────────────
+# To enable Apple M1 optimization and LLD for faster dev loops:
+# RUSTFLAGS="-C target-cpu=apple-m1" RUSTC_LINKER="ld64.lld" cargo build ...
+# Note: Builds using local overrides or lld are marked authority_eligible=false.
 
 [term]
 verbose = false

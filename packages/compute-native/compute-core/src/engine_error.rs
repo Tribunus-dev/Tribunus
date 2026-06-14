@@ -4,7 +4,7 @@
 //! an optional model image hash, an optional request ID, an optional phase,
 //! a retryability flag, and a worker-termination flag.
 //!
-//! N-API boundary conversion preserves stable error codes via `to_napi_json`.
+//! Serialization preserves stable error codes via `to_json`.
 //! The `failure_funnel` and `cancellation_funnel` functions provide canonical
 //! error creation paths.
 
@@ -125,7 +125,7 @@ pub struct WorkerExitDetails {
 /// A structured inference-engine error.
 ///
 /// Construct via [`EngineError::new`] or the builder-style helpers,
-/// then convert to N-API-safe JSON with [`to_napi_json`](Self::to_napi_json).
+/// then convert to a serializable JSON object with [`to_json`](Self::to_json).
 #[derive(Debug, Clone)]
 pub struct EngineError {
     pub code: EngineErrorCode,
@@ -279,14 +279,13 @@ impl EngineError {
 // ---------------------------------------------------------------------------
 
 impl EngineError {
-    /// Serialize this error to a JSON object suitable for crossing the N-API
-    /// boundary.
+    /// Serialize this error to a JSON object.
     ///
     /// Keys: `"code"`, `"message"`, `"modelImageHash"` (or `null`),
     /// `"requestId"` (or `null`), `"phase"`, `"retryable"`, `"workerTerminated"`,
     /// `"forcedTerminationReason"` (string or `null`),
     /// `"workerExitDetails"` (object or `null`).
-    pub fn to_napi_json(&self) -> Value {
+    pub fn to_json(&self) -> Value {
         serde_json::json!({
             "code": self.code.code(),
             "message": self.message,
@@ -488,9 +487,9 @@ mod tests {
     }
 
     #[test]
-    fn test_to_napi_json() {
+    fn test_to_json() {
         let err = EngineError::new(EngineErrorCode::ModelBusy, "busy").at_phase("prefill");
-        let json = err.to_napi_json();
+        let json = err.to_json();
         assert_eq!(json["code"], "model-busy");
         assert_eq!(json["message"], "busy");
         assert!(json["modelImageHash"].is_null());
@@ -501,14 +500,14 @@ mod tests {
     }
 
     #[test]
-    fn test_to_napi_json_with_fields() {
+    fn test_to_json_with_fields() {
         let err = EngineError::with_request(
             EngineErrorCode::WorkerCrashed,
             "segfault in attention kernel",
             "req-7",
         )
         .at_phase("decode");
-        let json = err.to_napi_json();
+        let json = err.to_json();
         assert_eq!(json["code"], "worker-crashed");
         assert_eq!(json["requestId"], "req-7");
         assert_eq!(json["phase"], "decode");
@@ -577,7 +576,7 @@ mod tests {
         assert_eq!(err.worker_exit_details, Some(details.clone()));
 
         // Verify JSON round-trip includes the worker exit details.
-        let json = err.to_napi_json();
+        let json = err.to_json();
         let wd = json["workerExitDetails"].as_object().unwrap();
         assert_eq!(wd["workerPid"], 12345);
         assert_eq!(wd["exitCode"], serde_json::json!(1));

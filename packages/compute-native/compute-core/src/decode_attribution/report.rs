@@ -330,6 +330,17 @@ pub struct CoverageLatticeRow {
     pub cold_first_predict_ns: u64,
     pub reference_output_hashes_populated: bool,
     pub reference_status: String,
+    pub terminal_phase: String,
+    pub backend_support_status: String,
+    pub materialize_status: String,
+    pub compile_status: String,
+    pub load_status: String,
+    pub reference_output_hashes: Vec<String>,
+    pub backend_output_hashes: Vec<String>,
+    pub matches_tolerance: bool,
+    pub execution_proof_summary: String,
+    pub execution_proof_cpu_glue_ops: Vec<String>,
+    pub mlx_compile_attempted: bool,
 }
 
 /// The full coverage lattice artifact.
@@ -403,6 +414,23 @@ pub fn generate_coverage_json(
             cold_first_predict_ns: r.cold_first_predict_ns,
             reference_output_hashes_populated: r.reference_output_hashes_populated,
             reference_status: r.reference_status.clone(),
+            terminal_phase: if r.terminal_phase.is_empty() {
+                r.pipeline_phase
+                    .clone()
+                    .unwrap_or_else(|| "unknown".to_string())
+            } else {
+                r.terminal_phase.clone()
+            },
+            backend_support_status: r.backend_support_status.clone(),
+            materialize_status: r.materialize_status.clone(),
+            compile_status: r.compile_status.clone(),
+            load_status: r.load_status.clone(),
+            reference_output_hashes: r.reference_output_hashes.clone(),
+            backend_output_hashes: r.cold_output_hashes.clone(),
+            matches_tolerance: r.matches_tolerance,
+            execution_proof_summary: r.execution_proof.notes.clone().unwrap_or_default(),
+            execution_proof_cpu_glue_ops: r.execution_proof.cpu_glue_ops.clone(),
+            mlx_compile_attempted: r.mlx_compile_attempted,
         })
         .collect();
 
@@ -563,11 +591,22 @@ mod tests {
             max_absolute_error: 0.0,
             steady_p50_ns: if predict_status == "pass" { 10 } else { 0 },
             materialize_duration_ns: 1,
-            compile_duration_ns: 2,
-            load_duration_ns: 3,
-            cold_first_predict_ns: 4,
+            compile_duration_ns: 1,
+            load_duration_ns: 1,
+            cold_first_predict_ns: 1,
             reference_output_hashes_populated: true,
-            reference_status: "ok".to_string(),
+            reference_status: "pass".to_string(),
+            terminal_phase: "complete".to_string(),
+            backend_support_status: "supported".to_string(),
+            materialize_status: "pass".to_string(),
+            compile_status: "pass".to_string(),
+            load_status: "pass".to_string(),
+            reference_output_hashes: vec!["hash1".to_string()],
+            backend_output_hashes: vec!["hash1".to_string()],
+            matches_tolerance: true,
+            execution_proof_summary: "execution proof".to_string(),
+            execution_proof_cpu_glue_ops: vec![],
+            mlx_compile_attempted: false,
         }
     }
 
@@ -610,6 +649,9 @@ mod tests {
         assert_eq!(round_trip.rows.len(), 2);
         assert_eq!(round_trip.validation.observed_row_count, 2);
         assert_eq!(round_trip.validation.aggregate_exclusions.len(), 1);
-        assert_eq!(round_trip.validation.aggregate_input_summary.excluded_rows, 1);
+        assert_eq!(
+            round_trip.validation.aggregate_input_summary.excluded_rows,
+            1
+        );
     }
 }

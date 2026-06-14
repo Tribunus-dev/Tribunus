@@ -226,6 +226,7 @@ pub fn run_matrix_a(config: &RunConfig) -> Vec<DecodeAttributionReceipt> {
         ("coreml", "cpuAndGPU"),
         ("accelerate", "accelerate_cpu"),
         ("mlx", "mlx_default"),
+        ("mlx", "skipped"),
         ("reference", ""),
     ];
     let mut seq: u32 = 0;

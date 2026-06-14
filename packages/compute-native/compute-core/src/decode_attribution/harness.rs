@@ -32,7 +32,9 @@ use crate::worker_memory;
 
 use crate::decode_attribution::compute_plan::inspect_compute_plan;
 use crate::decode_attribution::environment::{self, capture_host_environment};
-use crate::decode_attribution::graph_catalog::{canonical_family_name, graph_output_names, GraphFamily};
+use crate::decode_attribution::graph_catalog::{
+    canonical_family_name, graph_output_names, GraphFamily,
+};
 use crate::decode_attribution::receipt::DecodeAttributionReceipt;
 use crate::decode_attribution::shape_profiles::ShapeProfile;
 use crate::pipeline_parity::{
@@ -40,11 +42,13 @@ use crate::pipeline_parity::{
 };
 use std::ffi::c_void;
 
-use crate::arena::ArenaInfo;
+use crate::arena_info::ArenaInfo;
 use crate::decode_attribution::backend_adapters::{
-    accelerate_adapter, conformance, coreml_adapter, mlx_adapter, predict_loop,
-    reference_adapter as ref_eval, BackendSupportTier,
+    accelerate_adapter, conformance, coreml_adapter, predict_loop, reference_adapter as ref_eval,
+    BackendSupportTier,
 };
+
+use crate::decode_attribution::backend_adapters::mlx_adapter;
 
 /// Run one decode-attribution measurement.
 ///
@@ -142,8 +146,7 @@ pub fn run_one(
     let temp_dir = match tempfile::tempdir() {
         Ok(d) => d,
         Err(e) => {
-            r.status = "compile_error".into();
-            r.failure_reason = Some(format!("tempdir creation failed: {e}"));
+            r.mark_compile_limited(format!("tempdir creation failed: {e}"));
             return r;
         }
     };
@@ -154,8 +157,7 @@ pub fn run_one(
     let program = match b.build() {
         Ok(p) => p,
         Err(e) => {
-            r.status = "compile_error".into();
-            r.failure_reason = Some(format!("MIL program build failed: {e}"));
+            r.mark_compile_limited(format!("MIL program build failed: {e}"));
             return r;
         }
     };
@@ -167,8 +169,7 @@ pub fn run_one(
 
     let mat_start = Instant::now();
     if let Err(e) = mlpackage::write_mlpackage(program, &mlpackage_path, &meta) {
-        r.status = "compile_error".into();
-        r.failure_reason = Some(format!("mlpackage write failed: {e}"));
+        r.mark_compile_limited(format!("mlpackage write failed: {e}"));
         return r;
     }
     r.materialize_duration_ns = mat_start.elapsed().as_nanos() as u64;
@@ -186,8 +187,7 @@ pub fn run_one(
     let cm_receipt = match compile_result {
         Ok(rec) => rec,
         Err(e) => {
-            r.status = "compile_error".into();
-            r.failure_reason = Some(format!("coremlcompiler compilation failed: {e}"));
+            r.mark_compile_limited(format!("coremlcompiler compilation failed: {e}"));
             r.compile_duration_ns = 0;
             return r;
         }
@@ -238,8 +238,7 @@ pub fn run_one(
         Err(e) => {
             r.load_duration_ns = load_start.elapsed().as_nanos() as u64;
             r.load_success = false;
-            r.status = "load_error".into();
-            r.failure_reason = Some(format!("model load failed: {e}"));
+            r.mark_predict_blocked("load", format!("model load failed: {e}"));
             return r;
         }
     };
@@ -332,7 +331,7 @@ pub fn run_one(
     // prediction stubs mean timing fields are zero — receivers of this
     // receipt must check `cold_first_predict_ns > 0` to determine
     // whether prediction was actually executed.
-    r.status = "pass".to_string();
+    r.mark_passed();
 
     r
 }
@@ -465,11 +464,7 @@ pub fn run_backend(
         ),
         "reference" => run_backend_reference(&mut r, family, profile),
         other => {
-            r.status = "prediction_error".into();
-            r.failure_reason = Some(format!("unknown backend: {other}"));
-            r.predict_status = "predict_blocked".into();
-            r.predict_failure_classification = "predict_blocked".into();
-            r.terminal_phase = "predict".into();
+            r.mark_predict_blocked("predict", format!("unknown backend: {other}"));
         }
     }
 
@@ -556,10 +551,7 @@ fn run_backend_coreml(
         r.warmup_status = "skipped".to_string();
         r.steady_status = "skipped".to_string();
         r.cold_first_predict_ns = 0;
-        r.predict_failure_classification.clear();
-        r.predict_status = "pass".to_string();
-        r.status = "pass".to_string();
-        r.terminal_phase = "complete".into();
+        r.mark_passed();
         // Reference conformance for identity: output equals input.
         let input_data = generate_input_data(profile);
         r.cold_output_hashes = vec![conformance::hash_output(&input_data)];
@@ -576,8 +568,7 @@ fn run_backend_coreml(
             r.predict_failure_classification = "compile_limited".into();
             r.terminal_phase = "mil_build".into();
             r.failure_diagnostics = Some(format!("coreml prepare: {e}"));
-            r.status = "compile_error".into();
-            r.failure_reason = Some(format!("coreml prepare failed: {e}"));
+            r.mark_compile_limited(format!("coreml prepare failed: {e}"));
             r.materialize_status = "error".into();
             r.compile_status = "error".into();
             r.load_status = "error".into();
@@ -635,11 +626,7 @@ fn run_backend_coreml(
     let model = match prepared.coreml_model.as_ref() {
         Some(m) => m,
         None => {
-            r.status = "load_error".into();
-            r.predict_status = "load_blocked".into();
-            r.predict_failure_classification = "load_blocked".into();
-            r.terminal_phase = "load".into();
-            r.failure_diagnostics = Some("coreml model not loaded".into());
+            r.mark_predict_blocked("load", "coreml model not loaded".to_string());
             r.failure_reason = Some("coreml model not loaded".into());
             r.load_status = "error".into();
             return;
@@ -687,12 +674,8 @@ fn run_backend_coreml(
         }
         Err(e) => {
             r.cold_status = "error".into();
-            r.predict_status = "predict_blocked".into();
-            r.predict_failure_classification = "predict_blocked".into();
-            r.terminal_phase = "predict".into();
+            r.mark_predict_blocked("predict", format!("coreml cold predict: {e}"));
             r.failure_diagnostics = Some(format!("coreml cold predict: {e}"));
-            r.status = "prediction_error".into();
-            r.failure_reason = Some(format!("coreml cold predict: {e}"));
             return;
         }
     }
@@ -707,12 +690,8 @@ fn run_backend_coreml(
         }
         Err(e) => {
             r.warmup_status = "error".into();
-            r.predict_status = "predict_blocked".into();
-            r.predict_failure_classification = "predict_blocked".into();
-            r.terminal_phase = "predict".into();
+            r.mark_predict_blocked("predict", format!("coreml warmup: {e}"));
             r.failure_diagnostics = Some(format!("coreml warmup: {e}"));
-            r.status = "prediction_error".into();
-            r.failure_reason = Some(format!("coreml warmup: {e}"));
             return;
         }
     }
@@ -738,12 +717,8 @@ fn run_backend_coreml(
         }
         Err(e) => {
             r.steady_status = "error".into();
-            r.predict_status = "predict_blocked".into();
-            r.predict_failure_classification = "predict_blocked".into();
-            r.terminal_phase = "predict".into();
+            r.mark_predict_blocked("predict", format!("coreml steady: {e}"));
             r.failure_diagnostics = Some(format!("coreml steady: {e}"));
-            r.status = "prediction_error".into();
-            r.failure_reason = Some(format!("coreml steady: {e}"));
             return;
         }
     };
@@ -771,15 +746,9 @@ fn run_backend_coreml(
     }
 
     if metrics.matches_tolerance {
-        r.predict_failure_classification.clear();
-        r.status = "pass".to_string();
-        r.predict_status = "pass".to_string();
-        r.terminal_phase = "complete".into();
+        r.mark_passed();
     } else {
-        r.status = "numerical_divergence".into();
-        r.predict_status = "numerical_divergence".into();
-        r.predict_failure_classification = "numerical_divergence".into();
-        r.terminal_phase = "conformance".into();
+        r.mark_numerical_divergence(metrics.max_absolute_error);
         r.failure_reason = Some(format!(
             "max_absolute_error={}, tolerance={}",
             metrics.max_absolute_error, tolerance
@@ -812,13 +781,7 @@ fn run_backend_accelerate(
         tier,
         BackendSupportTier::UnsupportedGraph | BackendSupportTier::NotImplemented
     ) {
-        r.predict_status = "skipped_by_support".to_string();
-        r.predict_failure_classification = "skipped_by_support".to_string();
-        r.terminal_phase = "skipped_by_support".to_string();
-        // Unsupported graph — status reflects that the named backend did not execute.
-        // The reference evaluator (run unconditionally after backend dispatch) will
-        // produce conformance data. This row is NOT a native Accelerate pass.
-        r.status = "skipped_by_support".to_string();
+        r.mark_skipped_by_support("Accelerate does not support this family".to_string());
         r.execution_proof = crate::decode_attribution::receipt::ExecutionProof {
             engine: "reference_evaluator".into(),
             accelerated_ops: vec![],
@@ -853,10 +816,7 @@ fn run_backend_accelerate(
         r.steady_status = "ok".to_string();
         r.cold_first_predict_ns = 0;
         r.cold_output_hashes = vec![conformance::hash_output(&input_data)];
-        r.predict_failure_classification.clear();
-        r.predict_status = "pass".to_string();
-        r.status = "pass".to_string();
-        r.terminal_phase = "complete".into();
+        r.mark_passed();
         r.reference_status = "ok".to_string();
         r.execution_proof = crate::decode_attribution::receipt::ExecutionProof {
             engine: "accelerate".into(),
@@ -892,9 +852,7 @@ fn run_backend_accelerate(
     r.cold_first_predict_ns = domain_result.duration_ns;
     r.cold_output_hashes = vec![conformance::hash_output(&domain_result.output)];
     r.cold_status = "ok".into();
-    r.predict_status = "pass".into();
-    r.status = "pass".into();
-    r.terminal_phase = "complete".into();
+    r.mark_passed();
 
     // ── Steady (amortized loop) ────────────────────────────────────────────
     let steady_start = Instant::now();
@@ -936,15 +894,9 @@ fn run_backend_accelerate(
     }
 
     if metrics.matches_tolerance {
-        r.predict_failure_classification.clear();
-        r.predict_status = "pass".to_string();
-        r.terminal_phase = "complete".into();
-        r.status = "pass".to_string();
+        r.mark_passed();
     } else {
-        r.predict_status = "numerical_divergence".into();
-        r.predict_failure_classification = "numerical_divergence".into();
-        r.terminal_phase = "conformance".into();
-        r.status = "numerical_divergence".into();
+        r.mark_numerical_divergence(metrics.max_absolute_error);
         r.failure_reason = Some(format!(
             "max_absolute_error={}, tolerance={}",
             metrics.max_absolute_error, tolerance
@@ -977,10 +929,7 @@ fn run_backend_mlx(
         tier,
         BackendSupportTier::UnsupportedGraph | BackendSupportTier::NotImplemented
     ) {
-        r.predict_status = "skipped_by_support".to_string();
-        r.predict_failure_classification = "skipped_by_support".to_string();
-        r.terminal_phase = "skipped_by_support".to_string();
-        r.status = "skipped_by_support".to_string();
+        r.mark_skipped_by_support("MLX does not support this family".to_string());
         r.cold_status = "skipped".to_string();
         r.warmup_status = "skipped".to_string();
         r.steady_status = "skipped".to_string();
@@ -1002,9 +951,7 @@ fn run_backend_mlx(
             Err(e) => {
                 r.predict_status = "predict_blocked".to_string();
                 r.predict_failure_classification = "predict_blocked".to_string();
-                r.terminal_phase = "predict".to_string();
-                r.status = "prediction_error".into();
-                r.failure_reason = Some(format!("mlx prepare_graph: {e}"));
+                r.mark_predict_blocked("predict", format!("mlx prepare_graph: {e}"));
                 return;
             }
         };
@@ -1038,9 +985,7 @@ fn run_backend_mlx(
         if let Err(e) = cold_result {
             r.predict_status = "predict_blocked".into();
             r.predict_failure_classification = "predict_blocked".into();
-            r.terminal_phase = "predict".into();
-            r.status = "prediction_error".into();
-            r.failure_reason = Some(format!("mlx phase-split cold: {e}"));
+            r.mark_predict_blocked("predict", format!("mlx phase-split cold: {e}"));
             return;
         }
     }
@@ -1069,9 +1014,7 @@ fn run_backend_mlx(
             r.cold_status = "error".into();
             r.predict_status = "predict_blocked".into();
             r.predict_failure_classification = "predict_blocked".into();
-            r.terminal_phase = "predict".into();
-            r.status = "prediction_error".into();
-            r.failure_reason = Some(format!("mlx cold: {e}"));
+            r.mark_predict_blocked("predict", format!("mlx cold: {e}"));
             return;
         }
     }
@@ -1088,9 +1031,7 @@ fn run_backend_mlx(
             r.warmup_status = "error".into();
             r.predict_status = "predict_blocked".into();
             r.predict_failure_classification = "predict_blocked".into();
-            r.terminal_phase = "predict".into();
-            r.status = "prediction_error".into();
-            r.failure_reason = Some(format!("mlx warmup: {e}"));
+            r.mark_predict_blocked("predict", format!("mlx warmup: {e}"));
             return;
         }
     }
@@ -1118,9 +1059,7 @@ fn run_backend_mlx(
             r.steady_status = "error".into();
             r.predict_status = "predict_blocked".into();
             r.predict_failure_classification = "predict_blocked".into();
-            r.terminal_phase = "predict".into();
-            r.status = "prediction_error".into();
-            r.failure_reason = Some(format!("mlx steady: {e}"));
+            r.mark_predict_blocked("predict", format!("mlx steady: {e}"));
             return;
         }
     };
@@ -1143,15 +1082,9 @@ fn run_backend_mlx(
     r.reference_status = "ok".to_string();
 
     if metrics.matches_tolerance {
-        r.status = "pass".to_string();
-        r.predict_status = "pass".to_string();
-        r.predict_failure_classification.clear();
-        r.terminal_phase = "complete".into();
+        r.mark_passed();
     } else {
-        r.status = "numerical_divergence".into();
-        r.predict_status = "numerical_divergence".into();
-        r.predict_failure_classification = "numerical_divergence".into();
-        r.terminal_phase = "conformance".into();
+        r.mark_numerical_divergence(metrics.max_absolute_error);
         r.failure_reason = Some(format!(
             "max_absolute_error={}, tolerance={}",
             metrics.max_absolute_error, tolerance
@@ -1194,17 +1127,14 @@ fn run_backend_reference(
     r.mean_absolute_error = 0.0;
     r.cosine_similarity = 1.0;
     r.matches_tolerance = true;
-    r.predict_status = "pass".to_string();
-    r.predict_failure_classification.clear();
-    r.terminal_phase = "complete".into();
+    r.mark_passed();
 
     // Populate output shapes for multi-output families.
     r.output_shapes = ref_outputs
         .iter()
         .map(|o| vec![1, o.len() as u32])
         .collect();
-
-    r.status = "pass".to_string();
+    r.mark_passed();
 }
 
 // ── Backend helpers ─────────────────────────────────────────────────────────

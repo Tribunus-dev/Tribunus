@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::graph_catalog::{canonical_family_name, identity_baseline_family_name};
 use super::lattice::{expected_lattice_cells, parse_lattice_cell_id, LatticeCellKey};
 use super::receipt::DecodeAttributionReceipt;
+use super::report::{CoverageLattice, CoverageLatticeRow};
 
 pub const LATTICE_VALIDATION_SCHEMA_VERSION: &str = "coverage-lattice.validation.v2";
 pub const LATTICE_VALIDATOR_VERSION: &str = "coverage-lattice-validator.v2";
@@ -292,6 +293,132 @@ pub fn validate_lattice(
     }
 }
 
+pub fn validate_lattice_artifact(coverage: &CoverageLattice) -> LatticeValidationReceipt {
+    let expected_cells = expected_lattice_cells();
+    let expected_cell_count = expected_cells.len();
+    let observed_row_count = coverage.rows.len();
+    let baseline_commit_sha = coverage.commit_sha.clone();
+
+    let mut seen_cells: BTreeMap<LatticeCellKey, Vec<usize>> = BTreeMap::new();
+    let mut invalid_cells = Vec::new();
+    let mut aggregate_exclusions = Vec::new();
+    let mut valid_row_count = 0usize;
+
+    for (row_index, row) in coverage.rows.iter().enumerate() {
+        match validate_artifact_row(
+            row_index,
+            &coverage.run_id,
+            &baseline_commit_sha,
+            row,
+            &expected_cells,
+        ) {
+            Ok(validated) => {
+                valid_row_count += 1;
+                seen_cells
+                    .entry(validated.cell_key.clone())
+                    .or_default()
+                    .push(row_index);
+                if let Some(exclusion) = validated.aggregate_exclusion {
+                    aggregate_exclusions.push(exclusion);
+                }
+            }
+            Err(invalid) => invalid_cells.push(invalid),
+        }
+    }
+
+    let seen_valid_cells: BTreeSet<LatticeCellKey> = seen_cells.keys().cloned().collect();
+    let unique_cell_count = seen_valid_cells.len();
+    let missing_cells = expected_cells
+        .difference(&seen_valid_cells)
+        .map(LatticeCellKey::to_cell_id)
+        .collect::<Vec<_>>();
+
+    let duplicate_cells = seen_cells
+        .iter()
+        .filter(|(_, row_indices)| row_indices.len() > 1)
+        .map(|(cell_key, row_indices)| DuplicateCellReport {
+            lattice_cell_id: cell_key.to_cell_id(),
+            observed_count: row_indices.len(),
+            row_indices: row_indices.clone(),
+        })
+        .collect::<Vec<_>>();
+
+    let aggregate_input_summary = AggregateInputSummary {
+        valid_rows: valid_row_count,
+        included_rows: valid_row_count.saturating_sub(aggregate_exclusions.len()),
+        excluded_rows: aggregate_exclusions.len(),
+    };
+
+    let passed = invalid_cells.is_empty() && duplicate_cells.is_empty() && missing_cells.is_empty();
+
+    LatticeValidationReceipt {
+        schema_version: LATTICE_VALIDATION_SCHEMA_VERSION.to_string(),
+        validator_version: LATTICE_VALIDATOR_VERSION.to_string(),
+        run_id: coverage.run_id.clone(),
+        passed,
+        observed_row_count,
+        expected_cell_count,
+        unique_cell_count,
+        missing_cells,
+        duplicate_cells,
+        invalid_cells,
+        aggregate_input_summary,
+        aggregate_exclusions,
+    }
+}
+
+fn validate_artifact_row(
+    row_index: usize,
+    expected_run_id: &str,
+    expected_commit_sha: &str,
+    row: &CoverageLatticeRow,
+    expected_cells: &BTreeSet<LatticeCellKey>,
+) -> Result<ValidatedRow, InvalidCellReport> {
+    // This is a bridge that maps CoverageLatticeRow to a synthetic DecodeAttributionReceipt
+    // for reuse of the existing validate_row logic.
+    //
+    // Long term we should probably make validate_row generic or have it work on
+    // a shared trait, but for now this mapping is sufficient.
+    let mut receipt = DecodeAttributionReceipt::default();
+    receipt.run_id = row.run_id.clone();
+    receipt.commit_sha = row.commit_sha.clone();
+    receipt.backend = row.backend.clone();
+    receipt.graph_family = row.graph_family.clone();
+    receipt.shape_profile = row.shape_profile.clone();
+    receipt.backend_runtime_policy = row.runtime_policy.clone();
+    receipt.lattice_cell_id = row.lattice_cell_id.clone();
+    receipt.support_tier = row.support_tier.clone();
+    receipt.predict_status = row.predict_status.clone();
+    receipt.predict_failure_classification = row.predict_failure_classification.clone();
+    receipt.max_absolute_error = row.max_absolute_error;
+    receipt.steady_p50_ns = row.steady_p50_ns;
+    receipt.materialize_duration_ns = row.materialize_duration_ns;
+    receipt.compile_duration_ns = row.compile_duration_ns;
+    receipt.load_duration_ns = row.load_duration_ns;
+    receipt.cold_first_predict_ns = row.cold_first_predict_ns;
+    receipt.reference_output_hashes_populated = row.reference_output_hashes_populated;
+    receipt.reference_status = row.reference_status.clone();
+    receipt.terminal_phase = row.terminal_phase.clone();
+    receipt.backend_support_status = row.backend_support_status.clone();
+    receipt.materialize_status = row.materialize_status.clone();
+    receipt.compile_status = row.compile_status.clone();
+    receipt.load_status = row.load_status.clone();
+    receipt.reference_output_hashes = row.reference_output_hashes.clone();
+    receipt.cold_output_hashes = row.backend_output_hashes.clone();
+    receipt.matches_tolerance = row.matches_tolerance;
+    receipt.execution_proof.notes = Some(row.execution_proof_summary.clone());
+    receipt.execution_proof.cpu_glue_ops = row.execution_proof_cpu_glue_ops.clone();
+    receipt.mlx_compile_attempted = row.mlx_compile_attempted;
+
+    validate_row(
+        row_index,
+        expected_run_id,
+        expected_commit_sha,
+        &receipt,
+        expected_cells,
+    )
+}
+
 fn validate_row(
     row_index: usize,
     expected_run_id: &str,
@@ -416,8 +543,8 @@ fn validate_row(
         )
     })?;
 
-    let _backend_support_status =
-        BackendSupportStatus::parse(&row.backend_support_status).map_err(|_| {
+    let _backend_support_status = BackendSupportStatus::parse(&row.backend_support_status)
+        .map_err(|_| {
             invalid_report(
                 row_index,
                 Some(lattice_cell_id.clone()),
@@ -471,18 +598,20 @@ fn validate_row(
                 "non-pass rows must set predict_failure_classification",
             ));
         }
-        let failure_class =
-            PredictFailureClassification::parse(&row.predict_failure_classification).map_err(|_| {
-                invalid_report(
-                    row_index,
-                    Some(lattice_cell_id.clone()),
-                    "unknown_predict_failure_classification",
-                    &format!(
-                        "predict_failure_classification={} is not in the canonical lattice vocabulary",
-                        row.predict_failure_classification
-                    ),
-                )
-            })?;
+        let failure_class = PredictFailureClassification::parse(
+            &row.predict_failure_classification,
+        )
+        .map_err(|_| {
+            invalid_report(
+                row_index,
+                Some(lattice_cell_id.clone()),
+                "unknown_predict_failure_classification",
+                &format!(
+                    "predict_failure_classification={} is not in the canonical lattice vocabulary",
+                    row.predict_failure_classification
+                ),
+            )
+        })?;
 
         // Enforce Phase/Failure compatibility
         let expected_phase = match failure_class {
@@ -518,7 +647,10 @@ fn validate_row(
                 row_index,
                 Some(lattice_cell_id.clone()),
                 "phase_failure_mismatch",
-                &format!("failure class {:?} must terminate at {:?}", failure_class, expected_phase),
+                &format!(
+                    "failure class {:?} must terminate at {:?}",
+                    failure_class, expected_phase
+                ),
             ));
         }
     }
@@ -589,6 +721,46 @@ fn validate_row(
         ));
     }
 
+    if predict_status == PredictStatus::Pass && !row.matches_tolerance {
+        return Err(invalid_report(
+            row_index,
+            Some(lattice_cell_id.clone()),
+            "pass_without_tolerance_match",
+            "passed rows must satisfy numerical tolerance",
+        ));
+    }
+
+    if predict_status == PredictStatus::Pass && row.steady_p50_ns == 0 {
+        return Err(invalid_report(
+            row_index,
+            Some(lattice_cell_id.clone()),
+            "pass_without_timing",
+            "passed rows must carry valid steady-state timing",
+        ));
+    }
+
+    if predict_status == PredictStatus::Pass
+        && row.cold_output_hashes.is_empty()
+        && row.accelerate_output_hashes.is_empty()
+    {
+        return Err(invalid_report(
+            row_index,
+            Some(lattice_cell_id.clone()),
+            "pass_without_backend_output",
+            "passed rows must carry backend output hashes",
+        ));
+    }
+
+    if support_tier == SupportTier::SupportedNative && !row.execution_proof.cpu_glue_ops.is_empty()
+    {
+        return Err(invalid_report(
+            row_index,
+            Some(lattice_cell_id.clone()),
+            "supported_native_with_cpu_glue",
+            "supported_native rows must not contain CPU glue operations in execution proof",
+        ));
+    }
+
     if row.backend == "mlx" && row.mlx_compile_attempted {
         return Err(invalid_report(
             row_index,
@@ -610,7 +782,8 @@ fn validate_row(
         ));
     }
 
-    let aggregate_exclusion = aggregate_exclusion_for(row_index, &lattice_cell_id, row, &predict_status);
+    let aggregate_exclusion =
+        aggregate_exclusion_for(row_index, &lattice_cell_id, row, &predict_status);
 
     Ok(ValidatedRow {
         cell_key: parsed,
@@ -691,9 +864,9 @@ fn invalid_report(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::receipt::ExecutionProof;
-    use super::super::shape_profiles::{LARGE, MEDIUM, SMALL, ShapeProfile};
+    use super::super::shape_profiles::{ShapeProfile, LARGE, MEDIUM, SMALL};
+    use super::*;
 
     #[derive(Clone, Copy)]
     enum WriterOutcome {
@@ -777,7 +950,9 @@ mod tests {
             "branch_rejoin" => vec!["matmul".into(), "add".into(), "matmul".into(), "add".into()],
             "identity_passthrough" => vec!["identity".into()],
             "multi_output" => vec!["matmul".into(), "add".into()],
-            "reshape_transpose_matmul" => vec!["reshape".into(), "transpose".into(), "matmul".into()],
+            "reshape_transpose_matmul" => {
+                vec!["reshape".into(), "transpose".into(), "matmul".into()]
+            }
             "softmax_tail" => vec!["matmul".into(), "softmax".into()],
             other => vec![other.into()],
         }
@@ -839,7 +1014,11 @@ mod tests {
         }
     }
 
-    fn writer_like_receipt(run_id: &str, cell: &LatticeCellKey, matrix_name: &str) -> DecodeAttributionReceipt {
+    fn writer_like_receipt(
+        run_id: &str,
+        cell: &LatticeCellKey,
+        matrix_name: &str,
+    ) -> DecodeAttributionReceipt {
         let profile = writer_shape_profile(cell.shape_profile.as_str());
         let mut receipt = DecodeAttributionReceipt::default();
         receipt.run_id = run_id.to_string();
@@ -852,14 +1031,16 @@ mod tests {
         receipt.xcode_version = "17.0".to_string();
         receipt.coremlcompiler_version = "17.0".to_string();
         receipt.graph_family = cell.graph_family.clone();
-        receipt.pipeline_phase = Some(family_pipeline_phase(cell.graph_family.as_str()).to_string());
+        receipt.pipeline_phase =
+            Some(family_pipeline_phase(cell.graph_family.as_str()).to_string());
         receipt.phase_variant = cell.runtime_policy.clone();
         receipt.semantic_contract_id = format!(
             "{}::{}::{}",
             cell.backend, cell.graph_family, cell.shape_profile
         );
         receipt.shape_profile = cell.shape_profile.clone();
-        receipt.graph_status = if canonical_family_name(cell.graph_family.as_str()) == identity_baseline_family_name()
+        receipt.graph_status = if canonical_family_name(cell.graph_family.as_str())
+            == identity_baseline_family_name()
         {
             "baseline".to_string()
         } else {
@@ -901,7 +1082,8 @@ mod tests {
         receipt.materialization_kind = "mil_package_write".to_string();
         receipt.compile_kind = "xcrun_coremlcompiler".to_string();
         receipt.load_kind = "mlmodel_load".to_string();
-        receipt.execution_kind = if canonical_family_name(cell.graph_family.as_str()) == identity_baseline_family_name()
+        receipt.execution_kind = if canonical_family_name(cell.graph_family.as_str())
+            == identity_baseline_family_name()
         {
             "identity_passthrough_cpu".to_string()
         } else {
@@ -1043,8 +1225,10 @@ mod tests {
             receipt.predict_status = "compile_limited".to_string();
             receipt.predict_failure_classification = "compile_limited".to_string();
             receipt.terminal_phase = "mil_build".to_string();
-            receipt.failure_reason = Some("coreml prepare failed: synthetic compiler failure".to_string());
-            receipt.failure_diagnostics = Some("coreml prepare: synthetic compiler failure".to_string());
+            receipt.failure_reason =
+                Some("coreml prepare failed: synthetic compiler failure".to_string());
+            receipt.failure_diagnostics =
+                Some("coreml prepare: synthetic compiler failure".to_string());
             receipt.compiler_exit_code = Some(1);
             receipt.compute_plan_status.clear();
             receipt.execution_proof = ExecutionProof {
@@ -1215,7 +1399,8 @@ mod tests {
         receipt.materialization_kind = "array_pack".to_string();
         receipt.compile_kind = "not_applicable".to_string();
         receipt.load_kind = "not_applicable".to_string();
-        receipt.execution_kind = if canonical_family_name(cell.graph_family.as_str()) == identity_baseline_family_name()
+        receipt.execution_kind = if canonical_family_name(cell.graph_family.as_str())
+            == identity_baseline_family_name()
         {
             "identity_memcpy".to_string()
         } else {
@@ -1334,9 +1519,7 @@ mod tests {
                 ("coreml", "branch_rejoin", "medium", "cpuOnly") => {
                     WriterOutcome::CoreMlCompileLimited
                 }
-                ("mlx", "multi_output", "large", "mlx_default") => {
-                    WriterOutcome::MlxPredictBlocked
-                }
+                ("mlx", "multi_output", "large", "mlx_default") => WriterOutcome::MlxPredictBlocked,
                 ("accelerate", "softmax_tail", "small", "accelerate_cpu") => {
                     WriterOutcome::AccelerateSkippedBySupport
                 }
@@ -1464,7 +1647,8 @@ mod tests {
             .find(|r| {
                 r.backend == "coreml"
                     && r.predict_status == "pass"
-                    && canonical_family_name(r.graph_family.as_str()) != identity_baseline_family_name()
+                    && canonical_family_name(r.graph_family.as_str())
+                        != identity_baseline_family_name()
             })
             .expect("coreml pass row");
         assert_eq!(coreml_pass.backend_support_status, "supported");
@@ -1481,7 +1665,10 @@ mod tests {
             .find(|r| r.backend == "coreml" && r.predict_status == "compile_limited")
             .expect("coreml non-pass row");
         assert_eq!(coreml_non_pass.backend_support_status, "supported");
-        assert_eq!(coreml_non_pass.predict_failure_classification, "compile_limited");
+        assert_eq!(
+            coreml_non_pass.predict_failure_classification,
+            "compile_limited"
+        );
         assert_eq!(coreml_non_pass.status, "compile_error");
         assert_eq!(coreml_non_pass.terminal_phase, "mil_build");
         assert_eq!(coreml_non_pass.materialize_status, "error");
@@ -1493,7 +1680,8 @@ mod tests {
             .find(|r| {
                 r.backend == "mlx"
                     && r.predict_status == "pass"
-                    && canonical_family_name(r.graph_family.as_str()) != identity_baseline_family_name()
+                    && canonical_family_name(r.graph_family.as_str())
+                        != identity_baseline_family_name()
             })
             .expect("mlx pass row");
         assert_eq!(mlx_pass.backend_support_status, "supported");
@@ -1511,7 +1699,10 @@ mod tests {
             .find(|r| r.backend == "mlx" && r.predict_status == "predict_blocked")
             .expect("mlx non-pass row");
         assert_eq!(mlx_non_pass.backend_support_status, "supported");
-        assert_eq!(mlx_non_pass.predict_failure_classification, "predict_blocked");
+        assert_eq!(
+            mlx_non_pass.predict_failure_classification,
+            "predict_blocked"
+        );
         assert_eq!(mlx_non_pass.status, "prediction_error");
         assert_eq!(mlx_non_pass.terminal_phase, "predict");
         assert_eq!(mlx_non_pass.materialization_kind, "mlx_array_construct");
@@ -1523,7 +1714,8 @@ mod tests {
             .find(|r| {
                 r.backend == "accelerate"
                     && r.predict_status == "pass"
-                    && canonical_family_name(r.graph_family.as_str()) != identity_baseline_family_name()
+                    && canonical_family_name(r.graph_family.as_str())
+                        != identity_baseline_family_name()
             })
             .expect("accelerate pass row");
         assert_eq!(accelerate_pass.backend_support_status, "supported");
@@ -1542,9 +1734,15 @@ mod tests {
             .iter()
             .find(|r| r.backend == "accelerate" && r.predict_status == "skipped_by_support")
             .expect("accelerate non-pass row");
-        assert_eq!(accelerate_non_pass.backend_support_status, "unsupported_graph");
+        assert_eq!(
+            accelerate_non_pass.backend_support_status,
+            "unsupported_graph"
+        );
         assert_eq!(accelerate_non_pass.support_tier, "unsupported_graph");
-        assert_eq!(accelerate_non_pass.predict_failure_classification, "skipped_by_support");
+        assert_eq!(
+            accelerate_non_pass.predict_failure_classification,
+            "skipped_by_support"
+        );
         assert_eq!(accelerate_non_pass.status, "skipped_by_support");
         assert_eq!(accelerate_non_pass.terminal_phase, "skipped_by_support");
         assert_eq!(accelerate_non_pass.cold_status, "skipped");

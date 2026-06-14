@@ -1,8 +1,14 @@
-extern crate self as tribunus_compute_native;
+#[cfg(not(all(target_os = "macos", target_arch = "aarch64")))]
+compile_error!(
+    "Compute authority requires Apple Silicon (macOS arm64). Platform is explicitly unsupported."
+);
+
+extern crate self as tribunus_compute_core;
 
 pub mod analysis;
 pub mod ane_bridge;
 pub mod arena;
+pub mod arena_info;
 pub mod arena_lifecycle;
 pub mod arena_pool;
 pub mod attention;
@@ -48,10 +54,10 @@ pub mod mapped_image;
 pub mod metal_capture;
 pub mod mil_builder;
 pub mod mlpackage;
+pub mod mlx_api_compat;
 pub mod mlx_executor;
 pub mod mlx_inventory;
 pub mod mlx_patch_register;
-pub mod mlx_api_compat;
 pub mod mlx_runtime_probe;
 pub mod model;
 pub mod model_runtime;
@@ -73,6 +79,7 @@ pub mod research_contracts;
 pub mod research_metrics;
 pub mod research_trace;
 pub mod residency;
+pub mod runtime_contract;
 pub mod runtime_trace;
 pub mod session;
 pub mod sidecar;
@@ -85,44 +92,47 @@ pub mod worker_memory;
 pub mod worker_protocol;
 pub mod worker_supervisor;
 
-pub use session::{
+pub use crate::session::{
     ControlSessionState, GenerationControlSession, InferenceSession, InferenceSessionState,
     SamplerConfig,
 };
 
-#[cfg(not(feature = "napi"))]
-extern crate self as napi;
-
-#[cfg(not(feature = "napi"))]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Status {
     InvalidArg,
     GenericFailure,
+    InternalError,
+    Cancelled,
+    Timeout,
 }
 
-#[cfg(not(feature = "napi"))]
 #[derive(Debug)]
 pub struct Error {
     pub status: Status,
     pub reason: String,
 }
 
-#[cfg(not(feature = "napi"))]
 impl Error {
     pub fn new(status: Status, reason: impl Into<String>) -> Self {
-        Self { status, reason: reason.into() }
+        Self {
+            status,
+            reason: reason.into(),
+        }
     }
     pub fn from_reason(reason: impl Into<String>) -> Self {
-        Self { status: Status::GenericFailure, reason: reason.into() }
+        Self {
+            status: Status::GenericFailure,
+            reason: reason.into(),
+        }
     }
 }
 
-#[cfg(not(feature = "napi"))]
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.reason)
     }
 }
 
-#[cfg(not(feature = "napi"))]
-pub type Result<T> = std::result::Result<T, Error>;
+impl std::error::Error for Error {}
+
+pub type Result<T, E = Error> = std::result::Result<T, E>;

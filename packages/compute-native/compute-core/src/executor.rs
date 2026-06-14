@@ -11,6 +11,7 @@ use crate::primitives;
 use crate::projection_identity::{dtype_to_storage, ProjectionContext, ProjectionFamily};
 use crate::session::SamplerConfig;
 use mlx_rs::error::Result as MlxResult;
+use mlx_rs::ops;
 use mlx_rs::ops::indexing::IndexOp;
 use mlx_rs::Array;
 
@@ -721,7 +722,7 @@ pub fn run_epilogue(
 
     // Greedy path: fast argmax (no sampling overhead)
     if sampler.is_greedy() {
-        let token_arr = mlx_rs::ops::indexing::argmax_axis(&last_logits, -1, None)
+        let token_arr = ops::indexing::argmax_axis(&last_logits, -1, false)
             .map_err(|e| mlx_rs::error::Exception::custom(format!("argmax: {:?}", e)))?;
         return Ok(EpilogueResult {
             selected_token: token_arr,

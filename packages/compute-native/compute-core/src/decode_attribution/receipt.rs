@@ -290,10 +290,24 @@ pub struct DecodeAttributionReceipt {
     pub structural_status: String,
     /// Machine-readable structural error codes (comma-separated).
     pub structural_errors: String,
+    // ── Build Provenance ──────────────────────────────────────────────────
+    pub target_cpu: String,
+    pub target_triple: String,
+    pub linker: String,
+    pub mlx_fork_identity: String,
+    pub is_local_override: bool,
+    pub authority_eligible: bool,
 }
 
 impl Default for DecodeAttributionReceipt {
     fn default() -> Self {
+        let rustflags = option_env!("TRIBUNUS_RUSTFLAGS").unwrap_or("");
+        let target_cpu = rustflags
+            .split_whitespace()
+            .find(|f| f.starts_with("target-cpu="))
+            .map(|f| f.trim_start_matches("target-cpu=").to_string())
+            .unwrap_or_else(|| "default".to_string());
+
         Self {
             run_id: String::new(),
             lattice_cell_id: String::new(),
@@ -425,9 +439,96 @@ impl Default for DecodeAttributionReceipt {
             compiler_stderr: None,
             compiler_exit_code: None,
             failure_diagnostics: None,
-            structural_status: String::new(),
+            structural_status: "pending".to_string(),
             structural_errors: String::new(),
+            target_cpu,
+            target_triple: option_env!("TRIBUNUS_TARGET")
+                .unwrap_or("unknown")
+                .to_string(),
+            linker: option_env!("TRIBUNUS_LINKER")
+                .unwrap_or("default")
+                .to_string(),
+            mlx_fork_identity: option_env!("TRIBUNUS_MLX_IDENTITY")
+                .unwrap_or("unknown")
+                .to_string(),
+            is_local_override: option_env!("TRIBUNUS_MLX_LOCAL_OVERRIDE").is_some(),
+            authority_eligible: option_env!("TRIBUNUS_MLX_LOCAL_OVERRIDE").is_none()
+                && option_env!("TRIBUNUS_LINKER")
+                    .map(|ld| ld == "apple-ld")
+                    .unwrap_or(true),
         }
+    }
+}
+
+impl DecodeAttributionReceipt {
+    pub fn mark_passed(&mut self) {
+        self.status = "pass".to_string();
+        self.predict_status = "pass".to_string();
+        self.predict_failure_classification.clear();
+        self.terminal_phase = "complete".to_string();
+        self.materialize_status = "ok".to_string();
+        self.compile_status = "ok".to_string();
+        self.load_status = "ok".to_string();
+    }
+
+    pub fn mark_skipped_by_support(&mut self, reason: String) {
+        self.status = "skipped_by_support".to_string();
+        self.predict_status = "skipped_by_support".to_string();
+        self.predict_failure_classification = "skipped_by_support".to_string();
+        self.terminal_phase = "skipped_by_support".to_string();
+        self.unsupported_reason = Some(reason);
+    }
+
+    pub fn mark_compile_limited(&mut self, reason: String) {
+        self.status = "compile_error".to_string();
+        self.predict_status = "compile_limited".to_string();
+        self.predict_failure_classification = "compile_limited".to_string();
+        self.terminal_phase = "mil_build".to_string();
+        self.failure_reason = Some(reason);
+    }
+
+    pub fn mark_predict_blocked(&mut self, phase: &str, reason: String) {
+        self.status = "prediction_error".to_string();
+        self.predict_status = "predict_blocked".to_string();
+        self.predict_failure_classification = "predict_blocked".to_string();
+        self.terminal_phase = phase.to_string();
+        self.failure_reason = Some(reason);
+    }
+
+    pub fn mark_predict_crashed(&mut self, phase: &str, classification: String, reason: String) {
+        self.status = "prediction_error".to_string();
+        self.predict_status = "predict_crashed".to_string();
+        self.predict_failure_classification = classification;
+        self.terminal_phase = phase.to_string();
+        self.failure_reason = Some(reason);
+    }
+
+    pub fn mark_numerical_divergence(&mut self, max_abs_err: f64) {
+        self.status = "numerical_divergence".to_string();
+        self.predict_status = "numerical_divergence".to_string();
+        self.predict_failure_classification = "numerical_divergence".to_string();
+        self.terminal_phase = "conformance".to_string();
+        self.max_absolute_error = max_abs_err;
+    }
+
+    pub fn set_supported_native(&mut self) {
+        self.support_tier = "supported_native".to_string();
+        self.backend_support_status = "supported".to_string();
+    }
+
+    pub fn set_supported_composed(&mut self) {
+        self.support_tier = "supported_composed".to_string();
+        self.backend_support_status = "supported".to_string();
+    }
+
+    pub fn set_unsupported_graph(&mut self) {
+        self.support_tier = "unsupported_graph".to_string();
+        self.backend_support_status = "unsupported_graph".to_string();
+    }
+
+    pub fn set_not_implemented(&mut self) {
+        self.support_tier = "not_implemented".to_string();
+        self.backend_support_status = "not_implemented".to_string();
     }
 }
 

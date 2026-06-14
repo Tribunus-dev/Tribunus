@@ -157,9 +157,9 @@ impl ComputeEngine {
     ///
     /// Opens (or creates) `~/.tribunus/models/` and detects runtime
     /// capabilities.
-    pub fn new() -> napi::Result<Self> {
+    pub fn new() -> crate::Result<Self> {
         let store = ModelStore::open_default()
-            .map_err(|e| napi::Error::from_reason(format!("Failed to open model store: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("Failed to open model store: {}", e)))?;
 
         Ok(Self {
             model_store: store,
@@ -197,19 +197,19 @@ impl ComputeEngine {
         image_hash: String,
         source_identity: String,
         compiler_version: String,
-    ) -> napi::Result<InstalledModel> {
+    ) -> crate::Result<InstalledModel> {
         let source = std::path::Path::new(&source_dir);
         self.model_store
             .install(source, &image_hash, &source_identity, &compiler_version)
-            .map_err(|e| napi::Error::from_reason(format!("Install failed: {}", e)))
+            .map_err(|e| crate::Error::from_reason(format!("Install failed: {}", e)))
     }
 
     /// Return every model currently recorded in the persistent store.
 
-    pub fn list_models(&self) -> napi::Result<Vec<InstalledModel>> {
+    pub fn list_models(&self) -> crate::Result<Vec<InstalledModel>> {
         self.model_store
             .list()
-            .map_err(|e| napi::Error::from_reason(format!("List failed: {}", e)))
+            .map_err(|e| crate::Error::from_reason(format!("List failed: {}", e)))
     }
 
     // -- load / unload --------------------------------------------------------
@@ -228,9 +228,9 @@ impl ComputeEngine {
     /// was called first, or the `TRIBUNUS_WORKER_BINARY` environment variable
     /// is set.
 
-    pub fn load_model(&mut self, image_hash: String) -> napi::Result<()> {
+    pub fn load_model(&mut self, image_hash: String) -> crate::Result<()> {
         if self.worker_supervisor.is_some() {
-            return Err(napi::Error::from_reason(format!(
+            return Err(crate::Error::from_reason(format!(
                 "Model already loaded: {}",
                 image_hash
             )));
@@ -238,7 +238,7 @@ impl ComputeEngine {
 
         let model_dir = self.model_store.root_dir.join(&image_hash);
         if !model_dir.exists() {
-            return Err(napi::Error::from_reason(format!(
+            return Err(crate::Error::from_reason(format!(
                 "Model not found in store: {}",
                 image_hash
             )));
@@ -247,7 +247,7 @@ impl ComputeEngine {
         // Verify integrity before launching the worker.
         self.model_store
             .verify_seal(&image_hash)
-            .map_err(|e| napi::Error::from_reason(format!("Seal verification failed: {}", e)))?;
+            .map_err(|e| crate::Error::from_reason(format!("Seal verification failed: {}", e)))?;
 
         // Resolve the worker binary path.
         let worker_path = self
@@ -255,7 +255,7 @@ impl ComputeEngine {
             .clone()
             .or_else(|| std::env::var("TRIBUNUS_WORKER_BINARY").ok().map(PathBuf::from))
             .ok_or_else(|| {
-                napi::Error::from_reason(
+                crate::Error::from_reason(
                     "Worker binary path not set. Call setWorkerBinaryPath() or set TRIBUNUS_WORKER_BINARY",
                 )
             })?;
@@ -270,11 +270,11 @@ impl ComputeEngine {
             &image_hash,
             "compute-worker",
         )
-        .map_err(|e| napi::Error::from_reason(format!("Failed to launch worker: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("Failed to launch worker: {}", e)))?;
 
         // Instruct the worker to load the model and wait for confirmation.
         supervisor.load_model(&image_hash).map_err(|e| {
-            napi::Error::from_reason(format!("Failed to load model in worker: {}", e))
+            crate::Error::from_reason(format!("Failed to load model in worker: {}", e))
         })?;
 
         // TODO: read vocab_size from model metadata / capability record
@@ -441,9 +441,9 @@ impl ComputeEngine {
     ///
     /// Retained for backward compatibility; delegates to
     /// [`cancel_generation`](Self::cancel_generation).
-    pub fn cancel(&mut self, job_id: u64) -> napi::Result<()> {
+    pub fn cancel(&mut self, job_id: u64) -> crate::Result<()> {
         self.cancel_generation(job_id.to_string())
-            .map_err(|e| napi::Error::from_reason(format!("Cancel failed: {}", e)))
+            .map_err(|e| crate::Error::from_reason(format!("Cancel failed: {}", e)))
     }
 
     /// Cancel an active generation job by string job id.

@@ -1,7 +1,7 @@
 //! Immutable execution policies for the Tribunus Compute Kernel.
 //!
 //! This module defines the compiled-in policy surface, pure budget resolution,
-//! request admission, and deadline representation. No napi or mlx-rs imports.
+//! request admission, and deadline representation. No mlx-rs imports.
 
 use std::sync::Arc;
 use std::time::{Duration, Instant};

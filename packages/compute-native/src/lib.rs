@@ -1,11 +1,29 @@
 //! Tribunus Compute Kernel — native MLX backend via napi-rs.
 
 use tribunus_compute_core::{
-    bridge, compute_image, config, engine, gemma, loader, validator,
+    bridge, compute_image, config, engine, gemma, loader, validator, Status,
 };
 
 use mlx_rs::Array;
 use napi_derive::napi;
+
+fn to_napi_error(err: tribunus_compute_core::Error) -> napi::Error {
+    let status = match err.status {
+        Status::InvalidArg => napi::Status::InvalidArg,
+        _ => napi::Status::GenericFailure,
+    };
+    napi::Error::new(status, err.reason)
+}
+
+trait ToNapiResult<T> {
+    fn to_napi(self) -> napi::Result<T>;
+}
+
+impl<T> ToNapiResult<T> for tribunus_compute_core::Result<T> {
+    fn to_napi(self) -> napi::Result<T> {
+        self.map_err(to_napi_error)
+    }
+}
 
 #[napi]
 pub fn detect_default_device() -> napi::Result<serde_json::Value> {

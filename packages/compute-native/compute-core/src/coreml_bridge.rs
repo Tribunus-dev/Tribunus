@@ -1,6 +1,6 @@
 //! Core ML execution bridge — Rust FFI bindings.
 
-use crate::arena::ArenaInfo;
+use crate::arena_info::ArenaInfo;
 
 /// Compute unit policy for Core ML model loading.
 /// Maps to MLComputeUnits in the ObjC bridge.

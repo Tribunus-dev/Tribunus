@@ -22,12 +22,12 @@ use std::path::Path;
 use std::process::{Command, ExitStatus};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use tribunus_compute_native::decode_attribution::environment::{self, HostEnvironment};
-use tribunus_compute_native::decode_attribution::graph_catalog::GraphFamily;
-use tribunus_compute_native::decode_attribution::harness::run_backend;
-use tribunus_compute_native::decode_attribution::receipt::DecodeAttributionReceipt;
-use tribunus_compute_native::decode_attribution::shape_profiles::ShapeProfile;
-use tribunus_compute_native::decode_attribution::timer_calibration::calibrate_timer_overhead;
+use tribunus_compute_core::decode_attribution::environment::{self, HostEnvironment};
+use tribunus_compute_core::decode_attribution::graph_catalog::GraphFamily;
+use tribunus_compute_core::decode_attribution::harness::run_backend;
+use tribunus_compute_core::decode_attribution::receipt::DecodeAttributionReceipt;
+use tribunus_compute_core::decode_attribution::shape_profiles::ShapeProfile;
+use tribunus_compute_core::decode_attribution::timer_calibration::calibrate_timer_overhead;
 
 // ── Measurement shape profiles ───────────────────────────────────────────
 
@@ -54,23 +54,23 @@ const MEASUREMENT_SHAPES: &[ShapeProfile] = &[MEASUREMENT_SMALL, MEASUREMENT_MED
 // ── Narrow catalog families ──────────────────────────────────────────────
 
 const MEASUREMENT_FAMILIES: &[&GraphFamily] = &[
-    &tribunus_compute_native::decode_attribution::graph_catalog::NORMAL_FAMILIES[0], // matmul
-    &tribunus_compute_native::decode_attribution::graph_catalog::NORMAL_FAMILIES[1], // chain_matmul_add_silu
-    &tribunus_compute_native::decode_attribution::graph_catalog::NORMAL_FAMILIES[4], // constant_heavy (index 4)
-    &tribunus_compute_native::decode_attribution::graph_catalog::NORMAL_FAMILIES[2], // branch_rejoin
+    &tribunus_compute_core::decode_attribution::graph_catalog::NORMAL_FAMILIES[0], // matmul
+    &tribunus_compute_core::decode_attribution::graph_catalog::NORMAL_FAMILIES[1], // chain_matmul_add_silu
+    &tribunus_compute_core::decode_attribution::graph_catalog::NORMAL_FAMILIES[4], // constant_heavy (index 4)
+    &tribunus_compute_core::decode_attribution::graph_catalog::NORMAL_FAMILIES[2], // branch_rejoin
 ];
 
 // ── Tier 1 families (static-op expansion) ──────────────────────────────
 
 const TIER1_FAMILIES: &[&GraphFamily] = &[
-    &tribunus_compute_native::decode_attribution::graph_catalog::TIER1_FAMILIES[0], // add_standalone
-    &tribunus_compute_native::decode_attribution::graph_catalog::TIER1_FAMILIES[1], // mul_standalone
-    &tribunus_compute_native::decode_attribution::graph_catalog::TIER1_FAMILIES[2], // sigmoid_standalone
-    &tribunus_compute_native::decode_attribution::graph_catalog::TIER1_FAMILIES[3], // silu_standalone
-    &tribunus_compute_native::decode_attribution::graph_catalog::TIER1_FAMILIES[4], // matmul_projection
-    &tribunus_compute_native::decode_attribution::graph_catalog::TIER1_FAMILIES[5], // matmul_residual_add
-    &tribunus_compute_native::decode_attribution::graph_catalog::TIER1_FAMILIES[6], // two_matmul_add
-    &tribunus_compute_native::decode_attribution::graph_catalog::TIER1_FAMILIES[7], // matmul_add_silu
+    &tribunus_compute_core::decode_attribution::graph_catalog::TIER1_FAMILIES[0], // add_standalone
+    &tribunus_compute_core::decode_attribution::graph_catalog::TIER1_FAMILIES[1], // mul_standalone
+    &tribunus_compute_core::decode_attribution::graph_catalog::TIER1_FAMILIES[2], // sigmoid_standalone
+    &tribunus_compute_core::decode_attribution::graph_catalog::TIER1_FAMILIES[3], // silu_standalone
+    &tribunus_compute_core::decode_attribution::graph_catalog::TIER1_FAMILIES[4], // matmul_projection
+    &tribunus_compute_core::decode_attribution::graph_catalog::TIER1_FAMILIES[5], // matmul_residual_add
+    &tribunus_compute_core::decode_attribution::graph_catalog::TIER1_FAMILIES[6], // two_matmul_add
+    &tribunus_compute_core::decode_attribution::graph_catalog::TIER1_FAMILIES[7], // matmul_add_silu
 ];
 
 // ── Backend/policy pairs ─────────────────────────────────────────────────
@@ -168,7 +168,7 @@ fn main() {
             "DEBUG breadcrumb file exists: {}",
             crumb_path_for_read.exists()
         );
-        let last_crumb = tribunus_compute_native::decode_attribution::breadcrumb::last_breadcrumb(
+        let last_crumb = tribunus_compute_core::decode_attribution::breadcrumb::last_breadcrumb(
             crumb_path_for_read,
         )
         .unwrap_or_default();
@@ -523,30 +523,15 @@ fn classify_child_exit(
     let repro_dir = repro_path.parent().unwrap_or(Path::new("/"));
     let crumb_path = repro_dir.join("predict_breadcrumbs.txt");
     let last_crumb =
-        tribunus_compute_native::decode_attribution::breadcrumb::last_breadcrumb(&crumb_path)
+        tribunus_compute_core::decode_attribution::breadcrumb::last_breadcrumb(&crumb_path)
             .unwrap_or_default();
 
-    let mut r = DecodeAttributionReceipt {
-        run_id: row_id.to_string(),
-        status: terminal_status.into(),
-        terminal_phase: "coreml_predict_child".into(),
-        failure_diagnostics: Some(diag),
-        execution_proof: tribunus_compute_native::decode_attribution::receipt::ExecutionProof {
-            engine: "coreml".into(),
-            accelerated_ops: vec![],
-            cpu_ops: vec![],
-            reference_ops: vec![],
-            accelerate_blas_ops: vec![],
-            accelerate_vdsp_ops: vec![],
-            accelerate_vforce_ops: vec![],
-            cpu_glue_ops: vec![],
-            bridge_path: Some(repro_path.to_string_lossy().to_string()),
-            notes: Some(format!("child terminated by {}", signal_desc)),
-        },
-        last_completed_predict_breadcrumb: last_crumb,
-        ..DecodeAttributionReceipt::default()
-    };
-    // Fill minimum identity fields from defaults so the receipt is valid.
+    let mut r = DecodeAttributionReceipt::default();
+    r.run_id = row_id.to_string();
+    r.mark_predict_crashed("coreml_predict_child", signal_desc, diag);
+    r.execution_proof.engine = "coreml".into();
+    r.execution_proof.bridge_path = Some(repro_path.to_string_lossy().to_string());
+    r.last_completed_predict_breadcrumb = last_crumb;
     r.commit_sha = option_env!("VERGEN_GIT_SHA")
         .unwrap_or("unknown")
         .to_string();
@@ -555,8 +540,6 @@ fn classify_child_exit(
         .to_string();
     r.timestamp = iso_timestamp_v2();
     r.schema_version = "decode-attribution.v1".to_string();
-    r.predict_status = terminal_status.into();
-    r.predict_failure_classification = signal_desc;
     r
 }
 
@@ -567,12 +550,10 @@ fn synthetic_child_failure(
     diag: &str,
     _exit_status: ExitStatus,
 ) -> DecodeAttributionReceipt {
-    let mut r = DecodeAttributionReceipt {
-        run_id: row_id.to_string(),
-        status: status.into(),
-        failure_diagnostics: Some(diag.into()),
-        ..DecodeAttributionReceipt::default()
-    };
+    let mut r = DecodeAttributionReceipt::default();
+    r.run_id = row_id.to_string();
+    r.mark_predict_blocked("unknown", diag.into());
+    r.status = status.into(); // Override status if needed
     r.commit_sha = option_env!("VERGEN_GIT_SHA")
         .unwrap_or("unknown")
         .to_string();
@@ -622,7 +603,7 @@ fn synthetic_env_unavailable_receipt(
             env.coremlcompiler_version
         )),
         backend_support_status: "environment_unavailable".into(),
-        execution_proof: tribunus_compute_native::decode_attribution::receipt::ExecutionProof {
+        execution_proof: tribunus_compute_core::decode_attribution::receipt::ExecutionProof {
             engine: backend.to_string(),
             accelerated_ops: vec![],
             cpu_ops: vec![],

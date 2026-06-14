@@ -166,7 +166,7 @@ pub enum DtypeId {
     Bool = 9,
 }
 
-fn dtype_from_id(id: u32) -> napi::Result<Dtype> {
+fn dtype_from_id(id: u32) -> crate::Result<Dtype> {
     match id {
         0 => Ok(Dtype::Float32),
         1 => Ok(Dtype::Float16),
@@ -178,7 +178,7 @@ fn dtype_from_id(id: u32) -> napi::Result<Dtype> {
         7 => Ok(Dtype::Uint16),
         8 => Ok(Dtype::Uint32),
         9 => Ok(Dtype::Bool),
-        _ => Err(napi::Error::from_reason(format!(
+        _ => Err(crate::Error::from_reason(format!(
             "Unknown dtype id: {}",
             id
         ))),
@@ -190,7 +190,7 @@ pub fn create_array_f32(data: &[f32], shape: &[i32]) -> ArrayHandle {
     let array = Array::from_slice(data, shape);
     ARRAY_REGISTRY.write().insert(array, None)
 }
-pub fn create_array_raw(data: &[u8], shape: &[i32], dtype_id: u32) -> napi::Result<ArrayHandle> {
+pub fn create_array_raw(data: &[u8], shape: &[i32], dtype_id: u32) -> crate::Result<ArrayHandle> {
     let dtype = dtype_from_id(dtype_id)?;
     let array =
         unsafe { Array::from_raw_data(data.as_ptr() as *const std::ffi::c_void, shape, dtype) };
@@ -204,53 +204,53 @@ pub fn create_scalar_f32(value: f32) -> ArrayHandle {
 }
 
 /// Materialize a lazy array (force evaluation of the compute graph).
-pub fn array_eval(handle: ArrayHandle) -> napi::Result<()> {
+pub fn array_eval(handle: ArrayHandle) -> crate::Result<()> {
     let registry = ARRAY_REGISTRY.read();
     let array = registry
         .get(handle)
-        .ok_or_else(|| napi::Error::from_reason(format!("Array not found: {}", handle)))?;
+        .ok_or_else(|| crate::Error::from_reason(format!("Array not found: {}", handle)))?;
     array
         .eval()
-        .map_err(|e| napi::Error::from_reason(format!("MLX eval error: {:?}", e)))
+        .map_err(|e| crate::Error::from_reason(format!("MLX eval error: {:?}", e)))
 }
 
 /// Get the shape of an array.
-pub fn array_shape(handle: ArrayHandle) -> napi::Result<Vec<i32>> {
+pub fn array_shape(handle: ArrayHandle) -> crate::Result<Vec<i32>> {
     let registry = ARRAY_REGISTRY.read();
     let array = registry
         .get(handle)
-        .ok_or_else(|| napi::Error::from_reason(format!("Array not found: {}", handle)))?;
+        .ok_or_else(|| crate::Error::from_reason(format!("Array not found: {}", handle)))?;
     Ok(array.shape().to_vec())
 }
 
 /// Get the number of elements in an array.
-pub fn array_size(handle: ArrayHandle) -> napi::Result<usize> {
+pub fn array_size(handle: ArrayHandle) -> crate::Result<usize> {
     let registry = ARRAY_REGISTRY.read();
     let array = registry
         .get(handle)
-        .ok_or_else(|| napi::Error::from_reason(format!("Array not found: {}", handle)))?;
+        .ok_or_else(|| crate::Error::from_reason(format!("Array not found: {}", handle)))?;
     Ok(array.size())
 }
 
 /// Get the number of bytes in an array.
-pub fn array_nbytes(handle: ArrayHandle) -> napi::Result<usize> {
+pub fn array_nbytes(handle: ArrayHandle) -> crate::Result<usize> {
     let registry = ARRAY_REGISTRY.read();
     let array = registry
         .get(handle)
-        .ok_or_else(|| napi::Error::from_reason(format!("Array not found: {}", handle)))?;
+        .ok_or_else(|| crate::Error::from_reason(format!("Array not found: {}", handle)))?;
     Ok(array.nbytes())
 }
 
 /// Read array data as f32 values (triggers evaluation, copies to output buffer).
-pub fn array_data_f32(handle: ArrayHandle, out: &mut [u8]) -> napi::Result<usize> {
+pub fn array_data_f32(handle: ArrayHandle, out: &mut [u8]) -> crate::Result<usize> {
     let registry = ARRAY_REGISTRY.read();
     let array = registry
         .get(handle)
-        .ok_or_else(|| napi::Error::from_reason(format!("Array not found: {}", handle)))?;
+        .ok_or_else(|| crate::Error::from_reason(format!("Array not found: {}", handle)))?;
 
     let data = array
         .try_as_slice::<f32>()
-        .map_err(|e| napi::Error::from_reason(format!("Failed to read array data: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("Failed to read array data: {:?}", e)))?;
 
     let byte_count = (data.len() * 4).min(out.len());
     let f32_count = byte_count / 4;
@@ -260,7 +260,7 @@ pub fn array_data_f32(handle: ArrayHandle, out: &mut [u8]) -> napi::Result<usize
 }
 
 /// Free an array handle, releasing MLX resources.
-pub fn free_array(handle: ArrayHandle) -> napi::Result<()> {
+pub fn free_array(handle: ArrayHandle) -> crate::Result<()> {
     ARRAY_REGISTRY.write().remove(handle);
     Ok(())
 }
@@ -283,51 +283,51 @@ pub fn handle_count() -> usize {
 // ── Compute Operations ──────────────────────────────────────────────────────
 
 /// Matrix multiplication: c = a @ b
-pub fn matmul(a_handle: ArrayHandle, b_handle: ArrayHandle) -> napi::Result<ArrayHandle> {
+pub fn matmul(a_handle: ArrayHandle, b_handle: ArrayHandle) -> crate::Result<ArrayHandle> {
     let registry = ARRAY_REGISTRY.read();
     let a = registry
         .get(a_handle)
-        .ok_or_else(|| napi::Error::from_reason("matmul: a not found"))?;
+        .ok_or_else(|| crate::Error::from_reason("matmul: a not found"))?;
     let b = registry
         .get(b_handle)
-        .ok_or_else(|| napi::Error::from_reason("matmul: b not found"))?;
+        .ok_or_else(|| crate::Error::from_reason("matmul: b not found"))?;
 
     let result = a
         .matmul(b)
-        .map_err(|e| napi::Error::from_reason(format!("matmul error: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("matmul error: {:?}", e)))?;
     drop(registry);
 
     Ok(ARRAY_REGISTRY.write().insert(result, None))
 }
 
 /// Element-wise addition: c = a + b
-pub fn add(a_handle: ArrayHandle, b_handle: ArrayHandle) -> napi::Result<ArrayHandle> {
+pub fn add(a_handle: ArrayHandle, b_handle: ArrayHandle) -> crate::Result<ArrayHandle> {
     let registry = ARRAY_REGISTRY.read();
     let a = registry
         .get(a_handle)
-        .ok_or_else(|| napi::Error::from_reason("add: a not found"))?;
+        .ok_or_else(|| crate::Error::from_reason("add: a not found"))?;
     let b = registry
         .get(b_handle)
-        .ok_or_else(|| napi::Error::from_reason("add: b not found"))?;
+        .ok_or_else(|| crate::Error::from_reason("add: b not found"))?;
     let result = a
         .add(b)
-        .map_err(|e| napi::Error::from_reason(format!("add error: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("add error: {:?}", e)))?;
     drop(registry);
     Ok(ARRAY_REGISTRY.write().insert(result, None))
 }
 
 /// Element-wise multiplication: c = a * b
-pub fn multiply(a_handle: ArrayHandle, b_handle: ArrayHandle) -> napi::Result<ArrayHandle> {
+pub fn multiply(a_handle: ArrayHandle, b_handle: ArrayHandle) -> crate::Result<ArrayHandle> {
     let registry = ARRAY_REGISTRY.read();
     let a = registry
         .get(a_handle)
-        .ok_or_else(|| napi::Error::from_reason("multiply: a not found"))?;
+        .ok_or_else(|| crate::Error::from_reason("multiply: a not found"))?;
     let b = registry
         .get(b_handle)
-        .ok_or_else(|| napi::Error::from_reason("multiply: b not found"))?;
+        .ok_or_else(|| crate::Error::from_reason("multiply: b not found"))?;
     let result = a
         .multiply(b)
-        .map_err(|e| napi::Error::from_reason(format!("multiply error: {:?}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("multiply error: {:?}", e)))?;
     drop(registry);
     Ok(ARRAY_REGISTRY.write().insert(result, None))
 }

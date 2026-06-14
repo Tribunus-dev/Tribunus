@@ -15,18 +15,7 @@
 //! - [`GenerationStream`] — the consumption half; JS calls `recv`/`try_recv`.
 //! - [`generation_channel`] — construct a (sender, stream) pair.
 //! - [`validate_event_sequence`] — check a slice of events for valid ordering.
-#[cfg(feature = "napi")]
-use napi_derive::napi;
-
-#[cfg(feature = "napi")]
-pub type NapiResult<T> = napi::Result<T>;
-#[cfg(feature = "napi")]
-pub type NapiError = napi::Error;
-
-#[cfg(not(feature = "napi"))]
-pub type NapiResult<T> = crate::Result<T>;
-
-#[cfg(not(feature = "napi"))]
+pub type NapiResult<T, E = crate::Error> = std::result::Result<T, E>;
 pub type NapiError = crate::Error;
 use parking_lot::{Condvar, Mutex};
 use std::collections::VecDeque;
@@ -41,7 +30,6 @@ use std::sync::Arc;
 /// emits zero or more `Token`, `Chunk`, `Progress`, `Speed`, or `Warning`
 /// events.
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "napi", napi)]
 pub enum GenerationEvent {
     /// Generation has started — the model is beginning its forward pass.
     Started,
@@ -123,7 +111,6 @@ fn is_terminal(event: &GenerationEvent) -> bool {
 ///
 /// All events flow through a single unified queue so there is no wake-up race
 /// between ordinary and terminal events.
-#[cfg_attr(feature = "napi", napi)]
 pub struct GenerationStream {
     shared: Arc<SharedQueue>,
     /// Oneshot sender — fired when the stream is closed.
@@ -150,14 +137,12 @@ impl fmt::Debug for GenerationStream {
     }
 }
 
-#[cfg_attr(feature = "napi", napi)]
 impl GenerationStream {
     /// Block the current thread until the next event arrives, or the channel
     /// is closed and drained (returns `None`).
     ///
     /// Terminal and ordinary events share a single queue so ordering is
     /// preserved and there is no wake-up race.
-    #[cfg_attr(feature = "napi", napi)]
     pub fn recv(&mut self) -> Option<GenerationEvent> {
         let mut guard = self.shared.queue.lock();
         loop {
@@ -188,7 +173,6 @@ impl GenerationStream {
     ///
     /// Returns `None` when the queue is empty but still open, or closed
     /// and drained.
-    #[cfg_attr(feature = "napi", napi)]
     pub fn try_recv(&mut self) -> Option<GenerationEvent> {
         let mut guard = self.shared.queue.lock();
         if self.shared.terminal_seen.load(Ordering::Acquire) {
@@ -213,7 +197,6 @@ impl GenerationStream {
     /// Already-queued events (including terminal events sent afterwards via
     /// [`send_terminal`](GenerationSender::send_terminal)) will still be
     /// drained by [`recv`](Self::recv) before it returns `None`.
-    #[cfg_attr(feature = "napi", napi)]
     pub fn close(&mut self) {
         self.shared.closed.store(true, Ordering::Release);
         // Fire the disconnect oneshot so any waiting receiver is woken.
@@ -225,7 +208,6 @@ impl GenerationStream {
     }
 
     /// Returns `true` once [`close`](Self::close) has been called.
-    #[cfg_attr(feature = "napi", napi)]
     pub fn is_closed(&self) -> bool {
         self.shared.closed.load(Ordering::Acquire)
     }
@@ -263,18 +245,15 @@ impl Drop for GenerationStream {
 ///
 /// Terminal events sent via [`send_terminal`] bypass the capacity check and
 /// are therefore guaranteed to arrive even when the main event buffer is full.
-#[cfg_attr(feature = "napi", napi)]
 pub struct GenerationSender {
     shared: Arc<SharedQueue>,
 }
 
-#[cfg_attr(feature = "napi", napi)]
 impl GenerationSender {
     /// Try to send an event without blocking.
     ///
     /// Returns an error when the channel is full (the caller should retry
     /// after the consumer drains) or closed (the consumer dropped the stream).
-    #[cfg_attr(feature = "napi", napi)]
     pub fn try_send(&self, event: GenerationEvent) -> NapiResult<()> {
         let mut guard = self.shared.queue.lock();
         if self.shared.closed.load(Ordering::Acquire) {
@@ -291,7 +270,6 @@ impl GenerationSender {
     /// Block the current thread until the event is sent.
     ///
     /// Fails when the consumer has dropped the stream.
-    #[cfg_attr(feature = "napi", napi)]
     pub fn blocking_send(&self, event: GenerationEvent) -> NapiResult<()> {
         let mut guard = self.shared.queue.lock();
         while guard.len() >= self.shared.capacity {
@@ -311,7 +289,6 @@ impl GenerationSender {
     /// This always succeeds — the event will be delivered even if the
     /// main event buffer is completely full. If the consumer has already
     /// closed the stream, the event is still queued for draining.
-    #[cfg_attr(feature = "napi", napi)]
     pub fn send_terminal(&self, event: GenerationEvent) {
         let mut guard = self.shared.queue.lock();
         guard.push_back(event);

@@ -844,9 +844,9 @@ struct RawQuantization {
 /// Parse config.json and produce a normalized TextArchitecture + QuantizationMeta.
 pub fn parse_config(
     config_path: &str,
-) -> napi::Result<(TextArchitecture, Option<QuantizationMeta>, ModelManifest)> {
+) -> crate::Result<(TextArchitecture, Option<QuantizationMeta>, ModelManifest)> {
     let config_json = std::fs::read_to_string(config_path)
-        .map_err(|e| napi::Error::from_reason(format!("Cannot read config: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("Cannot read config: {}", e)))?;
 
     // Hash the raw config for provenance
     let mut hasher = Sha256::new();
@@ -854,12 +854,12 @@ pub fn parse_config(
     let config_hash = format!("{:x}", hasher.finalize());
 
     let raw: RawConfig = serde_json::from_str(&config_json)
-        .map_err(|e| napi::Error::from_reason(format!("Invalid config JSON: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("Invalid config JSON: {}", e)))?;
 
     let text = raw
         .text_config
         .as_ref()
-        .ok_or_else(|| napi::Error::from_reason("Missing text_config in model config"))?;
+        .ok_or_else(|| crate::Error::from_reason("Missing text_config in model config"))?;
 
     let max_pos = text
         .max_position_embeddings
@@ -876,7 +876,7 @@ pub fn parse_config(
         .collect();
 
     if layer_types.len() != text.num_hidden_layers as usize {
-        return Err(napi::Error::from_reason(format!(
+        return Err(crate::Error::from_reason(format!(
             "layer_types count ({}) != num_hidden_layers ({})",
             layer_types.len(),
             text.num_hidden_layers

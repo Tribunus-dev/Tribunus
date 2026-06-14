@@ -224,12 +224,12 @@ pub fn validate_profile(profile: &ExecutionPlacementProfile) -> Result<(), Vec<S
 
 /// Serialize a placement profile as pretty-printed JSON and write to `path`.
 ///
-/// Wraps serde serialisation errors into a `napi::Result`.
-pub fn write_profile(profile: &ExecutionPlacementProfile, path: &Path) -> napi::Result<()> {
+/// Wraps serde serialisation errors into a `crate::Result`.
+pub fn write_profile(profile: &ExecutionPlacementProfile, path: &Path) -> crate::Result<()> {
     let json = serde_json::to_string_pretty(profile)
-        .map_err(|e| napi::Error::from_reason(format!("failed to serialize profile: {}", e)))?;
+        .map_err(|e| crate::Error::from_reason(format!("failed to serialize profile: {}", e)))?;
     std::fs::write(path, &json).map_err(|e| {
-        napi::Error::from_reason(format!(
+        crate::Error::from_reason(format!(
             "failed to write profile to {}: {}",
             path.display(),
             e
