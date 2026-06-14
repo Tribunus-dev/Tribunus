@@ -80,6 +80,7 @@ pub mod research_metrics;
 pub mod research_trace;
 pub mod residency;
 pub mod runtime_contract;
+pub mod runtime_orchestration;
 pub mod runtime_trace;
 pub mod session;
 pub mod sidecar;
