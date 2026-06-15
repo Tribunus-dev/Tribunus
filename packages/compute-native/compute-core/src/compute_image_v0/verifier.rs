@@ -1,4 +1,5 @@
 use super::schema::{BackendStatus, ComputeImageV0, KvEvidenceQualification};
+use sha2::Digest;
 use std::collections::HashSet;
 
 pub struct VerifierOptions {
@@ -106,7 +107,7 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
     let json = serde_json::to_string(&canonical).unwrap();
     let mut hasher = sha2::Sha256::new();
     sha2::Digest::update(&mut hasher, json.as_bytes());
-    let recomputed_hash = format!("{:x}", sha2::Digest::finalize(hasher));
+    let recomputed_hash = format!("{:x}", hasher.finalize());
 
     if recomputed_hash != image.schema_hash {
         errors.push(format!("Schema hash mismatch. Expected {}, got {}", image.schema_hash, recomputed_hash));
@@ -205,7 +206,7 @@ mod tests {
         let json = serde_json::to_string(&canonical).unwrap();
         let mut hasher = sha2::Sha256::new();
         sha2::Digest::update(&mut hasher, json.as_bytes());
-        image.schema_hash = format!("{:x}", sha2::Digest::finalize(hasher));
+        image.schema_hash = format!("{:x}", hasher.finalize());
 
         assert!(verify_v0_image(&image, VerifierOptions::default()).is_ok());
     }
