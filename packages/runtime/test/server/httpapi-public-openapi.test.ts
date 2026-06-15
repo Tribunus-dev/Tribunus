@@ -47,9 +47,23 @@ describe("PublicApi OpenAPI v2 errors", () => {
   test("preserves /api auth responses", () => {
     const spec = OpenApi.fromApi(PublicApi) as OpenApiSpec
 
+    const publicApiAuthExemptPaths = new Set([
+      "/api/claims",
+      "/api/claims/tree"
+    ])
+
     for (const route of v2Operations(spec)) {
+      if (publicApiAuthExemptPaths.has(route.path)) continue
       expect(route.operation.responses?.["401"], `${route.method.toUpperCase()} ${route.path}`).toBeDefined()
       expect(route.operation.security, `${route.method.toUpperCase()} ${route.path}`).toEqual([])
+    }
+  })
+
+  test("documents unauthenticated /api endpoints", () => {
+    const spec = OpenApi.fromApi(PublicApi) as OpenApiSpec
+
+    for (const path of ["/api/claims", "/api/claims/tree"]) {
+      expect(spec.paths[path]?.get?.responses?.["401"], `GET ${path} should not have 401`).toBeUndefined()
     }
   })
 
