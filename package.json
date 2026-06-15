@@ -24,7 +24,8 @@
     "schema:types": "bun run script/schema-types.ts",
     "schema:check": "bun run script/schema-types.ts && if [ -n \"$(git status --porcelain schemas/generated/types.ts)\" ]; then echo 'ERROR: Schema types out of date — run bun run schema:generate and commit the result'; echo ''; git diff schemas/generated/types.ts; exit 1; fi",
     "schema:validate": "bun run script/schema-validate.ts",
-    "schema:compat-check": "bun run script/schema-validate.ts"
+    "schema:compat-check": "bun run script/schema-validate.ts",
+    "compute:contracts": "bun run packages/compute-native/scripts/verify-compute-contracts.ts"
   },
   "workspaces": {
     "packages": [
