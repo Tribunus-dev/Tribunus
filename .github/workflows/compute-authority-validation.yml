@@ -5,6 +5,7 @@
 # architecture contracts compile,
 # runtime work can be scoped,
 # hostile lattice corruption is rejected,
+# dependency linkage is valid (submodules, path deps, lockfile),
 # and the result is reproducible off the developer machine.
 
 name: Compute Authority Validation
@@ -56,7 +57,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      
+
+      - name: Verify Submodules
+        run: git submodule status --recursive
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         
@@ -64,6 +68,14 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: packages/compute-native -> target
+
+      - name: Dependency Resolution Gate
+        working-directory: packages/compute-native
+        run: cargo metadata --locked
+
+      - name: Build Verification Gate
+        working-directory: packages/compute-native
+        run: cargo check --locked
 
       - name: Build Authority Subset
         run: |
