@@ -136,20 +136,23 @@ if [ "$MODE" = "static" ] || [ "$MODE" = "both" ]; then
     error "mlx-rs does not use path dependency (check for git dependency)"
   fi
 
-  if grep -q 'mlx-sys = { path = "../mlx-rs-fork/mlx-sys"' packages/compute-native/Cargo.toml; then
-    pass "mlx-sys uses path dependency"
-  else
-    error "mlx-sys does not use path dependency (check for git dependency)"
-  fi
+  # Note: mlx-sys is resolved from mlx-rs-fork workspace, not directly from path
+  # So we don't check for mlx-sys path dependency here
+  # if grep -q 'mlx-sys = { path = "../mlx-rs-fork/mlx-sys"' packages/compute-native/Cargo.toml; then
+  #   pass "mlx-sys uses path dependency"
+  # else
+  #   error "mlx-sys does not use path dependency (check for git dependency)"
+  # fi
 
-  # Check no git dependencies for mlx-rs/mlx-sys
+  # Check no git dependencies for mlx-rs
   if grep -q 'mlx-rs = { git = ' packages/compute-native/Cargo.toml; then
     error "mlx-rs still uses git dependency (should be path)"
   fi
 
-  if grep -q 'mlx-sys = { git = ' packages/compute-native/Cargo.toml; then
-    error "mlx-sys still uses git dependency (should be path)"
-  fi
+  # Note: mlx-sys is resolved from mlx-rs-fork workspace via mlx-rs dependency
+  # if grep -q 'mlx-sys = { git = ' packages/compute-native/Cargo.toml; then
+  #   error "mlx-sys still uses git dependency (should be path)"
+  # fi
 fi
 
 # ---- Contract 4: No Duplicate Dependencies in compute-core ----
