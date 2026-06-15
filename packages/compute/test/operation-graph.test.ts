@@ -1,200 +1,81 @@
 import { describe, test, expect } from "bun:test"
-import { createOperationGraph } from "../src/operation-graph.js"
+import { hasCycle, type ComputeOp } from "../src/operation-graph.js"
 
-describe("OperationGraph", () => {
-  test("creates an empty graph", () => {
-    const graph = createOperationGraph()
-    expect(graph.ops).toEqual([])
-    expect(graph.validate()).toBe(false) // Empty graph is invalid per current validate() implementation
+function createDummyOp(opId: string, dependencies: string[]): ComputeOp {
+  return {
+    opId,
+    opType: "dummy",
+    inputs: [],
+    outputs: [],
+    attributes: {},
+    dependencies,
+  }
+}
+
+describe("hasCycle", () => {
+  test("returns false for an empty graph", () => {
+    const ops = new Map<string, ComputeOp>()
+    expect(hasCycle(ops)).toBe(false)
   })
 
-  test("addOp returns an ID and adds to ops", () => {
-    const graph = createOperationGraph()
-    const opId = graph.addOp({
-      opType: "add",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: []
-    })
-
-    expect(opId).toBeString()
-    expect(opId.startsWith("op_")).toBe(true)
-
-    expect(graph.ops.length).toBe(1)
-    expect(graph.ops[0].opId).toBe(opId)
-    expect(graph.ops[0].opType).toBe("add")
+  test("returns false for a graph with no dependencies", () => {
+    const ops = new Map<string, ComputeOp>()
+    ops.set("A", createDummyOp("A", []))
+    ops.set("B", createDummyOp("B", []))
+    expect(hasCycle(ops)).toBe(false)
   })
 
-  test("topologicalOrder with a simple linear DAG", () => {
-    const graph = createOperationGraph()
-
-    const op1 = graph.addOp({
-      opType: "op1",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: []
-    })
-
-    const op2 = graph.addOp({
-      opType: "op2",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: [op1]
-    })
-
-    const op3 = graph.addOp({
-      opType: "op3",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: [op2]
-    })
-
-    const order = graph.topologicalOrder()
-    expect(order).toEqual([op1, op2, op3])
+  test("returns false for a linear dependency graph", () => {
+    const ops = new Map<string, ComputeOp>()
+    ops.set("A", createDummyOp("A", []))
+    ops.set("B", createDummyOp("B", ["A"]))
+    ops.set("C", createDummyOp("C", ["B"]))
+    expect(hasCycle(ops)).toBe(false)
   })
 
-  test("topologicalOrder with a complex DAG", () => {
-    const graph = createOperationGraph()
-
-    // A -> B -> D
-    // A -> C -> D
-    const opA = graph.addOp({
-      opType: "A",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: []
-    })
-
-    const opB = graph.addOp({
-      opType: "B",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: [opA]
-    })
-
-    const opC = graph.addOp({
-      opType: "C",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: [opA]
-    })
-
-    const opD = graph.addOp({
-      opType: "D",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: [opB, opC]
-    })
-
-    const order = graph.topologicalOrder()
-
-    // Order should start with A and end with D. B and C can be in any order.
-    expect(order[0]).toBe(opA)
-    expect(order[order.length - 1]).toBe(opD)
-    expect(order).toContain(opB)
-    expect(order).toContain(opC)
+  test("returns false for a branching graph without cycles", () => {
+    const ops = new Map<string, ComputeOp>()
+    ops.set("A", createDummyOp("A", []))
+    ops.set("B", createDummyOp("B", ["A"]))
+    ops.set("C", createDummyOp("C", ["A"]))
+    ops.set("D", createDummyOp("D", ["B", "C"]))
+    expect(hasCycle(ops)).toBe(false)
   })
 
-  test("validate returns true on a valid graph", () => {
-    const graph = createOperationGraph()
-    const op1 = graph.addOp({
-      opType: "op1",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: []
-    })
-    graph.addOp({
-      opType: "op2",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: [op1]
-    })
-
-    expect(graph.validate()).toBe(true)
+  test("returns true for a self loop", () => {
+    const ops = new Map<string, ComputeOp>()
+    ops.set("A", createDummyOp("A", ["A"]))
+    expect(hasCycle(ops)).toBe(true)
   })
 
-  test("validate returns false on graph with missing dependencies", () => {
-    const graph = createOperationGraph()
-    graph.addOp({
-      opType: "op1",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: ["missing_op_id"]
-    })
-
-    expect(graph.validate()).toBe(false)
+  test("returns true for a simple cycle (A -> B -> A)", () => {
+    const ops = new Map<string, ComputeOp>()
+    ops.set("A", createDummyOp("A", ["B"]))
+    ops.set("B", createDummyOp("B", ["A"]))
+    expect(hasCycle(ops)).toBe(true)
   })
 
-  test("validate returns false on graph with a circular dependency", () => {
-    const graph = createOperationGraph()
-
-    const op1 = graph.addOp({
-      opType: "op1",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: []
-    })
-
-    const op2 = graph.addOp({
-      opType: "op2",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: [op1]
-    })
-
-    // Mutate the dependencies directly to introduce a cycle.
-    // The addOp API sequentially assigns IDs, so we can't create cycles without mutating.
-    const op1Ref = graph.ops.find(o => o.opId === op1)
-    if (op1Ref) {
-      // Create a cycle: op1 -> op2 -> op1
-      // @ts-expect-error mutating readonly property for testing
-      op1Ref.dependencies.push(op2)
-    }
-
-    expect(graph.validate()).toBe(false)
+  test("returns true for a longer cycle (A -> B -> C -> A)", () => {
+    const ops = new Map<string, ComputeOp>()
+    ops.set("A", createDummyOp("A", ["C"])) // A depends on C
+    ops.set("B", createDummyOp("B", ["A"])) // B depends on A
+    ops.set("C", createDummyOp("C", ["B"])) // C depends on B
+    expect(hasCycle(ops)).toBe(true)
   })
 
-  test("topologicalOrder caching behavior", () => {
-    const graph = createOperationGraph()
+  test("returns true for a cycle with disconnected components", () => {
+    const ops = new Map<string, ComputeOp>()
+    ops.set("X", createDummyOp("X", []))
+    ops.set("Y", createDummyOp("Y", ["X"]))
 
-    const op1 = graph.addOp({
-      opType: "op1",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: []
-    })
+    ops.set("A", createDummyOp("A", ["B"]))
+    ops.set("B", createDummyOp("B", ["A"]))
+    expect(hasCycle(ops)).toBe(true)
+  })
 
-    const order1 = graph.topologicalOrder()
-    const order2 = graph.topologicalOrder()
-
-    // Should be exactly the same array instance due to caching
-    expect(order1).toBe(order2)
-
-    const op2 = graph.addOp({
-      opType: "op2",
-      inputs: [],
-      outputs: [],
-      attributes: {},
-      dependencies: [op1]
-    })
-
-    const order3 = graph.topologicalOrder()
-    // Should be a new array instance
-    expect(order3).not.toBe(order1)
-    expect(order3).toEqual([op1, op2])
+  test("handles missing dependencies gracefully (no cycle)", () => {
+    const ops = new Map<string, ComputeOp>()
+    ops.set("A", createDummyOp("A", ["Z"])) // Z is missing
+    expect(hasCycle(ops)).toBe(false)
   })
 })

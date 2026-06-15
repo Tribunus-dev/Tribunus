@@ -690,7 +690,7 @@ export async function exportSourcePacket(
 
 export async function exportPairedPackets(
   repoRoot: string,
-  options?: { progress?: ReviewExportProgressSinkV1 },
+  options?: { progress?: ReviewExportProgressSinkV1; verifyByteIdentical?: boolean },
 ): Promise<{
   snapshot: CodeIndexSnapshotV1
   semanticZipPath: string
@@ -716,27 +716,30 @@ export async function exportPairedPackets(
   const source = await exportSourcePacket(repoRoot, snapshot, options)
 
   const verifyDone = timeline.start("verify", { message: "Verifying semantic artifacts are byte-identical" })
-  const semanticEntries = [
-    "01_manifest.json",
-    "02_file_index.json",
-    "03_module_graph.json",
-    "04_symbol_index.json",
-    "05_type_api_surface.json",
-    "06_tool_kernel_ir.json",
-    "07_pglite_duckdb_ir.json",
-    "08_tests_and_ci_ir.json",
-    "09_architecture_context.json",
-    "10_review_findings.json",
-  ]
-  // Skip byte-identical verification for performance in large repos
-  // for (const entry of semanticEntries) {
-  //   const semanticBytes = readPacketEntryBytes(semantic.zipPath, entry)
-  //   const sourceBytes = readZipEntryBytes(source.zipPath, `tribunus-source-review/semantic-review/${entry}`)
-  //   if (Buffer.compare(semanticBytes, sourceBytes) !== 0) {
-  //     throw new Error(`Semantic artifact mismatch for ${entry}`)
-  //   }
-  // }
-  verifyDone({ check: "semantic artifacts byte-identical across packets", message: "Semantic artifacts are byte-identical" }, "done")
+  if (options?.verifyByteIdentical) {
+    const semanticEntries = [
+      "01_manifest.json",
+      "02_file_index.json",
+      "03_module_graph.json",
+      "04_symbol_index.json",
+      "05_type_api_surface.json",
+      "06_tool_kernel_ir.json",
+      "07_pglite_duckdb_ir.json",
+      "08_tests_and_ci_ir.json",
+      "09_architecture_context.json",
+      "10_review_findings.json",
+    ]
+    for (const entry of semanticEntries) {
+      const semanticBytes = readPacketEntryBytes(semantic.zipPath, entry)
+      const sourceBytes = readZipEntryBytes(source.zipPath, `tribunus-source-review/semantic-review/${entry}`)
+      if (Buffer.compare(semanticBytes, sourceBytes) !== 0) {
+        throw new Error(`Semantic artifact mismatch for ${entry}`)
+      }
+    }
+    verifyDone({ check: "semantic artifacts byte-identical across packets", message: "Semantic artifacts are byte-identical" }, "done")
+  } else {
+    verifyDone({ check: "semantic artifacts verification skipped", message: "Semantic artifact byte-identical verification skipped" }, "done")
+  }
 
   timeline.mark("complete", performance.now() - pairedStarted)
   timeline.emit({
