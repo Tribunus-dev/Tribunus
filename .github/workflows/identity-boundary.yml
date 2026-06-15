@@ -14,8 +14,14 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.14"
+      - name: Create source cutover plan
+        run: |
+             bun run scripts/identity/build-package-authority-map.ts
+             bun run scripts/identity/plan-source-cutover.ts
+      - name: Generate baseline
+        run: bun run scripts/identity/verify-identity.ts --source-identity-baseline
       - name: Run identity verifier
-        run: bun run scripts/identity/verify-identity.ts
+        run: bun run scripts/identity/verify-identity.ts --source-identity-baseline
       - name: Upload identity receipt
         if: always()
         uses: actions/upload-artifact@v4

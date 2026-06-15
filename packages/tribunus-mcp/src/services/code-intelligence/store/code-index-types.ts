@@ -471,6 +471,7 @@ export type PairedReviewExportInputV1 = {
   source_output_path?: string
   force?: boolean
   progress?: ReviewExportProgressSinkV1
+  verify_byte_identical?: boolean
 }
 
 export type PairedReviewExportResultV1 = {

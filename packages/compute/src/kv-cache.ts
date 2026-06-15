@@ -160,7 +160,7 @@ export class SimpleKVCache implements KVCache {
         // Evict entries farthest from the most recent token position.
         {
           const maxPos = latestTokenPosition(this.entries)
-          pool.sort((a, b) => Math.abs(a.tokenCount - maxPos) - Math.abs(b.tokenCount - maxPos))
+          pool.sort((a, b) => Math.abs(b.tokenCount - maxPos) - Math.abs(a.tokenCount - maxPos))
         }
         break
     }
