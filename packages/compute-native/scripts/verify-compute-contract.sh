@@ -79,17 +79,17 @@ if [ "$MODE" = "static" ] || [ "$MODE" = "both" ]; then
   fi
 
   # Check gitlink exists (160000 mode in git ls-files)
-  if git ls-files --stage 2>/dev/null | grep -q "^160000.*packages/mlx-rs-fork"; then
-    pass "packages/mlx-rs-fork has gitlink (real submodule)"
+  if git ls-files --stage 2>/dev/null | grep -q "^160000.*mlx-rs-fork"; then
+    pass "mlx-rs-fork has gitlink (real submodule)"
   else
-    error "packages/mlx-rs-fork missing gitlink (fake submodule)"
+    error "mlx-rs-fork missing gitlink (fake submodule)"
   fi
 
   # Check submodule is initialized (gitlink is a file, not a directory)
-  if [ -e "packages/mlx-rs-fork/.git" ]; then
-    pass "packages/mlx-rs-fork/.git exists (initialized)"
+  if [ -e "mlx-rs-fork/.git" ]; then
+    pass "mlx-rs-fork/.git exists (initialized)"
   else
-    error "packages/mlx-rs-fork/.git missing (not initialized)"
+    error "mlx-rs-fork/.git missing (not initialized)"
   fi
 fi
 
@@ -98,27 +98,27 @@ if [ "$MODE" = "static" ] || [ "$MODE" = "both" ]; then
   info "=== Contract 2: Nested Submodule (mlx-c-fork) ==="
 
   # Check nested submodule exists
-  if [ -d "packages/mlx-rs-fork/mlx-sys/src/mlx-c" ]; then
-    pass "packages/mlx-rs-fork/mlx-sys/src/mlx-c exists"
+  if [ -d "mlx-rs-fork/mlx-sys/src/mlx-c" ]; then
+    pass "mlx-rs-fork/mlx-sys/src/mlx-c exists"
   else
-    error "packages/mlx-rs-fork/mlx-sys/src/mlx-c missing"
+    error "mlx-rs-fork/mlx-sys/src/mlx-c missing"
   fi
 
   # Check nested submodule is initialized (gitlink is a file, not a directory)
-  if [ -e "packages/mlx-rs-fork/mlx-sys/src/mlx-c/.git" ]; then
-    pass "packages/mlx-rs-fork/mlx-sys/src/mlx-c/.git exists (initialized)"
+  if [ -e "mlx-rs-fork/mlx-sys/src/mlx-c/.git" ]; then
+    pass "mlx-rs-fork/mlx-sys/src/mlx-c/.git exists (initialized)"
   else
-    error "packages/mlx-rs-fork/mlx-sys/src/mlx-c/.git missing (not initialized)"
+    error "mlx-rs-fork/mlx-sys/src/mlx-c/.git missing (not initialized)"
   fi
 
   # Check critical files exist
-  if [ -f "packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt" ]; then
+  if [ -f "mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt" ]; then
     pass "CMakeLists.txt exists in mlx-c-fork"
   else
     error "CMakeLists.txt missing in mlx-c-fork"
   fi
 
-  if [ -f "packages/mlx-rs-fork/mlx-sys/src/mlx-c/mlx/c/mlx.h" ]; then
+  if [ -f "mlx-rs-fork/mlx-sys/src/mlx-c/mlx/c/mlx.h" ]; then
     pass "mlx.h exists in mlx-c-fork"
   else
     error "mlx.h missing in mlx-c-fork"
@@ -130,25 +130,25 @@ if [ "$MODE" = "static" ] || [ "$MODE" = "both" ]; then
   info "=== Contract 3: Path Dependencies ==="
 
   # Check Cargo.toml uses path dependencies
-  if grep -q 'mlx-rs = { path = "../mlx-rs-fork/mlx-rs"' packages/compute-native/Cargo.toml; then
+  if grep -q 'mlx-rs = { path = "mlx-rs-fork/mlx-rs"' packages/compute-native/Cargo.toml; then
     pass "mlx-rs uses path dependency"
   else
     error "mlx-rs does not use path dependency (check for git dependency)"
   fi
 
-  if grep -q 'mlx-sys = { path = "../mlx-rs-fork/mlx-sys"' packages/compute-native/Cargo.toml; then
+  if grep -q 'mlx-sys = { path = "mlx-rs-fork/mlx-sys"' packages/compute-native/Cargo.toml; then
     pass "mlx-sys uses path dependency"
   else
     error "mlx-sys does not use path dependency (check for git dependency)"
   fi
 
-  if grep -q 'mlx-macros = { path = "../mlx-rs-fork/mlx-macros"' packages/compute-native/Cargo.toml; then
+  if grep -q 'mlx-macros = { path = "mlx-rs-fork/mlx-macros"' packages/compute-native/Cargo.toml; then
     pass "mlx-macros uses path dependency"
   else
     error "mlx-macros does not use path dependency (check for git dependency)"
   fi
 
-  if grep -q 'mlx-internal-macros = { path = "../mlx-rs-fork/mlx-internal-macros"' packages/compute-native/Cargo.toml; then
+  if grep -q 'mlx-internal-macros = { path = "mlx-rs-fork/mlx-internal-macros"' packages/compute-native/Cargo.toml; then
     pass "mlx-internal-macros uses path dependency"
   else
     error "mlx-internal-macros does not use path dependency (check for git dependency)"
