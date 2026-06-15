@@ -89,11 +89,10 @@ async function main() {
 
   // Delete any existing branches for opencode updates
   console.log(`🔍 Checking for existing branches...`)
-  const branches = await $`git ls-remote --heads https://x-access-token:${token}@github.com/${FORK_REPO}.git`.text()
   const branchPattern = `refs/heads/update-${EXTENSION_NAME}-`
+  const branches = await $`git ls-remote --heads https://x-access-token:${token}@github.com/${FORK_REPO}.git ${branchPattern}*`.text()
   const oldBranches = branches
     .split("\n")
-    .filter((line) => line.includes(branchPattern))
     .map((line) => line.split("refs/heads/")[1])
     .filter(Boolean)
 

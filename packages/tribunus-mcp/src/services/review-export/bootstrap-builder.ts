@@ -12,6 +12,7 @@ import {
   writeFileSync,
   statSync,
   renameSync,
+  promises as fsPromises,
 } from "node:fs";
 import { execSync } from "node:child_process";
 import { resolve, dirname, basename } from "node:path";
@@ -515,7 +516,7 @@ export async function buildCodeReviewExport(
     if (existsSync(srcDir)) {
       for (const f of readdirSync(srcDir).filter((f) => f.endsWith(".v1.json")).sort()) {
         const src = resolve(srcDir, f);
-        const buf = readFileSync(src);
+        const buf = await fsPromises.readFile(src);
         const sha256 = createHash("sha256").update(buf).digest("hex");
         includedFiles.push({
           path: `board/${dir}/${f}`,
@@ -525,7 +526,7 @@ export async function buildCodeReviewExport(
         })
         const dst = resolve(reviewDir, `board/${dir}/${f}`)
         mkdirSync(dirname(dst), { recursive: true })
-        writeFileSync(dst, buf)
+        await fsPromises.writeFile(dst, buf)
       }
     }
   }
@@ -535,7 +536,7 @@ export async function buildCodeReviewExport(
   if (existsSync(memoryLinksDir)) {
     for (const f of readdirSync(memoryLinksDir).filter((f) => f.endsWith(".v1.json")).sort()) {
       const src = resolve(memoryLinksDir, f);
-      const buf = readFileSync(src);
+      const buf = await fsPromises.readFile(src);
       const sha256 = createHash("sha256").update(buf).digest("hex");
       includedFiles.push({
         path: `board/memory-links/${f}`,
@@ -545,25 +546,26 @@ export async function buildCodeReviewExport(
       })
       const dst = resolve(reviewDir, `board/memory-links/${f}`)
       mkdirSync(dirname(dst), { recursive: true })
-      writeFileSync(dst, buf)
+      await fsPromises.writeFile(dst, buf)
     }
   }
 
   // Research packets (recursive)
   const researchSrcDir = resolve(w, "docs/json/omp/research");
-  const collectResearch = (src: string, prefix: string) => {
+  const collectResearch = async (src: string, prefix: string) => {
     if (!existsSync(src)) return;
-    for (const entry of readdirSync(src, { withFileTypes: true }).sort((a, b) =>
+    const entries = readdirSync(src, { withFileTypes: true }).sort((a, b) =>
       a.name.localeCompare(b.name),
-    )) {
+    );
+    for (const entry of entries) {
       if (signal?.aborted) throw new Error("code_review_export cancelled");
       const srcPath = resolve(src, entry.name);
       const rel = `${prefix}/${entry.name}`;
       if (entry.isDirectory()) {
         if (entry.name === "memory-links") return; // skip — already handled above
-        collectResearch(srcPath, rel);
+        await collectResearch(srcPath, rel);
       } else if (entry.name.endsWith(".v1.json")) {
-        const buf = readFileSync(srcPath);
+        const buf = await fsPromises.readFile(srcPath);
         const sha256 = createHash("sha256").update(buf).digest("hex");
         const destRel = `research/${rel}`;
         includedFiles.push({
@@ -571,14 +573,14 @@ export async function buildCodeReviewExport(
           size_bytes: buf.length,
           sha256,
           category: "research",
-        })
-        const rdst = resolve(reviewDir, destRel)
-        mkdirSync(dirname(rdst), { recursive: true })
-        writeFileSync(rdst, buf)
+        });
+        const rdst = resolve(reviewDir, destRel);
+        mkdirSync(dirname(rdst), { recursive: true });
+        await fsPromises.writeFile(rdst, buf);
       }
     }
-      }
-  collectResearch(researchSrcDir, "");
+  };
+  await collectResearch(researchSrcDir, "");
 
   // ── Stage: Required path checking ──
 
@@ -850,7 +852,8 @@ export async function buildCodeReviewExport(
 
     const dst = resolve(reviewDir, zipEntry);
     mkdirSync(dirname(dst), { recursive: true });
-    writeFileSync(dst, readFileSync(sourcePath));
+    const buf = await fsPromises.readFile(sourcePath);
+    await fsPromises.writeFile(dst, buf);
     zipManifestEntries.push(zipEntry);
   }
 
