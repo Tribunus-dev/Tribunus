@@ -61,6 +61,9 @@ jobs:
       - name: Verify Submodules
         run: git submodule status --recursive
 
+      - name: Run Compute Contract Verifier
+        run: ./packages/compute-native/scripts/verify-compute-contract.sh
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         
