@@ -15,7 +15,7 @@ members = [
 ]
 
 [workspace.dependencies]
-mlx-rs = { path = "mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
+mlx-rs = { path = "../mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
 
 [dependencies]
 tribunus-compute-core = { path = "compute-core" }
