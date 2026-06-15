@@ -33,6 +33,8 @@ fn main() {
         );
         eprintln!("  tribunus-compute-image infer --image <dir>");
         eprintln!("  tribunus-compute-image decode-one --image <dir>");
+        eprintln!("  tribunus-compute-image emit-v0 --output-dir <dir> [--allow-contract-only-kv]");
+        eprintln!("  tribunus-compute-image verify-v0 --image <dir>");
         std::process::exit(1);
     }
 
@@ -41,6 +43,8 @@ fn main() {
         "verify" => cmd_verify(&args[2..]),
         "infer" => cmd_infer(&args[2..]),
         "decode-one" => cmd_decode_one(&args[2..]),
+        "emit-v0" => cmd_emit_v0(&args[2..]),
+        "verify-v0" => cmd_verify_v0(&args[2..]),
         other => {
             eprintln!("unknown command: {other}");
             std::process::exit(1);
@@ -621,4 +625,62 @@ fn cmd_infer(args: &[String]) -> Result<(), String> {
 
     eprintln!("GATE PASSED: token={} elapsed={:.1}s", token, elapsed_s);
     Ok(())
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// emit-v0 and verify-v0 commands
+// ═══════════════════════════════════════════════════════════════════════════
+
+fn cmd_emit_v0(args: &[String]) -> Result<(), String> {
+    let output_dir = get_opt(args, "--output-dir").ok_or_else(|| "--output-dir is required".to_string())?;
+    let allow_contract_only_kv = has_flag(args, "--allow-contract-only-kv");
+
+    let out_path = Path::new(output_dir);
+    fs::create_dir_all(out_path).map_err(|e| format!("create output dir: {}", e))?;
+
+    let adapter = tribunus_compute_core::compute_image_v0::evidence::SyntheticFixtureAdapter {
+        scenarios: tribunus_compute_core::compute_image_v0::evidence::default_synthetic_fixtures(),
+    };
+
+    let mut options = tribunus_compute_core::compute_image_v0::emitter::EmitterOptions::default();
+    options.allow_contract_only_kv = allow_contract_only_kv;
+
+    let (image, md) = tribunus_compute_core::compute_image_v0::emitter::emit_v0_image(&adapter, options)?;
+
+    let json_path = out_path.join("compute_image_v0.json");
+    let md_path = out_path.join("compute_image_v0.md");
+
+    let json_str = serde_json::to_string_pretty(&image).map_err(|e| format!("json serialize: {}", e))?;
+    fs::write(&json_path, json_str).map_err(|e| format!("write json: {}", e))?;
+    fs::write(&md_path, md).map_err(|e| format!("write md: {}", e))?;
+
+    println!("Emitted compute_image_v0.json and .md to {}", output_dir);
+    Ok(())
+}
+
+fn cmd_verify_v0(args: &[String]) -> Result<(), String> {
+    let image_dir = get_opt(args, "--image").ok_or_else(|| "--image is required".to_string())?;
+
+    let json_path = Path::new(image_dir).join("compute_image_v0.json");
+    if !json_path.exists() {
+        return Err(format!("{} does not exist", json_path.display()));
+    }
+
+    let json_str = fs::read_to_string(&json_path).map_err(|e| format!("read json: {}", e))?;
+    let image: tribunus_compute_core::compute_image_v0::schema::ComputeImageV0 = serde_json::from_str(&json_str).map_err(|e| format!("parse json: {}", e))?;
+
+    let override_dirty = has_flag(args, "--override-dirty");
+    let options = tribunus_compute_core::compute_image_v0::verifier::VerifierOptions {
+        override_dirty_tree: override_dirty,
+    };
+
+    match tribunus_compute_core::compute_image_v0::verifier::verify_v0_image(&image, options) {
+        Ok(_) => {
+            println!("ComputeImageV0 validation passed.");
+            Ok(())
+        }
+        Err(errors) => {
+            Err(format!("ComputeImageV0 verification failed:\n  - {}", errors.join("\n  - ")))
+        }
+    }
 }

@@ -39,10 +39,11 @@ impl DurableAuthorityPort for PgAdapter {
     }
 
     async fn commit_receipt(&self, record: DurableReceiptRecord) -> Result<()> {
+        let ts = record.timestamp as i64;
         self.client
             .execute(
                 "INSERT INTO durable_receipts (receipt_id, work_id, timestamp) VALUES ($1, $2, $3)",
-                &[&record.receipt_id, &record.work_id, &(record.timestamp as i64)],
+                &[&record.receipt_id, &record.work_id, &ts],
             )
             .await
             .map_err(|e| crate::Error::new(crate::Status::InternalError, e.to_string()))?;
