@@ -61,8 +61,8 @@ jobs:
       - name: Verify Submodules
         run: git submodule status --recursive
 
-      - name: Run Compute Contract Verifier
-        run: ./packages/compute-native/scripts/verify-compute-contract.sh
+      - name: Run Compute Contract Verifier (Static)
+        run: ./packages/compute-native/scripts/verify-compute-contract.sh --static
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -79,6 +79,10 @@ jobs:
       - name: Build Verification Gate
         working-directory: packages/compute-native
         run: cargo check --locked
+
+      - name: Run Compute Contract Verifier (Cargo)
+        working-directory: packages/compute-native
+        run: ../scripts/verify-compute-contract.sh --cargo
 
       - name: Build Authority Subset
         run: |
