@@ -19,7 +19,7 @@ mlx-rs = { path = "../mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "s
 mlx-sys = { path = "../mlx-rs-fork/mlx-sys" }
 
 [dependencies]
-tribunus-compute-core = { path = "compute-core" }
+tribunus-compute-core = { path = "compute-core", features = ["storage-adapters"] }
 napi = { version = "3.9.0", features = ["napi8", "serde-json"], default-features = false }
 napi-derive = "3.5.6"
 mlx-rs = { workspace = true }
