@@ -83,11 +83,11 @@ jobs:
 
       - name: Dependency Resolution Gate
         working-directory: packages/compute-native
-        run: cargo metadata --locked --format-version 1
+        run: cargo metadata --format-version 1
 
       - name: Build Verification Gate
         working-directory: packages/compute-native
-        run: cargo check --locked
+        run: cargo check
 
       - name: Run Compute Contract Verifier (Cargo)
         working-directory: packages/compute-native
