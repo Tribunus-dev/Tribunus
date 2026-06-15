@@ -16,18 +16,12 @@ members = [
 
 [workspace.dependencies]
 mlx-rs = { path = "mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
-mlx-sys = { path = "mlx-rs-fork/mlx-sys" }
-mlx-macros = { path = "mlx-rs-fork/mlx-macros" }
-mlx-internal-macros = { path = "mlx-rs-fork/mlx-internal-macros" }
 
 [dependencies]
 tribunus-compute-core = { path = "compute-core" }
 napi = { version = "3.9.0", features = ["napi8", "serde-json"], default-features = false }
 napi-derive = "3.5.6"
 mlx-rs = { workspace = true }
-mlx-sys = { workspace = true }
-mlx-macros = { workspace = true }
-mlx-internal-macros = { workspace = true }
 safetensors = "0.5"
 sha2 = { version = "0.10", features = ["asm"] }
 uuid = { version = "1", features = ["v4", "serde"] }

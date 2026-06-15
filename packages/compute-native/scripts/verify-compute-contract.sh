@@ -136,31 +136,12 @@ if [ "$MODE" = "static" ] || [ "$MODE" = "both" ]; then
     error "mlx-rs does not use path dependency (check for git dependency)"
   fi
 
-  if grep -q 'mlx-sys = { path = "mlx-rs-fork/mlx-sys"' packages/compute-native/Cargo.toml; then
-    pass "mlx-sys uses path dependency"
-  else
-    error "mlx-sys does not use path dependency (check for git dependency)"
-  fi
+  # Note: mlx-sys, mlx-macros, mlx-internal-macros are resolved from mlx-rs-fork workspace
+  # via mlx-rs dependency, so we don't check for them here
 
-  if grep -q 'mlx-macros = { path = "mlx-rs-fork/mlx-macros"' packages/compute-native/Cargo.toml; then
-    pass "mlx-macros uses path dependency"
-  else
-    error "mlx-macros does not use path dependency (check for git dependency)"
-  fi
-
-  if grep -q 'mlx-internal-macros = { path = "mlx-rs-fork/mlx-internal-macros"' packages/compute-native/Cargo.toml; then
-    pass "mlx-internal-macros uses path dependency"
-  else
-    error "mlx-internal-macros does not use path dependency (check for git dependency)"
-  fi
-
-  # Check no git dependencies for mlx-rs/mlx-sys
+  # Check no git dependencies for mlx-rs
   if grep -q 'mlx-rs = { git = ' packages/compute-native/Cargo.toml; then
     error "mlx-rs still uses git dependency (should be path)"
-  fi
-
-  if grep -q 'mlx-sys = { git = ' packages/compute-native/Cargo.toml; then
-    error "mlx-sys still uses git dependency (should be path)"
   fi
 
   if grep -q 'mlx-macros = { git = ' packages/compute-native/Cargo.toml; then
