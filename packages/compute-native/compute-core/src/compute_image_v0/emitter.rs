@@ -108,7 +108,7 @@ fn generate_markdown_summary(image: &ComputeImageV0) -> String {
     md.push_str(&format!("- **Policy**: {}\n", image.target_context.compute_policy));
     md.push_str("\n## Phase Placements\n");
 
-    let mut usable_count = 0;
+    let mut _usable_count = 0;
     let mut fallback_count = 0;
     let mut blocked_count = 0;
 
@@ -144,7 +144,7 @@ fn generate_markdown_summary(image: &ComputeImageV0) -> String {
             fallback_count += 1;
             fallback_sections.push(format!("{} -> {}", phase.phase_name, phase.selected_backend.as_ref().unwrap()));
         } else {
-            usable_count += 1;
+            _usable_count += 1;
         }
 
         // Gather reasons
