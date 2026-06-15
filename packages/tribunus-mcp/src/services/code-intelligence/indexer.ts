@@ -553,7 +553,7 @@ class CodeIntelligenceKernelImpl implements OmpCodeIntelligenceKernelV1 {
   }
 
   async exportPairedReviewPacket(input: PairedReviewExportInputV1): Promise<PairedReviewExportResultV1> {
-    const paired = await exportPairedPackets(this.repoRoot, { progress: input.progress })
+    const paired = await exportPairedPackets(this.repoRoot, { progress: input.progress, verifyByteIdentical: input.verify_byte_identical })
     const store = getCodeIndexStore(this.repoRoot)
     const semanticZipPath = input.semantic_output_path ?? paired.semanticZipPath
     const sourceZipPath = input.source_output_path ?? paired.sourceZipPath

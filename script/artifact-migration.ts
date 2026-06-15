@@ -15,6 +15,7 @@ import { $ } from "bun"
 import { join, relative, basename, dirname } from "node:path"
 import { createHash } from "node:crypto"
 import { existsSync, readFileSync, statSync } from "node:fs"
+import { readFile } from "node:fs/promises"
 import { homedir } from "node:os"
 
 // ---------------------------------------------------------------------------
@@ -138,7 +139,8 @@ type ClassifiedFile = {
 const sessionIdPattern = /ses_[a-z0-9]+/i
 const laneIdPattern = /lane[_-]?\d+/i
 const schemaVersionPattern = /\.(v\d+)\./
-const agentNamePattern = /\b(architect|cartographer|critic|surgeon|trial|journalist|scalpel|vitals|stress-test|second-opinion|tourniquet|monitor)\b/i
+const agentNamePattern =
+  /\b(architect|cartographer|critic|surgeon|trial|journalist|scalpel|vitals|stress-test|second-opinion|tourniquet|monitor)\b/i
 const timestampPattern = /(\d{4}-\d{2}-\d{2}T\d{2}[:\-]\d{2}[:\-]\d{2})/
 
 function classifyFile(filepath: string): ClassifiedFile {
@@ -161,7 +163,12 @@ function classifyFile(filepath: string): ClassifiedFile {
       return { path: filepath, kind: "cartography", retention: "ingest-remove", reason: ".build surveyor output" }
     if (subPath.includes("campaign-lifecycle"))
       return { path: filepath, kind: "cartography", retention: "ingest-remove", reason: ".build campaign map" }
-    return { path: filepath, kind: "generated-evidence", retention: "ingest-remove", reason: ".build generated artifact" }
+    return {
+      path: filepath,
+      kind: "generated-evidence",
+      retention: "ingest-remove",
+      reason: ".build generated artifact",
+    }
   }
 
   // ── docs/json/opencode/sessions — session archives ──────────────────
@@ -189,7 +196,12 @@ function classifyFile(filepath: string): ClassifiedFile {
     return { path: filepath, kind: "task-board", retention: "ingest-remove", reason: "runtime state" }
   }
   if (filepath.startsWith("docs/json/opencode/state.db")) {
-    return { path: filepath, kind: "build-output", retention: "transient-delete", reason: "runtime database (WAL/SHM ignore)" }
+    return {
+      path: filepath,
+      kind: "build-output",
+      retention: "transient-delete",
+      reason: "runtime database (WAL/SHM ignore)",
+    }
   }
 
   // ── docs/json/opencode/feedback — tool feedback ─────────────────────
@@ -287,9 +299,16 @@ function classifyFile(filepath: string): ClassifiedFile {
       const stat = statSync(filepath)
       if (stat.size === 0)
         return { path: filepath, kind: "empty-profile", retention: "trash", reason: "empty profile stub" }
-    } catch { /* skip */ }
+    } catch {
+      /* skip */
+    }
     // Non-empty profiles at root are shortened copies of .opencode/agents/
-    return { path: filepath, kind: "agent-profile", retention: "superseded", reason: "duplicate profile (canonical in .opencode/agents/)" }
+    return {
+      path: filepath,
+      kind: "agent-profile",
+      retention: "superseded",
+      reason: "duplicate profile (canonical in .opencode/agents/)",
+    }
   }
 
   // ── Root tool usage guidelines — generated docs ─────────────────────
@@ -299,7 +318,12 @@ function classifyFile(filepath: string): ClassifiedFile {
 
   // ── Root generated docs ─────────────────────────────────────────────
   if (filepath === "context.md") {
-    return { path: filepath, kind: "generated-evidence", retention: "ingest-remove", reason: "generated code context analysis" }
+    return {
+      path: filepath,
+      kind: "generated-evidence",
+      retention: "ingest-remove",
+      reason: "generated code context analysis",
+    }
   }
   if (filepath === "TOOL_GUIDE.md") {
     return { path: filepath, kind: "generated-doc", retention: "ingest-remove", reason: "generated tool guide index" }
@@ -326,7 +350,12 @@ function classifyFile(filepath: string): ClassifiedFile {
     }
     // State/docs that leaked into .opencode tracking
     if (filepath.startsWith(".opencode/docs/"))
-      return { path: filepath, kind: "generated-evidence", retention: "ingest-remove", reason: "opencode generated docs" }
+      return {
+        path: filepath,
+        kind: "generated-evidence",
+        retention: "ingest-remove",
+        reason: "opencode generated docs",
+      }
     if (filepath === ".opencode/plan_content.txt")
       return { path: filepath, kind: "plan", retention: "trash", reason: "runtime plan cache" }
     // Dependency saboteur / edge-case enumerator / state poisoner .md in .opencode
@@ -349,8 +378,7 @@ function classifyFile(filepath: string): ClassifiedFile {
   if (filepath.startsWith("packages/")) {
     if (filepath.includes("/test/") || filepath.includes("/tests/") || filepath.includes("/e2e/"))
       return { path: filepath, kind: "test", retention: "keep", reason: "test file" }
-    if (filepath.includes("/src/"))
-      return { path: filepath, kind: "source", retention: "keep", reason: "source code" }
+    if (filepath.includes("/src/")) return { path: filepath, kind: "source", retention: "keep", reason: "source code" }
     if (filepath.endsWith(".sql.ts") || filepath.includes("migration"))
       return { path: filepath, kind: "migration", retention: "keep", reason: "database migration" }
     if (filepath.endsWith("package.json") || filepath.endsWith("tsconfig.json"))
@@ -388,13 +416,31 @@ function classifyFile(filepath: string): ClassifiedFile {
 
   // ── Root config / docs ──────────────────────────────────────────────
   const keepRootFiles = [
-    "package.json", "bun.lock", "bunfig.toml", "tsconfig.json", "turbo.json",
-    ".oxlintrc.json", ".editorconfig", ".prettierignore", ".dockerignore",
-    ".gitignore", ".gitleaksignore",
-    "flake.nix", "flake.lock", "install", "sst.config.ts", "sst-env.d.ts",
-    "LICENSE", "SECURITY.md",
-    "README.md", "CONTRIBUTING.md", "STATS.md",
-    "AGENTS.md", "INDEX.md", "LEAFS.md", "PROJECT.md",
+    "package.json",
+    "bun.lock",
+    "bunfig.toml",
+    "tsconfig.json",
+    "turbo.json",
+    ".oxlintrc.json",
+    ".editorconfig",
+    ".prettierignore",
+    ".dockerignore",
+    ".gitignore",
+    ".gitleaksignore",
+    "flake.nix",
+    "flake.lock",
+    "install",
+    "sst.config.ts",
+    "sst-env.d.ts",
+    "LICENSE",
+    "SECURITY.md",
+    "README.md",
+    "CONTRIBUTING.md",
+    "STATS.md",
+    "AGENTS.md",
+    "INDEX.md",
+    "LEAFS.md",
+    "PROJECT.md",
   ]
   const readmeI18n = /^README\.[a-z]{2,4}\.md$/
   if (keepRootFiles.includes(filepath) || readmeI18n.test(filepath))
@@ -413,7 +459,10 @@ function classifyFile(filepath: string): ClassifiedFile {
 // Metadata extraction
 // ---------------------------------------------------------------------------
 
-function extractMetadata(filepath: string, content: string): {
+function extractMetadata(
+  filepath: string,
+  content: string,
+): {
   sessionId?: string
   laneId?: string
   agentName?: string
@@ -462,7 +511,9 @@ function extractMetadata(filepath: string, content: string): {
       if (!meta.laneId && parsed?.laneId) meta.laneId = parsed.laneId
       if (!meta.agentName && parsed?.agent) meta.agentName = parsed.agent
       if (!meta.timestamp && parsed?.timestamp) meta.timestamp = parsed.timestamp
-    } catch { /* not valid JSON, skip */ }
+    } catch {
+      /* not valid JSON, skip */
+    }
   }
 
   return meta
@@ -659,7 +710,7 @@ async function main() {
   ]
 
   console.log("→ Updating .gitignore with forbidden paths...")
-  const currentGitignore = readFileSync(".gitignore", "utf-8")
+  const currentGitignore = await readFile(".gitignore", "utf-8")
   // Only append patterns not already present
   const existingLines = new Set(currentGitignore.split("\n").map((l) => l.trim()))
   const newPatterns = forbiddenPatterns.filter((p) => {

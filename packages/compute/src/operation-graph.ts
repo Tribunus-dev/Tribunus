@@ -18,7 +18,7 @@ export interface OperationGraph {
 
 let nextId = 0
 
-function hasCycle(ops: Map<string, ComputeOp>): boolean {
+export function hasCycle(ops: Map<string, ComputeOp>): boolean {
   const visited = new Set<string>()
   const inStack = new Set<string>()
 

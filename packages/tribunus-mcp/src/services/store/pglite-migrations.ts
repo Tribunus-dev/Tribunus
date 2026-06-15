@@ -6,7 +6,7 @@
 // Enforces migration integrity: if a previously applied migration's stored
 // checksum differs from the current file checksum, initialization fails.
 
-import { readdirSync, readFileSync } from "node:fs"
+import { readdir, readFile } from "node:fs/promises"
 import { resolve } from "node:path"
 import { createHash } from "node:crypto"
 import type { PGliteLike } from "./pglite-runtime.js"
@@ -25,15 +25,17 @@ async function ensureTrackingTable(db: PGliteLike): Promise<void> {
   `)
 }
 
-function discoverMigrations(): Array<{ version: string; path: string; checksum: string }> {
-  const files = readdirSync(MIGRATIONS_DIR).filter((f) => f.endsWith(".sql"))
+async function discoverMigrations(): Promise<Array<{ version: string; path: string; checksum: string }>> {
+  const files = (await readdir(MIGRATIONS_DIR)).filter((f) => f.endsWith(".sql"))
   files.sort()
-  return files.map((f) => {
-    const fullPath = resolve(MIGRATIONS_DIR, f)
-    const content = readFileSync(fullPath, "utf-8")
-    const checksum = createHash("sha256").update(content, "utf-8").digest("hex")
-    return { version: f.replace(/\.sql$/, ""), path: fullPath, checksum }
-  })
+  return await Promise.all(
+    files.map(async (f) => {
+      const fullPath = resolve(MIGRATIONS_DIR, f)
+      const content = await readFile(fullPath, "utf-8")
+      const checksum = createHash("sha256").update(content, "utf-8").digest("hex")
+      return { version: f.replace(/\.sql$/, ""), path: fullPath, checksum }
+    }),
+  )
 }
 
 async function getAppliedVersions(db: PGliteLike): Promise<Map<string, string>> {
@@ -49,7 +51,7 @@ async function getAppliedVersions(db: PGliteLike): Promise<Map<string, string>> 
 
 export async function runMigrations(db: PGliteLike): Promise<void> {
   await ensureTrackingTable(db)
-  const migrations = discoverMigrations()
+  const migrations = await discoverMigrations()
   const applied = await getAppliedVersions(db)
 
   // Check integrity: already-applied migrations must have matching checksums
@@ -68,7 +70,7 @@ export async function runMigrations(db: PGliteLike): Promise<void> {
 
   for (const m of migrations) {
     if (applied.has(m.version)) continue
-    const sql = readFileSync(m.path, "utf-8")
+    const sql = await readFile(m.path, "utf-8")
     await db.exec("BEGIN")
     try {
       await db.exec(sql)
