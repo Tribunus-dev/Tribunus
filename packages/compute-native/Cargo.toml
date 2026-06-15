@@ -12,17 +12,17 @@ crate-type = ["cdylib"]
 members = [
     ".",
     "compute-core",
-    "../mlx-rs-fork/mlx-rs",
-    "../mlx-rs-fork/mlx-sys",
-    "../mlx-rs-fork/mlx-macros",
-    "../mlx-rs-fork/mlx-internal-macros",
+    "mlx-rs-fork/mlx-rs",
+    "mlx-rs-fork/mlx-sys",
+    "mlx-rs-fork/mlx-macros",
+    "mlx-rs-fork/mlx-internal-macros",
 ]
 
 [workspace.dependencies]
-mlx-rs = { path = "../mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
-mlx-sys = { path = "../mlx-rs-fork/mlx-sys" }
-mlx-macros = { path = "../mlx-rs-fork/mlx-macros" }
-mlx-internal-macros = { path = "../mlx-rs-fork/mlx-internal-macros" }
+mlx-rs = { path = "mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
+mlx-sys = { path = "mlx-rs-fork/mlx-sys" }
+mlx-macros = { path = "mlx-rs-fork/mlx-macros" }
+mlx-internal-macros = { path = "mlx-rs-fork/mlx-internal-macros" }
 
 [dependencies]
 tribunus-compute-core = { path = "compute-core" }

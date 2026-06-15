@@ -1,0 +1,3 @@
+[submodule "packages/compute-native/mlx-rs-fork"]
+	path = packages/compute-native/mlx-rs-fork
+	url = https://github.com/Tribunus-dev/mlx-rs-fork.git
