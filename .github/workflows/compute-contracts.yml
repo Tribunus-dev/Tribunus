@@ -1,0 +1,30 @@
+name: Compute Contracts
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "packages/compute-native/**"
+      - ".github/workflows/compute-contracts.yml"
+
+jobs:
+  verify-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Verify compute contracts
+        run: bun run packages/compute-native/scripts/verify-compute-contracts.ts
+
+      - name: Cargo metadata check
+        run: cd packages/compute-native && cargo metadata --format-version 1 > /dev/null
