@@ -72,9 +72,18 @@ jobs:
         with:
           workspaces: packages/compute-native -> target
 
+      - name: Generate Lockfile
+        working-directory: packages/compute-native
+        run: |
+          if [ ! -f Cargo.lock ]; then
+            echo "No Cargo.lock found, generating..."
+            cargo update
+            cargo check
+          fi
+
       - name: Dependency Resolution Gate
         working-directory: packages/compute-native
-        run: cargo metadata --locked
+        run: cargo metadata --locked --format-version 1
 
       - name: Build Verification Gate
         working-directory: packages/compute-native
