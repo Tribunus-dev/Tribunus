@@ -79,17 +79,17 @@ if [ "$MODE" = "static" ] || [ "$MODE" = "both" ]; then
   fi
 
   # Check gitlink exists (160000 mode in git ls-files)
-  if git ls-files --stage 2>/dev/null | grep -q "^160000.*mlx-rs-fork"; then
-    pass "mlx-rs-fork has gitlink (real submodule)"
+  if git ls-files --stage 2>/dev/null | grep -q "^160000.*packages/compute-native/mlx-rs-fork"; then
+    pass "packages/compute-native/mlx-rs-fork has gitlink (real submodule)"
   else
-    error "mlx-rs-fork missing gitlink (fake submodule)"
+    error "packages/compute-native/mlx-rs-fork missing gitlink (fake submodule)"
   fi
 
   # Check submodule is initialized (gitlink is a file, not a directory)
-  if [ -e "mlx-rs-fork/.git" ]; then
-    pass "mlx-rs-fork/.git exists (initialized)"
+  if [ -e "packages/compute-native/mlx-rs-fork/.git" ]; then
+    pass "packages/compute-native/mlx-rs-fork/.git exists (initialized)"
   else
-    error "mlx-rs-fork/.git missing (not initialized)"
+    error "packages/compute-native/mlx-rs-fork/.git missing (not initialized)"
   fi
 fi
 
@@ -98,27 +98,27 @@ if [ "$MODE" = "static" ] || [ "$MODE" = "both" ]; then
   info "=== Contract 2: Nested Submodule (mlx-c-fork) ==="
 
   # Check nested submodule exists
-  if [ -d "mlx-rs-fork/mlx-sys/src/mlx-c" ]; then
-    pass "mlx-rs-fork/mlx-sys/src/mlx-c exists"
+  if [ -d "packages/compute-native/mlx-rs-fork/mlx-sys/src/mlx-c" ]; then
+    pass "packages/compute-native/mlx-rs-fork/mlx-sys/src/mlx-c exists"
   else
-    error "mlx-rs-fork/mlx-sys/src/mlx-c missing"
+    error "packages/compute-native/mlx-rs-fork/mlx-sys/src/mlx-c missing"
   fi
 
   # Check nested submodule is initialized (gitlink is a file, not a directory)
-  if [ -e "mlx-rs-fork/mlx-sys/src/mlx-c/.git" ]; then
-    pass "mlx-rs-fork/mlx-sys/src/mlx-c/.git exists (initialized)"
+  if [ -e "packages/compute-native/mlx-rs-fork/mlx-sys/src/mlx-c/.git" ]; then
+    pass "packages/compute-native/mlx-rs-fork/mlx-sys/src/mlx-c/.git exists (initialized)"
   else
-    error "mlx-rs-fork/mlx-sys/src/mlx-c/.git missing (not initialized)"
+    error "packages/compute-native/mlx-rs-fork/mlx-sys/src/mlx-c/.git missing (not initialized)"
   fi
 
   # Check critical files exist
-  if [ -f "mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt" ]; then
+  if [ -f "packages/compute-native/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt" ]; then
     pass "CMakeLists.txt exists in mlx-c-fork"
   else
     error "CMakeLists.txt missing in mlx-c-fork"
   fi
 
-  if [ -f "mlx-rs-fork/mlx-sys/src/mlx-c/mlx/c/mlx.h" ]; then
+  if [ -f "packages/compute-native/mlx-rs-fork/mlx-sys/src/mlx-c/mlx/c/mlx.h" ]; then
     pass "mlx.h exists in mlx-c-fork"
   else
     error "mlx.h missing in mlx-c-fork"
