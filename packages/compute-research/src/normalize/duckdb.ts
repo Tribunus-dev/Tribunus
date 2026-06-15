@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { NORMALIZED_TABLE_SCHEMAS } from "./schema.js";
@@ -99,7 +99,7 @@ export function buildDuckDb(
   const cli = config?.cliPath ?? "duckdb";
   let cliAvailable = false;
   try {
-    execSync(`${cli} --version`, { stdio: "pipe", timeout: 5000 });
+    execFileSync(cli, ["--version"], { stdio: "pipe", timeout: 5000 });
     cliAvailable = true;
   } catch {
     return {
@@ -232,7 +232,7 @@ export function buildDuckDb(
   ].join("\n");
 
   try {
-    execSync(`${cli} '${absDbPath}'`, {
+    execFileSync(cli, [absDbPath], {
       input: initSql,
       stdio: ["pipe", "pipe", "pipe"],
       timeout: 30000,
@@ -240,7 +240,7 @@ export function buildDuckDb(
     });
 
     // Step B: Parseable smoke query with -csv -noheader
-    const stdout = execSync(`${cli} -csv -noheader '${absDbPath}' "SELECT COUNT(*) FROM valid_claim_runs;"`, {
+    const stdout = execFileSync(cli, ["-csv", "-noheader", absDbPath, "SELECT COUNT(*) FROM valid_claim_runs;"], {
       stdio: ["pipe", "pipe", "pipe"],
       timeout: 10000,
       encoding: "utf-8",
