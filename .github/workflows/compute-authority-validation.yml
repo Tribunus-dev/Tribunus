@@ -73,11 +73,15 @@ jobs:
           workspaces: packages/compute-native -> target
 
       - name: Generate Lockfile
-        working-directory: packages/compute-native
         run: |
-          if [ ! -f Cargo.lock ]; then
+          if [ ! -f packages/compute-native/Cargo.lock ]; then
             echo "No Cargo.lock found, generating..."
+            cd packages/compute-native
+            echo "Submodule status:"
+            git submodule status --recursive
+            echo "Attempting cargo update..."
             cargo update
+            echo "Attempting cargo check..."
             cargo check
           fi
 
