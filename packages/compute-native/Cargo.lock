@@ -1775,7 +1775,6 @@ dependencies = [
 [[package]]
 name = "mlx-rs"
 version = "0.25.3-tribunus.1"
-source = "git+https://github.com/Tribunus-dev/mlx-rs-fork.git?branch=main#78f4fb16d0f36bc09dfc4196449b433884504d6d"
 dependencies = [
  "bytemuck",
  "dyn-clone",
@@ -1800,7 +1799,6 @@ dependencies = [
 [[package]]
 name = "mlx-sys"
 version = "0.6.0-tribunus.1"
-source = "git+https://github.com/Tribunus-dev/mlx-rs-fork.git?branch=main#78f4fb16d0f36bc09dfc4196449b433884504d6d"
 dependencies = [
  "bindgen",
  "cc",
