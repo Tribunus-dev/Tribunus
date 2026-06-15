@@ -15,8 +15,8 @@ members = [
 ]
 
 [workspace.dependencies]
-mlx-rs = { git = "https://github.com/Tribunus-dev/mlx-rs-fork.git", branch = "main", features = ["metal", "accelerate", "safetensors"] }
-mlx-sys = { git = "https://github.com/Tribunus-dev/mlx-rs-fork.git", branch = "main" }
+mlx-rs = { path = "../mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
+mlx-sys = { path = "../mlx-rs-fork/mlx-sys" }
 
 [dependencies]
 tribunus-compute-core = { path = "compute-core" }
