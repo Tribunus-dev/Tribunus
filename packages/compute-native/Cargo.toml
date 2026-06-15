@@ -12,10 +12,6 @@ crate-type = ["cdylib"]
 members = [
     ".",
     "compute-core",
-    "mlx-rs-fork/mlx-rs",
-    "mlx-rs-fork/mlx-sys",
-    "mlx-rs-fork/mlx-macros",
-    "mlx-rs-fork/mlx-internal-macros",
 ]
 
 [workspace.dependencies]
