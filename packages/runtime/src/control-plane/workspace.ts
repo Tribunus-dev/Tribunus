@@ -523,7 +523,7 @@ export const layer = Layer.effect(
               })
             }),
           ),
-        ),
+        ) as Effect.Effect<void, SyncLoopError>,
       )
     })
 
