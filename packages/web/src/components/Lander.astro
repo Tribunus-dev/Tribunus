@@ -6,9 +6,9 @@ import WordmarkV2 from "./WordmarkV2.astro";
 
 import CopyIcon from "../assets/lander/copy.svg";
 import CheckIcon from "../assets/lander/check.svg";
-import TuiScreenshot from "../assets/lander/screenshot-splash.png";
-import VscodeScreenshot from "../assets/lander/screenshot-vscode.png";
-import GithubScreenshot from "../assets/lander/screenshot-github.png";
+// import TuiScreenshot from "../assets/lander/screenshot-splash.png";
+// import VscodeScreenshot from "../assets/lander/screenshot-vscode.png";
+// import GithubScreenshot from "../assets/lander/screenshot-github.png";
 
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline, image, actions = [] } = data.hero || {};
@@ -157,7 +157,7 @@ if (image) {
       </div>
     </section>
 
-    <section class="images">
+    {/* <section class="images">
       <div class="left">
         <figure>
           <figcaption>{t('app.lander.images.tui.caption')}</figcaption>
@@ -184,7 +184,7 @@ if (image) {
           </figure>
         </div>
       </div>
-    </section>
+    </section> */}
 
     <section class="footer">
       <div class="col1">
