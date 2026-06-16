@@ -26,7 +26,7 @@ import { WorkQueueDurableStoreService } from "./durable-store"
 import { CoordinationRecoveryTable } from "./recovery.pg.sql"
 import { DEFAULT_DUE_SET_NAME, ValkeySortedSets } from "./sorted-set-primitives"
 import { DEFAULT_CONSUMER_GROUP, DEFAULT_STREAM_NAME, ValkeyStreams } from "./stream-primitives"
-import { createValkeyFabric } from "./valkey-fabric"
+import { ValkeyRedisService, createValkeyFabric, ValkeyRedisLayer } from "./valkey-fabric"
 import type { RecoveryAction } from "./work-queue.pg.sql"
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -132,11 +132,13 @@ export interface CoordinationRecoveryService {
   readonly detectDivergence: () => Effect.Effect<DivergenceReport>
 }
 
-export class CoordinationRecovery extends Context.Service<CoordinationRecovery>()("@tribunus/CoordinationRecovery", {
-  make: Effect.gen(function* () {
+export class CoordinationRecovery extends Context.Service<CoordinationRecovery, CoordinationRecoveryService>()("@tribunus/CoordinationRecovery") {}
+
+export const recoveryLayer = Layer.effect(CoordinationRecovery, Effect.gen(function* () {
     const sql = yield* DatabaseAdapter.Service
     const store = yield* WorkQueueDurableStoreService
-    const redis = yield* getValkeyRedis()
+    const redisService = yield* ValkeyRedisService
+    const redis = redisService.client
 
     let lastDivergenceReport: DivergenceReport | null = null
     const config = DEFAULT_RECOVERY_CONFIG
@@ -450,8 +452,8 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery>(
       persistRecoveryReceipt,
       detectDivergence,
     }
-  }),
-}) {}
+  })
+)
 
 // ── Functional Wrappers ──────────────────────────────────────────────
 
@@ -481,23 +483,4 @@ export function setRecoveryStatus(
   state: string,
 ): Effect.Effect<void, never, SessionStatusService> {
   return SessionStatusService.pipe(Effect.flatMap((svc) => svc.set(sessionID, { type: state as any })))
-}
-
-/**
- * Export recoveryLayer for compatibility
- */
-export const recoveryLayer = CoordinationRecovery.pipe(Layer.effect(CoordinationRecovery))
-
-// ── Helper to get Valkey Redis ────────────────────────────────────────
-
-function getValkeyRedis(): Effect.Effect<Redis> {
-  return Effect.promise(async () => {
-    const fabric = await createValkeyFabric("redis://127.0.0.1:6379")
-    // Use unknown cast to access internal redis instance for recovery operations
-    const redis = (fabric as unknown as { redis: Redis }).redis
-    if (!redis) {
-      throw new Error("Valkey Redis not configured")
-    }
-    return redis
-  })
 }
