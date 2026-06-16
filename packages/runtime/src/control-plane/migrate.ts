@@ -312,13 +312,17 @@ if (import.meta.main) {
   console.log("")
 
   // TODO: Wire DatabaseAdapter layer and run migration
-  console.log("Migration tool scaffolded. Wire DatabaseAdapter to run.")
-  console.log("Entity directories configured:")
-  for (const [type, dir] of Object.entries(ENTITY_DIRS)) {
-    const exists = fs.existsSync(dir)
-    const count = exists
-      ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).length
-      : 0
-    console.log(`  ${type}: ${dir} (${count} files) ${exists ? "" : "[MISSING]"}`)
-  }
+  console.log("")
+
+  const program = Effect.gen(function* () {
+    const adapter = DatabaseAdapter.makeLocalPgAdapter()
+    const report = yield* migrateAll(adapter, dryRun)
+    if (!report) return
+    console.log(`\nMigration completed in ${report.duration_ms}ms`)
+    for (const p of report.entities) {
+      console.log(`  ${p.entity_type}: ${p.migrated} migrated, ${p.skipped} skipped, ${p.failed} failed`)
+    }
+  })
+
+  Effect.runPromise(program).catch(console.error)
 }
