@@ -1,4 +1,4 @@
-use crate::compute_image;
+
 use crate::research_metrics::{InstrumentationMode, MemorySnapshot};
 use crate::research_trace::{ClockDomain, StageId, SubstrateId, TraceBuffer, TraceEvent};
 use parking_lot::Mutex;
