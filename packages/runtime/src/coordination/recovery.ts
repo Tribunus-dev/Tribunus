@@ -24,6 +24,7 @@ import { WorkQueueDurableStoreService } from "./durable-store"
 import { DEFAULT_STREAM_NAME, DEFAULT_CONSUMER_GROUP } from "./stream-primitives"
 import { DEFAULT_DUE_SET_NAME } from "./sorted-set-primitives"
 import { CoordinationRecoveryTable } from "./recovery.pg.sql"
+import type { RecoveryAction } from "./work-queue.pg.sql"
 import { SessionID } from "@/session/schema"
 import { Service as SessionStatusService } from "@/session/status"
 import type { DivergenceReport } from "./observability"
@@ -58,7 +59,7 @@ export interface RecoveryReceipt {
   id: string
   workId: string
   streamEntryId?: string
-  action: string
+  action: RecoveryAction
   recoveredBy: string
   originalConsumer?: string
   recoveredAt: number
@@ -630,7 +631,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
       this.store.recordRecoveryReceipt({
         workId: receipt.workId,
         streamEntryId: receipt.streamEntryId,
-        action: receipt.action as any,
+        action: receipt.action,
         recoveredByConsumer: receipt.recoveredBy,
         originalConsumer: receipt.originalConsumer,
         recoveredAt: receipt.recoveredAt,
