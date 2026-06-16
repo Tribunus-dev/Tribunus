@@ -21,10 +21,12 @@ import { Plugin } from "@/plugin"
 import { Skill } from "../skill"
 import { Effect, Context, Layer, Schema } from "effect"
 import { InstanceState } from "@/effect/instance-state"
+import { normalizeMessages as _normalizeMessages } from "./normalize"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import * as Option from "effect/Option"
 import * as OtelTracer from "@effect/opentelemetry/Tracer"
 import { type DeepMutable } from "@tribunus/core/schema"
+import type * as ProviderType from "../provider/provider"
 
 export const Info = Schema.Struct({
   name: Schema.String,
@@ -67,6 +69,7 @@ export interface Interface {
   readonly list: () => Effect.Effect<Info[]>
   readonly defaultInfo: () => Effect.Effect<Info>
   readonly defaultAgent: () => Effect.Effect<string>
+  readonly normalizeMessages: (msgs: ModelMessage[], model: ProviderType.Model, options: Record<string, unknown>) => ModelMessage[]
   readonly generate: (input: {
     description: string
     model?: { providerID: ProviderID; modelID: ModelID }
@@ -369,6 +372,7 @@ export const layer = Layer.effect(
         return {
           get,
           list,
+          normalizeMessages: _normalizeMessages,
           defaultInfo,
           defaultAgent,
         } satisfies State
@@ -382,6 +386,7 @@ export const layer = Layer.effect(
       list: Effect.fn("Agent.list")(function* () {
         return yield* InstanceState.useEffect(state, (s) => s.list())
       }),
+      normalizeMessages: (msgs, model, options) => _normalizeMessages(msgs, model, options),
       defaultInfo: Effect.fn("Agent.defaultInfo")(function* () {
         return yield* InstanceState.useEffect(state, (s) => s.defaultInfo())
       }),
@@ -442,6 +447,7 @@ export const layer = Layer.effect(
           return yield* Effect.promise(async () => {
             const result = streamObject({
               ...params,
+              messages: _normalizeMessages(params.messages, resolved, {}),
               providerOptions: ProviderTransform.providerOptions(resolved, {
                 instructions: system.join("\n"),
                 store: false,
@@ -455,7 +461,9 @@ export const layer = Layer.effect(
           })
         }
 
-        return yield* Effect.promise(() => generateObject(params).then((r) => r.object))
+        return yield* Effect.promise(() =>
+          generateObject({ ...params, messages: _normalizeMessages(params.messages, resolved, {}) }).then((r) => r.object),
+        )
       }),
     })
   }),
@@ -471,3 +479,4 @@ export const defaultLayer = layer.pipe(
 )
 
 export * as Agent from "./agent"
+export { normalizeMessages } from "./normalize"
