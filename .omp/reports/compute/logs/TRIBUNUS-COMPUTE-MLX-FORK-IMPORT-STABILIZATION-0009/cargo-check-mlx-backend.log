@@ -1,0 +1,153 @@
+   Compiling mlx-sys v0.6.0-tribunus.1 (/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys)
+   Compiling tribunus-compute-core v0.1.0 (/Users/user/Developer/GitHub/Tribunus/packages/compute-native/compute-core)
+warning: function `build_and_link_mlx_c` is never used
+ --> /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/build.rs:6:4
+  |
+6 | fn build_and_link_mlx_c() {
+  |    ^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `mlx-sys` (build script) generated 1 warning
+    Checking mlx-rs v0.25.3-tribunus.1 (/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-rs)
+warning: constant `DEFAULT_STACK_VEC_LEN` is never used
+   --> /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-rs/src/lib.rs:486:22
+    |
+486 |     pub(crate) const DEFAULT_STACK_VEC_LEN: usize = 4;
+    |                      ^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: trait `Sealed` is never used
+   --> /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-rs/src/lib.rs:491:15
+    |
+491 |     pub trait Sealed {}
+    |               ^^^^^^
+
+warning: `mlx-rs` (lib) generated 2 warnings
+warning: unused import: `mlx_rs::ops::indexing::IndexOp`
+  --> compute-core/src/executor.rs:15:5
+   |
+15 | use mlx_rs::ops::indexing::IndexOp;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `mlx_rs::ops::indexing::IndexOp`
+  --> compute-core/src/gemma.rs:16:5
+   |
+16 | use mlx_rs::ops::indexing::IndexOp;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `mlx_rs::ops::indexing::IndexMutOp`
+  --> compute-core/src/kv_cache.rs:16:5
+   |
+16 | use mlx_rs::ops::indexing::IndexMutOp;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `mlx_rs::ops::indexing::IndexOp`
+  --> compute-core/src/kv_cache.rs:17:5
+   |
+17 | use mlx_rs::ops::indexing::IndexOp;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `mlx_rs::ops::indexing::IndexOp`
+  --> compute-core/src/primitives.rs:75:9
+   |
+75 |     use mlx_rs::ops::indexing::IndexOp;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: trait `TensorLookup` is more private than the item `run_six_layer_prefix`
+   --> compute-core/src/model.rs:168:1
+    |
+168 | / pub fn run_six_layer_prefix<T: TensorLookup>(
+169 | |     sources: &[&T],
+170 | |     arch: &crate::config::TextArchitecture,
+171 | | ) -> MlxResult<Array> {
+    | |_____________________^ function `run_six_layer_prefix` is reachable at visibility `pub`
+    |
+note: but trait `TensorLookup` is only usable at visibility `pub(crate)`
+   --> compute-core/src/model.rs:158:1
+    |
+158 | pub(crate) trait TensorLookup {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: `#[warn(private_bounds)]` on by default
+
+warning: `tribunus-compute-core` (lib) generated 6 warnings (run `cargo fix --lib -p tribunus-compute-core` to apply 5 suggestions)
+warning: unused imports: `BTreeMap` and `BTreeSet`
+  --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:13:24
+   |
+13 | use std::collections::{BTreeMap, BTreeSet};
+   |                        ^^^^^^^^  ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `canonical_family_name` and `identity_baseline_family_name`
+  --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:18:5
+   |
+18 |     canonical_family_name, identity_baseline_family_name,
+   |     ^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `LatticeCellKey`, `expected_lattice_cells`, and `parse_lattice_cell_id`
+  --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:21:5
+   |
+21 |     expected_lattice_cells, parse_lattice_cell_id, LatticeCellKey,
+   |     ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^
+
+warning: unused import: `CoverageLatticeRow`
+  --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:30:5
+   |
+30 |     CoverageLatticeRow,
+   |     ^^^^^^^^^^^^^^^^^^
+
+warning: unused variable: `validation`
+   --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:132:24
+    |
+132 |         let (coverage, validation) = validate_coverage_lattice_file(&coverage_path, authority_mode);
+    |                        ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_validation`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: constant `COVERAGE_PASS_STATUSES` is never used
+   --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:366:7
+    |
+366 | const COVERAGE_PASS_STATUSES: &[&str] = &["pass", "passed"];
+    |       ^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: constant `COVERAGE_SUPPORT_TIERS` is never used
+   --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:367:7
+    |
+367 | const COVERAGE_SUPPORT_TIERS: &[&str] = &[
+    |       ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `COVERAGE_PREDICT_STATUSES` is never used
+   --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:373:7
+    |
+373 | const COVERAGE_PREDICT_STATUSES: &[&str] = &[
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `COVERAGE_PREDICT_FAILURE_CLASSES` is never used
+   --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:387:7
+    |
+387 | const COVERAGE_PREDICT_FAILURE_CLASSES: &[&str] = &[
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `is_coverage_pass_status` is never used
+   --> compute-core/src/bin/tribunus-coreml-decode-attribution.rs:400:4
+    |
+400 | fn is_coverage_pass_status(status: &str) -> bool {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `tribunus-compute-core` (bin "tribunus-coreml-decode-attribution") generated 10 warnings (run `cargo fix --bin "tribunus-coreml-decode-attribution" -p tribunus-compute-core` to apply 5 suggestions)
+warning: unused variable: `terminal_status`
+   --> compute-core/src/bin/tribunus-decode-attribution-measure.rs:508:9
+    |
+508 |     let terminal_status = if matches!(exit_code, 4 | 6 | 8 | 10 | 11) {
+    |         ^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_terminal_status`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `tribunus-compute-core` (bin "tribunus-decode-attribution-measure") generated 1 warning (run `cargo fix --bin "tribunus-decode-attribution-measure" -p tribunus-compute-core` to apply 1 suggestion)
+    Finished `dev` profile [optimized + debuginfo] target(s) in 11.70s
