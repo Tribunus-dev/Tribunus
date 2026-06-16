@@ -178,13 +178,13 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
     opencode: Effect.fnUntraced(function* (input: Info) {
       const env = yield* dep.env()
       const hasKey = iife(() => {
-        if (input.env.some((item) => env[item])) return true
+        if (input.env?.some((item) => env[item])) return true
         return false
       })
       const ok =
         hasKey ||
         Boolean(yield* dep.auth(input.id)) ||
-        Boolean((yield* dep.config()).provider?.["opencode"]?.options?.apiKey)
+        Boolean((yield* dep.config()).provider?.[input.id]?.options?.apiKey)
 
       if (!ok) {
         for (const [key, value] of Object.entries(input.models)) {
@@ -292,10 +292,8 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
 
       const awsAccessKeyId = env["AWS_ACCESS_KEY_ID"]
 
-      // TODO: Using process.env directly because Env.set only updates a process.env shallow copy,
-      // until the scope of the Env API is clarified (test only or runtime?)
       const awsBearerToken = iife(() => {
-        const envToken = process.env.AWS_BEARER_TOKEN_BEDROCK
+        const envToken = env["AWS_BEARER_TOKEN_BEDROCK"]
         if (envToken) return envToken
         if (auth?.type === "api") {
           process.env.AWS_BEARER_TOKEN_BEDROCK = auth.key
@@ -307,7 +305,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
       const awsWebIdentityTokenFile = env["AWS_WEB_IDENTITY_TOKEN_FILE"]
 
       const containerCreds = Boolean(
-        process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI || process.env.AWS_CONTAINER_CREDENTIALS_FULL_URI,
+        env["AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"] || env["AWS_CONTAINER_CREDENTIALS_FULL_URI"],
       )
 
       if (!profile && !awsAccessKeyId && !awsBearerToken && !awsWebIdentityTokenFile && !containerCreds)
@@ -540,10 +538,10 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
     }),
     "sap-ai-core": Effect.fnUntraced(function* () {
       const auth = yield* dep.auth("sap-ai-core")
-      // TODO: Using process.env directly because Env.set only updates a shallow copy (not process.env),
-      // until the scope of the Env API is clarified (test only or runtime?)
+      const env = yield* dep.env()
+
       const envServiceKey = iife(() => {
-        const envAICoreServiceKey = process.env.AICORE_SERVICE_KEY
+        const envAICoreServiceKey = env["AICORE_SERVICE_KEY"]
         if (envAICoreServiceKey) return envAICoreServiceKey
         if (auth?.type === "api") {
           process.env.AICORE_SERVICE_KEY = auth.key
@@ -551,8 +549,8 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         }
         return undefined
       })
-      const deploymentId = process.env.AICORE_DEPLOYMENT_ID
-      const resourceGroup = process.env.AICORE_RESOURCE_GROUP
+      const deploymentId = env["AICORE_DEPLOYMENT_ID"]
+      const resourceGroup = env["AICORE_RESOURCE_GROUP"]
 
       return {
         autoload: !!envServiceKey,
