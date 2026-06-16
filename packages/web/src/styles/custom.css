@@ -1,76 +1,42 @@
+/* v2 Design System Integration */
+/* The v2-theme.css file imports the v2 design tokens and maps them to Starlight variables */
+/* This file now uses the v2 design tokens for all styling */
+
 :root {
-  --sl-color-bg: hsl(0, 20%, 99%);
-  --sl-color-gray-5: hsl(0, 1%, 85%);
+  /* Navigation */
   --sl-nav-gap: 40px;
-  --sl-color-text: hsl(0, 1%, 39%);
-  --sl-border-color: hsl(0, 1%, 85%);
-  --sl-color-hairline-shade: hsl(0, 1%, 85%);
 
-  --color-background: hsl(0, 20%, 99%);
-  --color-background-weak: hsl(0, 8%, 97%);
-  --color-background-weak-hover: hsl(0, 8%, 94%);
-  --color-background-strong: hsl(0, 5%, 12%);
-  --color-background-strong-hover: hsl(0, 5%, 18%);
-  --color-background-interactive: hsl(62, 84%, 88%);
-  --color-background-interactive-weaker: hsl(64, 74%, 95%);
-
-  --color-text: hsl(0, 1%, 39%);
-  --color-text-weak: hsl(0, 1%, 60%);
-  --color-text-weaker: hsl(0, 3%, 88%);
-  --color-text-strong: hsl(0, 5%, 12%);
-  --color-text-inverted: hsl(0, 20%, 99%);
-
-  --color-border: hsl(30, 2%, 81%);
-  --color-border-weak: hsl(0, 1%, 85%);
-
-  --color-icon: hsl(0, 1%, 55%);
-
-  /* For the share component */
-  --sl-color-bg-surface: var(--sl-color-bg-nav);
-  --sl-color-divider: var(--sl-color-gray-5);
+  /* For the share component - using v2 tokens */
+  --sl-color-bg-surface: var(--v2-background-bg-layer-01);
+  --sl-color-divider: var(--v2-border-border-base);
 }
 
 body {
-  color: var(--color-text) !important;
+  color: var(--v2-text-text-base) !important;
   font-size: 14px !important;
+}
 
-  @media (prefers-color-scheme: dark) {
-    --sl-color-bg: hsl(0, 9%, 7%);
-    --sl-color-gray-5: hsl(0, 4%, 23%);
-    --sl-color-text: hsl(0, 4%, 71%);
-    --sl-border-color: hsl(0, 4%, 23%);
-    --sl-color-hairline-shade: hsl(0, 4%, 23%);
-
-    --color-background: hsl(0, 9%, 7%);
-    --color-background-weak: hsl(0, 6%, 10%);
-    --color-background-strong: hsl(0, 15%, 94%);
-    --color-background-strong-hover: hsl(0, 15%, 97%);
-    --color-background-interactive: hsl(62, 100%, 90%);
-    --color-background-interactive-weaker: hsl(60, 20%, 8%);
-
-    --color-text: hsl(0, 4%, 71%);
-    --color-text-weak: hsl(0, 2%, 49%);
-    --color-text-weaker: hsl(0, 3%, 28%);
-    --color-text-strong: hsl(0, 15%, 94%);
-    --color-text-inverted: hsl(0, 9%, 7%);
-
-    --color-border: hsl(0, 3%, 28%);
-    --color-border-weak: hsl(0, 4%, 23%);
-
-    --color-icon: hsl(10, 3%, 43%);
+/* Dark mode styles using v2 tokens */
+@media (prefers-color-scheme: dark) {
+  body {
+    color: var(--v2-text-text-base) !important;
   }
 }
 
+[data-color-scheme="dark"] body {
+  color: var(--v2-text-text-base) !important;
+}
+
 .header:where(.astro-tcroauqe) {
-  border-bottom: 1px solid var(--color-border-weak) !important;
+  border-bottom: 1px solid var(--v2-border-border-muted) !important;
 }
 
 .sl-markdown-content hr {
-  border-bottom: 1px solid var(--color-border-weak) !important;
+  border-bottom: 1px solid var(--v2-border-border-muted) !important;
 }
 
 #starlight__on-this-page--mobile {
-  border-bottom: 1px solid var(--color-border-weak) !important;
+  border-bottom: 1px solid var(--v2-border-border-muted) !important;
 }
 
 mobile-starlight-toc nav summary .toggle {
@@ -79,7 +45,7 @@ mobile-starlight-toc nav summary .toggle {
 }
 
 nav.sidebar summary svg.caret {
-  color: var(--color-icon) !important;
+  color: var(--v2-icon-icon-base) !important;
 }
 
 /* Search button style overrides */
@@ -89,7 +55,7 @@ body > .page > header button[data-open-modal] > kbd {
   gap: 4px;
 }
 body > .page > header button[data-open-modal] > kbd > kbd {
-  color: var(--color-icon) !important;
+  color: var(--v2-icon-icon-base) !important;
   font-size: 15px;
 }
 /* Make the Cmd (⌘) keystroke bigger */
@@ -112,11 +78,11 @@ body > .page > header a.site-title img {
 }
 
 a {
-  color: var(--color-text-strong) !important;
+  color: var(--v2-text-text-base) !important;
 }
 
 .page-description {
-  color: var(--color-text) !important;
+  color: var(--v2-text-text-base) !important;
 }
 
 .right-sidebar {
@@ -124,12 +90,12 @@ a {
 }
 
 .sidebar-pane {
-  border-inline-end: 1px solid var(--color-border-weak) !important;
+  border-inline-end: 1px solid var(--v2-border-border-muted) !important;
 }
 
 .right-sidebar-panel {
   padding: 24px 0 !important;
-  color: var(--color-text-weaker);
+  color: var(--v2-text-text-faint);
 }
 
 .sidebar-content {
@@ -137,13 +103,13 @@ a {
 }
 
 a[aria-current="page"] {
-  border-left: 2px solid var(--color-background-strong);
-  background: var(--color-background-weak) !important;
+  border-left: 2px solid var(--v2-background-bg-layer-03);
+  background: var(--v2-background-bg-layer-01) !important;
   font-weight: 600 !important;
 }
 
 ul.top-level a[aria-current="page"] > span {
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
 }
 
 #starlight__sidebar > div > sl-sidebar-state-persist > ul > li > details > summary {
@@ -152,11 +118,11 @@ ul.top-level a[aria-current="page"] > span {
 }
 
 #starlight__sidebar > div > sl-sidebar-state-persist > ul > li > details > summary:hover {
-  background: var(--color-background-weak);
+  background: var(--v2-background-bg-layer-01);
 }
 
 #starlight__sidebar > div > sl-sidebar-state-persist > ul > li > details > summary span {
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
   font-weight: 600 !important;
 }
 
@@ -167,7 +133,7 @@ ul.top-level a[aria-current="page"] > span {
 }
 
 .top-level li a:hover {
-  background: var(--color-background-weak) !important;
+  background: var(--v2-background-bg-layer-01) !important;
 }
 
 .right-group {
@@ -189,18 +155,18 @@ site-search > button {
 
 body > .page > header button[data-open-modal] {
   gap: 12px !important;
-  background: var(--color-background-weak);
-  border: 1px solid var(--color-border-weak) !important;
+  background: var(--v2-background-bg-layer-01);
+  border: 1px solid var(--v2-border-border-muted) !important;
   padding: 6px 12px !important;
   border-radius: 4px;
 
   @media (prefers-color-scheme: dark) {
-    background: var(--color-background-weak);
+    background: var(--v2-background-bg-layer-01);
   }
 }
 
 body > .page > header button[data-open-modal] {
-  background: var(--color-background-weaker);
+  background: var(--v2-background-bg-layer-02);
 }
 
 site-search > button span {
@@ -232,35 +198,35 @@ h3 a,
 h4 a,
 h5 a,
 h6 a {
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
 }
 
 h1 {
   font-size: 26px !important;
   text-transform: none !important;
   font-weight: 500 !important;
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
 }
 
 h2 {
   font-size: 22px !important;
   text-transform: none !important;
   font-weight: 500 !important;
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
 }
 
 h3 {
   font-size: 18px !important;
   text-transform: none !important;
   font-weight: 500 !important;
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
 }
 
 h4 {
   font-size: 16px !important;
   text-transform: none !important;
   font-weight: 500 !important;
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
 }
 
 strong {
@@ -274,20 +240,20 @@ ol {
 }
 
 .sl-markdown-content .tab > [role="tab"][aria-selected="true"] {
-  border-color: var(--color-text-strong);
+  border-color: var(--v2-background-bg-inverse);
 }
 
 .social-icons a svg {
-  color: var(--color-text-weak) !important;
+  color: var(--v2-text-text-muted) !important;
 }
 
 .social-icons a svg:hover {
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
 }
 
 body > .page > header,
 :root[data-has-sidebar] body > .page > header {
-  background: var(--color-background) !important;
+  background: var(--v2-background-bg-base) !important;
   padding: 24px !important;
 }
 
@@ -313,16 +279,16 @@ nav.sidebar .sl-container ul li a,
 div.right-sidebar .sl-container ul li a {
   padding: 4px 24px !important;
   width: 100% !important;
-  color: var(--color-text-weaker);
+  color: var(--v2-text-text-faint);
   opacity: 50%;
 }
 
 nav.sidebar .sl-container ul li a:hover,
 div.right-sidebar .sl-container ul li a:hover {
-  background: var(--color-background-weak);
+  background: var(--v2-background-bg-layer-01);
 
   @media (prefers-color-scheme: dark) {
-    background: var(--color-background-weak);
+    background: var(--v2-background-bg-layer-01);
   }
 }
 
@@ -333,25 +299,25 @@ div.right-sidebar .sl-container ul li ul li {
 
 nav.sidebar .sl-container ul li a[aria-current="true"],
 div.right-sidebar .sl-container ul li a[aria-current="true"] {
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
   opacity: 100%;
 }
 
 h2#starlight__on-this-page {
   font-size: 14px !important;
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
   margin: 0 !important;
   font-weight: 400 !important;
   padding: 0 24px 12px 24px;
 }
 
 #starlight__on-this-page ul {
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
   font-size: 16px !important;
 }
 
 .middle-group .links {
-  color: var(--color-icon);
+  color: var(--v2-icon-icon-base);
   text-decoration: none;
   text-transform: none;
   font-size: 16px;
@@ -366,7 +332,7 @@ h2#starlight__on-this-page {
 
 nav.sidebar ul.top-level > li > details > summary .group-label > span {
   margin-top: 24px !important;
-  color: var(--color-text-strong) !important;
+  color: var(--v2-background-bg-inverse) !important;
   text-transform: none !important;
   font-weight: 500 !important;
 }
@@ -385,7 +351,7 @@ nav.sidebar ul.top-level > li > details > summary .group-label > span {
 }
 
 .expressive-code figure {
-  background: var(--color-background-weak) !important;
+  background: var(--v2-background-bg-layer-01) !important;
 }
 
 .expressive-code .frame {

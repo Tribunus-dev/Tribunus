@@ -2,12 +2,13 @@
 import { Image } from 'astro:assets';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import config from "virtual:starlight/user-config";
+import WordmarkV2 from "./WordmarkV2.astro";
 
 import CopyIcon from "../assets/lander/copy.svg";
 import CheckIcon from "../assets/lander/check.svg";
-import TuiScreenshot from "../assets/lander/screenshot-splash.png";
-import VscodeScreenshot from "../assets/lander/screenshot-vscode.png";
-import GithubScreenshot from "../assets/lander/screenshot-github.png";
+// import TuiScreenshot from "../assets/lander/screenshot-splash.png";
+// import VscodeScreenshot from "../assets/lander/screenshot-vscode.png";
+// import GithubScreenshot from "../assets/lander/screenshot-github.png";
 
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline, image, actions = [] } = data.hero || {};
@@ -58,6 +59,8 @@ if (image) {
           />
         )}
         {lightImage && <Image src={lightImage} {...imageAttrs} class="dark:sl-hidden" />}
+        {/* Add v2 wordmark as fallback/alternative */}
+        <WordmarkV2 class="v2-wordmark" />
       </div>
       <h1>{t('app.lander.hero.title')}</h1>
     </section>
@@ -154,7 +157,7 @@ if (image) {
       </div>
     </section>
 
-    <section class="images">
+    {/* <section class="images">
       <div class="left">
         <figure>
           <figcaption>{t('app.lander.images.tui.caption')}</figcaption>
@@ -181,7 +184,7 @@ if (image) {
           </figure>
         </div>
       </div>
-    </section>
+    </section> */}
 
     <section class="footer">
       <div class="col1">
@@ -203,7 +206,7 @@ if (image) {
   --heading-font-size: var(--sl-text-3xl);
 
   margin: 1rem;
-  border: 2px solid var(--sl-color-border);
+  border: 2px solid var(--v2-border-border-base);
 }
 @media (max-width: 30rem) {
   .hero {
@@ -223,11 +226,19 @@ section.top {
     font-size: var(--heading-font-size);
     line-height: 1.25;
     text-transform: uppercase;
+    color: var(--v2-text-text-base);
   }
 
   img {
     height: auto;
     width: clamp(200px, 70vw, 400px);
+  }
+  
+  .v2-wordmark {
+    display: none; /* Hidden by default, can be enabled when ready */
+    width: 100%;
+    height: 40px;
+    color: var(--v2-text-text-base);
   }
 }
 
@@ -236,7 +247,7 @@ section.cta {
   flex-direction: row;
   justify-content: flex-start;
   align-items: stretch;
-  border-top: 2px solid var(--sl-color-border);
+  border-top: 2px solid var(--v2-border-border-base);
 
   @media (max-width: 50rem) {
     flex-direction: column;
@@ -248,6 +259,12 @@ section.cta {
 
     a {
       font-size: 1rem;
+      color: var(--v2-text-text-base);
+      text-decoration: none;
+    }
+    
+    a:hover {
+      color: var(--v2-text-text-accent);
     }
   }
   & > div.col1 {
@@ -266,11 +283,11 @@ section.cta {
   }
 
   & > div + div {
-    border-left: 2px solid var(--sl-color-border);
+    border-left: 2px solid var(--v2-border-border-base);
 
     @media (max-width: 50rem) {
       border-left: none;
-      border-top: 2px solid var(--sl-color-border);
+      border-top: 2px solid var(--v2-border-border-base);
     }
   }
 
@@ -282,9 +299,19 @@ section.cta {
     justify-content: center;
     cursor: pointer;
     width: 100%;
+    background: var(--v2-background-bg-layer-01);
+    border: 1px solid var(--v2-border-border-muted);
+    border-radius: 6px;
+    padding: 0.5rem;
+    transition: all var(--v2-duration-normal) ease;
+
+    &:hover {
+      background: var(--v2-background-bg-layer-02);
+      border-color: var(--v2-border-border-base);
+    }
 
     code {
-      color: var(--sl-color-text-secondary);
+      color: var(--v2-text-text-muted);
       font-size: 1.125rem;
 
       @media (max-width: 24rem) {
@@ -303,7 +330,7 @@ section.cta {
       }
     }
     code .highlight {
-      color: var(--sl-color-text);
+      color: var(--v2-text-text-base);
       font-weight: 500;
     }
 
@@ -320,10 +347,10 @@ section.cta {
       vertical-align: middle;
     }
     .copy svg:first-child {
-      color: var(--sl-color-text-dimmed);
+      color: var(--v2-icon-icon-muted);
     }
     .copy svg:last-child {
-      color: var(--sl-color-text);
+      color: var(--v2-icon-icon-base);
       display: none;
     }
     &.success .copy {
@@ -339,7 +366,7 @@ section.cta {
 }
 
 section.content {
-  border-top: 2px solid var(--sl-color-border);
+  border-top: 2px solid var(--v2-border-border-base);
   padding: var(--padding);
 
   ul {
@@ -351,6 +378,20 @@ section.content {
 
     li b {
       text-transform: uppercase;
+      color: var(--v2-text-text-base);
+    }
+    
+    li {
+      color: var(--v2-text-text-muted);
+    }
+    
+    li a {
+      color: var(--v2-text-text-accent);
+      text-decoration: none;
+    }
+    
+    li a:hover {
+      text-decoration: underline;
     }
   }
 }
@@ -360,7 +401,7 @@ section.images {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: var(--images-height);
-  border-top: 2px solid var(--sl-color-border);
+  border-top: 2px solid var(--v2-border-border-base);
 
   & > div.left {
     display: flex;
@@ -373,12 +414,12 @@ section.images {
     grid-template-rows: 1fr 1fr;
     grid-row: 1;
     grid-column: 2;
-    border-left: 2px solid var(--sl-color-border);
+    border-left: 2px solid var(--v2-border-border-base);
 
     & > div.row1 {
       display: flex;
       grid-row: 1;
-      border-bottom: 2px solid var(--sl-color-border);
+      border-bottom: 2px solid var(--v2-border-border-base);
       height: calc(var(--images-height) / 2);
     }
 
@@ -397,7 +438,7 @@ section.images {
     padding: calc(var(--padding) / 2);
     border-width: 0;
     border-style: solid;
-    border-color: var(--sl-color-border);
+    border-color: var(--v2-border-border-base);
     min-height: 0;
     overflow: hidden;
 
@@ -427,7 +468,7 @@ section.images {
     figcaption {
       letter-spacing: -0.03125rem;
       text-transform: uppercase;
-      color: var(--sl-color-text-dimmed);
+      color: var(--v2-text-text-muted);
       flex-shrink: 0;
 
       @media (max-width: 30rem) {
@@ -476,7 +517,7 @@ section.images {
       grid-row: 2;
       grid-column: 1;
       border-left: none;
-      border-top: 2px solid var(--sl-color-border);
+      border-top: 2px solid var(--v2-border-border-base);
 
       & > div.row1,
       & > div.row2 {
@@ -499,7 +540,7 @@ section.images {
 }
 
 section.alternatives {
-  border-top: 2px solid var(--sl-color-border);
+  border-top: 2px solid var(--v2-border-border-base);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
@@ -526,7 +567,7 @@ section.alternatives {
   }
 
   & > div.col1 {
-    border-bottom: 2px solid var(--sl-color-border);
+    border-bottom: 2px solid var(--v2-border-border-base);
 
     @media (max-width: 40rem) {
       border-bottom: none;
@@ -534,34 +575,34 @@ section.alternatives {
   }
 
   & > div.col2 {
-    border-left: 2px solid var(--sl-color-border);
-    border-bottom: 2px solid var(--sl-color-border);
+    border-left: 2px solid var(--v2-border-border-base);
+    border-bottom: 2px solid var(--v2-border-border-base);
 
     @media (max-width: 40rem) {
       border-left: none;
       border-bottom: none;
-      border-top: 2px solid var(--sl-color-border);
+      border-top: 2px solid var(--v2-border-border-base);
     }
   }
 
   & > div.col3 {
     @media (max-width: 40rem) {
-      border-top: 2px solid var(--sl-color-border);
+      border-top: 2px solid var(--v2-border-border-base);
     }
   }
 
   & > div.col4 {
-    border-left: 2px solid var(--sl-color-border);
+    border-left: 2px solid var(--v2-border-border-base);
     @media (max-width: 40rem) {
       border-left: none;
-      border-top: 2px solid var(--sl-color-border);
+      border-top: 2px solid var(--v2-border-border-base);
     }
   }
 
   h3 {
     letter-spacing: -0.03125rem;
     text-transform: uppercase;
-    color: var(--sl-color-text-dimmed);
+    color: var(--v2-text-text-muted);
     font-weight: normal;
     font-size: 1rem;
     flex-shrink: 0;
@@ -579,6 +620,16 @@ section.alternatives {
     justify-content: flex-start;
     cursor: pointer;
     width: 100%;
+    background: var(--v2-background-bg-layer-01);
+    border: 1px solid var(--v2-border-border-muted);
+    border-radius: 6px;
+    padding: 0.5rem;
+    transition: all var(--v2-duration-normal) ease;
+
+    &:hover {
+      background: var(--v2-background-bg-layer-02);
+      border-color: var(--v2-border-border-base);
+    }
 
     @media (max-width: 40rem) {
       justify-content: flex-start;
@@ -589,7 +640,7 @@ section.alternatives {
     }
 
     code {
-      color: var(--sl-color-text-secondary);
+      color: var(--v2-text-text-muted);
       font-size: 1rem;
 
       @media (max-width: 24rem) {
@@ -598,7 +649,7 @@ section.alternatives {
     }
 
     code .highlight {
-      color: var(--sl-color-text);
+      color: var(--v2-text-text-base);
       font-weight: 500;
     }
 
@@ -618,11 +669,11 @@ section.alternatives {
     }
 
     .copy svg:first-child {
-      color: var(--sl-color-text-dimmed);
+      color: var(--v2-icon-icon-muted);
     }
 
     .copy svg:last-child {
-      color: var(--sl-color-text);
+      color: var(--v2-icon-icon-base);
       display: none;
     }
 
@@ -641,7 +692,7 @@ section.alternatives {
 }
 
 section.footer {
-  border-top: 2px solid var(--sl-color-border);
+  border-top: 2px solid var(--v2-border-border-base);
   display: flex;
   flex-direction: row;
 
@@ -650,10 +701,21 @@ section.footer {
     text-align: center;
     text-transform: uppercase;
     padding: var(--vertical-padding) 0.5rem;
+    color: var(--v2-text-text-muted);
+  }
+
+  & > div a {
+    color: var(--v2-text-text-base);
+    text-decoration: none;
+  }
+  
+  & > div a:hover {
+    color: var(--v2-text-text-accent);
+    text-decoration: underline;
   }
 
   & > div + div {
-    border-left: 2px solid var(--sl-color-border);
+    border-left: 2px solid var(--v2-border-border-base);
   }
 
   /* Below 800px: first two columns shrink to content, third expands */
@@ -682,7 +744,7 @@ section.footer {
     & > div.col3 {
       flex: 1 0 100%;
       border-left: none;
-      border-top: 2px solid var(--sl-color-border);
+      border-top: 2px solid var(--v2-border-border-base);
     }
   }
 }
@@ -702,6 +764,13 @@ section.footer {
   }
   main > .content-panel .sl-markdown-content {
     margin-top: 0;
+  }
+}
+
+/* v2 Design System Integration */
+:root[data-has-hero] {
+  .hero {
+    background: var(--v2-background-bg-base);
   }
 }
 </style>

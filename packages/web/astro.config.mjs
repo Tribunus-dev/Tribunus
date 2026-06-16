@@ -165,7 +165,7 @@ export default defineConfig({
       markdown: {
         headingLinks: false,
       },
-      customCss: ["./src/styles/custom.css"],
+      customCss: ["./src/styles/v2-theme.css", "./src/styles/custom.css"],
       logo: {
         light: "./src/assets/logo-light.svg",
         dark: "./src/assets/logo-dark.svg",

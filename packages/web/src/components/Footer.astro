@@ -66,7 +66,7 @@ const discord = config.social?.find((item) => item.icon === "discord")
 <style>
   footer.doc {
     margin-top: 3rem;
-    border-top: 1px solid var(--sl-color-border);
+    border-top: 1px solid var(--v2-border-border-base);
   }
 
   .meta {
@@ -92,16 +92,21 @@ const discord = config.social?.find((item) => item.icon === "discord")
     gap: 0.4375rem;
     align-items: center;
     text-decoration: none;
-    color: var(--sl-color-text);
+    color: var(--v2-text-text-base);
     font-size: var(--sl-text-sm);
+    
+    &:hover {
+      color: var(--v2-text-text-accent);
+    }
   }
 
   .doc a svg {
     opacity: 0.85;
+    color: var(--v2-icon-icon-base);
   }
 
   .doc p {
-    color: var(--sl-color-text-dimmed);
+    color: var(--v2-text-text-muted);
   }
 
   .doc :global(starlight-lang-select) {
@@ -111,6 +116,9 @@ const discord = config.social?.find((item) => item.icon === "discord")
 
   .doc :global(starlight-lang-select select) {
     min-width: 15em;
+    background: var(--v2-background-bg-layer-01);
+    border: 1px solid var(--v2-border-border-muted);
+    color: var(--v2-text-text-base);
   }
 
   @media (min-width: 30rem) {
@@ -120,6 +128,10 @@ const discord = config.social?.find((item) => item.icon === "discord")
   }
 
   .doc p a {
-    color: var(--sl-color-text-dimmed);
+    color: var(--v2-text-text-muted);
+    
+    &:hover {
+      color: var(--v2-text-text-accent);
+    }
   }
 </style>

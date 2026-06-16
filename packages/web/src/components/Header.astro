@@ -92,15 +92,23 @@ function href(url: string) {
       line-height: 1;
 
       svg {
-        color: var(--sl-color-text-dimmed);
+        color: var(--v2-icon-icon-base);
+      }
+      
+      &:hover svg {
+        color: var(--v2-icon-icon-accent);
       }
     }
 
     a.links {
       text-transform: uppercase;
       font-size: var(--sl-text-sm);
-      color: var(--sl-color-text-secondary);
+      color: var(--v2-text-text-muted);
       line-height: normal;
+      
+      &:hover {
+        color: var(--v2-text-text-accent);
+      }
     }
   }
 
