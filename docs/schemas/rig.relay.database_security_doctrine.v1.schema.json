@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/database_security_doctrine.v1",
+  "title": "Database Security Doctrine",
+  "description": "Security doctrine governing credential management, TLS requirements, and access control for the Postgres backend migration.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["rig.relay.database_security_doctrine.v1"],
+      "description": "Schema identifier"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of generation"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author of the doctrine"
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of the doctrine (e.g., draft, approved, deprecated)"
+    },
+    "env_convention": {
+      "type": "string",
+      "description": "Environment variable naming convention"
+    },
+    "secrets_pattern": {
+      "type": "string",
+      "description": "Pattern for secrets management"
+    },
+    "local_binding": {
+      "type": "string",
+      "description": "Local binding strategy"
+    },
+    "ci_tls_requirements": {
+      "type": "string",
+      "description": "CI TLS requirements"
+    },
+    "role_separation": {
+      "type": "string",
+      "description": "Role separation strategy"
+    },
+    "credential_isolation": {
+      "type": "string",
+      "description": "Credential isolation strategy"
+    },
+    "model_transition": {
+      "type": "string",
+      "description": "Model transition strategy"
+    },
+    "implementation_phases": {
+      "type": "string",
+      "description": "Implementation phases"
+    }
+  },
+  "required": [
+    "schema_version",
+    "generated_at",
+    "author",
+    "status",
+    "env_convention",
+    "secrets_pattern",
+    "local_binding",
+    "ci_tls_requirements",
+    "role_separation",
+    "credential_isolation",
+    "model_transition",
+    "implementation_phases"
+  ]
+}

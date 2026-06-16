@@ -1,0 +1,118 @@
+[package]
+name = "tribunus-compute-native"
+version = "0.1.0"
+edition = "2021"
+description = "Tribunus Compute Kernel — native MLX backend via napi-rs"
+license = "AGPL-3.0-only"
+
+[lib]
+crate-type = ["cdylib"]
+
+[workspace]
+members = [
+    ".",
+    "compute-core",
+]
+
+[workspace.dependencies]
+mlx-rs = { path = "../mlx-rs-fork/mlx-rs" }
+mlx-sys = { path = "../mlx-rs-fork/mlx-sys" }
+
+[dependencies]
+tribunus-compute-core = { path = "compute-core" }
+napi = { version = "3.9.0", features = ["napi8", "serde-json"], default-features = false }
+napi-derive = "3.5.6"
+mlx-rs = { workspace = true }
+mlx-sys = { workspace = true }
+safetensors = "0.5"
+sha2 = { version = "0.10", features = ["asm"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+rayon = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+parking_lot = "0.12"
+tribunus-evidence-schema = { path = "../compute-evidence-native/crates/evidence-schema" }
+libc = "0.2"
+lazy_static = "1.5"
+tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "macros"] }
+async-trait = "0.1"
+coreml-proto = "0.1.0"
+prost = "0.14.4"
+prost-types = "0.14.4"
+tempfile = "3"
+[build-dependencies]
+napi-build = "2.3.2"
+cc = "1.2"
+
+[features]
+default = ["stub-backend"]
+private-development = []
+stub-backend = ["mlx-rs/stub"]
+mlx-backend = ["mlx-rs/metal", "mlx-rs/accelerate", "mlx-rs/safetensors"]
+
+[profile.release]
+strip = "symbols"
+lto = true
+codegen-units = 1
+
+[profile.dev]
+opt-level = 3
+
+[profile.test]
+opt-level = 3
+
+[profile.image-build]
+inherits = "release"
+opt-level = 3
+lto = true
+codegen-units = 1
+incremental = false
+debug = false
+debug-assertions = false
+overflow-checks = false
+strip = "symbols"
+[profile.inference-research]
+inherits = "release"
+opt-level = 3
+debug = "line-tables-only"
+split-debuginfo = "unpacked"
+strip = "none"
+debug-assertions = false
+overflow-checks = false
+lto = "thin"
+codegen-units = 16
+incremental = true
+panic = "unwind"
+
+[profile.inference-debug]
+inherits = "release"
+opt-level = 3
+debug = "full"
+split-debuginfo = "unpacked"
+strip = "none"
+debug-assertions = false
+overflow-checks = true
+lto = "off"
+codegen-units = 16
+incremental = true
+panic = "unwind"
+
+[profile.inference-evidence]
+inherits = "release"
+opt-level = 3
+debug = "line-tables-only"
+split-debuginfo = "unpacked"
+strip = "none"
+debug-assertions = false
+overflow-checks = false
+lto = "thin"
+codegen-units = 8
+incremental = false
+panic = "unwind"
+
+[profile.inference-evidence-fat]
+inherits = "inference-evidence"
+lto = "fat"
+codegen-units = 1
+incremental = false
+

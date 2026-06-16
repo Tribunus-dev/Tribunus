@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/reporting_honesty_audit.v1",
+  "title": "Reporting Honesty Audit",
+  "description": "Structured audit artifact that flags overclaim language in reporting artifacts — claims that exceed their supporting evidence.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    }
+  },
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "rig.relay.reporting_honesty_audit.v1"
+    },
+    "audit_id": {
+      "type": "string",
+      "description": "Unique audit identifier"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the audit was generated"
+    },
+    "lane_id": {
+      "type": "string",
+      "description": "Lane identifier"
+    },
+    "methodology": {
+      "type": "string",
+      "description": "Detection methodology including grep patterns, scan criteria, and reproducibility notes"
+    },
+    "severity_rubric": {
+      "type": "object",
+      "description": "Clear definitions for each severity level",
+      "properties": {
+        "high": { "type": "string", "description": "Definition of high severity overclaim" },
+        "medium": { "type": "string", "description": "Definition of medium severity overclaim" },
+        "low": { "type": "string", "description": "Definition of low severity overclaim" }
+      },
+      "required": ["high", "medium", "low"]
+    },
+    "detection_criteria": {
+      "type": "array",
+      "description": "Explicit patterns used to detect overclaims",
+      "items": { "type": "string" }
+    },
+    "maturity_level_taxonomy": {
+      "type": "object",
+      "description": "Standardized maturity levels for classifying artifact claims",
+      "additionalProperties": { "type": "string" }
+    },
+    "findings": {
+      "type": "array",
+      "description": "List of overclaim findings",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Unique finding identifier" },
+          "severity": { "type": "string", "enum": ["high", "medium", "low"] },
+          "description": { "type": "string", "description": "Finding description" },
+          "evidence": { "type": "string", "description": "Supporting evidence" },
+          "suggested_repair": { "type": "string", "description": "Suggested repair action" }
+        },
+        "required": ["id", "severity", "description"]
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "Audit summary",
+      "properties": {
+        "total_findings": { "type": "integer" },
+        "high_severity": { "type": "integer" },
+        "medium_severity": { "type": "integer" },
+        "low_severity": { "type": "integer" },
+        "recommendation": { "type": "string" }
+      },
+      "required": ["total_findings", "high_severity", "medium_severity", "low_severity", "recommendation"]
+    }
+  },
+  "required": ["schema", "audit_id", "generated_at", "findings", "summary"]
+}

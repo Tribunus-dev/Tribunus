@@ -1,0 +1,145 @@
+[package]
+name = "tribunus-compute-core"
+version = "0.1.0"
+edition = "2021"
+description = "Tribunus Compute Kernel — core MLX backend"
+license = "AGPL-3.0-only"
+
+[lib]
+name = "tribunus_compute_core"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "tribunus-coreml-decode-attribution"
+path = "src/bin/tribunus-coreml-decode-attribution.rs"
+
+[[bin]]
+name = "tribunus-coreml-minimal-repro"
+path = "src/bin/tribunus-coreml-minimal-repro.rs"
+
+[[bin]]
+name = "tribunus-compute-worker"
+path = "src/bin/tribunus-compute-worker.rs"
+
+[[bin]]
+name = "tribunus-fake-worker"
+path = "src/bin/tribunus-fake-worker.rs"
+
+[[bin]]
+name = "tribunus-compute-image"
+path = "src/bin/tribunus-compute-image.rs"
+
+[[bin]]
+name = "tribunus-native-bench"
+path = "src/bin/tribunus-native-bench.rs"
+ 
+[[bin]]
+name = "tribunus-tier1-defect-cluster"
+path = "src/bin/tribunus-tier1-defect-cluster.rs"
+ 
+[[bin]]
+name = "tribunus-tier2-manifest-gen"
+path = "src/bin/tribunus-tier2-manifest-gen.rs"
+
+[[bin]]
+name = "tribunus-compute-gap-report"
+path = "src/bin/tribunus-compute-gap-report.rs"
+
+[[bin]]
+name = "tribunus-decode-attribution-measure"
+path = "src/bin/tribunus-decode-attribution-measure.rs"
+
+[[bin]]
+name = "tribunus-mlx-compatibility-gate"
+path = "src/bin/tribunus-mlx-compatibility-gate.rs"
+
+[[test]]
+name = "treatment_qualification"
+path = "tests/treatment_qualification.rs"
+
+[[test]]
+name = "treatment_lifecycle"
+path = "tests/treatment_lifecycle.rs"
+
+[[test]]
+name = "backend_conformance"
+path = "tests/backend_conformance.rs"
+
+[[test]]
+name = "lane_conformance"
+path = "tests/lane_conformance.rs"
+
+[[test]]
+name = "heterogeneous_conformance"
+path = "tests/heterogeneous_conformance.rs"
+
+[[test]]
+name = "evaluation_authority"
+path = "tests/evaluation_authority.rs"
+
+[[test]]
+name = "accelerate_qualification"
+path = "tests/accelerate_qualification.rs"
+
+[[test]]
+name = "mlx_accelerate_smoke"
+path = "tests/mlx_accelerate_smoke.rs"
+
+[[test]]
+name = "coreml_lifecycle"
+path = "tests/coreml_lifecycle.rs"
+
+[[test]]
+name = "pipeline_parity_contract"
+path = "tests/pipeline_parity_contract.rs"
+
+[[test]]
+name = "f32_contract_tests"
+path = "tests/f32_contract_tests.rs"
+
+[[test]]
+name = "three_backend_conformance"
+path = "tests/three_backend_conformance.rs"
+
+[[bench]]
+name = "benchmark_placement"
+harness = false
+path = "benches/benchmark_placement.rs"
+
+[dependencies]
+mlx-rs = { workspace = true }
+mlx-sys = { workspace = true }
+safetensors = "0.5"
+sha2 = { version = "0.10", features = ["asm"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+rayon = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+parking_lot = "0.12"
+tribunus-evidence-schema = { path = "../../compute-evidence-native/crates/evidence-schema" }
+libc = "0.2"
+lazy_static = "1.5"
+tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "macros"] }
+async-trait = "0.1"
+coreml-proto = "0.1.0"
+prost = "0.14.4"
+prost-types = "0.14.4"
+tempfile = { version = "3" }
+tokio-postgres = { version = "0.7", optional = true }
+redis = { version = "0.27", features = ["tokio-comp"], optional = true }
+duckdb = { version = "1.1", features = ["bundled"], optional = true }
+
+[features]
+napi = []
+private-development = []
+default = ["stub-backend"]
+stub-backend = ["mlx-rs/stub"]
+mlx-backend = ["mlx-rs/metal", "mlx-rs/accelerate", "mlx-rs/safetensors"]
+storage-adapters = ["dep:tokio-postgres", "dep:redis", "dep:duckdb"]
+
+[build-dependencies]
+cc = "1.2"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+tribunus_compute_native = { package = "tribunus-compute-core", path = "." }

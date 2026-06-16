@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/debug_packet.v1",
+  "title": "Tribunus Debug Packet",
+  "description": "Schema for a full session debug packet exported from OpenCode. Contains the session state, runtime events, tool calls, file edits, permissions, lifecycle transitions, MCP events, and normalized errors for diagnostics and replay.",
+  "type": "object",
+  "$defs": {
+    "ToolCallSummary": {
+      "type": "object",
+      "description": "Summary of a tool call made during a session",
+      "properties": {
+        "toolName": {
+          "type": "string",
+          "description": "Name of the tool called"
+        },
+        "arguments": {
+          "type": "object",
+          "description": "Arguments passed to the tool"
+        },
+        "result": {
+          "type": "object",
+          "description": "Result returned by the tool"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of the call"
+        }
+      },
+      "required": ["toolName", "arguments", "timestamp"]
+    },
+    "FileEditSummary": {
+      "type": "object",
+      "description": "Summary of a file edit made during a session",
+      "properties": {
+        "filePath": {
+          "type": "string",
+          "description": "Path to the file edited"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["insert", "delete", "replace"]
+              },
+              "line": {
+                "type": "integer",
+                "description": "Line number where the change occurred"
+              },
+              "content": {
+                "type": "string",
+                "description": "Content of the change"
+              }
+            },
+            "required": ["type", "line", "content"]
+          }
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of the edit"
+        }
+      },
+      "required": ["filePath", "changes", "timestamp"]
+    },
+    "PermissionDecision": {
+      "type": "object",
+      "description": "Decision made about a permission request",
+      "properties": {
+        "allowed": {
+          "type": "boolean",
+          "description": "Whether the permission was granted"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for the decision"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of the decision"
+        }
+      },
+      "required": ["allowed", "timestamp"]
+    },
+    "LifecycleTransition": {
+      "type": "object",
+      "description": "Transition in the session lifecycle",
+      "properties": {
+        "from": {
+          "type": "string",
+          "description": "Previous lifecycle state"
+        },
+        "to": {
+          "type": "string",
+          "description": "New lifecycle state"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of the transition"
+        }
+      },
+      "required": ["from", "to", "timestamp"]
+    },
+    "McpEvent": {
+      "type": "object",
+      "description": "Event from an MCP server",
+      "properties": {
+        "server": {
+          "type": "string",
+          "description": "Name of the MCP server"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of event"
+        },
+        "data": {
+          "type": "object",
+          "description": "Event-specific data"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of the event"
+        }
+      },
+      "required": ["server", "type", "data", "timestamp"]
+    },
+    "NormalizedError": {
+      "type": "object",
+      "description": "Normalized error structure for diagnostics",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Error code"
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error message"
+        },
+        "stack": {
+          "type": ["string", "null"],
+          "description": "Error stack trace"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of the error"
+        }
+      },
+      "required": ["code", "message", "timestamp"]
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "description": "Version of the debug packet schema"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this packet was generated"
+    },
+    "appVersion": {
+      "type": "string",
+      "description": "Version of the OpenCode application that generated this packet"
+    },
+    "dbSchemaVersion": {
+      "type": "string",
+      "description": "Version of the database schema in use"
+    },
+    "session": {
+      "type": "object",
+      "description": "Session state and metadata"
+    },
+    "duckDbQueries": {
+      "type": "array",
+      "description": "DuckDB queries executed during the session",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gitDiff": {
+      "type": "string",
+      "description": "Git diff of changes made during the session"
+    },
+    "redactedConfig": {
+      "type": "object",
+      "description": "Redacted configuration used during the session"
+    }
+  },
+  "required": ["schemaVersion", "generatedAt", "appVersion", "dbSchemaVersion", "session", "redactedConfig"],
+  "additionalProperties": false
+}

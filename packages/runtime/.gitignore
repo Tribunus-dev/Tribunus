@@ -1,0 +1,16 @@
+research
+dist
+dist-*
+gen
+app.log
+script/build-*.ts
+temporary-*.md
+.artifacts
+
+instance-startup.jsonl
+# Banks/MnemoPi local databases
+*.db
+*.db-wal
+*.db-shm
+# Temporary test scripts
+test_rf.ts

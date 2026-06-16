@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/repair_plan_approval.v1",
+  "title": "Repair Plan Approval",
+  "description": "Approval artifact for a repair plan after red-team findings, recording what was fixed, residual defects, and the number of repair rounds.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    }
+  },
+  "properties": {
+    "candidate_packet_digest": {
+      "type": "string",
+      "description": "SHA256 digest of the candidate packet under review"
+    },
+    "candidate_boundary_identifier": {
+      "type": "string",
+      "description": "Identifier for the candidate boundary being repaired"
+    },
+    "plan_revision": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Revision number of the plan being repaired"
+    },
+    "reviewer_set": {
+      "type": "array",
+      "description": "List of repair reviewers and their dispositions",
+      "items": { "type": "string" }
+    },
+    "decision": {
+      "type": "string",
+      "description": "Repair plan approval decision",
+      "enum": ["approved", "repair_required", "blocked"]
+    },
+    "decision_rationale": {
+      "type": "string",
+      "description": "Narrative rationale for the decision"
+    },
+    "findings_fixed": {
+      "type": "array",
+      "description": "List of findings that were fixed",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Finding identifier" },
+          "description": { "type": "string", "description": "Finding description" }
+        },
+        "required": ["id", "description"]
+      }
+    },
+    "residual_defects": {
+      "type": "array",
+      "description": "List of residual defects that remain",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Defect identifier" },
+          "description": { "type": "string", "description": "Defect description" },
+          "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] }
+        },
+        "required": ["id", "description", "severity"]
+      }
+    },
+    "repair_rounds": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of repair rounds completed"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the approval was issued"
+    }
+  },
+  "required": [
+    "candidate_packet_digest",
+    "candidate_boundary_identifier",
+    "plan_revision",
+    "reviewer_set",
+    "decision",
+    "decision_rationale",
+    "findings_fixed",
+    "residual_defects",
+    "repair_rounds",
+    "issued_at"
+  ]
+}

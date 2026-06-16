@@ -1,0 +1,283 @@
+bun test v1.3.14 (0d9b296a)
+
+test/server/httpapi-schema-error-body.test.ts:
+[07:19:42.426] ERROR (#6): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2597:69
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2667:12
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2678:23
+[migration] Benign idempotency notice: relation "diagnostic_packets" does not exist
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/CapabilityToolRegistry (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/capability/tool-registry.ts:58:53)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) schema-rejection wire shape > Payload schema rejection returns NamedError-shaped JSON, not empty [950.12ms]
+[07:19:43.368] ERROR (#246): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2597:69
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2667:12
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2678:23
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/CapabilityToolRegistry (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/capability/tool-registry.ts:58:53)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) schema-rejection wire shape > Query schema rejection returns NamedError-shaped JSON [1.35ms]
+[07:19:43.369] ERROR (#260): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2597:69
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2667:12
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2678:23
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/CapabilityToolRegistry (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/capability/tool-registry.ts:58:53)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) schema-rejection wire shape > v2 query schema rejection returns InvalidRequestError JSON [0.81ms]
+[07:19:43.370] ERROR (#274): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2597:69
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2667:12
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2678:23
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/CapabilityToolRegistry (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/capability/tool-registry.ts:58:53)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) schema-rejection wire shape > rejected request body never echoes back unbounded — message is capped [0.79ms]
+[07:19:43.370] ERROR (#288): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/DatabaseAdapter (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/storage/adapter.ts:119:38)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2597:69
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2667:12
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2678:23
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @tribunus/CapabilityToolRegistry (defined at /Users/user/Developer/GitHub/Tribunus/packages/runtime/src/capability/tool-registry.ts:58:53)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/user/Developer/GitHub/Tribunus/node_modules/.bun/effect@4.0.0-beta.66/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) schema-rejection wire shape > response-encode failure: corrupted stored row returns NamedError-shaped JSON with field path [0.84ms]
+
+ 0 pass
+ 5 fail
+Ran 5 tests across 1 file. [2.10s]

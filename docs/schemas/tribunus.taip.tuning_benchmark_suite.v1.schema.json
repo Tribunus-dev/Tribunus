@@ -1,0 +1,571 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/taip.tuning_benchmark_suite.v1",
+  "title": "TAIP Tuning Benchmark Suite v1",
+  "description": "TRIBUNUS-ASYNC-INFERENCE-PROFILE dual-plane tuning evaluation schema. Every model-machine-profile-workload tuple that graduates as a selected ExecutionProfile must have passed both a performance plane and an intelligence plane. Neither plane may override the other. A fast-but-unusable model is Rejected. A smart-but-too-slow model is Quarantined for specific workloads only.",
+  "type": "object",
+  "$defs": {
+    "Sha256Digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "64-character lowercase hex SHA-256 digest"
+    },
+    "TimestampMs": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unix timestamp in milliseconds"
+    },
+    "WorkloadClass": {
+      "type": "string",
+      "enum": [
+        "short_chat",
+        "long_context_analysis",
+        "concurrent_batch",
+        "tool_call_heavy",
+        "repeated_prefix_coding",
+        "structured_output_generation",
+        "retrieval_augmented"
+      ],
+      "description": "Semantic workload shape. Tuning outcomes are scoped to the workload class — a batch-optimized profile is not automatically optimal for short chat."
+    },
+    "CachePolicy": {
+      "type": "string",
+      "enum": ["no_caching", "prefix_reuse", "ssd_kv_tiered", "warm_session_restore"],
+      "description": "KV cache strategy used during the benchmark. Maps to OMLX's SSD-backed KV cache and prefix-restoration features."
+    },
+    "WorkloadDescriptor": {
+      "type": "object",
+      "description": "The exact workload shape this tuning suite evaluated. Tuning is always tuple-bound: model × machine × profile × workload.",
+      "properties": {
+        "workload_class": { "$ref": "#/$defs/WorkloadClass" },
+        "avg_context_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Average context window length in tokens for this workload"
+        },
+        "concurrency_level": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of concurrent inference requests (1 = single-agent)"
+        },
+        "cache_policy": { "$ref": "#/$defs/CachePolicy" },
+        "streaming_required": {
+          "type": "boolean",
+          "description": "Whether streaming token output was required"
+        },
+        "tool_call_budget_per_turn": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum tool calls allowed per turn (0 = no tool calls)"
+        }
+      },
+      "required": ["workload_class", "avg_context_tokens", "concurrency_level", "cache_policy", "streaming_required", "tool_call_budget_per_turn"]
+    },
+    "PerformanceMetricSet": {
+      "type": "object",
+      "description": "Phase-level performance metrics. Every metric is anchored to a TAIP PhaseKind so regressions can be attributed to a specific phase. All latencies are in nanoseconds. All memory values are in bytes.",
+      "properties": {
+        "tokenizer_ingress_latency_ns": { "type": ["integer", "null"] },
+        "retrieval_latency_ns": { "type": ["integer", "null"] },
+        "reranking_latency_ns": { "type": ["integer", "null"] },
+        "prefill_ttft_ns": { "type": ["integer", "null"], "description": "Time-to-first-token from prefill phase start" },
+        "decode_tps": { "type": ["number", "null"], "description": "Sustained decode throughput in tokens per second" },
+        "token_latency_p50_ns": { "type": ["integer", "null"] },
+        "token_latency_p95_ns": { "type": ["integer", "null"] },
+        "token_latency_p99_ns": { "type": ["integer", "null"] },
+        "kv_write_latency_ns": { "type": ["integer", "null"] },
+        "kv_append_latency_ns": { "type": ["integer", "null"] },
+        "kv_view_copy_cost_bytes": { "type": ["integer", "null"], "description": "Bytes copied during KvView phase (0 = zero-copy confirmed)" },
+        "structured_validation_overhead_ns": { "type": ["integer", "null"] },
+        "tool_call_boundary_latency_ns": { "type": ["integer", "null"] },
+        "memory_read_latency_ns": { "type": ["integer", "null"] },
+        "memory_write_latency_ns": { "type": ["integer", "null"] },
+        "checkpoint_cost_ns": { "type": ["integer", "null"] },
+        "cancellation_latency_ns": { "type": ["integer", "null"] },
+        "recovery_time_ns": { "type": ["integer", "null"] },
+        "peak_memory_bytes": { "type": ["integer", "null"] },
+        "active_memory_bytes": { "type": ["integer", "null"] },
+        "cache_memory_bytes": { "type": ["integer", "null"] },
+        "ssd_cache_hit_rate": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Fraction of KV cache requests satisfied from SSD tier (OMLX SSD-KV dimension)"
+        },
+        "warm_vs_cold_cache_delta_tps": {
+          "type": ["number", "null"],
+          "description": "Decode TPS improvement when cache is warm vs. cold (OMLX prefix-restoration dimension)"
+        },
+        "thermal_degradation_pct": {
+          "type": ["number", "null"],
+          "description": "Decode TPS reduction under sustained load due to thermal throttling (observable only; None if not measured)"
+        },
+        "concurrency_scaling_efficiency": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "description": "Throughput at concurrency_level N divided by N × throughput at concurrency 1. 1.0 = perfect linear scaling. (OMLX continuous-batching dimension)"
+        }
+      }
+    },
+    "MetricDelta": {
+      "type": "object",
+      "description": "Comparison of a single metric between the tuning candidate and the baseline.",
+      "properties": {
+        "metric_name": { "type": "string" },
+        "baseline_value": { "type": "number" },
+        "candidate_value": { "type": "number" },
+        "delta_pct": { "type": "number", "description": "Signed percentage change from baseline. Negative = improvement for latency metrics; positive = improvement for throughput metrics." },
+        "direction": {
+          "type": "string",
+          "enum": ["better", "worse", "neutral"],
+          "description": "Whether the delta is an improvement, regression, or within noise floor"
+        },
+        "protected": {
+          "type": "boolean",
+          "description": "True if this metric is in the acceptance policy protected set. A protected regression triggers Quarantine or Rejection."
+        }
+      },
+      "required": ["metric_name", "baseline_value", "candidate_value", "delta_pct", "direction", "protected"]
+    },
+    "PerformanceBenchmarkSpec": {
+      "type": "object",
+      "description": "Specification for a single performance benchmark run.",
+      "properties": {
+        "spec_id": { "type": "string" },
+        "phase_kind": {
+          "type": "string",
+          "enum": [
+            "tokenizer_ingress", "retrieval", "reranking", "prefill", "attention",
+            "kv_write", "kv_append", "kv_view", "decode", "sampling",
+            "structured_output_validation", "tool_call_boundary",
+            "memory_read", "memory_write", "checkpoint", "cancellation", "recovery",
+            "cross_phase"
+          ],
+          "description": "TAIP PhaseKind this benchmark targets. cross_phase = aggregate metric."
+        },
+        "target_metrics": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Metric names from PerformanceMetricSet this spec measures"
+        },
+        "repetitions": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of runs for stability estimation"
+        },
+        "warmup_runs": { "type": "integer", "minimum": 0 },
+        "description": { "type": "string" }
+      },
+      "required": ["spec_id", "phase_kind", "target_metrics", "repetitions"]
+    },
+    "PerformanceBenchmarkReceipt": {
+      "type": "object",
+      "description": "Result of a single performance benchmark run.",
+      "properties": {
+        "receipt_id": { "type": "string" },
+        "spec_id": { "type": "string" },
+        "run_number": { "type": "integer", "minimum": 1 },
+        "started_at": { "$ref": "#/$defs/TimestampMs" },
+        "finished_at": { "$ref": "#/$defs/TimestampMs" },
+        "metrics": { "$ref": "#/$defs/PerformanceMetricSet" },
+        "comparison_delta": {
+          "type": ["array", "null"],
+          "items": { "$ref": "#/$defs/MetricDelta" }
+        },
+        "notes": { "type": ["string", "null"] }
+      },
+      "required": ["receipt_id", "spec_id", "run_number", "started_at", "finished_at", "metrics"]
+    },
+    "GenericEvalKind": {
+      "type": "string",
+      "enum": [
+        "instruction_following",
+        "code_edit_accuracy",
+        "tool_call_argument_validity",
+        "json_schema_validity",
+        "retrieval_grounded_answering",
+        "long_context_recall",
+        "summarization_faithfulness",
+        "refusal_safety_behavior",
+        "multilingual_consistency",
+        "reasoning_stability",
+        "deterministic_replay_under_fixed_seed",
+        "custom_regression"
+      ]
+    },
+    "TribunusNativeEvalKind": {
+      "type": "string",
+      "enum": [
+        "mission_packet_to_task_list",
+        "backend_failure_receipt_classification",
+        "safe_fallback_plan_generation",
+        "authority_boundary_compliance",
+        "code_review_bundle_summarization",
+        "structured_artifact_emission",
+        "phase_graph_instruction_following"
+      ],
+      "description": "Tribunus project-native evals. First-class \u2014 not afterthoughts. These evals verify that the tuned model preserves agent competence on the actual tasks Tribunus executes."
+    },
+    "IntelligenceBenchmarkKind": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "generic" },
+            "eval": { "$ref": "#/$defs/GenericEvalKind" },
+            "custom_tag": { "type": ["string", "null"], "description": "Required when eval = custom_regression" }
+          },
+          "required": ["kind", "eval"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "tribunus_native" },
+            "eval": { "$ref": "#/$defs/TribunusNativeEvalKind" }
+          },
+          "required": ["kind", "eval"]
+        }
+      ]
+    },
+    "IntelligenceBenchmarkSpec": {
+      "type": "object",
+      "description": "Specification for a single intelligence evaluation.",
+      "properties": {
+        "spec_id": { "type": "string" },
+        "benchmark_kind": { "$ref": "#/$defs/IntelligenceBenchmarkKind" },
+        "prompt_template": { "type": "string", "description": "Eval prompt template. May reference variables." },
+        "expected_schema": { "type": ["object", "null"], "description": "JSON Schema the output must validate against (if applicable)" },
+        "scoring_rubric": { "type": "string", "description": "Human-readable scoring criteria" },
+        "repetitions": { "type": "integer", "minimum": 1 },
+        "fixed_seed": { "type": ["integer", "null"], "description": "RNG seed for determinism testing. None = non-deterministic eval." },
+        "description": { "type": "string" }
+      },
+      "required": ["spec_id", "benchmark_kind", "scoring_rubric", "repetitions"]
+    },
+    "IntelligenceBenchmarkReceipt": {
+      "type": "object",
+      "description": "Result of a single intelligence evaluation run.",
+      "properties": {
+        "receipt_id": { "type": "string" },
+        "spec_id": { "type": "string" },
+        "started_at": { "$ref": "#/$defs/TimestampMs" },
+        "finished_at": { "$ref": "#/$defs/TimestampMs" },
+        "score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Normalized score 0.0\u20131.0"
+        },
+        "score_breakdown": {
+          "type": "object",
+          "additionalProperties": { "type": "number" },
+          "description": "Per-subtask scores keyed by subtask name"
+        },
+        "passed_hard_gate": { "type": "boolean" },
+        "comparison_delta": {
+          "type": ["number", "null"],
+          "description": "Score delta vs. baseline (positive = improvement)"
+        },
+        "determinism_verified": {
+          "type": ["boolean", "null"],
+          "description": "True if fixed-seed runs produced identical outputs across all repetitions"
+        },
+        "eval_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": { "type": "string", "description": "sample_output | diff_file | log_path | model_output_jsonl" },
+              "path": { "type": "string" },
+              "sha256": { "type": ["string", "null"] }
+            },
+            "required": ["kind", "path"]
+          }
+        },
+        "notes": { "type": ["string", "null"] }
+      },
+      "required": ["receipt_id", "spec_id", "started_at", "finished_at", "score", "passed_hard_gate"]
+    },
+    "HardGate": {
+      "type": "object",
+      "description": "A gate that must pass or the tuning candidate is Rejected immediately, regardless of all other scores.",
+      "properties": {
+        "gate_id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "schema_valid_tool_calls",
+            "no_unauthorized_memory_writes",
+            "cancellation_safety",
+            "deterministic_replay",
+            "minimum_intelligence_score",
+            "no_tool_call_hallucination",
+            "structured_output_contract_compliance"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "description": "Kind-specific parameters. For deterministic_replay: {seed: integer}. For minimum_intelligence_score: {threshold: number}.",
+          "additionalProperties": true
+        },
+        "description": { "type": "string" }
+      },
+      "required": ["gate_id", "kind"]
+    },
+    "ProtectedMetricGuard": {
+      "type": "object",
+      "description": "A performance metric that cannot regress beyond threshold without triggering Quarantine.",
+      "properties": {
+        "metric_name": { "type": "string" },
+        "regression_threshold_pct": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Allowed regression as a percentage of baseline (e.g. 10.0 = 10%). Exceeding this triggers Quarantine."
+        },
+        "gate_class": {
+          "type": "string",
+          "enum": ["hard", "soft"],
+          "description": "hard = Rejected if exceeded; soft = Quarantined if exceeded"
+        }
+      },
+      "required": ["metric_name", "regression_threshold_pct", "gate_class"]
+    },
+    "TargetMetricSpec": {
+      "type": "object",
+      "description": "A metric the tuning candidate must improve vs. baseline. Candidate must improve at least one target metric to be Promoted.",
+      "properties": {
+        "metric_name": { "type": "string" },
+        "improvement_direction": {
+          "type": "string",
+          "enum": ["lower_is_better", "higher_is_better"],
+          "description": "lower_is_better for latency/memory; higher_is_better for throughput/scores"
+        },
+        "min_improvement_pct": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Minimum percentage improvement required to count as an improvement (noise floor)"
+        }
+      },
+      "required": ["metric_name", "improvement_direction", "min_improvement_pct"]
+    },
+    "TuningAcceptancePolicy": {
+      "type": "object",
+      "description": "The contract that controls whether a tuning candidate is Promoted, Quarantined, or Rejected. Both planes must meet their floors. Neither plane can override the other.",
+      "properties": {
+        "hard_gates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/HardGate" },
+          "description": "All must pass or the candidate is Rejected immediately"
+        },
+        "protected_metrics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ProtectedMetricGuard" },
+          "description": "Regressions beyond threshold trigger Quarantine or Rejection"
+        },
+        "target_metrics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/TargetMetricSpec" },
+          "description": "Candidate must improve at least one target metric to be Promoted"
+        },
+        "min_intelligence_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Minimum aggregate intelligence score (0.0\u20131.0). Failure = Rejected."
+        },
+        "min_performance_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Minimum composite performance score vs. baseline. Failure = Rejected."
+        },
+        "stability_runs": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of repeated runs required for score stability verification"
+        }
+      },
+      "required": ["hard_gates", "protected_metrics", "target_metrics", "min_intelligence_score", "min_performance_score", "stability_runs"]
+    },
+    "BaselineProfileRef": {
+      "type": "object",
+      "description": "Reference to the previously Promoted ExecutionProfile used as comparison baseline.",
+      "properties": {
+        "profile_digest": { "$ref": "#/$defs/Sha256Digest" },
+        "suite_receipt_digest": { "$ref": "#/$defs/Sha256Digest" },
+        "promoted_at": { "$ref": "#/$defs/TimestampMs" },
+        "notes": { "type": ["string", "null"] }
+      },
+      "required": ["profile_digest", "suite_receipt_digest", "promoted_at"]
+    },
+    "TuningOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Candidate improved at least one target metric, passed all hard gates, and both planes met their floors. Becomes the selected ExecutionProfile.",
+          "properties": {
+            "outcome": { "const": "promoted" },
+            "effective_at": { "$ref": "#/$defs/TimestampMs" }
+          },
+          "required": ["outcome", "effective_at"]
+        },
+        {
+          "type": "object",
+          "description": "Candidate is useful for specific workloads but cannot become the default profile. A quarantined profile may still be selected for its declared workload_fit classes.",
+          "properties": {
+            "outcome": { "const": "quarantined" },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "performance_regression_in_protected_metric",
+                "intelligence_regression",
+                "workload_specific_only",
+                "thermal_instability",
+                "concurrency_regression"
+              ]
+            },
+            "workload_fit": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/WorkloadClass" },
+              "description": "Workload classes this profile is still acceptable for, despite not being Promoted"
+            }
+          },
+          "required": ["outcome", "reason", "workload_fit"]
+        },
+        {
+          "type": "object",
+          "description": "Candidate violated a hard gate or regressed a hard-class protected metric. Cannot be selected for any workload.",
+          "properties": {
+            "outcome": { "const": "rejected" },
+            "failing_gates": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Gate IDs that failed"
+            },
+            "regression_report": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/MetricDelta" }
+            }
+          },
+          "required": ["outcome", "failing_gates", "regression_report"]
+        }
+      ]
+    },
+    "TuningLoopState": {
+      "type": "string",
+      "enum": [
+        "candidate_generated",
+        "performance_suite_running",
+        "performance_complete",
+        "intelligence_suite_running",
+        "comparing",
+        "outcome_determined"
+      ],
+      "description": "Ordered state machine for the tuning loop. Intelligence always runs after performance \u2014 never skipped."
+    },
+    "TuningBenchmarkReceipt": {
+      "type": "object",
+      "description": "A completed benchmark run receipt. May be either a PerformanceBenchmarkReceipt or IntelligenceBenchmarkReceipt, discriminated by receipt_kind.",
+      "properties": {
+        "receipt_id": { "type": "string" },
+        "receipt_kind": {
+          "type": "string",
+          "enum": ["performance", "intelligence"]
+        },
+        "performance": { "$ref": "#/$defs/PerformanceBenchmarkReceipt" },
+        "intelligence": { "$ref": "#/$defs/IntelligenceBenchmarkReceipt" }
+      },
+      "required": ["receipt_id", "receipt_kind"]
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["tribunus.taip.tuning_benchmark_suite.v1"],
+      "description": "Schema version identifier"
+    },
+    "suite_id": {
+      "type": "string",
+      "description": "Unique identifier for this TuningBenchmarkSuite instance"
+    },
+    "model_profile_digest": {
+      "$ref": "#/$defs/Sha256Digest",
+      "description": "Digest of the ModelProfile this suite evaluates. Together with machine and execution digests, forms the tuple identity."
+    },
+    "machine_profile_digest": {
+      "$ref": "#/$defs/Sha256Digest",
+      "description": "Digest of the MachineProfile this suite ran on"
+    },
+    "execution_profile_digest": {
+      "$ref": "#/$defs/Sha256Digest",
+      "description": "Digest of the ExecutionProfile (phase graph + backend contracts) this suite evaluated"
+    },
+    "workload_descriptor": {
+      "$ref": "#/$defs/WorkloadDescriptor",
+      "description": "The workload shape this suite was evaluated under. A profile promoted under one workload is NOT automatically promoted under another."
+    },
+    "performance_benchmarks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/PerformanceBenchmarkSpec" },
+      "description": "Phase-level performance benchmark specifications"
+    },
+    "intelligence_benchmarks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/IntelligenceBenchmarkSpec" },
+      "description": "Task-oriented intelligence evaluation specifications. Must include at least one TribunusNativeEvalKind."
+    },
+    "acceptance_policy": {
+      "$ref": "#/$defs/TuningAcceptancePolicy"
+    },
+    "comparison_baseline": {
+      "oneOf": [
+        { "$ref": "#/$defs/BaselineProfileRef" },
+        { "type": "null" }
+      ],
+      "description": "Baseline to compare against. Null = this is the first run and becomes the baseline on Promotion."
+    },
+    "suite_status": {
+      "type": "string",
+      "enum": ["pending", "performance_running", "intelligence_running", "comparing", "promoted", "quarantined", "rejected"],
+      "description": "Current lifecycle state of this suite"
+    },
+    "tuning_loop_state": {
+      "$ref": "#/$defs/TuningLoopState",
+      "description": "Ordered state machine position. Intelligence cannot proceed before performance is complete."
+    },
+    "benchmark_receipts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/TuningBenchmarkReceipt" },
+      "description": "Append-only list of completed benchmark receipts. Never modified after append."
+    },
+    "tuning_outcome": {
+      "oneOf": [
+        { "$ref": "#/$defs/TuningOutcome" },
+        { "type": "null" }
+      ],
+      "description": "Final outcome. Null until OutcomeDetermined state is reached."
+    },
+    "created_at": { "$ref": "#/$defs/TimestampMs" },
+    "updated_at": { "$ref": "#/$defs/TimestampMs" },
+    "schema_notes": {
+      "type": "string",
+      "description": "Free-form notes about this suite instance (e.g. OMLX comparison context, Apple Core AI SDK version)"
+    }
+  },
+  "required": [
+    "schema_version",
+    "suite_id",
+    "model_profile_digest",
+    "machine_profile_digest",
+    "execution_profile_digest",
+    "workload_descriptor",
+    "performance_benchmarks",
+    "intelligence_benchmarks",
+    "acceptance_policy",
+    "suite_status",
+    "tuning_loop_state",
+    "benchmark_receipts",
+    "created_at"
+  ],
+  "additionalProperties": false
+}

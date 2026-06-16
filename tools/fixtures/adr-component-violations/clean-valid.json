@@ -1,0 +1,19 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "9994",
+  "title": "Clean Example",
+  "status": "proposed",
+  "date": "2026-06-14",
+  "last_modified": "2026-06-14T00:00:00Z",
+  "component_imports": [
+    "ACR-0001",
+    "ACR-0002",
+    "ACR-0005"
+  ],
+  "decision": "This example only uses temporary views and commits through receipts.",
+  "context": "",
+  "consequences": "",
+  "supersedes": [],
+  "superseded_by": []
+}

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/native_tool_architecture.v1",
+  "title": "Native Tool Architecture Design",
+  "description": "Design document for the native tool architecture, covering reliability, debuggability, operator UX, concurrency, parallelism, memory usage, lifecycle management, tool templates, anti-patterns, and registry growth.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    },
+    "designPatterns": {
+      "type": "object",
+      "description": "Design patterns used in the architecture",
+      "properties": {
+        "retry": { "type": "string", "description": "Retry pattern description" },
+        "circuitBreaker": { "type": "string", "description": "Circuit breaker pattern description" },
+        "spanPropagation": { "type": "string", "description": "Span propagation pattern description" },
+        "structuredLogging": { "type": "string", "description": "Structured logging pattern description" },
+        "heartbeats": { "type": "string", "description": "Heartbeats pattern description" },
+        "progressIndicators": { "type": "string", "description": "Progress indicators pattern description" },
+        "inputValidation": { "type": "string", "description": "Input validation pattern description" }
+      },
+      "required": ["retry", "circuitBreaker", "spanPropagation", "structuredLogging", "heartbeats", "progressIndicators", "inputValidation"]
+    }
+  },
+  "properties": {
+    "schema_version": { "type": "string", "description": "Schema version identifier" },
+    "generated_at": { "type": "string", "format": "date-time", "description": "ISO 8601 generation timestamp" },
+    "title": { "type": "string", "description": "Human-readable design document title" },
+    "scope": { "type": "string", "description": "Scope boundary of the design" },
+    "design_authority": { "type": "string", "description": "Key libraries and patterns the design builds on" },
+    "reliability": {
+      "type": "object",
+      "description": "Error boundaries, retry, circuit breakers, input validation",
+      "properties": {
+        "principles": { "type": "string", "description": "Reliability principles" },
+        "patterns": { "type": "string", "description": "Reliability patterns" },
+        "rationale": { "type": "string", "description": "Rationale for reliability choices" }
+      },
+      "required": ["principles", "patterns", "rationale"]
+    },
+    "debuggability": {
+      "type": "object",
+      "description": "Span propagation, structured logging, heartbeats, execution events",
+      "properties": {
+        "principles": { "type": "string", "description": "Debuggability principles" },
+        "patterns": { "type": "string", "description": "Debuggability patterns" },
+        "rationale": { "type": "string", "description": "Rationale for debuggability choices" }
+      },
+      "required": ["principles", "patterns", "rationale"]
+    },
+    "operator_ux": {
+      "type": "object",
+      "description": "LLM-facing error messages, structured output contract, progress indicators",
+      "properties": {
+        "principles": { "type": "string", "description": "Operator UX principles" },
+        "patterns": { "type": "string", "description": "Operator UX patterns" },
+        "rationale": { "type": "string", "description": "Rationale for operator UX choices" }
+      },
+      "required": ["principles", "patterns", "rationale"]
+    },
+    "strict_concurrency": { "type": "string", "description": "Strict concurrency model description" },
+    "true_parallelism": { "type": "string", "description": "True parallelism model description" },
+    "memory_usage": { "type": "string", "description": "Memory usage model description" },
+    "lifecycle_management": { "type": "string", "description": "Lifecycle management model description" },
+    "new_tool_template": { "type": "string", "description": "New tool template description" },
+    "anti_patterns": { "type": "string", "description": "Anti-patterns to avoid" },
+    "registry_growth_plan": { "type": "string", "description": "Registry growth plan description" }
+  },
+  "required": [
+    "schema_version",
+    "generated_at",
+    "title",
+    "scope",
+    "reliability",
+    "debuggability",
+    "operator_ux",
+    "strict_concurrency",
+    "true_parallelism",
+    "memory_usage",
+    "lifecycle_management",
+    "new_tool_template",
+    "anti_patterns",
+    "registry_growth_plan"
+  ]
+}
