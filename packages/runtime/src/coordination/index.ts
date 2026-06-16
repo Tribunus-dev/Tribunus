@@ -150,8 +150,7 @@ export type {
   RecoveryReceipt,
   RecoveryPlan,
   RecoveryConfig,
-  RebuildStats,
-  RebuildReceipt,
+  CoordinationRecoveryResult,
 } from "./recovery"
 
 // Database schema

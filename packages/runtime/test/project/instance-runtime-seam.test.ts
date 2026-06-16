@@ -9,7 +9,7 @@ import { Account } from "../../src/account/account"
 import { AccountStateTable, AccountTable } from "../../src/account/account.pg.sql"
 import { Bus } from "../../src/bus"
 import { Config } from "../../src/config/config"
-import { planCoordinationRecovery, persistCoordinationRecoveryReceipt, setRecoveryStatus } from "../../src/coordination/recovery"
+import { CoordinationRecovery, planCoordinationRecovery, persistCoordinationRecoveryReceipt, setRecoveryStatus, recoveryLayer } from "../../src/coordination/recovery"
 import { CoordinationRecoveryTable } from "../../src/coordination/recovery.pg.sql"
 import { AppRuntime } from "../../src/effect/app-runtime"
 import { InstanceRef } from "../../src/effect/instance-ref"
@@ -253,30 +253,18 @@ test.skip("drops in-memory session state on teardown and keeps durable recovery 
 
     const sessionID = SessionID.make("ses_teardown_runtime")
     const projectID = ProjectID.make("proj-teardown")
-    const plan = planCoordinationRecovery({
-      sessionID,
-      projectID,
-      valkeyAvailable: true,
-      statePresent: false,
-      durableGeneration: 2,
-      currentGeneration: 3,
-      unsafeWork: true,
-      durableReceipt: true,
-      timestamp: 123456,
-    })
-
-    expect(plan.receipt).toBeDefined()
-    if (!plan.receipt) throw new Error("expected coordination recovery receipt")
-    const receipt = plan.receipt
-
     await runProvided(
       Effect.gen(function* () {
         yield* seedAccount({ accountID: "account-teardown", url: "https://teardown.example.com" })
         const status = yield* SessionStatus.Service
         yield* setRecoveryStatus(sessionID, "coordination_degraded")
-        yield* Effect.promise(() => persistCoordinationRecoveryReceipt(receipt))
+        const recovery = yield* CoordinationRecovery
+        const plan = yield* recovery.planRecovery()
+        if (plan.receipt) {
+          yield* recovery.persistRecoveryReceipt(plan.receipt)
+        }
         expect(yield* status.get(sessionID)).toEqual({ type: "coordination_degraded" })
-      }).pipe(provideInstance(dirTmp.path), Effect.scoped, Effect.provide(runtime)),
+      }).pipe(provideInstance(dirTmp.path), Effect.scoped, Effect.provide(runtime), Effect.provide(recoveryLayer)),
     )
 
     await disposeAllInstances()
@@ -290,7 +278,7 @@ test.skip("drops in-memory session state on teardown and keeps durable recovery 
             db
               .select()
               .from(CoordinationRecoveryTable)
-              .where(eq(CoordinationRecoveryTable.id, receipt.id))
+              .where(eq(CoordinationRecoveryTable.id, "current"))
               .execute()
               .then((rows: any[]) => rows[0]),
           ),
