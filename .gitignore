@@ -19,3 +19,4 @@ settings.json
 
 # Local cache 
 cache/
+node_modules
