@@ -38,7 +38,7 @@ const mockAgentLayer = Layer.mock(Agent.Service, {
       name: "build",
       permission: [],
     } as any),
-  list: () => Effect.succeed([]),
+  list: () => Effect.succeed([]), normalizeMessages: (msgs) => msgs,
   defaultInfo: () => Effect.succeed({ name: "build", permission: [] } as any),
   defaultAgent: () => Effect.succeed("build"),
   generate: () =>
