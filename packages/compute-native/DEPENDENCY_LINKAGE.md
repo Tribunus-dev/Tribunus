@@ -52,7 +52,7 @@ Builds and tests the `mlx-c` layer independently.
 **Verification:**
 ```bash
 mkdir -p /tmp/mlx-c-build
-cmake -S packages/mlx-rs-fork/mlx-sys/src/mlx-c -B /tmp/mlx-c-build -DMLX_BUILD_METAL=OFF
+cmake -S packages/mlx-rs-fork/mlx-sys/src/mlx-c -B /tmp/mlx-c-build -DMLX_BUILD_METAL=OFF -DMLX_C_BUILD_EXAMPLES=OFF
 cmake --build /tmp/mlx-c-build
 ```
 
