@@ -1,0 +1,13 @@
+--- packages/runtime/src/tool/registry.ts
++++ packages/runtime/src/tool/registry.ts
+@@ -797,8 +797,8 @@
+     // describeTool dispatches to the correct description generator for a given tool ID and agent.
+     // For `task` and `skill`, it delegates to the existing dynamic list builders.
+     // For tools that export `modeDescriptions`, it looks up the agent-name key in the Map
+-    // that was captured during dynamic import (see the mod.modeDescriptions guard above).
+-    // Phase 1 will wire `DynamicDescription` (tool.ts:15) — a function `(agent) => Effect<string>`
+-    // that tools can export instead of a static map for fully dynamic context adaptation.
++    // that was captured during dynamic import (see the mod.modeDescriptions guard above).
+     const describeTool = Effect.fn("ToolRegistry.describeTool")(function* (toolId: string, agent: Agent.Info) {
+       if (toolId === TaskTool.id) return yield* describeTask(agent)
+       if (toolId === SkillTool.id) return yield* describeSkill(agent)

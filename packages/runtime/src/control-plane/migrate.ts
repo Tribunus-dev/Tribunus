@@ -8,6 +8,13 @@
  * Usage: bun run packages/opencode/src/control-plane/migrate.ts [--dry-run]
  */
 import { Effect, Layer, Context } from "effect"
+import { provideInstanceEffect } from "@/project/instance-context"
+import { InstanceLayer } from "@/effect/instance-context"
+import { CrossSpawnSpawner } from "@tribunus/core/spawner"
+import { NodeFileSystem } from "@effect/platform-node"
+import { Env } from "@/env"
+import { Config } from "@/config/config"
+import { DuckDBConfig } from "@/effect/config-service"
 import { DatabaseAdapter } from "@/storage/adapter"
 import { DataMigrationTable } from "@/data-migration.pg.sql"
 import {
@@ -311,9 +318,7 @@ if (import.meta.main) {
   )
   console.log("")
 
-  // TODO: Wire DatabaseAdapter layer and run migration
-  console.log("Migration tool scaffolded. Wire DatabaseAdapter to run.")
-  console.log("Entity directories configured:")
+    console.log("Entity directories configured:")
   for (const [type, dir] of Object.entries(ENTITY_DIRS)) {
     const exists = fs.existsSync(dir)
     const count = exists
@@ -321,4 +326,23 @@ if (import.meta.main) {
       : 0
     console.log(`  ${type}: ${dir} (${count} files) ${exists ? "" : "[MISSING]"}`)
   }
+
+  console.log("\nStarting migration...")
+
+  const program = Effect.gen(function* () {
+    const adapter = yield* DatabaseAdapter.Service
+    const report = yield* migrateAll(adapter, dryRun)
+
+    console.log(`\nMigration completed in ${report.duration_ms}ms`)
+    for (const progress of report.entities) {
+      console.log(`  ${progress.entity_type}: ${progress.migrated} migrated, ${progress.skipped} skipped, ${progress.failed} failed`)
+    }
+  })
+
+  const runnable = program.pipe(
+    Effect.provide(DatabaseAdapter.defaultLayer),
+    Effect.provide(InstanceLayer.layer),
+    Effect.provide(Config.defaultLayer)
+  )
+  Effect.runPromise(runnable).catch(console.error)
 }

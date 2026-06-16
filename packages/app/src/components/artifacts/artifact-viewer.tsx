@@ -1,8 +1,8 @@
 import { Match, Switch, Show } from "solid-js"
 import { type Artifact } from "@/context/artifact"
-import { Spinner } from "@opencode-ai/ui/spinner"
+import { Spinner } from "@tribunus/ui/spinner"
 
-import { Tag } from "@opencode-ai/ui/tag"
+import { Tag } from "@tribunus/ui/tag"
 import {
   formatArtifactRuntimeKind,
   formatWorkspaceMode,

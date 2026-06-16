@@ -1,0 +1,37 @@
+--- packages/runtime/src/coordination/recovery.ts
++++ packages/runtime/src/coordination/recovery.ts
+@@ -28,6 +28,7 @@
+ import type { SessionID } from "@/session/schema"
+ import { DatabaseAdapter } from "@/storage/adapter"
+ import { WorkQueueDurableStoreService } from "./durable-store"
++import { ValkeyRedis } from "./valkey-redis"
+
+ // ── Types ─────────────────────────────────────────────────────────────
+
+@@ -669,7 +670,7 @@
+   CoordinationRecovery,
+   Effect.gen(function* () {
+     const db: any = yield* DatabaseAdapter.Service
+-    const redis = yield* getValkeyRedis()
++    const { client: redis } = yield* ValkeyRedis
+     const store = yield* WorkQueueDurableStoreService
+     return new CoordinationRecovery(db, redis, store)
+   })
+@@ -719,16 +720,3 @@
+     Effect.flatMap((svc) => svc.set(sessionID, { type: state })),
+   )
+ }
+-
+-// ── Helper to get Valkey Redis ────────────────────────────────────────
+-
+-function getValkeyRedis(): Effect.Effect<Redis> {
+-  return Effect.promise(async () => {
+-    const { createValkeyFabric } = await import("./valkey-fabric")
+-    const fabric = await createValkeyFabric("redis://127.0.0.1:6379")
+-    const redis = (fabric as unknown as { redis: Redis }).redis
+-    if (!redis) {
+-      throw new Error("Valkey Redis not configured")
+-    }
+-    return redis
+-  })
+-}

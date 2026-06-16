@@ -797,8 +797,6 @@ export const layer = Layer.effect(
     // For `task` and `skill`, it delegates to the existing dynamic list builders.
     // For tools that export `modeDescriptions`, it looks up the agent-name key in the Map
     // that was captured during dynamic import (see the mod.modeDescriptions guard above).
-    // Phase 1 will wire `DynamicDescription` (tool.ts:15) — a function `(agent) => Effect<string>`
-    // that tools can export instead of a static map for fully dynamic context adaptation.
     const describeTool = Effect.fn("ToolRegistry.describeTool")(function* (toolId: string, agent: Agent.Info) {
       if (toolId === TaskTool.id) return yield* describeTask(agent)
       if (toolId === SkillTool.id) return yield* describeSkill(agent)

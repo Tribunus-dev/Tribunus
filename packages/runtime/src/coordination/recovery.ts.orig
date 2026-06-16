@@ -1,14 +1,14 @@
 /**
  * Coordination Recovery
- * 
+ *
  * Recovery protocols for the Valkey Stream-Backed Coordination Kernel.
- * 
+ *
  * Doctrine:
  * - PGlite is the authority
  * - Valkey is reconstructable coordination state
  * - Recovery starts from PGlite, not from Valkey
  * - Rebuild must be idempotent
- * 
+ *
  * The recovery module:
  * 1. Reconciles PGlite authoritative facts with Valkey pending state
  * 2. Rebuilds Valkey coordination state from PGlite after wipe
@@ -17,7 +17,6 @@
 
 import { Effect, Context, Layer } from "effect"
 import type { Redis } from "ioredis"
-import { ValkeyRedis } from "./valkey-redis"
 import { ValkeyStreams } from "./stream-primitives"
 import { ValkeySortedSets } from "./sorted-set-primitives"
 import { DatabaseAdapter } from "@/storage/adapter"
@@ -125,7 +124,7 @@ export interface RebuildReceipt {
 
 /**
  * CoordinationRecovery provides recovery protocols for the coordination kernel.
- * 
+ *
  * This service:
  * - Reconciles PGlite facts with Valkey pending state
  * - Rebuilds Valkey state from PGlite after wipe
@@ -150,12 +149,12 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
 
   /**
    * Plan recovery by inspecting PGlite and Valkey state.
-   * 
+   *
    * This determines what recovery actions are needed:
    * - Re-enqueue non-terminal work that's missing from Valkey
    * - Restore sorted set schedules for delayed work
    * - Skip terminal work
-   * 
+   *
    * @returns Recovery plan
    */
   async planRecovery(): Promise<RecoveryPlan> {
@@ -176,10 +175,10 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
     // Check stream and group exist
     const streams = new ValkeyStreams(this.redis, this.config.streamName)
     const sortedSets = new ValkeySortedSets(this.redis)
-    
+
     const streamExists = await streams.streamExists()
     const groupExists = await streams.getGroupInfo(this.config.consumerGroup) !== null
-    
+
     if (!streamExists || !groupExists) {
       // Stream or group missing - need rebuild
       return {
@@ -219,13 +218,13 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
 
   /**
    * Execute recovery plan.
-   * 
+   *
    * This:
    * 1. Ensures stream and consumer group exist
    * 2. Re-enqueues non-terminal work from PGlite
    * 3. Restores sorted set schedules
    * 4. Records recovery receipt
-   * 
+   *
    * @param plan - Recovery plan to execute
    * @returns Recovery receipt
    */
@@ -234,10 +233,10 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
     const now = Date.now()
     const streams = new ValkeyStreams(this.redis, this.config.streamName)
     const sortedSets = new ValkeySortedSets(this.redis)
-    
+
     // Ensure stream and group exist
     await streams.ensureGroup(this.config.consumerGroup)
-    
+
     // Re-enqueue non-terminal work
     for (const workId of plan.workToReEnqueue) {
       try {
@@ -257,7 +256,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
         console.error("Failed to re-enqueue work:", workId, error)
       }
     }
-    
+
     for (const workId of plan.workToReschedule) {
       try {
         // Get work details from PGlite for schedule context
@@ -273,7 +272,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
         console.error("Failed to reschedule work:", workId, error)
       }
     }
-    
+
     // Record recovery receipt
     const receipt: RecoveryReceipt = {
       id: receiptId,
@@ -284,10 +283,10 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
       outcome: "success",
       reason: `rebuilt ${plan.workToReEnqueue.length} work items`,
     }
-    
+
     // Persist receipt to PGlite
     await this.persistRecoveryReceipt(receipt)
-    
+
     return receipt
   }
 
@@ -303,32 +302,32 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
 
   /**
    * Reconcile pending entries against PGlite.
-   * 
+   *
    * For each pending entry, check if the work is terminal in PGlite.
    * If terminal, safely acknowledge the entry.
    * If non-terminal, leave it pending for reclaim.
-   * 
+   *
    * @returns Number of entries reconciled
    */
   async reconcilePendingEntries(): Promise<number> {
     const streams = new ValkeyStreams(this.redis, this.config.streamName)
     const pending = await streams.getPendingEntries(this.config.consumerGroup)
-    
+
     let reconciled = 0
-    
+
     for (const entry of pending) {
       // Parse work ID from entry
       // In real implementation, this would be in the entry values
       const workId = entry.id // Simplified for now
-      
+
       // Check if work is terminal in PGlite
       const isTerminal = await this.isWorkTerminal(workId)
-      
+
       if (isTerminal) {
         // Work is terminal - safely ack
         await streams.ack(this.config.consumerGroup, [entry.id])
         reconciled++
-        
+
         // Record reconciliation receipt
         await this.persistRecoveryReceipt({
           id: this.generateReceiptId(),
@@ -344,7 +343,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
         })
       }
     }
-    
+
     return reconciled
   }
 
@@ -359,7 +358,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
 
   /**
    * Rebuild Valkey coordination state from PGlite.
-   * 
+   *
    * This is called on startup or after detected Valkey wipe.
    * It:
    * 1. Ensures required streams and consumer groups exist
@@ -367,7 +366,7 @@ export class CoordinationRecovery extends Context.Service<CoordinationRecovery, 
    * 3. Re-enqueues work that should run immediately
    * 4. Restores sorted-set schedules for delayed work
    * 5. Skips terminal work
-   * 
+   *
    * The rebuild process must be idempotent.
    */
   async rebuildFromPGlite(): Promise<RebuildReceipt> {
@@ -676,31 +675,34 @@ export const recoveryLayer = Layer.effect(
   })
 )
 
+// ── Stubs ────────────────────────────────────────────────────────────
+// TODO: These will be implemented when the recovery-state repository is complete.
+// For now, provide compile-time stubs that throw at runtime.
 
 /**
  * Plan coordination recovery.
  *
- * Delegates to CoordinationRecovery service for state inspection and plan formulation.
+ * Pure planner — inspects session state and returns a recovery plan.
+ * Not yet implemented; use CoordinationRecovery.planRecovery() instead.
  */
-export function planCoordinationRecovery(): Effect.Effect<RecoveryPlan> {
-  return Effect.gen(function* () {
-    const recovery = yield* CoordinationRecovery
-    return yield* Effect.promise(() => recovery.planRecovery())
-  })
+export function planCoordinationRecovery(...args: unknown[]): { state: string; finalState?: string; receipt?: { id: string } } {
+  throw new Error(
+    "planCoordinationRecovery not yet implemented. Use CoordinationRecovery.planRecovery() instead.",
+  )
 }
 
 /**
  * Persist a coordination recovery receipt.
  *
- * Delegates to CoordinationRecovery service for durable persistence.
+ * Writes the receipt to the durable store.
+ * Not yet implemented; use CoordinationRecovery.persistRecoveryReceipt() instead.
  */
-export function persistCoordinationRecoveryReceipt(
-  receipt: RecoveryReceipt
-): Effect.Effect<void> {
-  return Effect.gen(function* () {
-    const recovery = yield* CoordinationRecovery
-    yield* Effect.promise(() => recovery.persistRecoveryReceipt(receipt))
-  })
+export async function persistCoordinationRecoveryReceipt(
+  ...args: unknown[]
+): Promise<void> {
+  throw new Error(
+    "persistCoordinationRecoveryReceipt not yet implemented.",
+  )
 }
 
 type RecoveryStatus =
@@ -716,4 +718,3 @@ export function setRecoveryStatus(sessionID: SessionID, state: RecoveryStatus): 
     Effect.flatMap((svc) => svc.set(sessionID, { type: state })),
   )
 }
-

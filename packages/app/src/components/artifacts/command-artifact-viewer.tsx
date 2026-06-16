@@ -1,6 +1,6 @@
 import { Show } from "solid-js"
 import type { Artifact } from "@/context/artifact"
-import { Tag } from "@opencode-ai/ui/tag"
+import { Tag } from "@tribunus/ui/tag"
 
 export interface CommandArtifactViewerProps {
   artifact: Artifact

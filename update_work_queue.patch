@@ -1,0 +1,36 @@
+--- packages/runtime/src/coordination/work-queue.ts
++++ packages/runtime/src/coordination/work-queue.ts
+@@ -23,6 +23,7 @@
+ import type { SessionID } from "@/session/schema"
+ import type { ProjectID } from "@/project/schema"
+ import { WorkQueueDurableStoreService } from "./durable-store"
++import { ValkeyRedis } from "./valkey-redis"
+
+ // ── Types ─────────────────────────────────────────────────────────────
+
+@@ -686,7 +687,7 @@
+ export const workQueueLayer = Layer.effect(
+   CoordinationWorkQueue,
+   Effect.gen(function* () {
+-    const redis = yield* getValkeyRedis()
++    const { client: redis } = yield* ValkeyRedis
+     const store = yield* WorkQueueDurableStoreService
+     const streams = new ValkeyStreams(redis, DEFAULT_CONFIG.streamName)
+     const consumerId = CoordinationWorkQueue.generateConsumerId(DEFAULT_CONFIG.consumerPrefix)
+@@ -698,16 +699,3 @@
+   })
+ )
+
+-// ── Helper to get Valkey Redis ────────────────────────────────────────
+-
+-/**
+- * Get the Valkey Redis client.
+- * This is a placeholder - in production, this would come from the coordination fabric.
+- */
+-function getValkeyRedis(): Effect.Effect<Redis> {
+-  // TODO: Wire this up to the actual Valkey fabric
+-  // For now, we return a dummy that will fail at runtime
+-  // This is just to make the types work
+-  return Effect.die(new Error("Valkey Redis not configured - implement getValkeyRedis()"))
+-}
+-

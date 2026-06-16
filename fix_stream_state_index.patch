@@ -1,0 +1,10 @@
+--- packages/runtime/src/coordination/work-queue.pg.sql.ts
++++ packages/runtime/src/coordination/work-queue.pg.sql.ts
+@@ -385,6 +385,8 @@
+   (table) => [
+     primaryKey({ columns: [table.stream_name, table.consumer_group] }),
+     index("coordination_stream_state_stream_idx").on(table.stream_name),
++    index("coordination_stream_state_last_entry_id_idx").on(table.last_entry_id),
++    index("coordination_stream_state_last_processed_entry_id_idx").on(table.last_processed_entry_id),
+   ]
+ )

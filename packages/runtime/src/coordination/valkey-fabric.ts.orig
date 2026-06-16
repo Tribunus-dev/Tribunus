@@ -92,12 +92,9 @@ export async function createValkeyFabric(url: string): Promise<CoordinationFabri
         if (!err.message.includes("BUSYGROUP")) throw err
       }
 
-      // We should use a unique consumer name per instance, or just a generic one for simple queue pops if no complex scaling is used yet.
-      const consumerName = `consumer-${Math.random().toString(36).substring(2, 8)}`
-
       // XREADGROUP returns an array like: [ [ 'stream_name', [ [ 'entry_id', [ 'key', 'value' ] ] ] ] ]
       const result = await redis.xreadgroup(
-        "GROUP", "workers", consumerName,
+        "GROUP", "workers", "consumer",
         "COUNT", 1,
         "STREAMS", `queue_stream:${queue}`, ">"
       ) as any
@@ -161,9 +158,11 @@ import { Layer, Effect } from "effect"
 import { ValkeyRedis } from "./valkey-redis"
 
 export function createValkeyLayer(url: string) {
-  return Layer.effect(
+  return Layer.scoped(
     ValkeyRedis,
-    Effect.sync(() => new Redis(url, { lazyConnect: false, maxRetriesPerRequest: 3 }))
-      .pipe(Effect.map((client) => ValkeyRedis.of({ client })))
+    Effect.acquireRelease(
+      Effect.sync(() => new Redis(url, { lazyConnect: false, maxRetriesPerRequest: 3 })),
+      (client) => Effect.promise(() => client.quit())
+    ).pipe(Effect.map((client) => ValkeyRedis.of({ client })))
   )
 }

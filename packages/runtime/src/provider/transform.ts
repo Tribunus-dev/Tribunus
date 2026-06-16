@@ -59,6 +59,7 @@ function sdkKey(npm: string): string | undefined {
   return undefined
 }
 
+
 // TODO: fix this stupid inefficient dogshit function
 function normalizeMessages(
   msgs: ModelMessage[],
@@ -80,266 +81,125 @@ function normalizeMessages(
     return content
   }
 
-  msgs = msgs.map((msg) => {
-    switch (msg.role) {
-      case "tool":
-        if (!Array.isArray(msg.content)) return msg
-        msg.content = msg.content.map((content) => {
-          if (content.type === "tool-result") {
-            return sanitizeToolResultOutput(content)
-          }
-          return content
-        })
-        return msg
+  const isAnthropic = model.api.npm === "@ai-sdk/anthropic" || model.api.npm === "@ai-sdk/google-vertex/anthropic"
+  const isBedrock = model.api.npm === "@ai-sdk/amazon-bedrock"
+  const isClaude = model.api.id.includes("claude")
+  const isMistral = model.providerID === "mistral" || model.api.id.toLowerCase().includes("mistral") || model.api.id.toLocaleLowerCase().includes("devstral")
+  const isDeepseek = model.api.id.toLowerCase().includes("deepseek")
 
-      case "system":
-        msg.content = sanitizeSurrogates(msg.content)
-        return msg
-
-      case "user":
-        if (typeof msg.content === "string") {
-          msg.content = sanitizeSurrogates(msg.content)
-        } else {
-          msg.content = msg.content.map((content) => {
-            if (content.type === "text") {
-              content.text = sanitizeSurrogates(content.text)
-            }
-            return content
-          })
-        }
-        return msg
-
-      case "assistant":
-        if (typeof msg.content === "string") {
-          msg.content = sanitizeSurrogates(msg.content)
-        } else {
-          msg.content = msg.content.map((content) => {
-            if (content.type === "text" || content.type === "reasoning") {
-              content.text = sanitizeSurrogates(content.text)
-            }
-            if (content.type === "tool-result") {
-              return sanitizeToolResultOutput(content)
-            }
-            return content
-          })
-        }
-        return msg
-    }
-  })
-
-  // Anthropic rejects messages with empty content - filter out empty string messages
-  // and remove empty text/reasoning parts from array content
-  if (model.api.npm === "@ai-sdk/anthropic") {
-    msgs = msgs
-      .map((msg) => {
-        if (typeof msg.content === "string") {
-          if (msg.content === "") return undefined
-          return msg
-        }
-        if (!Array.isArray(msg.content)) return msg
-        const filtered = msg.content.filter((part) => {
-          if (part.type === "text") {
-            return part.text !== ""
-          }
-          if (part.type === "reasoning") {
-            return (
-              part.text.trim().length > 0 ||
-              part.providerOptions?.anthropic?.signature != null ||
-              part.providerOptions?.anthropic?.redactedData != null
-            )
-          }
-          return true
-        })
-        if (filtered.length === 0) return undefined
-        return { ...msg, content: filtered }
-      })
-      .filter((msg): msg is ModelMessage => msg !== undefined && msg.content !== "")
-  }
-
-  // Bedrock specific transforms
-  if (model.api.npm === "@ai-sdk/amazon-bedrock") {
-    msgs = msgs
-      .map((msg) => {
-        if (typeof msg.content === "string") {
-          if (msg.content === "") return undefined
-          return msg
-        }
-        if (!Array.isArray(msg.content)) return msg
-        const filtered = msg.content.filter((part) => {
-          if (part.type === "text") {
-            return part.text !== ""
-          }
-          if (part.type === "reasoning") {
-            return (
-              part.text.trim().length > 0 ||
-              part.providerOptions?.bedrock?.signature != null ||
-              part.providerOptions?.bedrock?.redactedData != null
-            )
-          }
-          return true
-        })
-        if (filtered.length === 0) return undefined
-        return { ...msg, content: filtered }
-      })
-      .filter((msg): msg is ModelMessage => msg !== undefined && msg.content !== "")
-  }
-
-  if (model.api.id.includes("claude")) {
-    const scrub = (id: string) => id.replace(/[^a-zA-Z0-9_-]/g, "_")
-    msgs = msgs.map((msg) => {
-      if (msg.role === "assistant" && Array.isArray(msg.content)) {
-        return {
-          ...msg,
-          content: msg.content.map((part) => {
-            if (part.type === "tool-call" || part.type === "tool-result") {
-              return { ...part, toolCallId: scrub(part.toolCallId) }
-            }
-            return part
-          }),
-        }
-      }
-      if (msg.role === "tool" && Array.isArray(msg.content)) {
-        return {
-          ...msg,
-          content: msg.content.map((part) => {
-            if (part.type === "tool-result") {
-              return { ...part, toolCallId: scrub(part.toolCallId) }
-            }
-            return part
-          }),
-        }
-      }
-      return msg
-    })
-  }
-  if (["@ai-sdk/anthropic", "@ai-sdk/google-vertex/anthropic"].includes(model.api.npm)) {
-    // Anthropic rejects assistant turns where tool_use blocks are followed by non-tool
-    // content, e.g. [tool_use, tool_use, text], with:
-    // `tool_use` ids were found without `tool_result` blocks immediately after...
-    //
-    // Reorder that invalid shape into [text] + [tool_use, tool_use]. Consecutive
-    // assistant messages are later merged by the provider/SDK, so preserving the
-    // original [tool_use...] then [text] order still produces the invalid payload.
-    //
-    // The root cause appears to be somewhere upstream where the stream is originally
-    // processed. We were unable to locate an exact narrower reproduction elsewhere,
-    // so we keep this transform in place for the time being.
-    msgs = msgs.flatMap((msg) => {
-      if (msg.role !== "assistant" || !Array.isArray(msg.content)) return [msg]
-
-      const parts = msg.content
-      const first = parts.findIndex((part) => part.type === "tool-call")
-      if (first === -1) return [msg]
-      if (!parts.slice(first).some((part) => part.type !== "tool-call")) return [msg]
-      return [
-        { ...msg, content: parts.filter((part) => part.type !== "tool-call") },
-        { ...msg, content: parts.filter((part) => part.type === "tool-call") },
-      ]
-    })
-  }
-  if (
-    model.providerID === "mistral" ||
-    model.api.id.toLowerCase().includes("mistral") ||
-    model.api.id.toLocaleLowerCase().includes("devstral")
-  ) {
-    const scrub = (id: string) => {
-      return id
-        .replace(/[^a-zA-Z0-9]/g, "") // Remove non-alphanumeric characters
-        .substring(0, 9) // Take first 9 characters
-        .padEnd(9, "0") // Pad with zeros if less than 9 characters
-    }
-    const result: ModelMessage[] = []
-    for (let i = 0; i < msgs.length; i++) {
-      const msg = msgs[i]
-      const nextMsg = msgs[i + 1]
-
-      if (msg.role === "assistant" && Array.isArray(msg.content)) {
-        msg.content = msg.content.map((part) => {
-          if (part.type === "tool-call" || part.type === "tool-result") {
-            return { ...part, toolCallId: scrub(part.toolCallId) }
-          }
-          return part
-        })
-      }
-      if (msg.role === "tool" && Array.isArray(msg.content)) {
-        msg.content = msg.content.map((part) => {
-          if (part.type === "tool-result") {
-            return { ...part, toolCallId: scrub(part.toolCallId) }
-          }
-          return part
-        })
-      }
-      result.push(msg)
-
-      // Fix message sequence: tool messages cannot be followed by user messages
-      if (msg.role === "tool" && nextMsg?.role === "user") {
-        result.push({
-          role: "assistant",
-          content: [
-            {
-              type: "text",
-              text: "Done.",
-            },
-          ],
-        })
-      }
-    }
-    return result
-  }
-
-  // Deepseek requires all assistant messages to have reasoning on them
-  if (model.api.id.toLowerCase().includes("deepseek")) {
-    msgs = msgs.map((msg) => {
-      if (msg.role !== "assistant") return msg
-      if (Array.isArray(msg.content)) {
-        if (msg.content.some((part) => part.type === "reasoning")) return msg
-        return { ...msg, content: [...msg.content, { type: "reasoning", text: "" }] }
-      }
-      return {
-        ...msg,
-        content: [
-          ...(msg.content ? [{ type: "text" as const, text: msg.content }] : []),
-          { type: "reasoning" as const, text: "" },
-        ],
-      }
-    })
-  }
-
-  if (
+  const useInterleavedField =
     typeof model.capabilities.interleaved === "object" &&
     model.capabilities.interleaved.field &&
     model.api.npm !== "@openrouter/ai-sdk-provider"
-  ) {
-    const field = model.capabilities.interleaved.field
-    return msgs.map((msg) => {
-      if (msg.role === "assistant" && Array.isArray(msg.content)) {
-        const reasoningParts = msg.content.filter((part) => part.type === "reasoning")
-        const reasoningText = reasoningParts.map((part) => part.text).join("")
+  const interleavedField = useInterleavedField ? (model.capabilities.interleaved as any).field : undefined
 
-        // Filter out reasoning parts from content
-        const filteredContent = msg.content.filter((part: any) => part.type !== "reasoning")
+  const result: ModelMessage[] = []
 
-        // Include reasoning_content | reasoning_details directly on the message for all assistant messages.
-        // Always set the field even when empty — some providers (e.g. DeepSeek) may return empty
-        // reasoning_content which still needs to be sent back in subsequent requests.
-        return {
-          ...msg,
-          content: filteredContent,
-          providerOptions: {
-            ...msg.providerOptions,
-            openaiCompatible: {
-              ...msg.providerOptions?.openaiCompatible,
-              [field]: reasoningText,
-            },
-          },
+  const scrubMistral = (id: string) => id.replace(/[^a-zA-Z0-9]/g, "").substring(0, 9).padEnd(9, "0")
+  const scrubClaude = (id: string) => id.replace(/[^a-zA-Z0-9_-]/g, "_")
+
+  for (let i = 0; i < msgs.length; i++) {
+    let msg = { ...msgs[i] }
+    const nextMsg = msgs[i + 1]
+
+    // 1. Base sanitization & Scrubbing
+    if (typeof msg.content === "string") {
+      msg.content = sanitizeSurrogates(msg.content)
+    } else if (Array.isArray(msg.content)) {
+      msg.content = msg.content.map((part) => {
+        let newPart = { ...part }
+        if (newPart.type === "text" || newPart.type === "reasoning") {
+          (newPart as any).text = sanitizeSurrogates((newPart as any).text)
         }
-      }
+        if (newPart.type === "tool-result") {
+          newPart = sanitizeToolResultOutput(newPart as ToolResultPart)
+        }
 
-      return msg
-    })
+        if (isClaude && (newPart.type === "tool-call" || newPart.type === "tool-result")) {
+          (newPart as any).toolCallId = scrubClaude((newPart as any).toolCallId)
+        }
+
+        if (isMistral && (newPart.type === "tool-call" || newPart.type === "tool-result")) {
+          (newPart as any).toolCallId = scrubMistral((newPart as any).toolCallId)
+        }
+
+        return newPart
+      })
+    }
+
+    // 2. Anthropic/Bedrock empty content filtering
+    if (isAnthropic || isBedrock) {
+      if (typeof msg.content === "string") {
+        if (msg.content === "") continue
+      } else if (Array.isArray(msg.content)) {
+        const filtered = msg.content.filter((part) => {
+          if (part.type === "text") return part.text !== ""
+          if (part.type === "reasoning") {
+            const hasText = part.text.trim().length > 0
+            const hasAnthropicSignature = isAnthropic && (part.providerOptions?.anthropic?.signature != null || part.providerOptions?.anthropic?.redactedData != null)
+            const hasBedrockSignature = isBedrock && (part.providerOptions?.bedrock?.signature != null || part.providerOptions?.bedrock?.redactedData != null)
+            return hasText || hasAnthropicSignature || hasBedrockSignature
+          }
+          return true
+        })
+        if (filtered.length === 0) continue
+        msg.content = filtered
+      }
+    }
+
+    // 3. Deepseek reasoning filler
+    if (isDeepseek && msg.role === "assistant") {
+      if (Array.isArray(msg.content)) {
+        if (!msg.content.some((part) => part.type === "reasoning")) {
+          msg.content = [...msg.content, { type: "reasoning", text: "" } as any]
+        }
+      } else {
+        msg.content = [
+          ...(msg.content ? [{ type: "text", text: msg.content } as any] : []),
+          { type: "reasoning", text: "" } as any,
+        ]
+      }
+    }
+
+    // 4. Interleaved Reasoning Field Extraction
+    if (useInterleavedField && msg.role === "assistant" && Array.isArray(msg.content)) {
+      const reasoningParts = msg.content.filter((part) => part.type === "reasoning")
+      const reasoningText = reasoningParts.map((part) => part.text).join("")
+      const filteredContent = msg.content.filter((part) => part.type !== "reasoning")
+
+      msg.content = filteredContent
+      msg.providerOptions = {
+        ...msg.providerOptions,
+        openaiCompatible: {
+          ...msg.providerOptions?.openaiCompatible,
+          [interleavedField]: reasoningText,
+        },
+      }
+    }
+
+    // 5. Anthropic tool-use reordering
+    if (isAnthropic && msg.role === "assistant" && Array.isArray(msg.content)) {
+      const parts = msg.content
+      const first = parts.findIndex((part) => part.type === "tool-call")
+      if (first !== -1 && parts.slice(first).some((part) => part.type !== "tool-call")) {
+        result.push({ ...msg, content: parts.filter((part) => part.type !== "tool-call") })
+        result.push({ ...msg, content: parts.filter((part) => part.type === "tool-call") })
+        continue
+      }
+    }
+
+    result.push(msg)
+
+    // 6. Mistral Sequence Fix
+    if (isMistral && msg.role === "tool" && nextMsg?.role === "user") {
+      result.push({
+        role: "assistant",
+        content: [{ type: "text", text: "Done." }],
+      })
+    }
   }
 
-  return msgs
+  return result
 }
 
 function applyCaching(msgs: ModelMessage[], model: Provider.Model): ModelMessage[] {

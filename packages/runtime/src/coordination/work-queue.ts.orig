@@ -1,18 +1,18 @@
 /**
  * Coordination Work Queue
- * 
+ *
  * HIGH-LEVEL API for stream-backed work coordination.
- * 
+ *
  * This is the governed work queue abstraction that enforces the critical invariant:
  * XACK must happen AFTER the authoritative PGlite write, NEVER before.
- * 
+ *
  * Doctrine:
  * - Valkey decides who is currently responsible for work
  * - PGlite records what actually happened
  * - Valkey may be wiped and rebuilt
  * - PGlite may NOT be treated as a cache
  * - No task is considered complete because Valkey says so
- * 
+ *
  * Runtime code should use this abstraction, NOT raw XREADGROUP/XACK calls.
  */
 
@@ -23,7 +23,6 @@ import { DatabaseAdapter } from "@/storage/adapter"
 import type { SessionID } from "@/session/schema"
 import type { ProjectID } from "@/project/schema"
 import { WorkQueueDurableStoreService } from "./durable-store"
-import { ValkeyRedis } from "./valkey-redis"
 
 // ── Configuration ────────────────────────────────────────────────────
 
@@ -147,11 +146,11 @@ export interface CompletionReceipt {
 
 /**
  * CoordinationWorkQueue provides the high-level API for stream-backed work.
- * 
+ *
  * CRITICAL: Every ack path requires either:
  * 1. A durable PGlite write FIRST, OR
  * 2. Verification of existing durable terminal fact FIRST
- * 
+ *
  * No naked ack(entryId) is available to ordinary runtime code.
  */
 export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue, CoordinationWorkQueue>()(
@@ -181,10 +180,10 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
   /**
    * Publish work to the queue.
-   * 
+   *
    * Creates a stream entry with the work envelope.
    * The work envelope is content-light - it carries references, not raw data.
-   * 
+   *
    * @param envelope - Work envelope with durable work ID and metadata
    * @returns The stream entry ID
    */
@@ -211,10 +210,10 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
   /**
    * Read available work from the queue.
-   * 
+   *
    * This blocks until work is available or the block timeout is reached.
    * Valkey assigns entries to this consumer and places them in the pending list.
-   * 
+   *
    * @param options - Read options
    * @returns Array of claimed work items
    */
@@ -261,11 +260,11 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
   /**
    * Record terminal success and acknowledge the stream entry.
-   * 
+   *
    * CRITICAL: This writes to PGlite FIRST, then XACK.
    * If the PGlite write fails, XACK is NOT called.
    * If XACK fails after PGlite success, recovery will handle it.
-   * 
+   *
    * @param workId - Durable work item ID
    * @param entryId - Stream entry ID to acknowledge
    * @param resultRef - Reference to durable result (not the result itself)
@@ -299,11 +298,11 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
   /**
    * Record terminal failure and acknowledge the stream entry.
-   * 
+   *
    * CRITICAL: This writes to PGlite FIRST, then XACK.
    * If the PGlite write fails, XACK is NOT called.
    * If XACK fails after PGlite success, recovery will handle it.
-   * 
+   *
    * @param workId - Durable work item ID
    * @param entryId - Stream entry ID to acknowledge
    * @param errorKind - Classification of the error
@@ -339,12 +338,12 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
   /**
    * Record retryable failure, acknowledge the current entry, and schedule retry.
-   * 
+   *
    * CRITICAL: This writes to PGlite FIRST, then XACK.
    * If the PGlite write fails, XACK is NOT called.
    * If XACK fails after PGlite success, recovery will handle it.
    * The retry is scheduled separately (not in this method).
-   * 
+   *
    * @param workId - Durable work item ID
    * @param entryId - Stream entry ID to acknowledge
    * @param errorKind - Classification of the error
@@ -387,12 +386,12 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
   /**
    * Dead-letter work and acknowledge the stream entry.
-   * 
+   *
    * CRITICAL: This writes to PGlite FIRST, then XACK.
    * If the PGlite write fails, XACK is NOT called.
    * If XACK fails after PGlite success, recovery will handle it.
    * Dead-lettering is a TERMINAL durable state.
-   * 
+   *
    * @param workId - Durable work item ID
    * @param entryId - Stream entry ID to acknowledge
    * @param reason - Why the work was dead-lettered
@@ -571,11 +570,11 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
   /**
    * Reclaim expired pending entries.
-   * 
+   *
    * This claims entries that have been idle longer than the threshold.
    * After claiming, the new worker MUST check PGlite before executing.
    * If the work item is already terminal, the worker should ack and record reconciliation.
-   * 
+   *
    * @param count - Max entries to reclaim
    * @returns Array of reclaimed work claims
    */
@@ -599,12 +598,12 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
   /**
    * Reconcile a pending entry against PGlite.
-   * 
+   *
    * This is called during recovery to handle entries that were delivered
    * but never acknowledged. It checks PGlite for the durable state and:
    * - If terminal: safely ack the entry (no re-execution)
    * - If non-terminal: leave it pending for reclaim
-   * 
+   *
    * @param entryId - Stream entry ID to reconcile
    * @returns Whether the entry was acknowledged
    */
@@ -680,22 +679,34 @@ export class CoordinationWorkQueue extends Context.Service<CoordinationWorkQueue
 
 /**
  * Create a CoordinationWorkQueue layer.
- * 
+ *
  * This layer provides the high-level work queue abstraction backed by
  * Valkey Streams with PGlite authority.
  */
 export const workQueueLayer = Layer.effect(
   CoordinationWorkQueue,
   Effect.gen(function* () {
-    const { client: redis } = yield* ValkeyRedis
+    const redis = yield* getValkeyRedis()
     const store = yield* WorkQueueDurableStoreService
     const streams = new ValkeyStreams(redis, DEFAULT_CONFIG.streamName)
     const consumerId = CoordinationWorkQueue.generateConsumerId(DEFAULT_CONFIG.consumerPrefix)
-    
+
     // Ensure the queue exists
     yield* Effect.promise(() => streams.ensureGroup(DEFAULT_CONFIG.consumerGroup, "$"))
-    
+
     return new CoordinationWorkQueue(streams, redis, DEFAULT_CONFIG, consumerId, store)
   })
-
 )
+
+// ── Helper to get Valkey Redis ────────────────────────────────────────
+
+/**
+ * Get the Valkey Redis client.
+ * This is a placeholder - in production, this would come from the coordination fabric.
+ */
+function getValkeyRedis(): Effect.Effect<Redis> {
+  // TODO: Wire this up to the actual Valkey fabric
+  // For now, we return a dummy that will fail at runtime
+  // This is just to make the types work
+  return Effect.die(new Error("Valkey Redis not configured - implement getValkeyRedis()"))
+}
