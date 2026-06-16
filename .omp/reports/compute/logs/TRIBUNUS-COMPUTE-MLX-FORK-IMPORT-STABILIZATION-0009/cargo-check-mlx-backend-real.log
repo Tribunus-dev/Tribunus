@@ -1,0 +1,639 @@
+   Compiling mlx-sys v0.6.0-tribunus.1 (/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys)
+   Compiling tribunus-compute-core v0.1.0 (/Users/user/Developer/GitHub/Tribunus/packages/compute-native/compute-core)
+error: failed to run custom build command for `mlx-sys v0.6.0-tribunus.1 (/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys)`
+
+Caused by:
+  process didn't exit successfully: `/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-756c088347a20722/build-script-build` (exit status: 101)
+  --- stdout
+  CMAKE_TOOLCHAIN_FILE_aarch64-apple-darwin = None
+  CMAKE_TOOLCHAIN_FILE_aarch64_apple_darwin = None
+  HOST_CMAKE_TOOLCHAIN_FILE = None
+  CMAKE_TOOLCHAIN_FILE = None
+  CMAKE_GENERATOR_aarch64-apple-darwin = None
+  CMAKE_GENERATOR_aarch64_apple_darwin = None
+  HOST_CMAKE_GENERATOR = None
+  CMAKE_GENERATOR = None
+  CMAKE_PREFIX_PATH_aarch64-apple-darwin = None
+  CMAKE_PREFIX_PATH_aarch64_apple_darwin = None
+  HOST_CMAKE_PREFIX_PATH = None
+  CMAKE_PREFIX_PATH = None
+  CMAKE_aarch64-apple-darwin = None
+  CMAKE_aarch64_apple_darwin = None
+  HOST_CMAKE = None
+  CMAKE = None
+  Running with debug output on.
+  -- The CXX compiler identification is AppleClang 21.0.0.21000101
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake
+  -- The C compiler identification is AppleClang 21.0.0.21000101
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake
+  -- Detecting CXX compiler ABI info
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake
+  -- Detecting CXX compiler ABI info - done
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake
+  -- Check for working CXX compiler: /usr/bin/c++ - skipped
+     Called from: [2]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake
+  -- Detecting CXX compile features
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerSupport.cmake
+  -- Detecting CXX compile features - done
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerSupport.cmake
+  -- Detecting C compiler ABI info
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake
+  -- Detecting C compiler ABI info - done
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake
+  -- Check for working C compiler: /usr/bin/cc - skipped
+     Called from: [2]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake
+  -- Detecting C compile features
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerSupport.cmake
+  -- Detecting C compile features - done
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerSupport.cmake
+  -- Building MLX for arm64 processor on Darwin
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+  -- Metal found /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+  -- Building with macOS SDK version 26.5
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+  -- Accelerate found /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+  -- Downloading json
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+  -- Using the multi-header code from /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src/include/
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src/CMakeLists.txt
+  -- Downloading json for JACCL
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/CMakeLists.txt
+  -- Downloading gguflib
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/io/CMakeLists.txt
+  -- {fmt} version: 12.1.0
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src/CMakeLists.txt
+  -- Build type: Debug
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src/CMakeLists.txt
+  -- Performing Test HAS_NULLPTR_WARNING
+     Called from: [4]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src/CMakeLists.txt
+                  [3]	/opt/homebrew/share/cmake/Modules/CheckCXXCompilerFlag.cmake
+                  [2]	/opt/homebrew/share/cmake/Modules/Internal/CheckCompilerFlag.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake
+  -- Performing Test HAS_NULLPTR_WARNING - Success
+     Called from: [4]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src/CMakeLists.txt
+                  [3]	/opt/homebrew/share/cmake/Modules/CheckCXXCompilerFlag.cmake
+                  [2]	/opt/homebrew/share/cmake/Modules/Internal/CheckCompilerFlag.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake
+  -- Configuring done (148.1s)
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-build
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/common
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/common/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/cpu
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/cpu/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/distributed
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/distributed/mpi
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/mpi/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/distributed/ring
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/ring/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/distributed/nccl
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/nccl/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/distributed/jaccl
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/io
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/io/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/kernels
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/kernels/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/gpu
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/gpu/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-build
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src/CMakeLists.txt
+  -- Generating /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/examples
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  -- Generating done (0.1s)
+  -- Build files have been written to: /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build
+  Change Dir: '/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build'
+
+  Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile -j8 install
+  /opt/homebrew/bin/cmake -S/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c -B/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build --check-build-system CMakeFiles/Makefile.cmake 0
+  /opt/homebrew/bin/cmake -E cmake_progress_start /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/CMakeFiles /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build//CMakeFiles/progress.marks
+  /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/Makefile2 all
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/build.make _deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/depend
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/metal/kernels/CMakeFiles/mlx-metallib.dir/build.make _deps/mlx-build/mlx/backend/metal/kernels/CMakeFiles/mlx-metallib.dir/depend
+  /Library/Developer/CommandLineTools/usr/bin/make  -f jaccl/CMakeFiles/jaccl.dir/build.make jaccl/CMakeFiles/jaccl.dir/depend
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/CMakeFiles/mlx_version.dir/build.make _deps/mlx-build/mlx/CMakeFiles/mlx_version.dir/depend
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/cpu/CMakeFiles/cpu_compiled_preamble.dir/build.make _deps/mlx-build/mlx/backend/cpu/CMakeFiles/cpu_compiled_preamble.dir/depend
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/metal/CMakeFiles/utils.dir/build.make _deps/mlx-build/mlx/backend/metal/CMakeFiles/utils.dir/depend
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/metal/CMakeFiles/unary_ops.dir/build.make _deps/mlx-build/mlx/backend/metal/CMakeFiles/unary_ops.dir/depend
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/metal/CMakeFiles/binary_ops.dir/build.make _deps/mlx-build/mlx/backend/metal/CMakeFiles/binary_ops.dir/depend
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build && /opt/homebrew/bin/cmake -E cmake_depends "Unix Makefiles" /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/io /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/io /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/DependInfo.cmake "--color=" gguflib
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build && /opt/homebrew/bin/cmake -E cmake_depends "Unix Makefiles" /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl/CMakeFiles/jaccl.dir/DependInfo.cmake "--color=" jaccl
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build && /opt/homebrew/bin/cmake -E cmake_depends "Unix Makefiles" /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/kernels /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/kernels /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/kernels/CMakeFiles/mlx-metallib.dir/DependInfo.cmake "--color=" mlx-metallib
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build && /opt/homebrew/bin/cmake -E cmake_depends "Unix Makefiles" /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/CMakeFiles/mlx_version.dir/DependInfo.cmake "--color=" mlx_version
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build && /opt/homebrew/bin/cmake -E cmake_depends "Unix Makefiles" /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/cpu /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/cpu /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/cpu/CMakeFiles/cpu_compiled_preamble.dir/DependInfo.cmake "--color=" cpu_compiled_preamble
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build && /opt/homebrew/bin/cmake -E cmake_depends "Unix Makefiles" /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/CMakeFiles/utils.dir/DependInfo.cmake "--color=" utils
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build && /opt/homebrew/bin/cmake -E cmake_depends "Unix Makefiles" /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/CMakeFiles/unary_ops.dir/DependInfo.cmake "--color=" unary_ops
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build && /opt/homebrew/bin/cmake -E cmake_depends "Unix Makefiles" /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/CMakeFiles/binary_ops.dir/DependInfo.cmake "--color=" binary_ops
+  /Library/Developer/CommandLineTools/usr/bin/make  -f jaccl/CMakeFiles/jaccl.dir/build.make jaccl/CMakeFiles/jaccl.dir/build
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/build.make _deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/build
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/metal/kernels/CMakeFiles/mlx-metallib.dir/build.make _deps/mlx-build/mlx/backend/metal/kernels/CMakeFiles/mlx-metallib.dir/build
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/cpu/CMakeFiles/cpu_compiled_preamble.dir/build.make _deps/mlx-build/mlx/backend/cpu/CMakeFiles/cpu_compiled_preamble.dir/build
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/CMakeFiles/mlx_version.dir/build.make _deps/mlx-build/mlx/CMakeFiles/mlx_version.dir/build
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/metal/CMakeFiles/utils.dir/build.make _deps/mlx-build/mlx/backend/metal/CMakeFiles/utils.dir/build
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/metal/CMakeFiles/unary_ops.dir/build.make _deps/mlx-build/mlx/backend/metal/CMakeFiles/unary_ops.dir/build
+  /Library/Developer/CommandLineTools/usr/bin/make  -f _deps/mlx-build/mlx/backend/metal/CMakeFiles/binary_ops.dir/build.make _deps/mlx-build/mlx/backend/metal/CMakeFiles/binary_ops.dir/build
+  [  2%] Building CXX object jaccl/CMakeFiles/jaccl.dir/jaccl/tcp.cpp.o
+  [  2%] Building C object _deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/__/__/__/gguflib-src/fp16.c.o
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl && /usr/bin/c++ -DACCELERATE_NEW_LAPACK -DMLX_USE_ACCELERATE -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src/single_include/nlohmann -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w -g -std=gnu++20 -arch arm64 -fPIC -MD -MT jaccl/CMakeFiles/jaccl.dir/jaccl/tcp.cpp.o -MF CMakeFiles/jaccl.dir/jaccl/tcp.cpp.o.d -o CMakeFiles/jaccl.dir/jaccl/tcp.cpp.o -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/jaccl/tcp.cpp
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/io && /usr/bin/cc -DACCELERATE_NEW_LAPACK -DMLX_USE_ACCELERATE  -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w -g -arch arm64 -fPIC -MD -MT _deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/__/__/__/gguflib-src/fp16.c.o -MF CMakeFiles/gguflib.dir/__/__/__/gguflib-src/fp16.c.o.d -o CMakeFiles/gguflib.dir/__/__/__/gguflib-src/fp16.c.o -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/gguflib-src/fp16.c
+  [  2%] Generating jit/unary_ops.cpp
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal && bash /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/make_compiled_preamble.sh /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/jit /usr/bin/cc /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src unary_ops
+  [  2%] Generating compiled_preamble.cpp
+  [  3%] Building arg_reduce.air
+  [  3%] Generating jit/utils.cpp
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/cpu && bash /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/cpu/make_compiled_preamble.sh /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/cpu/compiled_preamble.cpp /usr/bin/cc /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src TRUE arm64
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/kernels && xcrun -sdk macosx metal -x metal -Wall -Wextra -fno-fast-math -Wno-c++17-extensions -Wno-c++20-extensions -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/kernels/arg_reduce.metal -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src -o arg_reduce.air
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal && bash /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/make_compiled_preamble.sh /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/jit /usr/bin/cc /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src utils
+  [  3%] Building CXX object _deps/mlx-build/mlx/CMakeFiles/mlx_version.dir/version.cpp.o
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx && /usr/bin/c++ -DACCELERATE_NEW_LAPACK -DMLX_STATIC -DMLX_USE_ACCELERATE -DMLX_VERSION=\"0.31.2\" -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w -g -std=gnu++20 -arch arm64 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -MD -MT _deps/mlx-build/mlx/CMakeFiles/mlx_version.dir/version.cpp.o -MF CMakeFiles/mlx_version.dir/version.cpp.o.d -o CMakeFiles/mlx_version.dir/version.cpp.o -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/version.cpp
+  [  3%] Generating jit/binary_ops.cpp
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal && bash /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/make_compiled_preamble.sh /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/backend/metal/jit /usr/bin/cc /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src binary_ops
+  [  3%] Building C object _deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/__/__/__/gguflib-src/gguflib.c.o
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/io && /usr/bin/cc -DACCELERATE_NEW_LAPACK -DMLX_USE_ACCELERATE  -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w -g -arch arm64 -fPIC -MD -MT _deps/mlx-build/mlx/io/CMakeFiles/gguflib.dir/__/__/__/gguflib-src/gguflib.c.o -MF CMakeFiles/gguflib.dir/__/__/__/gguflib-src/gguflib.c.o.d -o CMakeFiles/gguflib.dir/__/__/__/gguflib-src/gguflib.c.o -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/gguflib-src/gguflib.c
+  [  3%] Built target mlx_version
+  [  3%] Building CXX object jaccl/CMakeFiles/jaccl.dir/jaccl/rdma.cpp.o
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl && /usr/bin/c++ -DACCELERATE_NEW_LAPACK -DMLX_USE_ACCELERATE -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src/single_include/nlohmann -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w -g -std=gnu++20 -arch arm64 -fPIC -MD -MT jaccl/CMakeFiles/jaccl.dir/jaccl/rdma.cpp.o -MF CMakeFiles/jaccl.dir/jaccl/rdma.cpp.o.d -o CMakeFiles/jaccl.dir/jaccl/rdma.cpp.o -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/jaccl/rdma.cpp
+  [  4%] Building CXX object jaccl/CMakeFiles/jaccl.dir/jaccl/mesh.cpp.o
+  [  4%] Building CXX object jaccl/CMakeFiles/jaccl.dir/jaccl/ring.cpp.o
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl && /usr/bin/c++ -DACCELERATE_NEW_LAPACK -DMLX_USE_ACCELERATE -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src/single_include/nlohmann -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w -g -std=gnu++20 -arch arm64 -fPIC -MD -MT jaccl/CMakeFiles/jaccl.dir/jaccl/mesh.cpp.o -MF CMakeFiles/jaccl.dir/jaccl/mesh.cpp.o.d -o CMakeFiles/jaccl.dir/jaccl/mesh.cpp.o -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/jaccl/mesh.cpp
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl && /usr/bin/c++ -DACCELERATE_NEW_LAPACK -DMLX_USE_ACCELERATE -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src/single_include/nlohmann -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w -g -std=gnu++20 -arch arm64 -fPIC -MD -MT jaccl/CMakeFiles/jaccl.dir/jaccl/ring.cpp.o -MF CMakeFiles/jaccl.dir/jaccl/ring.cpp.o.d -o CMakeFiles/jaccl.dir/jaccl/ring.cpp.o -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/jaccl/ring.cpp
+  [  5%] Building CXX object jaccl/CMakeFiles/jaccl.dir/jaccl/jaccl.cpp.o
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl && /usr/bin/c++ -DACCELERATE_NEW_LAPACK -DMLX_USE_ACCELERATE -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib -I/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src/single_include/nlohmann -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w -g -std=gnu++20 -arch arm64 -fPIC -MD -MT jaccl/CMakeFiles/jaccl.dir/jaccl/jaccl.cpp.o -MF CMakeFiles/jaccl.dir/jaccl/jaccl.cpp.o.d -o CMakeFiles/jaccl.dir/jaccl/jaccl.cpp.o -c /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/jaccl/jaccl.cpp
+  [  5%] Built target cpu_compiled_preamble
+  [  6%] Linking C static library libgguflib.a
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/io && /opt/homebrew/bin/cmake -P CMakeFiles/gguflib.dir/cmake_clean_target.cmake
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-build/mlx/io && /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/gguflib.dir/link.txt --verbose=1
+  /usr/bin/ar qc libgguflib.a "CMakeFiles/gguflib.dir/__/__/__/gguflib-src/fp16.c.o" "CMakeFiles/gguflib.dir/__/__/__/gguflib-src/gguflib.c.o"
+  /usr/bin/ranlib libgguflib.a
+  [  6%] Built target gguflib
+  [  6%] Linking CXX static library libjaccl.a
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl && /opt/homebrew/bin/cmake -P CMakeFiles/jaccl.dir/cmake_clean_target.cmake
+  cd /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/jaccl && /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/jaccl.dir/link.txt --verbose=1
+  /usr/bin/ar qc libjaccl.a CMakeFiles/jaccl.dir/jaccl/tcp.cpp.o CMakeFiles/jaccl.dir/jaccl/rdma.cpp.o CMakeFiles/jaccl.dir/jaccl/mesh.cpp.o CMakeFiles/jaccl.dir/jaccl/ring.cpp.o CMakeFiles/jaccl.dir/jaccl/jaccl.cpp.o
+  /usr/bin/ranlib libjaccl.a
+  [  6%] Built target jaccl
+
+
+  --- stderr
+  running: cd "/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build" && CMAKE_PREFIX_PATH="" LC_ALL="C" "cmake" "-Wdev" "--debug-output" "/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c" "-B" "/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build" "-DCMAKE_OSX_ARCHITECTURES=arm64" "-DCMAKE_INSTALL_PREFIX=." "-DCMAKE_BUILD_TYPE=Debug" "-DMLX_BUILD_METAL=OFF" "-DMLX_BUILD_ACCELERATE=OFF" "-DMLX_BUILD_METAL=ON" "-DMLX_BUILD_ACCELERATE=ON" "-DCMAKE_C_FLAGS= -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w" "-DCMAKE_C_COMPILER=/usr/bin/cc" "-DCMAKE_CXX_FLAGS= -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w" "-DCMAKE_CXX_COMPILER=/usr/bin/c++" "-DCMAKE_ASM_FLAGS= -ffunction-sections -fdata-sections -fPIC --target=arm64-apple-macosx -mmacosx-version-min=26.5 -w" "-DCMAKE_ASM_COMPILER=/usr/bin/cc" "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
+  CMake Warning (dev) at /opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake:128 (set):
+    Policy CMP0126 is not set: set(CACHE) does not remove a normal variable of
+    the same name.  Run "cmake --help-policy CMP0126" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    For compatibility with older versions of CMake, normal variable
+    "CMAKE_CXX_COMPILER" will be removed from the current scope.
+  Call Stack (most recent call first):
+    /opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:71 (_cmake_find_compiler_path)
+    CMakeLists.txt:6 (project)
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake
+  CMake Warning (dev) at /opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake:128 (set):
+    Policy CMP0126 is not set: set(CACHE) does not remove a normal variable of
+    the same name.  Run "cmake --help-policy CMP0126" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    For compatibility with older versions of CMake, normal variable
+    "CMAKE_C_COMPILER" will be removed from the current scope.
+  Call Stack (most recent call first):
+    /opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:67 (_cmake_find_compiler_path)
+    CMakeLists.txt:6 (project)
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+  CMake Warning (dev) at /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt:4 (file):
+    Policy CMP0159 is not set: file(STRINGS) with REGEX updates
+    CMAKE_MATCH_<n>.  Run "cmake --help-policy CMP0159" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    For compatibility, CMake is leaving CMAKE_MATCH_<n> unchanged.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+  xcrun: error: unable to find utility "metal", not a developer tool or in PATH
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/json-src
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/common
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/cpu
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/mpi
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/ring
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/nccl
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/io
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/kernels
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/gpu
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c
+     Called from: [3]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+                  [2]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+                  [1]	/opt/homebrew/share/cmake/Modules/FetchContent.cmake
+     Entering             /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+     Returning to         /Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+  CMake Warning (dev) at CMakeLists.txt:72 (add_library):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/CMakeLists.txt
+  CMake Warning (dev) at /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt:150 (add_library):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/CMakeLists.txt
+  CMake Warning (dev) at /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/CMakeLists.txt:46 (add_library):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/distributed/jaccl/lib/CMakeLists.txt
+  CMake Warning (dev) at /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/io/CMakeLists.txt:18 (add_library):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/io/CMakeLists.txt
+  CMake Warning (dev) at /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src/CMakeLists.txt:61 (add_library):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  Call Stack (most recent call first):
+    /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src/CMakeLists.txt:306 (add_module_library)
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/fmt-src/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:1 (add_executable):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:1 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_LINK_FLAGS' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:1 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_CREATE_CONSOLE_EXE' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:4 (add_executable):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:4 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_LINK_FLAGS' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:4 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_CREATE_CONSOLE_EXE' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:7 (add_executable):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:7 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_LINK_FLAGS' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:7 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_CREATE_CONSOLE_EXE' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:10 (add_executable):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:10 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_LINK_FLAGS' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:10 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_CREATE_CONSOLE_EXE' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:14 (add_executable):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:14 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_LINK_FLAGS' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:14 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_CREATE_CONSOLE_EXE' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:18 (add_executable):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:18 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_LINK_FLAGS' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:18 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_CREATE_CONSOLE_EXE' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:21 (add_executable):
+    Policy CMP0156 is not set: De-duplicate libraries on link lines based on
+    linker capabilities.  Run "cmake --help-policy CMP0156" for policy details.
+    Use the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, legacy libraries de-duplication strategy will
+    be applied.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:21 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_LINK_FLAGS' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning (dev) at examples/CMakeLists.txt:21 (add_executable):
+    Policy CMP0181 is not set: Link command-line fragment variables are parsed
+    and re-quoted.  Run "cmake --help-policy CMP0181" for policy details.  Use
+    the cmake_policy command to set the policy and suppress this warning.
+
+    Since the policy is not set, the contents of variable
+    'CMAKE_CXX_CREATE_CONSOLE_EXE' will be used as is.
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+     Called from: [1]	/Users/user/Developer/GitHub/Tribunus/packages/mlx-rs-fork/mlx-sys/src/mlx-c/examples/CMakeLists.txt
+  CMake Warning:
+    Manually-specified variables were not used by the project:
+
+      CMAKE_ASM_COMPILER
+      CMAKE_ASM_FLAGS
+
+
+  running: cd "/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build" && LC_ALL="C" "cmake" "--build" "/Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build" "--target" "install" "--config" "RelWithDebInfo" "--parallel" "8"
+  xcrun: error: unable to find utility "metal", not a developer tool or in PATH
+  make[2]: *** [_deps/mlx-build/mlx/backend/metal/kernels/arg_reduce.air] Error 72
+  make[1]: *** [_deps/mlx-build/mlx/backend/metal/kernels/CMakeFiles/mlx-metallib.dir/all] Error 2
+  make[1]: *** Waiting for unfinished jobs....
+  Error: Metal compiler header resolution failed for /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/kernels/unary_ops.h
+  Expected lines starting with '.' but got:
+  xcrun: error: unable to find utility "metal", not a developer tool or in PATH
+
+  This usually means xcrun or the Metal toolchain is not configured correctly.
+  Try running: xcrun -sdk macosx metal --version
+  make[2]: *** [_deps/mlx-build/mlx/backend/metal/jit/unary_ops.cpp] Error 1
+  Error: Metal compiler header resolution failed for /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/kernels/utils.h
+  Expected lines starting with '.' but got:
+  xcrun: error: unable to find utility "metal", not a developer tool or in PATH
+
+  This usually means xcrun or the Metal toolchain is not configured correctly.
+  Try running: xcrun -sdk macosx metal --version
+  make[1]: *** [_deps/mlx-build/mlx/backend/metal/CMakeFiles/unary_ops.dir/all] Error 2
+  make[2]: *** [_deps/mlx-build/mlx/backend/metal/jit/utils.cpp] Error 1
+  make[1]: *** [_deps/mlx-build/mlx/backend/metal/CMakeFiles/utils.dir/all] Error 2
+  Error: Metal compiler header resolution failed for /Users/user/Developer/GitHub/Tribunus/packages/compute-native/target/debug/build/mlx-sys-1f33192e16895298/out/build/_deps/mlx-src/mlx/backend/metal/kernels/binary_ops.h
+  Expected lines starting with '.' but got:
+  xcrun: error: unable to find utility "metal", not a developer tool or in PATH
+
+  This usually means xcrun or the Metal toolchain is not configured correctly.
+  Try running: xcrun -sdk macosx metal --version
+  make[2]: *** [_deps/mlx-build/mlx/backend/metal/jit/binary_ops.cpp] Error 1
+  make[1]: *** [_deps/mlx-build/mlx/backend/metal/CMakeFiles/binary_ops.dir/all] Error 2
+  make: *** [all] Error 2
+
+  thread 'main' (1786756) panicked at /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cmake-0.1.58/src/lib.rs:1132:5:
+
+  command did not execute successfully, got: exit status: 2
+
+  build script failed, must exit now
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
