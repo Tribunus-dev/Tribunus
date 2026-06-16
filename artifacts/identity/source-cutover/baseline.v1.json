@@ -1,0 +1,16 @@
+{
+  "commit": "33062d84714cb0161359afee7d7bd84c86ed58c1",
+  "timestamp": "2026-06-16T11:09:26.568Z",
+  "firstPartyPackageRefs": 24,
+  "packagesOpenCodePathRefs": 0,
+  "unresolvedTotal": 35318,
+  "categoryCounts": {
+    "package-name": 29692,
+    "opencode-fs-path": 1836,
+    "opencode-ai-npm-scope": 24,
+    "sst-opencode-link": 11,
+    "opencode-ai-url": 3739,
+    "anomalyco-opencode-link": 2,
+    "path-name": 14
+  }
+}
