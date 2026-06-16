@@ -14,7 +14,10 @@
  *
  * Replaces scripts/check-branding.sh — run from repo root.
  */
-
+if (import.meta.main) {
+  const exitCode = await main();
+  process.exit(exitCode);
+}
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createHash } from "node:crypto";
@@ -278,19 +281,27 @@ function readRegistry(path: string): LegacyRegistry | null {
 // Matching a registry entry to an occurrence
 // ---------------------------------------------------------------------------
 
-function entryMatchesOccurrence(entry: RegistryEntry, occ: Occurrence): boolean {
-  const lowerPattern = entry.pattern.toLowerCase();
-  const lowerMatched = occ.matched.toLowerCase();
-  const lowerFile = occ.file.toLowerCase();
+export function pathMatches(entryPath: string, file: string): boolean {
+  if (entryPath === "*") return true;
+  if (entryPath.endsWith("/**")) {
+    const prefix = entryPath.slice(0, -3);
+    return file === prefix || file.startsWith(`${prefix}/`);
+  }
+  if (entryPath.endsWith("*")) {
+    const prefix = entryPath.slice(0, -1);
+    return file.startsWith(prefix);
+  }
+  return file === entryPath;
+}
 
-  // Pattern must match in either the file path or the matched text
-  if (lowerFile.includes(lowerPattern)) return true;
-  if (lowerMatched.includes(lowerPattern)) return true;
+export function patternMatches(entryPattern: string, matched: string): boolean {
+  const lowerPattern = entryPattern.toLowerCase();
+  const lowerMatched = matched.toLowerCase();
+  return lowerMatched === lowerPattern || lowerMatched.includes(lowerPattern);
+}
 
-  // Also check the line content if available
-  if (occ.line && lowerFile === entry.path) return true;
-
-  return false;
+export function entryMatchesOccurrence(entry: RegistryEntry, occ: Occurrence): boolean {
+  return pathMatches(entry.path, occ.file) && patternMatches(entry.pattern, occ.matched);
 }
 
 // ---------------------------------------------------------------------------
@@ -303,7 +314,7 @@ async function scanFiles(): Promise<ScanResult> {
   });
   if (proc.exitCode !== 0) {
     console.error("FATAL: git ls-files failed (exit %d): %s", proc.exitCode, proc.stderr.toString());
-    process.exit(1);
+    throw new Error("git ls-files failed");
   }
 
   const allFiles = proc.stdout
@@ -394,7 +405,7 @@ async function scanFiles(): Promise<ScanResult> {
 // Main
 // ---------------------------------------------------------------------------
 
-async function main(): Promise<never> {
+export async function main(): Promise<number> {
   const startTime = Date.now();
   const failures: string[] = [];
 
@@ -500,7 +511,7 @@ async function main(): Promise<never> {
     writeFileSync(resolve(BASELINE_JSON), JSON.stringify(baseline, null, 2) + "\n");
     console.log(`\nSource identity baseline written to ${BASELINE_JSON}`);
     console.log(JSON.stringify(baseline, null, 2));
-    process.exit(0);
+    return 0;
   }
 
   // -- 5. Detect STALE registry entries (registered but not found) ---------
@@ -824,7 +835,7 @@ async function main(): Promise<never> {
   console.log("");
   console.log(reportText);
 
-  process.exit(0);
+  return finalVerdict === "PASS" ? 0 : 1;
 }
 
 // ---------------------------------------------------------------------------
@@ -868,4 +879,7 @@ function readdirRecursive(dir: string): string[] {
   return result;
 }
 
-await main();
+if (import.meta.main) {
+  const exitCode = await main();
+  process.exit(exitCode);
+}
