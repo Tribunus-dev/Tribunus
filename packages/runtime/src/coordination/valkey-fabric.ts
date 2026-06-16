@@ -1,4 +1,5 @@
 import Redis from "ioredis"
+import { Context, Effect, Layer } from "effect"
 import type { CoordinationFabric, AgentHeartbeat, LeaseRequest, LeaseResult, CoordinationEvent, CoordinationJob, BackpressureState } from "./fabric"
 import { ValkeyStreams } from "./stream-primitives"
 
@@ -126,3 +127,19 @@ export async function createValkeyFabric(url: string): Promise<CoordinationFabri
     },
   }
 }
+
+export interface ValkeyRedis {
+  readonly client: Redis
+}
+
+/**
+ * ValkeyRedis service provides access to the shared Valkey/Redis instance.
+ * NOTE: Ensure security configurations are appropriately handled for production
+ * deployment, as this service exposes direct Redis access.
+ */
+export class ValkeyRedisService extends Context.Service<ValkeyRedisService, ValkeyRedis>()(
+  "@tribunus/ValkeyRedis"
+) {}
+
+export const ValkeyRedisLayer = (url: string) =>
+  Layer.succeed(ValkeyRedisService, ValkeyRedisService.of({ client: new Redis(url, { lazyConnect: false, maxRetriesPerRequest: 3 }) }))

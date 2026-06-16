@@ -130,6 +130,8 @@ export {
   isValkeyBinaryAvailable,
 } from "./fabric"
 
+export { ValkeyRedisService, ValkeyRedisLayer } from "./valkey-fabric"
+
 export { createValkeyFabric } from "./valkey-fabric"
 
 export { createLocalFabric } from "./local-fabric"
