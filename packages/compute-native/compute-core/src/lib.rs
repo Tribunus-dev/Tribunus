@@ -85,6 +85,7 @@ pub mod runtime_trace;
 pub mod session;
 pub mod sidecar;
 
+#[cfg(feature = "storage-adapters")]
 pub mod storage_adapters;
 pub mod storage_kernel;
 pub mod streaming;
