@@ -27,24 +27,34 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
 
     // Verify source gate paths
     for path in &image.target_context.source_gate_references {
-        if !std::path::Path::new(path).exists() {
+        if !std::path::Path::new(path).try_exists().unwrap_or(false) {
             errors.push(format!("Source gate path does not exist: {}", path));
         }
     }
 
     let mut phase_signatures = HashSet::new();
-    let mut has_decode_phase = false;
-    let mut has_kv_phase = false;
+    let required_strict_phases = vec![
+        "matmul", "softmax_tail", "reshape_transpose_matmul", "branch_rejoin",
+        "silu_or_composite", "identity_passthrough", "constant_heavy",
+        "multi_output", "KvWrite", "KvAppend", "KvView"
+    ];
+    let mut found_phases = HashSet::new();
 
     for phase in &image.phases {
+        found_phases.insert(phase.phase_name.clone());
         let sig = format!("{}-{}-{}-{}", phase.phase_name, phase.shape_key, phase.dtype, image.target_context.compute_policy);
         if !phase_signatures.insert(sig.clone()) {
             errors.push(format!("Duplicate phase conflict: {}", sig));
         }
 
         if phase.phase_family == "kv_cache" {
-            has_kv_phase = true;
             if let Some(mc) = &phase.mutation_contract {
+                if mc.evidence_qualification == KvEvidenceQualification::CompileOnly || mc.evidence_qualification == KvEvidenceQualification::Unqualified {
+                    if phase.selected_backend.is_some() {
+                        errors.push(format!("KV phase {} marked {:?} cannot be selected for runtime execution", phase.phase_name, mc.evidence_qualification));
+                    }
+                }
+
                 // If it claims to be RuntimeQualified but the selected backend evidence is not Pass.
                 if mc.evidence_qualification == KvEvidenceQualification::RuntimeQualified {
                     if let Some(sb) = &phase.selected_backend {
@@ -61,13 +71,22 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
             } else {
                  errors.push(format!("Missing mutation contract for KV phase: {}", phase.phase_name));
             }
-        } else {
-            has_decode_phase = true;
         }
 
         if let Some(sb) = &phase.selected_backend {
             if let Some(cand) = phase.backend_candidates.iter().find(|c| &c.backend_name == sb) {
-                if cand.status != BackendStatus::Pass && cand.status != BackendStatus::ContractOnly {
+                if cand.status == BackendStatus::ContractOnly {
+                    if phase.phase_family != "kv_cache" {
+                        errors.push(format!("Selected backend {} for {} is ContractOnly, but only KV phases can be ContractOnly", sb, phase.phase_name));
+                    } else if let Some(mc) = &phase.mutation_contract {
+                        if mc.evidence_qualification != KvEvidenceQualification::ContractOnly {
+                            errors.push(format!("Selected backend {} for {} is ContractOnly, but mutation contract does not match", sb, phase.phase_name));
+                        }
+                    }
+                    if !image.resolution_policy.allow_contract_only_kv {
+                        errors.push(format!("Selected backend {} for {} is ContractOnly, but policy forbids it", sb, phase.phase_name));
+                    }
+                } else if cand.status != BackendStatus::Pass {
                     errors.push(format!("Selected backend {} for {} has no passing evidence (status: {:?})", sb, phase.phase_name, cand.status));
                 }
 
@@ -90,24 +109,16 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
         }
     }
 
-    if !has_decode_phase {
-        errors.push("No decode phases found".into());
-    }
-
-    if !has_kv_phase {
-        errors.push("No KV phases found".into());
+    if image.resolution_policy.required_phase_set == "strict_v0" {
+        for required_phase in required_strict_phases {
+            if !found_phases.contains(required_phase) {
+                errors.push(format!("Required strict phase missing: {}", required_phase));
+            }
+        }
     }
 
     // Verify hash
-    let mut canonical = image.clone();
-    canonical.schema_hash = "".into();
-    canonical.created_at = "".into();
-    canonical.phases.sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
-    canonical.dirty_paths_sample.sort();
-    let json = serde_json::to_string(&canonical).unwrap();
-    let mut hasher = sha2::Sha256::new();
-    sha2::Digest::update(&mut hasher, json.as_bytes());
-    let recomputed_hash = format!("{:x}", hasher.finalize());
+    let recomputed_hash = super::canonical_hash::compute_canonical_hash(image);
 
     if recomputed_hash != image.schema_hash {
         errors.push(format!("Schema hash mismatch. Expected {}, got {}", image.schema_hash, recomputed_hash));
@@ -125,10 +136,22 @@ mod tests {
     use super::*;
     use crate::compute_image_v0::schema::{BackendCandidate, BackendStatus, BackendVersions, KvMutationContract, PhaseEntry, TargetContext};
 
+    use crate::compute_image_v0::schema::ResolutionPolicy;
+
     fn create_valid_image() -> ComputeImageV0 {
         ComputeImageV0 {
             schema: "tribunus.compute_image.v0".into(),
             schema_hash: "hash".into(),
+            evidence_source_kind: "synthetic_fixture".into(),
+            resolution_policy: ResolutionPolicy {
+                policy_name: "test".into(),
+                backend_preference_order: vec![],
+                allow_contract_only_kv: false,
+                require_runtime_qualified_kv: true,
+                allow_synthetic_evidence: true,
+                required_phase_set: "test".into(),
+            },
+            verdict: "usable".into(),
             created_at: "time".into(),
             run_id: "run".into(),
             git_commit: "commit".into(),
@@ -197,17 +220,7 @@ mod tests {
     #[test]
     fn test_valid_image() {
         let mut image = create_valid_image();
-
-        let mut canonical = image.clone();
-        canonical.schema_hash = "".into();
-        canonical.created_at = "".into();
-        canonical.phases.sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
-        canonical.dirty_paths_sample.sort();
-        let json = serde_json::to_string(&canonical).unwrap();
-        let mut hasher = sha2::Sha256::new();
-        sha2::Digest::update(&mut hasher, json.as_bytes());
-        image.schema_hash = format!("{:x}", hasher.finalize());
-
+        image.schema_hash = super::canonical_hash::compute_canonical_hash(&image);
         assert!(verify_v0_image(&image, VerifierOptions::default()).is_ok());
     }
 
@@ -265,15 +278,9 @@ mod tests {
     #[test]
     fn test_missing_phase() {
         let mut image = create_valid_image();
-        // Remove KV phase
-        image.phases.remove(1);
-        let errs = verify_v0_image(&image, VerifierOptions::default()).unwrap_err();
-        assert!(errs.iter().any(|e| e.contains("No KV phases found")));
+        image.resolution_policy.required_phase_set = "strict_v0".into();
 
-        let mut image2 = create_valid_image();
-        // Remove decode phase
-        image2.phases.remove(0);
-        let errs = verify_v0_image(&image2, VerifierOptions::default()).unwrap_err();
-        assert!(errs.iter().any(|e| e.contains("No decode phases found")));
+        let errs = verify_v0_image(&image, VerifierOptions::default()).unwrap_err();
+        assert!(errs.iter().any(|e| e.contains("Required strict phase missing")));
     }
 }

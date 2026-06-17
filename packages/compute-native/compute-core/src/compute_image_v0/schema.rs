@@ -4,6 +4,9 @@ use serde::{Deserialize, Serialize};
 pub struct ComputeImageV0 {
     pub schema: String, // "tribunus.compute_image.v0"
     pub schema_hash: String,
+    pub evidence_source_kind: String, // "synthetic_fixture" or "normalized_json"
+    pub resolution_policy: ResolutionPolicy,
+    pub verdict: String, // "usable", "usable_with_fallbacks", "blocked"
     pub created_at: String,
     pub run_id: String,
     pub git_commit: String,
@@ -12,6 +15,16 @@ pub struct ComputeImageV0 {
     pub evidence_root: String,
     pub target_context: TargetContext,
     pub phases: Vec<PhaseEntry>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ResolutionPolicy {
+    pub policy_name: String,
+    pub backend_preference_order: Vec<String>,
+    pub allow_contract_only_kv: bool,
+    pub require_runtime_qualified_kv: bool,
+    pub allow_synthetic_evidence: bool,
+    pub required_phase_set: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

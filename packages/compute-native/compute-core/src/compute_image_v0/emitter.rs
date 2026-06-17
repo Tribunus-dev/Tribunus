@@ -1,8 +1,8 @@
 use super::evidence::EvidenceAdapter;
 use super::resolver::Resolver;
 use super::schema::{BackendVersions, ComputeImageV0, TargetContext};
-use sha2::{Digest, Sha256};
 use std::time::{SystemTime, UNIX_EPOCH};
+use super::canonical_hash::compute_canonical_hash;
 
 pub struct EmitterOptions {
     pub run_id: String,
@@ -12,6 +12,7 @@ pub struct EmitterOptions {
     pub evidence_root: String,
     pub allow_contract_only_kv: bool,
     pub target_context: TargetContext,
+    pub is_synthetic: bool,
 }
 
 impl Default for EmitterOptions {
@@ -23,6 +24,7 @@ impl Default for EmitterOptions {
             dirty_paths_sample: vec![],
             evidence_root: "/artifacts".into(),
             allow_contract_only_kv: false,
+            is_synthetic: true,
             target_context: TargetContext {
                 repository_provenance: "https://github.com/Tribunus-dev/tribunus".into(),
                 device_profile: "apple_m3_max".into(),
@@ -63,6 +65,16 @@ pub fn emit_v0_image(
     let mut image = ComputeImageV0 {
         schema: "tribunus.compute_image.v0".into(),
         schema_hash: "".into(), // Will compute below
+        evidence_source_kind: if options.is_synthetic { "synthetic_fixture".into() } else { "normalized_json".into() },
+        resolution_policy: super::schema::ResolutionPolicy {
+            policy_name: "strict_truth".into(),
+            backend_preference_order: vec!["mlx".into(), "coreml".into(), "accelerate".into()],
+            allow_contract_only_kv: options.allow_contract_only_kv,
+            require_runtime_qualified_kv: true,
+            allow_synthetic_evidence: true,
+            required_phase_set: "strict_v0".into(),
+        },
+        verdict: "".into(), // Computed by markdown generator for now
         created_at,
         run_id: options.run_id,
         git_commit: options.git_commit,
@@ -73,39 +85,32 @@ pub fn emit_v0_image(
         phases,
     };
 
-    image.schema_hash = compute_canonical_hash(&image);
+    let (markdown, verdict) = generate_markdown_summary(&image);
+    image.verdict = verdict;
 
-    let markdown = generate_markdown_summary(&image);
+    image.schema_hash = compute_canonical_hash(&image);
 
     Ok((image, markdown))
 }
 
-fn compute_canonical_hash(image: &ComputeImageV0) -> String {
-    // Clone and clear volatile fields for deterministic hashing
-    let mut canonical = image.clone();
-    canonical.schema_hash = "".into();
-    canonical.created_at = "".into();
-
-    // Ensure phases are sorted by name for determinism
-    canonical.phases.sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
-
-    // Sort dirty paths
-    canonical.dirty_paths_sample.sort();
-
-    let json = serde_json::to_string(&canonical).expect("Failed to serialize canonical image");
-    let mut hasher = Sha256::new();
-    hasher.update(json.as_bytes());
-    format!("{:x}", hasher.finalize())
-}
-
-fn generate_markdown_summary(image: &ComputeImageV0) -> String {
+fn generate_markdown_summary(image: &ComputeImageV0) -> (String, String) {
     let mut md = String::new();
     md.push_str("# Compute Image v0 Summary\n\n");
-    md.push_str("## Target Context\n");
+    md.push_str(&format!("- **Schema**: {}\n", image.schema));
+    md.push_str(&format!("- **Schema Hash**: {}\n", image.schema_hash)); // Note: this will be empty at generation time and injected later if re-generated, but for now we put placeholder
+    md.push_str(&format!("- **Evidence Source Kind**: {}\n", image.evidence_source_kind));
+    md.push_str(&format!("- **Run ID**: {}\n", image.run_id));
+    md.push_str(&format!("- **Git Commit**: {}\n", image.git_commit));
+    md.push_str(&format!("- **Dirty Tree**: {}\n", image.compute_scope_dirty));
+    md.push_str("\n## Target Context\n");
     md.push_str(&format!("- **Device**: {}\n", image.target_context.device_profile));
     md.push_str(&format!("- **Model**: {}\n", image.target_context.model_profile));
     md.push_str(&format!("- **Shape Profile**: {}\n", image.target_context.shape_profile));
     md.push_str(&format!("- **Policy**: {}\n", image.target_context.compute_policy));
+    md.push_str("\n## Resolution Policy\n");
+    md.push_str(&format!("- **Policy Name**: {}\n", image.resolution_policy.policy_name));
+    md.push_str(&format!("- **Allow Contract Only KV**: {}\n", image.resolution_policy.allow_contract_only_kv));
+    md.push_str(&format!("- **Required Phase Set**: {}\n", image.resolution_policy.required_phase_set));
     md.push_str("\n## Phase Placements\n");
 
     let mut _usable_count = 0;
@@ -197,16 +202,16 @@ fn generate_markdown_summary(image: &ComputeImageV0) -> String {
 
     md.push_str("\n## Verdict\n");
     let verdict = if blocked_count > 0 {
-        "verdict: blocked"
+        "blocked"
     } else if fallback_count > 0 {
-        "verdict: usable_with_fallbacks"
+        "usable_with_fallbacks"
     } else {
-        "verdict: usable"
+        "usable"
     };
 
-    md.push_str(&format!("**{}**\n", verdict));
+    md.push_str(&format!("**verdict: {}**\n", verdict));
 
-    md
+    (md, verdict.to_string())
 }
 
 fn format_iso8601(secs: u64) -> String {

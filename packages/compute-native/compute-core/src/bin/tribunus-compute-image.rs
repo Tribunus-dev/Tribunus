@@ -634,18 +634,59 @@ fn cmd_infer(args: &[String]) -> Result<(), String> {
 fn cmd_emit_v0(args: &[String]) -> Result<(), String> {
     let output_dir = get_opt(args, "--output-dir").ok_or_else(|| "--output-dir is required".to_string())?;
     let allow_contract_only_kv = has_flag(args, "--allow-contract-only-kv");
+    let is_synthetic = has_flag(args, "--synthetic-fixture");
+    let evidence_path = get_opt(args, "--evidence");
+
+    let run_id = get_opt(args, "--run-id");
+    let git_commit = get_opt(args, "--git-commit");
+    let device_profile = get_opt(args, "--device-profile");
+    let model_profile = get_opt(args, "--model-profile");
+    let shape_profile = get_opt(args, "--shape-profile");
+    let dtype = get_opt(args, "--dtype");
+    let compute_policy = get_opt(args, "--compute-policy");
+    let evidence_root = get_opt(args, "--evidence-root");
+
+    if !is_synthetic && evidence_path.is_none() {
+        return Err("You must provide either --synthetic-fixture or --evidence <path>.".to_string());
+    }
+
+    if evidence_path.is_some() && (
+        run_id.is_none() || git_commit.is_none() || device_profile.is_none() ||
+        model_profile.is_none() || shape_profile.is_none() || dtype.is_none() ||
+        compute_policy.is_none() || evidence_root.is_none()
+    ) {
+        return Err("Missing target context. When using --evidence, you must provide --run-id, --git-commit, --device-profile, --model-profile, --shape-profile, --dtype, --compute-policy, and --evidence-root.".into());
+    }
 
     let out_path = Path::new(output_dir);
     fs::create_dir_all(out_path).map_err(|e| format!("create output dir: {}", e))?;
 
-    let adapter = tribunus_compute_core::compute_image_v0::evidence::SyntheticFixtureAdapter {
-        scenarios: tribunus_compute_core::compute_image_v0::evidence::default_synthetic_fixtures(),
-    };
-
     let mut options = tribunus_compute_core::compute_image_v0::emitter::EmitterOptions::default();
     options.allow_contract_only_kv = allow_contract_only_kv;
+    options.is_synthetic = is_synthetic;
 
-    let (image, md) = tribunus_compute_core::compute_image_v0::emitter::emit_v0_image(&adapter, options)?;
+    if evidence_path.is_some() {
+        options.run_id = run_id.unwrap().to_string();
+        options.git_commit = git_commit.unwrap().to_string();
+        options.evidence_root = evidence_root.unwrap().to_string();
+        options.target_context.device_profile = device_profile.unwrap().to_string();
+        options.target_context.model_profile = model_profile.unwrap().to_string();
+        options.target_context.shape_profile = shape_profile.unwrap().to_string();
+        options.target_context.dtype = dtype.unwrap().to_string();
+        options.target_context.compute_policy = compute_policy.unwrap().to_string();
+    }
+
+    let (image, md) = if let Some(path) = evidence_path {
+        let adapter = tribunus_compute_core::compute_image_v0::evidence::NormalizedJsonAdapter {
+            filepath: path.to_string(),
+        };
+        tribunus_compute_core::compute_image_v0::emitter::emit_v0_image(&adapter, options)?
+    } else {
+        let adapter = tribunus_compute_core::compute_image_v0::evidence::SyntheticFixtureAdapter {
+            scenarios: tribunus_compute_core::compute_image_v0::evidence::default_synthetic_fixtures(),
+        };
+        tribunus_compute_core::compute_image_v0::emitter::emit_v0_image(&adapter, options)?
+    };
 
     let json_path = out_path.join("compute_image_v0.json");
     let md_path = out_path.join("compute_image_v0.md");
@@ -662,7 +703,7 @@ fn cmd_verify_v0(args: &[String]) -> Result<(), String> {
     let image_dir = get_opt(args, "--image").ok_or_else(|| "--image is required".to_string())?;
 
     let json_path = Path::new(image_dir).join("compute_image_v0.json");
-    if !json_path.exists() {
+    if !json_path.try_exists().unwrap_or(false) {
         return Err(format!("{} does not exist", json_path.display()));
     }
 
