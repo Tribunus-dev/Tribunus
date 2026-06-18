@@ -80,6 +80,6 @@ vk-sys = { version = "0.4.0", optional = true }
 gpu-allocator = { version = "0.22", optional = true }
 spirv-cross = { version = "0.23", optional = true }
 openblas-sys = { version = "0.10", optional = true }
-level-zero-sys = { version = "0.2", optional = true }
-openvino-sys = { version = "0.3", optional = true }
+level-zero-sys = { git = "https://github.com/oneapi-src/level-zero-sys.git", optional = true }
+openvino-sys = { git = "https://github.com/intel/openvino-rs.git", optional = true }
 paged-attention = { version = "0.1", optional = true }
