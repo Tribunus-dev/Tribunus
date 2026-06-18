@@ -9,7 +9,7 @@ authors.workspace = true
 mlx-rs.workspace = true
 
 # External dependencies
-tokenizers = "0.22.0"
+tokenizers = "0.23.1"
 thiserror = "2"
 anyhow = "1.0"
 hf-hub = "0.4.3"
