@@ -1,0 +1,40 @@
+--- a/packages/compute-native/src/compute_image.rs
++++ b/packages/compute-native/src/compute_image.rs
+@@ -2850,8 +2850,37 @@
+         assert!(
+             err.to_string().contains("manifest hash mismatch"),
+             "unexpected abi-mismatch error: {}",
++            err
++        );
++    }
++
++    #[test]
++    fn segment_corruption_rejected() {
++        let source_dir = temp_dir("source-seg-corr");
++        write_fixture_model(&source_dir);
++
++        let output_dir = temp_dir("out-seg-corr");
++        compile(
++            source_dir.to_str().expect("source dir"),
++            output_dir.to_str().expect("output dir"),
++        )
++        .expect("compile segment corruption fixture");
++
++        // segment_000.bin = persistent (embed + final), segment_001.bin = layer 0
++        let segment_path = output_dir.join("segment_001.bin");
++        let mut bytes = fs::read(&segment_path).expect("layer segment bytes");
++        bytes[100] ^= 0xFF;
++        fs::write(&segment_path, bytes).expect("rewrite corrupted layer segment");
++
++        let err = match read(output_dir.to_str().expect("output dir")) {
++            Ok(_) => panic!("expected segment corruption error"),
++            Err(err) => err,
++        };
++        assert!(
++            err.to_string().contains("segment hash mismatch"),
++            "unexpected segment corruption error: {}",
+             err
+         );
+     }
+ }
+ 

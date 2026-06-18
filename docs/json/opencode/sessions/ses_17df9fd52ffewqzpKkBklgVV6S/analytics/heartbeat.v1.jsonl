@@ -1,0 +1,10 @@
+{"at":"2026-06-01T07:12:16.142Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T07:12:37.194Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T07:13:28.353Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T07:13:28.402Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T07:14:38.230Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:14:59.914Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T07:15:30.231Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsc"}
+{"at":"2026-06-01T07:15:57.915Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsc exit=1"}
+{"at":"2026-06-01T07:16:31.612Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:16:56.274Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","phase":"completed","detail":"tsgo exit=0"}

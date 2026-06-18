@@ -1,0 +1,13 @@
+{"at":"2026-06-01T02:15:35.418Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_find","pattern":"**/astr*.config.*","path":""}
+{"at":"2026-06-01T02:21:22.025Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"astro","path":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:21:22.481Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"@tsconfig/node22","path":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:24:49.363Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"@tsconfig/node22","path":"/Users/user/Developer/GitHub/opencode-desktop-dev/packages"}
+{"at":"2026-06-01T02:25:00.521Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"@tsconfig/node22","path":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:25:12.320Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_find","pattern":"packages/function/package.json","path":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:27:34.938Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_find","pattern":"packages/web/**","path":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:27:45.392Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_find","pattern":"packages/app/**","path":""}
+{"at":"2026-06-01T02:28:02.226Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_find","pattern":"packages/script/**","path":""}
+{"at":"2026-06-01T02:35:45.372Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_find","pattern":"packages/*/script/**","path":""}
+{"at":"2026-06-01T02:38:45.550Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"@ts-ignore","path":"/Users/user/Developer/GitHub/opencode-desktop-dev/packages/console/resource"}
+{"at":"2026-06-01T02:40:56.043Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"@ts-ignore|@ts-expect-error","path":"/Users/user/Developer/GitHub/opencode-desktop-dev/packages/console/resource"}
+{"at":"2026-06-01T02:43:19.091Z","session_id":"ses_17f0bf447ffebQaKMEeU8veHk7","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"\\\"name\\\".*\\\"@opencode-ai/script\\\"","path":""}

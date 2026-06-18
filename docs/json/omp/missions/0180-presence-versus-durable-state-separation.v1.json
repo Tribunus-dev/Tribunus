@@ -1,0 +1,45 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0180-presence-versus-durable-state-separation",
+  "type": "mission",
+  "name": "Presence Versus Durable State Separation",
+  "slug": "presence-versus-durable-state-separation",
+  "description": "Presence (cursors, online status, typing) is ephemeral. Durable state (documents, tasks) is persisted. The system must never confuse the two — different storage, different sync, different guarantees.",
+  "purpose": "Clearly separate ephemeral presence data from durable persisted state so they use different storage, sync mechanisms, and guarantees — never confusing or conflating them.",
+  "campaignId": "0020",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Presence data (cursors, online status, typing indicators) is stored in a separate ephemeral key-value store, not the operation log.",
+    "Durable state (documents, tasks) is persisted in the operation log and local database.",
+    "Presence sync uses a separate, lower-overhead transport (e.g., WebSocket pub/sub).",
+    "Durable sync uses the operation log replay mechanism.",
+    "Presence data is never replayed during catch-up sync.",
+    "No code path allows presence data to leak into durable storage."
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "sync",
+    "presence",
+    "durable-state",
+    "architecture"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:45:24.710Z",
+  "updated_at": "2026-06-07T05:52:25.592Z"
+}

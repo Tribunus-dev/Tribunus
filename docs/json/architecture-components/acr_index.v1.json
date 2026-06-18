@@ -1,0 +1,96 @@
+{
+  "schema_version": "v1",
+  "generated_at": "2026-06-14T00:00:00Z",
+  "generated_by": "system",
+  "title": "Architecture Component Record Index",
+  "description": "Machine-readable index of reusable architecture component records used by Tribunus ADRs, specs, missions, and validators.",
+  "components": [
+    {
+      "id": "ACR-0001",
+      "title": "Durable Authority Receipt",
+      "status": "proposed",
+      "component_type": "receipt_contract",
+      "owner_subsystem": "PGlite",
+      "file": "docs/json/architecture-components/acr-0001-durable-authority-receipt.v1.json"
+    },
+    {
+      "id": "ACR-0002",
+      "title": "Receipt-Before-Ack Ordering",
+      "status": "proposed",
+      "component_type": "boundary_contract",
+      "owner_subsystem": "PGlite",
+      "file": "docs/json/architecture-components/acr-0002-receipt-before-ack-ordering.v1.json"
+    },
+    {
+      "id": "ACR-0003",
+      "title": "Valkey Recoverable Work Stream",
+      "status": "proposed",
+      "component_type": "orchestration_component",
+      "owner_subsystem": "Valkey",
+      "file": "docs/json/architecture-components/acr-0003-valkey-recoverable-work-stream.v1.json"
+    },
+    {
+      "id": "ACR-0004",
+      "title": "Tokio Phase Scope",
+      "status": "proposed",
+      "component_type": "state_machine",
+      "owner_subsystem": "Tokio",
+      "file": "docs/json/architecture-components/acr-0004-tokio-phase-scope.v1.json"
+    },
+    {
+      "id": "ACR-0005",
+      "title": "IOSurface Runtime Island",
+      "status": "proposed",
+      "component_type": "memory_component",
+      "owner_subsystem": "IOSurface",
+      "file": "docs/json/architecture-components/acr-0005-iosurface-runtime-island.v1.json"
+    },
+    {
+      "id": "ACR-0006",
+      "title": "Backend Execution Engine",
+      "status": "proposed",
+      "component_type": "backend_component",
+      "owner_subsystem": "backend",
+      "file": "docs/json/architecture-components/acr-0006-backend-execution-engine.v1.json"
+    },
+    {
+      "id": "ACR-0007",
+      "title": "Phase-Local Scratch Memory",
+      "status": "proposed",
+      "component_type": "memory_component",
+      "owner_subsystem": "phase_scope",
+      "file": "docs/json/architecture-components/acr-0007-phase-local-scratch-memory.v1.json"
+    },
+    {
+      "id": "ACR-0008",
+      "title": "MLX Golden Path",
+      "status": "proposed",
+      "component_type": "runtime_component",
+      "owner_subsystem": "MLX",
+      "file": "docs/json/architecture-components/acr-0008-mlx-golden-path.v1.json"
+    },
+    {
+      "id": "ACR-0009",
+      "title": "RuntimeWorkItem",
+      "status": "proposed",
+      "component_type": "state_machine",
+      "owner_subsystem": "orchestration",
+      "file": "docs/json/architecture-components/acr-0009-runtime-work-item.v1.json"
+    },
+    {
+      "id": "ACR-0010",
+      "title": "Copy Ledger",
+      "status": "proposed",
+      "component_type": "receipt_contract",
+      "owner_subsystem": "copy_accounting",
+      "file": "docs/json/architecture-components/acr-0010-copy-ledger.v1.json"
+    }
+  ],
+  "stats": {
+    "total": 10,
+    "proposed": 10,
+    "accepted": 0,
+    "deprecated": 0,
+    "superseded": 0
+  }
+}

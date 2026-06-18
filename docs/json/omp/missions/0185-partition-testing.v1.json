@@ -1,0 +1,45 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0185-partition-testing",
+  "type": "mission",
+  "name": "Partition Testing",
+  "slug": "partition-testing",
+  "description": "Test sync under network partitions, message reordering, duplication, and delay. Jepsen-style verification.",
+  "purpose": "Validate sync correctness under adversarial network conditions — partitions, reordering, duplication, and delay — using Jepsen-style verification.",
+  "campaignId": "0020",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Test harness can simulate network partitions, message reordering, duplication, and delay.",
+    "Each test starts from a known initial state, applies concurrent mutations, then heals the partition and verifies convergence.",
+    "Causal consistency invariants are checked: no operation applied before its dependencies.",
+    "Convergence invariant: all devices eventually reach the same state under quiet conditions.",
+    "Idempotency invariant: replaying operations never diverges state from a replay without partitions.",
+    "Tests are repeatable and produce a minimal counterexample on failure."
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "sync",
+    "testing",
+    "partition",
+    "jepsen"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:45:24.714Z",
+  "updated_at": "2026-06-07T05:52:46.547Z"
+}

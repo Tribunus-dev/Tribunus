@@ -1,0 +1,37 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0009",
+  "title": "RuntimeWorkItem",
+  "status": "proposed",
+  "component_type": "state_machine",
+  "owner_subsystem": "orchestration",
+  "definition": "A RuntimeWorkItem is the governed unit of work that enters Valkey and is executed by Tokio.",
+  "invariants": [
+    "No canonical phase execution occurs without a RuntimeWorkItem.",
+    "A RuntimeWorkItem must declare run_id, phase_id, backend target, input/output tensor IDs, island ID, budget/deadline, retry policy, authority mode, and expected receipts."
+  ],
+  "allowed_states": [
+    "queued",
+    "claimed",
+    "executing",
+    "committed",
+    "acknowledged"
+  ],
+  "forbidden_states": [
+    "implicit",
+    "untracked"
+  ],
+  "required_receipts": [
+    "work_item_receipt"
+  ],
+  "required_validators": [
+    "runtime_work_item_validator"
+  ],
+  "imported_by": [
+    "ADR-0021",
+    "ADR-0022"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

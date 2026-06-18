@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0022",
+  "type": "lane",
+  "name": "GitHub Pages Static Shell and Public Intake",
+  "slug": "github-pages-static-shell-and-public-intake",
+  "description": "Build the GitHub Pages static PWA shell: installable PWA manifest, service worker with caching strategy, HTTPS enforcement. Public mode renders demo data through Lit components: simulated mission timeline, demo receipts, architecture cards, codex browser. Implement intake lane: Ask a question → hosted queue → desktop subscribes and approves.",
+  "scope": "github-pages",
+  "missionId": "0015",
+  "status": "completed",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/app/src/",
+    "packages/opencode/src/http/"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": "2026-06-06T12:00:31.929Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:51:00.145Z",
+  "updated_at": "2026-06-06T12:00:31.929Z"
+}

@@ -1,0 +1,8 @@
+{"at":"2026-06-01T03:49:52.206Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"GlobalBus\\.on|GlobalBus\\.emit"}
+{"at":"2026-06-01T03:49:52.368Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"17 matches in 500 files"}
+{"at":"2026-06-01T03:49:53.220Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"ib-bootstrap-phases|ib-sidecar-boundary"}
+{"at":"2026-06-01T03:49:53.343Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 394 files"}
+{"at":"2026-06-01T03:50:55.551Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"classifyError"}
+{"at":"2026-06-01T03:50:55.649Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T03:53:32.789Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Cause\\.isFailure|Cause\\.isDie|Cause\\.isInterrupt|_tag.*Fail|_tag.*Die"}
+{"at":"2026-06-01T03:53:32.968Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"13 matches in 5 files"}

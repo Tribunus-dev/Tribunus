@@ -1,0 +1,65 @@
+[package]
+name = "tribunus-compute-native"
+version = "0.1.0"
+edition = "2021"
+description = "Tribunus Compute Kernel — native MLX backend via napi-rs"
+license = "AGPL-3.0-only"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "tribunus-coreml-decode-attribution"
+path = "src/bin/tribunus-coreml-decode-attribution.rs"
+
+[workspace.dependencies]
+mlx-rs = { path = "../mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
+mlx-sys = { path = "../mlx-rs-fork/mlx-sys" }
+
+[[bin]]
+name = "tribunus-compute-image"
+path = "src/bin/tribunus-compute-image.rs"
+
+[dependencies]
+tribunus-compute-core = { path = "compute-core", features = ["storage-adapters"] }
+napi = { version = "3.9.0", features = ["napi8", "serde-json"], default-features = false }
+napi-derive = "3.5.6"
+mlx-rs = { path = "/Users/user/Developer/GitHub/Tribunus Compute/mlx-rs-fork/mlx-rs", features = ["metal", "accelerate", "safetensors"] }
+mlx-sys = { path = "/Users/user/Developer/GitHub/Tribunus Compute/mlx-rs-fork/mlx-sys" }
+safetensors = "0.5"
+sha2 = { version = "0.10", features = ["asm"] }
+rayon = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+parking_lot = "0.12"
+tribunus-evidence-schema = { path = "../compute-evidence-native/crates/evidence-schema" }
+libc = "0.2"
+lazy_static = "1.5"
+tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "macros"] }
+async-trait = "0.1"
+coreml-proto = "0.1.0"
+prost = "0.14.4"
+prost-types = "0.14.4"
+tempfile = "3"
+[build-dependencies]
+napi-build = "2.3.2"
+cc = "1.2"
+
+[features]
+private-development = []
+
+[profile.release]
+strip = "symbols"
+lto = true
+codegen-units = 1
+
+[profile.image-build]
+inherits = "release"
+opt-level = 3
+lto = true
+codegen-units = 1
+incremental = false
+debug = false
+debug-assertions = false
+overflow-checks = false
+strip = "symbols"

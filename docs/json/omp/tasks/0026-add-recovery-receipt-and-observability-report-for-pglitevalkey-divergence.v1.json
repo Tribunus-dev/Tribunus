@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "0026",
+  "type": "task",
+  "name": "Add recovery receipt and observability report for PGlite/Valkey divergence",
+  "slug": "add-recovery-receipt-and-observability-report-for-pglitevalkey-divergence",
+  "description": "Implement a read-only divergence report that runs on startup or on demand. Report missing stream entries, orphan stream entries (in Valkey but not PGlite), scheduled work missing from sorted sets, pending entries without matching PGlite attempts, and terminal work still present in Valkey. Recovery receipts should be written for every rebuild action. Repair can come later; first make divergence visible.",
+  "laneId": "0007",
+  "missionId": "0004",
+  "status": "completed",
+  "priority": 80,
+  "estimatedEffort": "2 days",
+  "actualEffort": null,
+  "dependsOn": [
+    "Implement cold-start rebuild from PGlite into Valkey"
+  ],
+  "blocks": [],
+  "assignedTo": "system",
+  "startedAt": "2026-06-06T11:32:11.707Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T10:42:39.684Z",
+  "updated_at": "2026-06-06T17:56:34.643Z",
+  "completedAt": "2026-06-06T17:56:34.643Z"
+}

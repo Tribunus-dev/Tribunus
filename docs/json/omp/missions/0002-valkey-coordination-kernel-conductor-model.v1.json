@@ -1,0 +1,31 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0002",
+  "type": "mission",
+  "name": "Valkey Coordination Kernel — Conductor Model",
+  "slug": "valkey-coordination-kernel-conductor-model",
+  "description": "Implement the Conductor Model: Valkey serializes coordination without serializing execution. Stream-based work queues with consumer groups, sorted-set priority scheduling and due-time wheels, TTL-based heartbeats and leases, and pub/sub for volatile UI only. Primitive implementation is substantially complete. The remaining gate is durable authority binding: every work lifecycle transition must be backed by observable PGlite state before Valkey ACK.",
+  "purpose": "Replace all ad-hoc coordination (setTimeout, in-process locks, custom queues) with a single Valkey coordination spine where every authority-changing event flows through Valkey in order while expensive work runs in parallel workers. The mission closes only when the system proves the full lifecycle: create work in PGlite, enqueue to Valkey, consume through a group, record attempt start, record terminal/retry/dead-letter transition in PGlite, then ack.",
+  "campaignId": "0001",
+  "status": "completed",
+  "priority": 90,
+  "acceptanceCriteria": [
+    "Agent work queues using Valkey Streams with consumer groups prevent duplicate work",
+    "Every completeAndAck writes terminal durable state to PGlite before XACK",
+    "Every failRetryableAndAck writes retry-scheduled durable state to PGlite before requeue",
+    "Every deadLetterAndAck writes dead-letter durable record to PGlite before terminal XACK",
+    "reconcilePending inspects PGlite lifecycle state — never blind-ACKs to avoid blocking",
+    "Community support queue uses sorted sets with dharma-weighted priority scoring",
+    "Due-time wheel using sorted sets replaces all setTimeout/setInterval/cron",
+    "TTL heartbeat keys detect stale agents within 30 seconds",
+    "TTL lease keys ensure exclusive work ownership with expiry recovery",
+    "Pub/sub limited to volatile UI signals only — never for durable events",
+    "Tests inspect both PGlite and Valkey state for every lifecycle assertion"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:48:00.808Z",
+  "updated_at": "2026-06-06T11:55:55.059Z"
+}

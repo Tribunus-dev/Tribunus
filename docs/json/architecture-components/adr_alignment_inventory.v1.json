@@ -1,0 +1,433 @@
+{
+  "schema_version": "v1",
+  "generated_at": "2026-06-14T00:00:00Z",
+  "generated_by": "system",
+  "title": "ADR Alignment Inventory",
+  "description": "Corpus-wide classification of ADR alignment against the ACR board and runtime truth spine.",
+  "adr_alignment": [
+    {
+      "adr_id": "0003",
+      "title": "PGlite + Valkey + DuckDB Data Architecture",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned",
+        "ack": "aligned",
+        "commit": "aligned",
+        "durable_truth": "aligned",
+        "coordination": "aligned"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0004",
+      "title": "Valkey as Coordination Kernel",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "needs_cleanup",
+        "receipt": "aligned",
+        "ack": "aligned",
+        "commit": "needs_cleanup",
+        "coordination": "aligned"
+      },
+      "local_authority_claims": [
+        "Valkey coordinates ordering but does not own durable truth."
+      ]
+    },
+    {
+      "adr_id": "0005",
+      "title": "Tribunus Patent Landscape & Filing Strategy",
+      "status": "compatibility-only",
+      "should_import": [],
+      "shared_nouns": {},
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0006",
+      "title": "Mobile PWA as Remote Cockpit",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned",
+        "projection": "aligned"
+      },
+      "local_authority_claims": [
+        "The phone remains subordinate to the desktop's durable truth."
+      ]
+    },
+    {
+      "adr_id": "0007",
+      "title": "Unified Design Language Across All Surfaces",
+      "status": "aligned",
+      "should_import": [],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned",
+        "projection": "aligned"
+      },
+      "local_authority_claims": [
+        "Public and authenticated modes are presentation layers, not sources of truth."
+      ]
+    },
+    {
+      "adr_id": "0008",
+      "title": "Code-Native Design Canvas — The Hard Parts",
+      "status": "aligned",
+      "should_import": [],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned",
+        "commit": "aligned"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0009",
+      "title": "Design Council — Cartographer → Architect → Critic Loop for UI",
+      "status": "aligned",
+      "should_import": [],
+      "shared_nouns": {},
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0010",
+      "title": "Tribunus Community Contribution License & Consent Architecture",
+      "status": "compatibility-only",
+      "should_import": [],
+      "shared_nouns": {
+        "authority": "needs_cleanup",
+        "receipt": "needs_cleanup",
+        "projection": "needs_cleanup"
+      },
+      "local_authority_claims": [
+        "License language is a contribution/compliance layer, not runtime authority."
+      ]
+    },
+    {
+      "adr_id": "0011",
+      "title": "External Research Porting",
+      "status": "compatibility-only",
+      "should_import": [],
+      "shared_nouns": {},
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0012",
+      "title": "Anti-Scraping Dataset Protection",
+      "status": "compatibility-only",
+      "should_import": [],
+      "shared_nouns": {},
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0013",
+      "title": "OSS Integrity Gate",
+      "status": "compatibility-only",
+      "should_import": [],
+      "shared_nouns": {},
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0014",
+      "title": "Tribunus Cell — Sovereign Local Federation",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "needs_cleanup",
+        "receipt": "needs_cleanup",
+        "ack": "needs_cleanup",
+        "coordination": "needs_cleanup",
+        "durable_truth": "needs_cleanup"
+      },
+      "local_authority_claims": [
+        "Cell authority should not be phrased as if it owns durable truth."
+      ]
+    },
+    {
+      "adr_id": "0015",
+      "title": "MCP as Governed Capability Protocol",
+      "status": "aligned",
+      "should_import": [],
+      "shared_nouns": {
+        "authority": "needs_cleanup",
+        "receipt": "needs_cleanup",
+        "projection": "needs_cleanup"
+      },
+      "local_authority_claims": [
+        "MCP remains a protocol layer, not a governance source."
+      ]
+    },
+    {
+      "adr_id": "0016",
+      "title": "Repository Sandbox Serving — Browser Sandbox Cell",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003",
+        "ACR-0004",
+        "ACR-0005"
+      ],
+      "shared_nouns": {
+        "authority": "needs_cleanup",
+        "receipt": "needs_cleanup",
+        "ack": "needs_cleanup",
+        "commit": "needs_cleanup",
+        "projection": "needs_cleanup",
+        "durable_truth": "needs_cleanup"
+      },
+      "local_authority_claims": [
+        "Sandbox authority remains subordinate to the owning Cell."
+      ]
+    },
+    {
+      "adr_id": "0017",
+      "title": "Developer Graph — Technology Foundation for Social Collaboration Fabric",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "needs_cleanup",
+        "receipt": "needs_cleanup",
+        "commit": "needs_cleanup",
+        "projection": "needs_cleanup"
+      },
+      "local_authority_claims": [
+        "Durable graph events should stay in PGlite-backed truth."
+      ]
+    },
+    {
+      "adr_id": "0018",
+      "title": "SDK and Plugin Architecture",
+      "status": "aligned",
+      "should_import": [],
+      "shared_nouns": {
+        "authority": "needs_cleanup",
+        "execution_engine": "needs_cleanup"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0019",
+      "title": "Tribunus Compute Kernel",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003",
+        "ACR-0004",
+        "ACR-0005",
+        "ACR-0006",
+        "ACR-0007",
+        "ACR-0008",
+        "ACR-0009",
+        "ACR-0010"
+      ],
+      "shared_nouns": {
+        "authority": "needs_cleanup",
+        "receipt": "needs_cleanup",
+        "phase": "needs_cleanup",
+        "backend": "needs_cleanup",
+        "projection": "needs_cleanup",
+        "scratch_memory": "needs_cleanup",
+        "execution_engine": "needs_cleanup"
+      },
+      "local_authority_claims": [
+        "Compute kernel owns ephemeral accelerator state and execution plans, not durable truth."
+      ]
+    },
+    {
+      "adr_id": "0020",
+      "title": "JSON Schema Governance",
+      "status": "aligned",
+      "should_import": [],
+      "shared_nouns": {
+        "schema": "needs_cleanup",
+        "authority": "needs_cleanup"
+      },
+      "local_authority_claims": [
+        "Schema governance is a standards layer, not an authority source."
+      ]
+    },
+    {
+      "adr_id": "0021",
+      "title": "IOSurface Single-Island Runtime with Tokio-Valkey Orchestration",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003",
+        "ACR-0004",
+        "ACR-0005",
+        "ACR-0006",
+        "ACR-0007",
+        "ACR-0008",
+        "ACR-0009",
+        "ACR-0010"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned",
+        "ack": "aligned",
+        "commit": "aligned",
+        "phase": "aligned",
+        "work_item": "aligned",
+        "phase_scope": "aligned",
+        "backend": "aligned",
+        "projection": "aligned",
+        "coordination": "aligned",
+        "durable_truth": "aligned",
+        "runtime_tensor_truth": "aligned",
+        "scratch_memory": "aligned",
+        "execution_engine": "aligned"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0022",
+      "title": "Tribunus Runtime Truth Spine",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003",
+        "ACR-0004",
+        "ACR-0005"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned",
+        "ack": "aligned",
+        "commit": "aligned",
+        "phase": "aligned",
+        "work_item": "aligned",
+        "phase_scope": "aligned",
+        "backend": "aligned",
+        "projection": "aligned",
+        "coordination": "aligned",
+        "durable_truth": "aligned",
+        "runtime_tensor_truth": "aligned",
+        "scratch_memory": "aligned",
+        "execution_engine": "aligned"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0023",
+      "title": "Authority Model, Receipts, Evidence Chains, and Capability Ontology",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned",
+        "commit": "aligned"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0024",
+      "title": "Policy Decision Enforcement Points",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0025",
+      "title": "Authority Governance Model",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0026",
+      "title": "Schema Migration Compatibility",
+      "status": "compatibility-only",
+      "should_import": [],
+      "shared_nouns": {
+        "schema": "needs_cleanup"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0027",
+      "title": "Control-Plane Transaction Boundaries",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned",
+        "commit": "aligned"
+      },
+      "local_authority_claims": []
+    },
+    {
+      "adr_id": "0028",
+      "title": "Control-Plane Constraint Parity",
+      "status": "aligned",
+      "should_import": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003"
+      ],
+      "shared_nouns": {
+        "authority": "aligned",
+        "receipt": "aligned"
+      },
+      "local_authority_claims": []
+    }
+  ],
+  "summary": {
+    "aligned": 19,
+    "needs_component_imports": 0,
+    "needs_wording_cleanup": 0,
+    "superseded": 0,
+    "compatibility_only": 6,
+    "conflict": 0
+  }
+}

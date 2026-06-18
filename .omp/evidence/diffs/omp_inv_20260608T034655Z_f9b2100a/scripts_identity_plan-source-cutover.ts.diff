@@ -1,0 +1,53 @@
+--- a/scripts/identity/plan-source-cutover.ts
++++ b/scripts/identity/plan-source-cutover.ts
+@@ -309,28 +309,28 @@
+   label: "Consumer Packages",
+   description: "Application-level packages consuming foundation and SDK packages",
+   predicate: (dir, name) => {
+-    const consumers = new Set([
+-      "packages/app",
+-      "packages/desktop",
+-      "packages/web",
+-      "packages/console/core",
+-      "packages/console/app",
+-      "packages/console/function",
+-      "packages/console/support",
+-      "packages/console/mail",
+-      "packages/console/resource",
+-      "packages/stats/core",
+-      "packages/stats/app",
+-      "packages/stats/server",
+-      "packages/enterprise",
+-      "packages/slack",
+-      "packages/script",
+-      "packages/http-recorder",
+-      "packages/function",
+-      "packages/storybook",
+-      "packages/containers",
+-    ]);
+-    return consumers.has(dir);
++    const consumers: Record<string, true> = {
++      "packages/app": true,
++      "packages/desktop": true,
++      "packages/web": true,
++      "packages/console/core": true,
++      "packages/console/app": true,
++      "packages/console/function": true,
++      "packages/console/support": true,
++      "packages/console/mail": true,
++      "packages/console/resource": true,
++      "packages/stats/core": true,
++      "packages/stats/app": true,
++      "packages/stats/server": true,
++      "packages/enterprise": true,
++      "packages/slack": true,
++      "packages/script": true,
++      "packages/http-recorder": true,
++      "packages/function": true,
++      "packages/storybook": true,
++      "packages/containers": true,
++    };
++    return !!consumers[dir];
+   },
+ };
+ 

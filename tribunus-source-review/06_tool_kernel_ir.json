@@ -1,0 +1,15 @@
+{
+  "schema": "tribunus.semantic_review.tool_kernel_ir.v1",
+  "packet_id": "tribunus-gemini-ir",
+  "artifact_id": "06_tool_kernel_ir.json",
+  "generated_at": "2026-06-14T00:18:49.154Z",
+  "repo_root_name": "Tribunus",
+  "git_head_sha": "709b19e482e73643354a0cdfe1430fdc317766d8",
+  "git_branch": "main",
+  "dirty": true,
+  "generator_version": "code_review_export@gemini_structured_ir_v1",
+  "tools": [],
+  "kernel_files": [],
+  "provider_adapters": [],
+  "findings": []
+}

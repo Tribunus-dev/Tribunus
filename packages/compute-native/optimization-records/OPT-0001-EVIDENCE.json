@@ -1,0 +1,183 @@
+{
+  "mission_id": "0001",
+  "experiment_id": "E0002-DECODE-BOTTLENECK-ATTRIBUTION",
+  "run_id": "E0002-R1-20260609",
+  "source_commit": "2080fdc1b2b5ee71ae8b19046e2b76828c3bca61",
+  "runtime_binary_sha256": "7e3e7aacb588d7cb6680f6770dff92a778ece7548570a30425b9c2142e8442f6",
+  "binary_profile": "image-build (release + LTO + codegen-units=1 + opt-level=3)",
+  "logical_image_hash": "d042df1e4062a53e3a003af4e2e8c714924fcf19f03b7cf0dd5f67293355d924",
+  "artifact_root_hash": "3a0c6d47d42b42cba87d1be8a764a9717c9836e2748e4c0b3932ead6f645d8dd",
+  "machine_identity": "Apple M1, 16GB LPDDR4X, macOS 26.x (darwin 25.5.0), aarch64-apple-darwin",
+  "instrumentation_schema_version": "1.0",
+  "raw_trace": {
+    "path": "packages/compute-native/research-data/E0002-R1-raw-trace.txt",
+    "sha256": "d5e57004cb2b0a0b771f1dfd04c87df2cf0f0a29af329e123a93f637292bbfa1",
+    "lines": 190,
+    "note": "Full eprintln output from decode-one run, including [model-load], [full-model] per-layer, [phase], [OPT-0006-T2], and JSON summary. Reproducible from the frozen artifact and the committed binary."
+  },
+  "structured_dataset_digest": "0eddcfd32fa11697cac9b6685d75a71eee1232aaac5529a629f10011124007fe",
+  "canonical_normalization_digest": "a6bf8decc7185ea467395b9198e2f61e834f307ab12264c0d571cd6301ef1eb9",
+  "canonical_finalization_digest": "f38f6f62032b9d13c0482c2df4f9ae0da601c920c1afee25f55f39b6dceb700a",
+  "canonical_run_id": "E0002-R1-20260609-canonical",
+  "structured_dataset_method": "direct_parser_v1",
+  "canonical_normalization_method": "normalizeRun_v1_with_standard_layer_parser_v2",
+  "canonical_pipeline": {
+    "status": "completed",
+    "parser_module": "compute-research/src/parse/standard-layer-events.ts",
+    "parser_grammar": "v2-auto-detect",
+    "normalizer": "compute-research/src/normalize/normalize.ts",
+    "duckdb": "executed — smoke query returns 0 because valid_claim_runs filters run_grade='claim_candidate'; this run is 'controlled'. Direct query confirms 192 events (96 stage + 96 memory_sample) in the runs table.",
+    "parser_schema_corrections": [
+      "Zero-vs-unavailable: absent measurements (file_read_bytes, materialized_bytes, kv_delta) are omitted from the measurements object rather than emitted as phantom zeros.",
+      "Memory-field semantics: MLX cache memory is stored as mlx_cache_bytes in the measurements JSON, NOT as compressed_bytes. compressed_bytes and wired_bytes remain 0 (not measured in V2 instrumentation).",
+      "Backward-compatible: resident_bytes and active_bytes remain in the normalizer's MemorySampleRecord columns for DuckDB view compatibility."
+    ],
+    "canonical_run_directory": "packages/compute-native/research-data/E0002-R1-20260609-canonical",
+    "canonical_normalized_directory": "packages/compute-native/research-data/E0002-R1-20260609-canonical-norm",
+    "canonical_duckdb": "packages/compute-native/research-data/E0002-R1-20260609-canonical.duckdb",
+    "normalized_files": [
+      { "name": "runs.arrow", "rows": 1 },
+      { "name": "stage_events.arrow", "rows": 96 },
+      { "name": "memory_samples.arrow", "rows": 96 },
+      { "name": "token_metrics.arrow", "rows": 0 },
+      { "name": "correctness_checkpoints.arrow", "rows": 0 }
+    ],
+    "referential_integrity": "valid",
+    "note": "This run was first finalized manually with a direct V2 parser, then re-normalized through the updated canonical compute-research pipeline. The parser now supports both V1 (elapsed_ms/bytes) and V2 (graph_us/eval_us/rss/active/cache/kv) grammars via auto-detection."
+  },
+  "finalization_digest": "9183a5447d70e74d5da4f74a33a5641c01f979a1b6294220d5600f29b7b0424e",
+  "finalization": {
+    "method": "manual — checksums.sha256 over run-directory files, SHA-256 of sorted checksum listing",
+    "run_directory": "packages/compute-native/research-data/E0002-R1-20260609",
+    "files": [
+      { "name": "events.jsonl", "sha256": "006df399f971ac1b63ec90f9c131ded01384c7276fc8f3621712b8a2b32919ed", "size": 120052 },
+      { "name": "run-manifest.json", "sha256": "8a945fc7dc76352a1def5d66f6d9bd3c98bb5286674935b5f3f6bb9d863245b0", "size": 1024 }
+    ],
+    "checksums_sha256": "006df399f971ac1b63ec90f9c131ded01384c7276fc8f3621712b8a2b32919ed  events.jsonl\n8a945fc7dc76352a1def5d66f6d9bd3c98bb5286674935b5f3f6bb9d863245b0  run-manifest.json",
+    "note": "Normalization via compute-research pipeline skipped — the new [full-model] telemetry format with per-layer graph_us/eval_us/rss is not yet supported by parseStandardLayerEvents in packages/compute-research. Events were parsed from the raw trace by a direct parser and committed as events.jsonl in the run directory. The normalized_dataset_digest is a compound SHA-256 of the sorted event and manifest content hashes."
+  },
+  "phase_ledger": {
+    "prefill": {
+      "wall_s": 16.46,
+      "graph_build_s": 1.97,
+      "eval_s": 9.14,
+      "accounted_s": 11.11,
+      "unaccounted_s": 5.36,
+      "unaccounted_pct": 32.55,
+      "layers": 48,
+      "token": 589,
+      "all_finite": true
+    },
+    "decode": {
+      "wall_s": 38.30,
+      "graph_build_s": 6.19,
+      "eval_s": 28.63,
+      "accounted_s": 34.82,
+      "unaccounted_s": 3.49,
+      "unaccounted_pct": 9.10,
+      "layers": 48,
+      "token": 236941,
+      "all_finite": true
+    }
+  },
+  "per_layer_stats": {
+    "decode_wall_mean_ms": 797.9,
+    "decode_accounted_mean_ms": 725.4,
+    "decode_graph_mean_ms": 129.0,
+    "decode_eval_mean_ms": 596.5,
+    "decode_unaccounted_mean_ms": 72.7,
+    "sliding_layers": {
+      "count": 40,
+      "total_s": 28.39,
+      "mean_per_layer_ms": 709.8
+    },
+    "full_attention_layers": {
+      "count": 8,
+      "total_s": 6.43,
+      "mean_per_layer_ms": 803.8
+    },
+    "full_vs_sliding_ratio": 1.13
+  },
+  "operation_family_ledger": {
+    "note": "Per-projection timing not instrumented. Available: per-layer graph_us + eval_us totals only. Projection families cannot be separated from attention, normalization, activation, and KV overhead within each layer.",
+    "decode_accounted_pct": 90.9,
+    "decode_graph_construction_pct": 16.2,
+    "decode_evaluation_pct": 74.7,
+    "sliding_attention_total_pct": 74.1,
+    "full_attention_total_pct": 16.8,
+    "unaccounted_pct": 9.1,
+    "projection_families": "not_instrumented",
+    "kv_copy_bytes": 131072,
+    "kv_alloc_bytes": 671252480
+  },
+  "residency_assessment": {
+    "model_load": {
+      "mapped_tensors": 1180,
+      "copied_tensors": 0,
+      "materialized_tensors": 0,
+      "mapped_bytes": 12670153523,
+      "copied_bytes": 0,
+      "materialized_bytes": 0,
+      "postload_rss_bytes": 9663676416,
+      "mlx_active_bytes": 12670153523,
+      "mlx_cache_bytes": 0,
+      "page_faults": 0
+    },
+    "decode_peak": {
+      "mlx_active_bytes": 13743895347,
+      "mlx_cache_peak_bytes": 19922944,
+      "per_layer_rss_range_bytes": "6.7 GB down to ~15 MB during prefill; ~16 MB during decode"
+    },
+    "conclusion": [
+      "All 1180 model tensors were bound as mapped external arrays. No application-level weight copy was recorded during model load.",
+      "Physical residency behavior remains unresolved: page-fault sampling is disabled (SIGBUS on macOS 26.x), and per-layer RSS values show an implausible drop from 6.7 GB to ~15 MB during prefill. If the drop is real (OS reclaiming MAP_PRIVATE file-backed pages under Metal memory pressure), it indicates severe memory contention rather than comfortable residency.",
+      "MLX active memory reaches 13.7 GB on a 16 GB machine. MLX active/peak/cache are allocator-specific measures; they are not equivalent to process RSS or total physical footprint. The model operates close to the machine envelope.",
+      "Residency optimization is not authorized until page-fault sampling is operational and a valid per-layer RSS series can be collected."
+    ]
+  },
+  "deterministic_token_proof": {
+    "prefill_token": 589,
+    "decode_token": 236941,
+    "prompt": [2, 42, 100, 500],
+    "verified_against": "E0000-DECODE1-v1 frozen control"
+  },
+  "t2_probe": {
+    "status": "blocked",
+    "reason": "External array dtype mismatch — Uint8 external arrays report as Uint32 through MLX Metal path on Apple Silicon. Copy comparison could not execute.",
+    "ext_qmatmul_ms": 18.8,
+    "shape": "4096x960"
+  },
+  "conclusion": [
+    "Decode bottleneck confirmed: eval_us (Metal kernel execution + synchronization fence) dominates at 74.7% of wall time (28.63s of 38.30s).",
+    "Graph construction (lazy MLX operation recording) accounts for 16.2% (6.19s).",
+    "Decode per-layer mean: 797.9 ms wall, 725.4 ms accounted (129.0 ms graph + 596.5 ms eval).",
+    "Full-attention layers are 1.13× more expensive per layer than sliding (803.8 ms vs 709.8 ms).",
+    "Per-projection timing NOT available — cannot determine which matmul dominates the 74.7% eval time.",
+    "T2 contiguity hypothesis UNTESTED due to external array dtype mismatch.",
+    "All 1180 model tensors mapped-no-copy at load. No application-level weight copies.",
+    "Physical residency unresolved: page-fault sampling disabled, per-layer RSS series invalid.",
+    "KV cache copies only for full-attention layers (16 KB/step × 8 layers = 128 KB total per decode step)."
+  ],
+  "authorization_decision": "authorize_per_projection_instrumentation",
+  "authorization_detail": {
+    "layout_qualification": "NOT AUTHORIZED — per-projection timing unavailable; T2 probe blocked by dtype mismatch",
+    "kv_optimization": "NOT AUTHORIZED — KV copy is 128 KB/step, overshadowed by 596.5 ms evaluation",
+    "graph_sync_optimization": "NOT AUTHORIZED — graph construction is 16.2% of wall time; eval dominates",
+    "residency_optimization": "NOT AUTHORIZED — page-fault sampling disabled; per-layer RSS series invalid; physical residency unresolved",
+    "mlx_kernel_path_investigation": "AUTHORIZED — eval dominates at 74.7% of decode wall time; per-projection attribution is the prerequisite",
+    "insufficient_evidence": false,
+    "next_mission": "Mission 0006A: Quantized Projection Kernel-Path Attribution. Three levels: (1) projection_graph_build_us via Instant around each quantized_matmul call; (2) isolated_projection_eval_us via forced eval+synchronize in a diagnostic microbenchmark or replay harness operating on one real mapped projection from the frozen artifact; (3) integrated_gpu_duration_us via Metal capture, GPU signposts, or MLX backend instrumentation to associate kernel launches with Q/K/V/O/gate/up/down projections inside an unchanged full-layer graph. The Uint8→Uint32 external-array dtype mismatch must be investigated as part of this mission — it may affect kernel selection, stride interpretation, and temporary-copy behavior."
+  },
+  "run_timestamp": "2026-06-09T13:45:00Z",
+  "revision": 3,
+  "revision_timestamp": "2026-06-09T15:30:00Z",
+  "revision_changes": [
+    "Fixed per-layer timing units: 725 ms not 0.725 ms (×1000 error).",
+    "Fixed full-attention ratio: 1.13× not 1.4× (803.8/709.8 = 1.13).",
+    "Replaced raw_trace_digest path with committed trace + SHA-256 hash.",
+    "Replaced invalid RSS conclusions: per-layer series shows implausible 6.7 GB → 15 MB drop; physical residency marked unresolved.",
+    "Removed 'model fits comfortably' — MLX active 13.7 GB on 16 GB machine is close to the envelope.",
+    "Replaced next_action with three-level attribution system description.",
+    "Added finalization_digest and normalized_dataset_digest computed from run-directory files."
+  ]
+}

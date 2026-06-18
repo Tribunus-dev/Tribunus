@@ -1,0 +1,6 @@
+{"at":"2026-06-01T06:45:22.173Z","session_id":"ses_17e123e09ffeJhvZTrbvi9VmBg","agent":"critic","tool":"smart_find","pattern":"*two-level*","path":"docs/json"}
+{"at":"2026-06-01T06:45:29.527Z","session_id":"ses_17e123e09ffeJhvZTrbvi9VmBg","agent":"critic","tool":"smart_find","pattern":"*health*plan*","path":"docs/json"}
+{"at":"2026-06-01T06:45:35.171Z","session_id":"ses_17e123e09ffeJhvZTrbvi9VmBg","agent":"critic","tool":"smart_find","pattern":"*health*","path":"docs/json/opencode"}
+{"at":"2026-06-01T06:45:54.075Z","session_id":"ses_17e123e09ffeJhvZTrbvi9VmBg","agent":"critic","tool":"smart_find","pattern":"*health*.json","path":""}
+{"at":"2026-06-01T06:45:54.802Z","session_id":"ses_17e123e09ffeJhvZTrbvi9VmBg","agent":"critic","tool":"smart_grep","pattern":"two.level.health","path":"docs"}
+{"at":"2026-06-01T06:46:14.198Z","session_id":"ses_17e123e09ffeJhvZTrbvi9VmBg","agent":"critic","tool":"smart_grep","pattern":"ib-sidecar-boundary.*handoff.*completed","path":"/Users/user/.local/share/opencode/tool-output"}

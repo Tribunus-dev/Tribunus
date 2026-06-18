@@ -1,0 +1,69 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0060-resource-ownership-and-deterministic-teardown",
+  "type": "mission",
+  "name": "Resource Ownership and Deterministic Teardown",
+  "slug": "resource-ownership-and-deterministic-teardown",
+  "description": "Every resource (database connection, file handle, network socket, child process) has an owner. Teardown is ordered and deterministic.",
+  "purpose": "No resource leaks, no dangling state.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Every resource is registered in a global resource registry with owner, type, and lifecycle scope",
+    "Resource teardown follows reverse order of acquisition (stack semantics)",
+    "Resource registry provides a dump of all live resources for leak detection",
+    "Teardown of one scope does not orphan resources in a child scope",
+    "Force-teardown after timeout logs warnings but never hangs the shutdown sequence",
+    "Resource registry is itself a resource with deterministic teardown (last in, first out)"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "resource-ownership",
+    "teardown",
+    "lifecycle",
+    "registry",
+    "leak-detection"
+  ],
+  "depends_on": [
+    "0053-instance-bootstrap-and-dependency-assembly"
+  ],
+  "unlocks": [
+    "0054-session-open-checkpoint-resume-consolidate-and-close",
+    "0055-workspace-open-and-close-semantics",
+    "0057-main-process-renderer-worker-and-sidecar-boundaries",
+    "0058-background-runtime-supervision",
+    "0059-runtime-upgrade-and-migration-hooks",
+    "0061-app-shell-navigation-and-window-lifecycle"
+  ],
+  "authority_scope": "resource-ownership",
+  "allowed_paths": [
+    "packages/app/src/runtime/resource/**"
+  ],
+  "required_evidence": [
+    "Resource registry registration test (owner, type, lifecycle scope)",
+    "Reverse-order teardown test (stack semantics)",
+    "Scope teardown does not orphan child resources test",
+    "Force-teardown timeout test (no hang)",
+    "Resource registry self-teardown test (last in, first out)"
+  ],
+  "acceptance_gates": [
+    "Every resource registered with owner, type, scope",
+    "Teardown follows reverse acquisition order",
+    "Scope teardown does not orphan child resources",
+    "Force-teardown never hangs shutdown",
+    "Resource registry teardown is deterministic"
+  ],
+  "rollback_strategy": "Resource acquisition that fails mid-sequence triggers reverse-order teardown of already-acquired resources",
+  "recovery_strategy": "On crash, resource registry is rebuilt from persistent resource journal; orphaned resources are cleaned up",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "Resource leak detection exceeding threshold escalates to user with leak report",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.494Z",
+  "updated_at": "2026-06-07T05:45:37.009Z"
+}

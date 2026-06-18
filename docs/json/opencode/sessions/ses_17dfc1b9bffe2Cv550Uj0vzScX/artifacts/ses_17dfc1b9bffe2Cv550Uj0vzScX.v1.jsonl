@@ -1,0 +1,6 @@
+{"at":"2026-06-01T07:21:02.996Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"Read-only — getting context around classifyErrorCode","occurrences":1}
+{"at":"2026-06-01T07:22:44.957Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"Read-only — getting context around the exact failed pattern match","occurrences":1}
+{"at":"2026-06-01T07:29:45.132Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"Read-only: locate the create function with surrounding context via diff","occurrences":1}
+{"at":"2026-06-01T07:30:37.645Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"Read-only: locate the create function disabled check via diff context","occurrences":1}
+{"at":"2026-06-01T07:31:02.533Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"Read-only: find errorCode in McpFailedError via diff context","occurrences":1}
+{"at":"2026-06-01T07:31:18.398Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"Read-only: locate layer effect to find create function context","occurrences":1}

@@ -1,0 +1,10 @@
+--- a/packages/compute-native/src/engine_error.rs
++++ b/packages/compute-native/src/engine_error.rs
+@@ -52,6 +52,7 @@
+             Self::WorkerProtocolViolation => "worker-protocol-violation",
+             Self::WorkerCrashed => "worker-crashed",
+             Self::WorkerUnresponsive => "worker-unresponsive",
++            Self::WorkerRestartLimitExceeded => "worker-restart-limit-exceeded",
+             Self::DeadlineExceeded => "deadline-exceeded",
+             Self::MemoryLimitExceeded => "memory-limit-exceeded",
+             Self::Cancelled => "cancelled",

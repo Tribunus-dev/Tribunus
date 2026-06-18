@@ -1,0 +1,67 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0055-workspace-open-and-close-semantics",
+  "type": "mission",
+  "name": "Workspace Open and Close Semantics",
+  "slug": "workspace-open-and-close-semantics",
+  "description": "What happens when a workspace opens: file watching, index hydration, project attachment, agent spawning. What happens on close: flush, save, detach, cleanup.",
+  "purpose": "Workspace boundaries are explicit and safe.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Workspace open triggers deterministic sequence: file watcher init, index hydration, project attachment, agent pool spawn",
+    "Workspace close triggers deterministic sequence: agent drain, project detach, index flush, watcher teardown",
+    "Open is idempotent — re-opening an already-open workspace returns existing handle",
+    "Close is idempotent — double-close does not throw or corrupt",
+    "In-flight operations during close are drained with configurable timeout before force-termination",
+    "Workspace open/close events are published to an observable stream"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "workspace",
+    "lifecycle",
+    "file-watching",
+    "index",
+    "agent-pool"
+  ],
+  "depends_on": [
+    "0053-instance-bootstrap-and-dependency-assembly",
+    "0054-session-open-checkpoint-resume-consolidate-and-close",
+    "0057-main-process-renderer-worker-and-sidecar-boundaries",
+    "0060-resource-ownership-and-deterministic-teardown"
+  ],
+  "unlocks": [
+    "0058-background-runtime-supervision",
+    "0063-runtime-truth-projection-into-the-cockpit"
+  ],
+  "authority_scope": "workspaces",
+  "allowed_paths": [
+    "packages/app/src/runtime/workspaces/**"
+  ],
+  "required_evidence": [
+    "Workspace open deterministic sequence test (watcher → index → project → agents)",
+    "Workspace close deterministic sequence test (drain → detach → flush → teardown)",
+    "Open idempotency test",
+    "Close idempotency test",
+    "In-flight drain timeout test"
+  ],
+  "acceptance_gates": [
+    "Open follows defined deterministic sequence",
+    "Close follows defined deterministic sequence",
+    "Open and close are idempotent",
+    "Events published to observable stream"
+  ],
+  "rollback_strategy": "Failed workspace open rolls back all partial setup steps in reverse order",
+  "recovery_strategy": "On crash, detect open workspace records from session and offer recovery or cleanup",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "Workspace that cannot open after max attempts escalates to user with diagnostics",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.477Z",
+  "updated_at": "2026-06-07T05:44:01.924Z"
+}

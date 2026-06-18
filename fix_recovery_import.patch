@@ -1,0 +1,10 @@
+--- packages/runtime/src/coordination/recovery.ts
++++ packages/runtime/src/coordination/recovery.ts
+@@ -19,6 +19,7 @@
+
+ import { Effect, Context, Layer } from "effect"
+ import type { Redis } from "ioredis"
++import { ValkeyRedis } from "./valkey-redis"
+ import { ValkeyStreams } from "./stream-primitives"
+ import { ValkeySortedSets } from "./sorted-set-primitives"
+ import { DatabaseAdapter } from "@/storage/adapter"

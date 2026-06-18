@@ -1,0 +1,40 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0214-entity-resolution",
+  "type": "mission",
+  "name": "Entity Resolution",
+  "slug": "entity-resolution",
+  "description": "Resolve multiple references to the same real-world entity into a canonical entity. Entity resolution uses attribute matching, relationship analysis, and manual confirmation.",
+  "purpose": "Eliminate entity duplication in the knowledge graph by identifying when different references point to the same real-world entity and merging them into a single canonical representation.",
+  "campaignId": "0016",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Entity resolution matches by: name similarity, attribute overlap, shared relationships",
+    "Resolution can be automatic (high confidence) or suggested (low confidence)",
+    "Manual confirmation resolves ambiguous candidates",
+    "Resolved entities merge triples onto the canonical entity",
+    "Resolution record is preserved for audit",
+    "Un-resolve operation exists for correcting false positive merges"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "depends_on": [
+    "0213-knowledge-triple-model"
+  ],
+  "unlocks": [],
+  "authority_scope": "memory:entities",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "Split merged entities; restore pre-resolution identity assignments",
+  "recovery_strategy": "Rebuild canonical entity index from entity resolution journal",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:46:05.233Z",
+  "updated_at": "2026-06-07T05:51:07.332Z"
+}

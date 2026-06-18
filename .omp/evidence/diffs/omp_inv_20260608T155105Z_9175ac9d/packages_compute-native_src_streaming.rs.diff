@@ -1,0 +1,81 @@
+--- a/packages/compute-native/src/streaming.rs
++++ b/packages/compute-native/src/streaming.rs
+@@ -649,46 +649,46 @@
+         assert!(matches!(rx.recv(), Some(GenerationEvent::Done)));
+         assert!(rx.recv().is_none());
+     }
+-}
+ 
+-// --------------------------------------------------------------------------
+-// GenerationHandle & disconnect notifier
+-// --------------------------------------------------------------------------
++    // ------------------------------------------------------------------
++    // GenerationHandle & disconnect notifier
++    // ------------------------------------------------------------------
+ 
+-#[test]
+-fn test_generation_handle_job_id() {
+-    let (_, stream) = generation_channel(None);
+-    let handle = GenerationHandle::new(stream);
++    #[test]
++    fn test_generation_handle_job_id() {
++        let (_, stream) = generation_channel(None);
++        let handle = GenerationHandle::new(stream);
+ 
+-    // job_id is a non-empty UUID string.
+-    assert!(!handle.job_id.is_empty());
+-    // Should parse as a valid UUID v4.
+-    let parsed: Uuid = handle.job_id.parse().expect("valid UUID");
+-    assert_eq!(parsed.get_version(), Some(uuid::Version::Random));
+-}
++        // job_id is a non-empty UUID string.
++        assert!(!handle.job_id.is_empty());
++        // Should parse as a valid UUID v4.
++        let parsed: Uuid = handle.job_id.parse().expect("valid UUID");
++        assert_eq!(parsed.get_version(), Some(uuid::Version::Random));
++    }
+ 
+-#[test]
+-fn test_disconnect_notifier_fires_on_close() {
+-    let (_, mut stream) = generation_channel(None);
+-    let mut rx = stream
+-        .take_disconnect_notifier()
+-        .expect("disconnect rx should be present");
++    #[test]
++    fn test_disconnect_notifier_fires_on_close() {
++        let (_, mut stream) = generation_channel(None);
++        let mut rx = stream
++            .take_disconnect_notifier()
++            .expect("disconnect rx should be present");
+ 
+-    // Not yet closed.
+-    assert!(!stream.is_closed());
++        // Not yet closed.
++        assert!(!stream.is_closed());
+ 
+-    // Close the stream — this should fire the oneshot.
+-    stream.close();
++        // Close the stream — this should fire the oneshot.
++        stream.close();
+ 
+-    // The receiver should now resolve.
+-    match rx.try_recv() {
+-        Ok(()) => {} // expected
+-        Err(tokio::sync::oneshot::error::TryRecvError::Closed) => {
+-            panic!("disconnect notifier was dropped before send");
+-        }
+-        Err(tokio::sync::oneshot::error::TryRecvError::Empty) => {
+-            panic!("disconnect notifier not fired after close");
++        // The receiver should now resolve.
++        match rx.try_recv() {
++            Ok(()) => {} // expected
++            Err(tokio::sync::oneshot::error::TryRecvError::Closed) => {
++                panic!("disconnect notifier was dropped before send");
++            }
++            Err(tokio::sync::oneshot::error::TryRecvError::Empty) => {
++                panic!("disconnect notifier not fired after close");
++            }
+         }
+     }
+ }
+ 

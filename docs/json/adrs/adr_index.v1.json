@@ -1,0 +1,187 @@
+{
+  "schema_version": "v1",
+  "generated_at": "2026-06-05T00:00:00Z",
+  "generated_by": "system",
+  "title": "Architecture Decision Record Index",
+  "description": "Machine-readable index of all ADRs. Maps each ADR ID to its status, date, title, supersedes/superseded_by links, and source file path.",
+  "adrs": [
+    {
+      "id": "0003",
+      "title": "PGlite + Valkey + DuckDB Data Architecture",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0003-pglite-valkey-duckdb.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0004",
+      "title": "Valkey as Coordination Kernel",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0004-valkey-coordination-kernel.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0006",
+      "title": "Mobile PWA as Remote Cockpit",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0006-mobile-pwa-cockpit.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0007",
+      "title": "Unified Design Language",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0007-unified-design-language.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0008",
+      "title": "Design Canvas Hard Parts",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0008-design-canvas-hard-parts.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0009",
+      "title": "Design Council — Cartographer → Architect → Critic Loop for UI",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0009-design-council.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0010",
+      "title": "Community Contribution License & Consent Architecture",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0010-community-contribution-license.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0011",
+      "title": "External Research Porting",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0011-external-research-porting.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0012",
+      "title": "Anti-Scraping Dataset Protection",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0012-anti-scraping-dataset-protection.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0013",
+      "title": "OSS Integrity Gate — License-Governance Workflow Lane",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0013-oss-integrity-gate.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0014",
+      "title": "Tribunus Cell — Sovereign Local Federation",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0014-tribunus-cell-federation.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0015",
+      "title": "MCP as Governed Capability Protocol",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0015-mcp-governed-capabilities.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0016",
+      "title": "Repository Sandbox Serving — Browser Sandbox Cell",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0016-sandbox-cell.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0017",
+      "title": "Developer Graph — Technology Foundation for Social Collaboration Fabric",
+      "status": "accepted",
+      "date": "2026-06-01",
+      "file": "docs/json/adrs/0017-developer-graph.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0018",
+      "title": "SDK and Plugin Architecture — Governed Runtime Contract",
+      "status": "proposed",
+      "date": "2026-06-05",
+      "file": "docs/json/adrs/0018-sdk-and-plugin-architecture.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0019",
+      "title": "Tribunus Compute Kernel — Governed, Copy-Honest Accelerator Runtime",
+      "status": "proposed",
+      "date": "2026-06-06",
+      "file": "docs/json/adrs/0019-compute-kernel.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0020",
+      "title": "JSON Schema Governance — Centralized Standards, Validation, and Type Generation",
+      "status": "accepted",
+      "date": "2026-06-06",
+      "file": "docs/json/adrs/0020-json-schema-governance.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0021",
+      "title": "IOSurface Single-Island Runtime with Tokio-Valkey Orchestration",
+      "status": "proposed",
+      "date": "2026-06-14",
+      "file": "docs/json/adrs/0021-iosurface-single-island-runtime-memory-foundation.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0022",
+      "title": "Tribunus Runtime Truth Spine",
+      "status": "proposed",
+      "date": "2026-06-14",
+      "file": "docs/json/adrs/0022-runtime-truth-spine.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    }
+  ],
+  "stats": {
+    "total": 20,
+    "proposed": 4,
+    "accepted": 16,
+    "deprecated": 0,
+    "superseded": 0
+  }
+}

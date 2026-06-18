@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0007",
+  "type": "lane",
+  "name": "Valkey Rebuild Protocol Implementation",
+  "slug": "valkey-rebuild-protocol-implementation",
+  "description": "Implement the rebuild-on-cold-start protocol: scan PGlite for non-terminal work items, repopulate Valkey Streams, Sorted Sets, and TTL keys. Must be fast (< 1s), idempotent, and derive all state from PGlite. This lane depends on the Durable ACK Binding lane — rebuild cannot be proven until the PGlite lifecycle schema is complete and every lifecycle transition writes to PGlite before touching Valkey.",
+  "scope": "valkey-rebuild",
+  "missionId": "0004",
+  "status": "completed",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/opencode/src/coordination/"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": "2026-06-06T09:12:26.129Z",
+  "leaseExpiresAt": "2026-06-06T11:56:03.726Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:50:09.616Z",
+  "updated_at": "2026-06-06T11:56:03.726Z"
+}

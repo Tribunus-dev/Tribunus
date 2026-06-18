@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0019-durable-work-lifecycle-authority-layer",
+  "type": "mission",
+  "name": "Durable Work Lifecycle Authority Layer",
+  "slug": "durable-work-lifecycle-authority-layer",
+  "description": "The coordination kernel depends on PGlite-backed lifecycle writes for authority. This mission establishes the durable work lifecycle schema and binding layer: work item durability, work attempt durability, lifecycle transitions, recovery receipts, dead-letter/quarantine tables, and the rule that every terminal Valkey ACK must be preceded by a committed PGlite lifecycle write.",
+  "purpose": "The decisive missing piece in the coordination kernel is not Valkey mechanics but PGlite-backed lifecycle writes. This mission isolates the coordination-critical schema and binding so it does not get buried under broader intelligence-layer work (diagnostic packets, dharma ledger, vector search). Every work lifecycle state (enqueued, in-progress, completed, failed-terminal, failed-retryable, dead-lettered) must be represented as an ACID row before the corresponding Valkey stream entry is acknowledged.",
+  "campaignId": "0001",
+  "status": "completed",
+  "priority": 95,
+  "acceptanceCriteria": [
+    "WorkItemTable and WorkAttemptTable Drizzle schemas define all lifecycle states: enqueue_pending, in_progress, completed, failed_terminal, failed_retryable, dead_lettered",
+    "Every completeAndAck writes terminal durable state to PGlite before XACK",
+    "Every failRetryableAndAck writes retry-scheduled durable state to PGlite before requeue",
+    "Every deadLetterAndAck writes dead-letter durable record to PGlite before terminal XACK",
+    "DeadLetterTable and QuarantineTable schemas exist for divergence tracking",
+    "Recovery receipts are written for every rebuild action"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T10:41:10.823Z",
+  "updated_at": "2026-06-06T17:56:42.342Z"
+}

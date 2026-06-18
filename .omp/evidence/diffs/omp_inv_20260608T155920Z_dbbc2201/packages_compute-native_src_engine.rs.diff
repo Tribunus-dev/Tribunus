@@ -1,0 +1,10 @@
+--- a/packages/compute-native/src/engine.rs
++++ b/packages/compute-native/src/engine.rs
+@@ -349,7 +349,6 @@
+             request_id,
+         };
+ 
+-        supervisor.start_generation(payload).map_err(|e| {
+         let handle = supervisor.start_generation(&payload).map_err(|e| {
+             napi::Error::from_reason(format!("Generation failed: {}", e))
+         })?;

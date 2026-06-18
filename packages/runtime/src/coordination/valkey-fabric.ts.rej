@@ -1,0 +1,11 @@
+--- packages/runtime/src/coordination/valkey-fabric.ts
++++ packages/runtime/src/coordination/valkey-fabric.ts
+@@ -1,7 +1,7 @@
+ import Redis from "ioredis"
+ import type { CoordinationFabric, AgentHeartbeat, LeaseRequest, LeaseResult, CoordinationEvent, CoordinationJob, BackpressureState } from "./fabric"
+ import { ValkeyStreams } from "./stream-primitives"
+-import { ValkeyRedis } from "./valkey-redis"
++import { ValkeyRedis } from "./valkey-redis" // already added via patch
+ import { Layer, Effect } from "effect"
+
+ export async function createValkeyFabric(url: string): Promise<CoordinationFabric> {

@@ -1,0 +1,883 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/golden-machine/v1.json",
+  "title": "GoldenMachine",
+  "description": "Top-level state machine that owns and drives signed inference execution. The machine transitions through declared states, verifying guards before each transition and recording every state change to a hash-chained audit log.",
+  "type": "object",
+  "required": [
+    "machine_id",
+    "plan_hash",
+    "current_state",
+    "island",
+    "backends",
+    "audit",
+    "execution_cursor"
+  ],
+  "properties": {
+    "machine_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this machine instance. Generated at plan load time."
+    },
+    "plan_hash": {
+      "$ref": "#/definitions/hash256",
+      "description": "SHA-256 of the loaded GoldenPathPlan. Immutable for the lifetime of this machine."
+    },
+    "current_state": {
+      "$ref": "#/definitions/golden_state",
+      "description": "Current state of the machine. All transitions are relative to this state."
+    },
+    "island": {
+      "$ref": "#/definitions/island_region",
+      "description": "The executor-owned memory region. Backends receive verified projections."
+    },
+    "backends": {
+      "type": "object",
+      "description": "Registry of initialized backend adapters.",
+      "additionalProperties": {
+        "$ref": "#/definitions/backend_instance"
+      }
+    },
+    "audit": {
+      "$ref": "#/definitions/audit_chain",
+      "description": "Hash-chained audit log of every transition executed."
+    },
+    "execution_cursor": {
+      "$ref": "#/definitions/execution_cursor",
+      "description": "Current position in the dispatch table."
+    }
+  },
+  "definitions": {
+    "hash256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hex-encoded SHA-256 hash."
+    },
+    "tensor_digest": {
+      "type": "object",
+      "required": [
+        "shape",
+        "dtype",
+        "checksum"
+      ],
+      "properties": {
+        "shape": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "dtype": {
+          "type": "string",
+          "enum": [
+            "f32",
+            "f16",
+            "bf16",
+            "i8",
+            "i32",
+            "q4_0",
+            "q8_0"
+          ]
+        },
+        "checksum": {
+          "$ref": "#/definitions/hash256"
+        }
+      },
+      "description": "Cryptographic digest of a tensor value. Computed over the raw bytes."
+    },
+    "golden_state": {
+      "type": "string",
+      "enum": [
+        "unloaded",
+        "bundle_loaded",
+        "manifest_verified",
+        "machine_profile_matched",
+        "artifacts_verified",
+        "island_allocated",
+        "backends_initialized",
+        "ready",
+        "prefilling",
+        "decoding",
+        "completed",
+        "degraded",
+        "refused",
+        "faulted"
+      ],
+      "description": "Lifecycle state of the golden machine. Transitions are strictly ordered; the machine cannot jump states."
+    },
+    "execution_cursor": {
+      "type": "object",
+      "required": [
+        "mode",
+        "token_index",
+        "position",
+        "layer_index",
+        "block_index"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "prefill",
+            "decode"
+          ]
+        },
+        "token_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "layer_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "block_index": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "description": "Instruction pointer for the dispatch table. Determines the next transition via plan.transition_table.lookup(cursor)."
+    },
+    "golden_transition": {
+      "type": "object",
+      "required": [
+        "transition_id",
+        "from_state",
+        "to_state",
+        "block_id",
+        "backend_id",
+        "artifact_id",
+        "required_inputs",
+        "allowed_outputs",
+        "required_barriers",
+        "emitted_barriers",
+        "guards",
+        "effects",
+        "audit_policy",
+        "violation_policy"
+      ],
+      "properties": {
+        "transition_id": {
+          "type": "string",
+          "description": "Stable identifier for this transition in the plan."
+        },
+        "from_state": {
+          "$ref": "#/definitions/golden_state"
+        },
+        "to_state": {
+          "$ref": "#/definitions/golden_state"
+        },
+        "block_id": {
+          "type": "string",
+          "description": "Logical block identifier (e.g. 'layer_0_rmsnorm_qkv')."
+        },
+        "backend_id": {
+          "type": "string",
+          "description": "Target backend for this block."
+        },
+        "artifact_id": {
+          "type": "string",
+          "description": "Hash or identifier of the compiled artifact to execute."
+        },
+        "required_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Memory views that must be initialized before this transition."
+        },
+        "allowed_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Memory views this transition may write to."
+        },
+        "required_barriers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Barriers that must be satisfied before dispatch."
+        },
+        "emitted_barriers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Barriers this transition signals on completion."
+        },
+        "guards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/guard"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/effect"
+          }
+        },
+        "audit_policy": {
+          "$ref": "#/definitions/audit_policy"
+        },
+        "violation_policy": {
+          "$ref": "#/definitions/violation_policy"
+        }
+      },
+      "description": "A legal state transition declared in the plan. The executor only applies this when all guards pass."
+    },
+    "guard": {
+      "type": "object",
+      "required": [
+        "guard_id",
+        "kind"
+      ],
+      "properties": {
+        "guard_id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "manifest_hash_matches",
+            "tensor_hash_matches",
+            "artifact_hash_matches",
+            "block_index_matches",
+            "tensor_shape_matches",
+            "memory_region_initialized",
+            "backend_matches",
+            "artifact_matches",
+            "barrier_satisfied",
+            "machine_profile_compatible",
+            "cursor_position_matches"
+          ]
+        },
+        "expected": {
+          "type": "string",
+          "description": "The value this guard compares against (e.g. expected hash, shape, index)."
+        }
+      },
+      "description": "A precondition that must be satisfied for the transition to be legal."
+    },
+    "effect": {
+      "type": "object",
+      "required": [
+        "effect_id",
+        "kind"
+      ],
+      "properties": {
+        "effect_id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "write_output_tensor",
+            "append_kv_cache_slot",
+            "signal_barrier",
+            "append_audit_event",
+            "increment_block_index",
+            "increment_token_index",
+            "update_logits_digest",
+            "emit_completion"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "description": "The resource affected (memory view ID, barrier ID, etc.)."
+        }
+      },
+      "description": "The only mutation this transition is allowed to perform."
+    },
+    "memory_view": {
+      "type": "object",
+      "required": [
+        "view_id",
+        "offset",
+        "size",
+        "dtype",
+        "shape",
+        "state"
+      ],
+      "properties": {
+        "view_id": {
+          "type": "string"
+        },
+        "offset": {
+          "type": "integer",
+          "description": "Byte offset into the island region."
+        },
+        "size": {
+          "type": "integer",
+          "description": "Size in bytes."
+        },
+        "dtype": {
+          "type": "string",
+          "enum": [
+            "f32",
+            "f16",
+            "bf16",
+            "i8",
+            "i32",
+            "q4_0",
+            "q8_0"
+          ]
+        },
+        "shape": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "state": {
+          "$ref": "#/definitions/memory_view_state",
+          "description": "Runtime lifecycle state of this view."
+        }
+      },
+      "description": "A typed, bounded region of the island allocated by the executor and assigned to a specific tensor role."
+    },
+    "memory_view_state": {
+      "type": "string",
+      "enum": [
+        "unallocated",
+        "allocated",
+        "initialized",
+        "valid",
+        "borrowed_read",
+        "borrowed_write",
+        "invalidated"
+      ],
+      "description": "Lifecycle state of a memory view. Backends only access views in valid or borrowed states."
+    },
+    "island_region": {
+      "type": "object",
+      "required": [
+        "base_address",
+        "total_size",
+        "views",
+        "allocator"
+      ],
+      "properties": {
+        "base_address": {
+          "type": "integer",
+          "description": "Virtual address of the mmap'd region. Process-private."
+        },
+        "total_size": {
+          "type": "integer",
+          "description": "Total size of the island in bytes."
+        },
+        "views": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/memory_view"
+          }
+        },
+        "allocator": {
+          "type": "string",
+          "enum": [
+            "bump",
+            "mmap_fixed"
+          ],
+          "description": "Allocation strategy used for this island."
+        }
+      },
+      "description": "The executor-owned memory region containing all model state. No other process can map this virtual address range."
+    },
+    "backend_instance": {
+      "type": "object",
+      "required": [
+        "backend_id",
+        "capability_certificate",
+        "artifact_identities"
+      ],
+      "properties": {
+        "backend_id": {
+          "type": "string"
+        },
+        "capability_certificate": {
+          "type": "object",
+          "properties": {
+            "island_memory": {
+              "type": "string",
+              "enum": [
+                "shared_host",
+                "staging_buffer",
+                "opaque_model",
+                "host_pinned"
+              ]
+            },
+            "zero_copy": {
+              "type": "boolean"
+            },
+            "artifact_identity_level": {
+              "type": "string",
+              "enum": [
+                "source_hash",
+                "pipeline_descriptor",
+                "binary_archive",
+                "opaque_model_hash"
+              ]
+            },
+            "command_replay": {
+              "type": "string",
+              "enum": [
+                "fresh_from_template",
+                "reusable_buffer",
+                "opaque_subgraph"
+              ]
+            },
+            "runtime_code_path": {
+              "type": "boolean"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "artifact_identities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of artifact hashes registered with this backend."
+        }
+      },
+      "description": "A runtime backend initialized with declared artifacts and capability evidence."
+    },
+    "barrier_state": {
+      "type": "string",
+      "enum": [
+        "unsignaled",
+        "signaled",
+        "waited"
+      ],
+      "description": "A synchronization barrier between backends. Transitions require barriers_in to be signaled before dispatch."
+    },
+    "execution_cursor_state": {
+      "type": "object",
+      "required": [
+        "mode",
+        "token_index",
+        "position",
+        "layer_index",
+        "block_index"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "prefill",
+            "decode"
+          ]
+        },
+        "token_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "layer_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "block_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      },
+      "description": "Current position in the dispatch table. Acts as the program counter for the golden state machine."
+    },
+    "audit_event": {
+      "type": "object",
+      "required": [
+        "sequence",
+        "previous_event_hash",
+        "state_before_hash",
+        "transition_id",
+        "start_ns",
+        "end_ns",
+        "state_after_hash"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer"
+        },
+        "previous_event_hash": {
+          "$ref": "#/definitions/hash256"
+        },
+        "state_before_hash": {
+          "$ref": "#/definitions/hash256"
+        },
+        "transition_id": {
+          "type": "string"
+        },
+        "block_id": {
+          "type": "string"
+        },
+        "backend_id": {
+          "type": "string"
+        },
+        "artifact_hash": {
+          "$ref": "#/definitions/hash256"
+        },
+        "input_digest": {
+          "$ref": "#/definitions/tensor_digest"
+        },
+        "output_digest": {
+          "$ref": "#/definitions/tensor_digest"
+        },
+        "start_ns": {
+          "type": "integer"
+        },
+        "end_ns": {
+          "type": "integer"
+        },
+        "state_after_hash": {
+          "$ref": "#/definitions/hash256"
+        }
+      },
+      "description": "A single audit event recording a state transition. Events are hash-chained: each event commits to the previous via previous_event_hash."
+    },
+    "audit_chain": {
+      "type": "object",
+      "required": [
+        "root_hash",
+        "events",
+        "sealed"
+      ],
+      "properties": {
+        "root_hash": {
+          "$ref": "#/definitions/hash256"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/audit_event"
+          }
+        },
+        "sealed": {
+          "type": "boolean",
+          "description": "True after Finalize. No more events can be appended."
+        }
+      },
+      "description": "Hash-chained audit log of all state transitions. Tamper-evident."
+    },
+    "kv_cache_state": {
+      "type": "object",
+      "required": [
+        "max_context",
+        "current_length",
+        "layout_hash"
+      ],
+      "properties": {
+        "max_context": {
+          "type": "integer"
+        },
+        "current_length": {
+          "type": "integer"
+        },
+        "layout_hash": {
+          "$ref": "#/definitions/hash256"
+        },
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "empty",
+                  "written",
+                  "readable"
+                ]
+              },
+              "token_position": {
+                "type": "integer"
+              },
+              "writer_block": {
+                "type": "string"
+              },
+              "digest": {
+                "$ref": "#/definitions/tensor_digest"
+              }
+            }
+          }
+        }
+      },
+      "description": "Stateful KV cache tracking. Prevents double-write and stale-read bugs."
+    },
+    "backend_command": {
+      "type": "object",
+      "required": [
+        "sequence",
+        "transition_id",
+        "block_id",
+        "backend_id",
+        "artifact_id",
+        "input_views",
+        "output_views"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer"
+        },
+        "transition_id": {
+          "type": "string"
+        },
+        "block_id": {
+          "type": "string"
+        },
+        "backend_id": {
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        },
+        "input_views": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "output_views": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scratch_views": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "barriers_in": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "barriers_out": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "audit_policy": {
+          "$ref": "#/definitions/audit_policy"
+        }
+      },
+      "description": "Command pushed to a backend's command ring. Represents one declared transition the backend should execute."
+    },
+    "backend_completion": {
+      "type": "object",
+      "required": [
+        "sequence",
+        "transition_id",
+        "block_id",
+        "backend_id",
+        "status",
+        "started_at_ns",
+        "completed_at_ns"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer"
+        },
+        "transition_id": {
+          "type": "string"
+        },
+        "block_id": {
+          "type": "string"
+        },
+        "backend_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "faulted",
+            "contract_violation",
+            "unsupported"
+          ]
+        },
+        "output_digests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tensor_digest"
+          }
+        },
+        "started_at_ns": {
+          "type": "integer"
+        },
+        "completed_at_ns": {
+          "type": "integer"
+        }
+      },
+      "description": "Completion event returned by a backend worker. The executor validates and applies this as a state transition."
+    },
+    "ring_buffer": {
+      "type": "object",
+      "required": [
+        "kind",
+        "capacity",
+        "mode"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "command",
+            "completion",
+            "audit"
+          ]
+        },
+        "capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Bounded ring capacity. Depth 1 for strict conformance; deeper for pipelined performance."
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "strict_linear",
+            "declared_concurrent"
+          ]
+        }
+      },
+      "description": "A bounded in-process ring buffer connecting the executor to a backend worker. Not Valkey \u2014 this is hot-path transport only."
+    },
+    "golden_violation": {
+      "type": "object",
+      "required": [
+        "code",
+        "details",
+        "timestamp"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "$ref": "#/definitions/violation_code"
+        },
+        "block_id": {
+          "type": "string"
+        },
+        "backend_id": {
+          "type": "string"
+        },
+        "details": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "integer"
+        }
+      },
+      "description": "A structured violation produced when the executor refuses an illegal operation."
+    },
+    "audit_policy": {
+      "type": "object",
+      "properties": {
+        "input_checksum": {
+          "type": "string",
+          "enum": [
+            "none",
+            "optional",
+            "required"
+          ]
+        },
+        "output_checksum": {
+          "type": "string",
+          "enum": [
+            "none",
+            "optional",
+            "required"
+          ]
+        },
+        "tolerance_mae": {
+          "type": "number"
+        }
+      },
+      "description": "Audit and tolerance policy for a specific transition."
+    },
+    "violation_policy": {
+      "type": "string",
+      "enum": [
+        "block",
+        "abort"
+      ],
+      "description": "What happens when this transition produces a violation. 'block' invalidates only this block; 'abort' halts execution."
+    },
+    "artifact_identity_level": {
+      "type": "string",
+      "enum": [
+        "source_hash",
+        "pipeline_descriptor",
+        "binary_archive",
+        "opaque_model_hash"
+      ],
+      "description": "Strongest identity guarantee a backend can provide for its compiled artifacts."
+    },
+    "island_memory_mode": {
+      "type": "string",
+      "enum": [
+        "shared_host",
+        "staging_buffer",
+        "opaque_model",
+        "host_pinned",
+        "device_managed"
+      ],
+      "description": "How a backend interacts with the executor's memory island."
+    },
+    "command_replay_mode": {
+      "type": "string",
+      "enum": [
+        "fresh_from_template",
+        "reusable_buffer",
+        "opaque_subgraph"
+      ],
+      "description": "How a backend dispatches work from the executor's command ring."
+    },
+    "violation_code": {
+      "type": "string",
+      "enum": [
+        "UNDECLARED_BLOCK",
+        "ARTIFACT_HASH_MISMATCH",
+        "SHAPE_MISMATCH",
+        "DTYPE_MISMATCH",
+        "MEMORY_VIEW_OOB",
+        "MEMORY_VIEW_UNINITIALIZED",
+        "MACHINE_PROFILE_MISMATCH",
+        "SIGNATURE_INVALID",
+        "PLAN_HASH_MISMATCH",
+        "TENSOR_HASH_MISMATCH",
+        "BACKEND_MISMATCH",
+        "BARRIER_MISSING",
+        "UNSATISFIED_BARRIER",
+        "DYNAMIC_ALLOCATION",
+        "UNDECLARED_SHADER",
+        "INVALID_TRANSITION",
+        "DEGRADED_FALLBACK_ACTIVATED",
+        "ISLAND_ALREADY_ALLOCATED",
+        "BACKEND_INITIALIZATION_FAILED",
+        "AUDIT_CHAIN_BROKEN",
+        "TRANSITION_OUT_OF_ORDER",
+        "CONCURRENT_ACCESS_CONFLICT"
+      ],
+      "description": "Violation codes for the golden executor. Each code maps to a specific invariant violation."
+    }
+  }
+}

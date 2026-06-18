@@ -1,0 +1,32 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0030",
+  "type": "lane",
+  "name": "Request identity repair",
+  "slug": "request-identity-repair",
+  "description": "Replace prompt-length-derived request IDs with stable request identities and propagate them through the worker protocol and supervisor.",
+  "scope": "compute-native-request-identity",
+  "missionId": "0237",
+  "status": "idle",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/compute-native/src/engine.rs",
+    "packages/compute-native/src/worker_protocol.rs",
+    "packages/compute-native/src/worker_supervisor.rs"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "request-id",
+    "protocol"
+  ],
+  "created_at": "2026-06-13T10:57:05.259Z",
+  "updated_at": "2026-06-13T10:57:05.259Z"
+}

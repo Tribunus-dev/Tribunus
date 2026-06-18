@@ -1,0 +1,10 @@
+--- a/packages/compute-research/src/parse/standard-layer-events.ts
++++ b/packages/compute-research/src/parse/standard-layer-events.ts
+@@ -117,7 +117,6 @@
+                 // they are not measured by V2 instrumentation.
+                 activeAfterM ? { mlx_active_bytes: Math.round(parseMem(activeAfterM[1]!)) } : null,
+                 cacheAfterM ? { mlx_cache_bytes: Math.round(parseMem(cacheAfterM[1]!)) } : null,
+-              ) as Record<string, unknown>;
+               ) as Record<string, unknown>,
+              },
+            });

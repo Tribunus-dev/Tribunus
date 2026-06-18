@@ -1,0 +1,13 @@
+--- a/packages/compute-native/Cargo.toml
++++ b/packages/compute-native/Cargo.toml
+@@ -7,10 +7,6 @@
+ 
+ [lib]
+ crate-type = ["cdylib", "rlib"]
+-
+-[[bin]]
+-name = "tribunus-coreml-decode-attribution"
+-path = "src/bin/tribunus-coreml-decode-attribution.rs"
+ 
+ [[bin]]
+ name = "tribunus-coreml-decode-attribution"

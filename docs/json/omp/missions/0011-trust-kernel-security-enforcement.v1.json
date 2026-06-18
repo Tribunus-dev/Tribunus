@@ -1,0 +1,28 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0011",
+  "type": "mission",
+  "name": "Trust Kernel Security Enforcement",
+  "slug": "trust-kernel-security-enforcement",
+  "description": "Implement the four-layer security model: Layer 1 (Technical Confinement — isolated extension host, no raw DB/FS/network), Layer 2 (Capability Governance — manifest-based grants), Layer 3 (Provenance & Accountability — signed packages, immutable checksums, durable receipts), Layer 4 (Dharma Overlay — event-derived trust scoring affecting friction/visibility/quotas).",
+  "purpose": "Enforce the ADR-level hard rules: plugins never get raw DB handles, dharma never grants direct authority, auto-update never silently expands authority, and broad network access is not supported.",
+  "campaignId": "0003",
+  "status": "completed",
+  "priority": 80,
+  "acceptanceCriteria": [
+    "Extension host process enforces no raw PGlite/Valkey/DuckDB/filesystem/network/shell access",
+    "Capability grants enforced at runtime on every operation",
+    "Signed packages with immutable checksums and reproducible build metadata",
+    "Durable receipt trail for all authority-relevant plugin actions",
+    "Dharma overlay affects friction, visibility, quotas, and eligibility only",
+    "Dharma MUST NEVER grant direct authority — only policy can",
+    "Auto-update triggers re-grant on new capability requests",
+    "Trust lanes: Low Trust (new publishers) and High Trust (verified publishers)"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:48:46.565Z",
+  "updated_at": "2026-06-06T11:41:41.657Z"
+}

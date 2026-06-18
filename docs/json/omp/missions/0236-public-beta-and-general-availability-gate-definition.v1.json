@@ -1,0 +1,36 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0236-public-beta-and-general-availability-gate-definition",
+  "type": "mission",
+  "name": "Public Beta and General Availability Gate Definition",
+  "slug": "public-beta-and-general-availability-gate-definition",
+  "description": "Define the public beta criteria, GA gate requirements, and post-launch reliability review process. Covers beta eligibility criteria, feature completeness checklist, performance SLIs/SLOs, security audit requirements, onboarding flow validation, support readiness, GA release checklist (regression suite pass, load test pass, security audit sign-off, documentation completeness, legal review), and post-GA 30/60/90-day reliability review cadence.",
+  "purpose": "Ensure the public launch is gated on objective, verifiable criteria across quality, security, performance, and support readiness, with a structured post-launch reliability review program to catch regressions early.",
+  "campaignId": "0032",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Public beta criteria document defines eligibility, scope, feature completeness threshold, and opt-in/opt-out UX",
+    "GA gate checklist enumerates all required sign-offs: regression suite pass, load test within SLOs, security audit clearance, documentation completeness, legal review, support readiness",
+    "Post-launch reliability review process defines 30/60/90-day review cadence with SLI trend analysis, incident retrospection, and remediation tracking",
+    "Performance SLIs/SLOs specification defines latency, throughput, error budget, and availability targets for GA",
+    "Onboarding flow validation specification defines success criteria for first-run experience from signup to first completed task"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "beta",
+    "ga",
+    "launch",
+    "release-gate",
+    "quality",
+    "slo"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:48:03.080Z",
+  "updated_at": "2026-06-07T05:53:26.158Z"
+}

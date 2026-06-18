@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0023",
+  "type": "campaign",
+  "name": "Model Provider Runtime and Routing",
+  "slug": "model-provider-runtime-and-routing",
+  "description": "Provider-neutral invocation contract, credential and API-key vault, model capability registry, context window and modality discovery, cost and rate-limit model, routing policy, fallback and circuit breaking, streaming normalization, tool-calling normalization, structured output validation, cache and single-flight behavior, provider error taxonomy, usage receipts, bring-your-own-key UX, local model adapter, model benchmark harness, and provider conformance matrix.",
+  "objective": "Build provider-agnostic model routing with credential management, capability discovery, cost tracking, and structured output validation.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "llm",
+    "routing",
+    "providers",
+    "cost-tracking"
+  ],
+  "maturity": "modeled",
+  "horizon": "planned",
+  "created_at": "2026-06-07T04:35:41.470Z",
+  "updated_at": "2026-06-07T04:35:41.470Z"
+}

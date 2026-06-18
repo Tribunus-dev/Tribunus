@@ -1,0 +1,68 @@
+{"at":"2026-06-01T02:49:15.214Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*event-names|import.*EventName"}
+{"at":"2026-06-01T02:49:15.451Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"55 matches in 29 files"}
+{"at":"2026-06-01T02:49:16.751Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"@/bus\\\"|\\\"@/bus/index\\\""}
+{"at":"2026-06-01T02:49:17.098Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"26 matches in 26 files"}
+{"at":"2026-06-01T02:49:18.551Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"@/bus/global\\\"|from.*\\\"@/bus\\\".*GlobalBus|import.*GlobalBus"}
+{"at":"2026-06-01T02:49:18.696Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"21 matches in 11 files"}
+{"at":"2026-06-01T02:49:19.728Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*bootstrap|InstanceBootstrap"}
+{"at":"2026-06-01T02:49:19.857Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"25 matches in 8 files"}
+{"at":"2026-06-01T02:49:20.914Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*instance-store|InstanceStore"}
+{"at":"2026-06-01T02:49:21.090Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"58 matches in 13 files"}
+{"at":"2026-06-01T02:49:33.962Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"HealthRegistry|health-registry|from.*\\\"@/server/health\\\""}
+{"at":"2026-06-01T02:49:34.202Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"23 matches in 8 files"}
+{"at":"2026-06-01T02:49:34.246Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"GlobalHealth|GlobalPaths|GlobalApi|global\\.health|global\\.ts"}
+{"at":"2026-06-01T02:49:34.437Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"13 matches in 2 files"}
+{"at":"2026-06-01T02:49:34.483Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*server\\.ts|HttpApiApp|createRoutes"}
+{"at":"2026-06-01T02:49:34.700Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"9 matches in 2 files"}
+{"at":"2026-06-01T02:51:13.358Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"health|Health|/global/"}
+{"at":"2026-06-01T02:51:13.372Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"34 matches in 4 files"}
+{"at":"2026-06-01T02:51:15.115Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"bootstrap|InstanceStore|InstanceBootstrap|health|HealthRegistry|global-handlers|"}
+{"at":"2026-06-01T02:51:15.437Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"173 matches in 24 files"}
+{"at":"2026-06-01T02:51:45.296Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"Health|healthy|global_health|GlobalHealth"}
+{"at":"2026-06-01T02:51:45.308Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"15 matches in 28 files"}
+{"at":"2026-06-01T02:53:02.790Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"GlobalHealth|global_health|healthy.*true"}
+{"at":"2026-06-01T02:53:02.802Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"14 matches in 14 files"}
+{"at":"2026-06-01T02:53:06.150Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent"}
+{"at":"2026-06-01T02:53:06.152Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:53:07.558Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"global.*health|health.*handler|health.*endpoint"}
+{"at":"2026-06-01T02:53:07.740Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"6 matches in 3 files"}
+{"at":"2026-06-01T02:53:41.886Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"health|healthy"}
+{"at":"2026-06-01T02:53:42.000Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"10 matches in 144 files"}
+{"at":"2026-06-01T02:54:12.636Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"GlobalHealth"}
+{"at":"2026-06-01T02:54:12.661Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:54:14.463Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"HealthRegistry|health"}
+{"at":"2026-06-01T02:54:14.468Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"10 matches in 10 files"}
+{"at":"2026-06-01T02:54:15.560Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent"}
+{"at":"2026-06-01T02:54:15.562Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:54:16.503Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName"}
+{"at":"2026-06-01T02:54:16.508Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"10 matches in 5 files"}
+{"at":"2026-06-01T02:55:12.908Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent"}
+{"at":"2026-06-01T02:55:12.914Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"6 matches in 15 files"}
+{"at":"2026-06-01T02:55:13.955Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName"}
+{"at":"2026-06-01T02:55:13.956Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 3 files"}
+{"at":"2026-06-01T02:55:15.055Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|Bus"}
+{"at":"2026-06-01T02:55:15.056Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"5 matches in 2 files"}
+{"at":"2026-06-01T02:55:41.013Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"packages/opencode/src/event/index.ts"}
+{"at":"2026-06-01T02:55:53.451Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"packages/opencode/src/event/index.ts"}
+{"at":"2026-06-01T02:55:53.905Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"@/agent/machine\\\""}
+{"at":"2026-06-01T02:55:53.908Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 9 files"}
+{"at":"2026-06-01T02:56:24.600Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"health"}
+{"at":"2026-06-01T02:56:24.602Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:56:25.780Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"health"}
+{"at":"2026-06-01T02:56:25.785Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 3 files"}
+{"at":"2026-06-01T02:56:27.025Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent"}
+{"at":"2026-06-01T02:56:27.025Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:56:28.060Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName"}
+{"at":"2026-06-01T02:56:28.072Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"10 matches in 5 files"}
+{"at":"2026-06-01T02:56:29.602Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"@/server/routes/instance/httpapi/(handlers/global|groups/global|server)\\"}
+{"at":"2026-06-01T02:56:29.620Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 57 files"}
+{"at":"2026-06-01T02:56:57.644Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent"}
+{"at":"2026-06-01T02:56:57.652Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"20 matches in 5 files"}
+{"at":"2026-06-01T02:56:58.658Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent"}
+{"at":"2026-06-01T02:56:58.659Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:57:37.089Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*event-names|import.*EventName"}
+{"at":"2026-06-01T02:57:37.100Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"7 matches in 18 files"}
+{"at":"2026-06-01T02:57:38.180Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from \\\"@/event\\\""}
+{"at":"2026-06-01T02:57:38.325Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"5 matches in 500 files"}
+{"at":"2026-06-01T02:57:39.776Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from \\\"@/project/instance-store\\\"|from \\\"@/project/instance-layer\\\"|from.*\\\"proj"}
+{"at":"2026-06-01T02:57:39.890Z","session_id":"ses_17eec089effet0VdjAbH5V2Qcw","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"12 matches in 500 files"}

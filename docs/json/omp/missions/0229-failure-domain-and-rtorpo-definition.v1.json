@@ -1,0 +1,33 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0229-failure-domain-and-rtorpo-definition",
+  "type": "mission",
+  "name": "Failure-Domain and RTO/RPO Definition",
+  "slug": "failure-domain-and-rtorpo-definition",
+  "description": "Inventory all failure domains across the Tribunus architecture: PGlite durable store, Valkey coordination kernel, DuckDB analytical layer, filesystem attachments, desktop device, federation network, cloud region/cell, and extension runtime. For each domain, define recovery-time objective (RTO) and recovery-point objective (RPO) with tiered service levels. Map dependencies between domains to identify cascading failure and recovery paths. Produce failure-domain map with SLI/SLO baselines for each domain.",
+  "purpose": "Clear RTO/RPO definitions per failure domain are the foundation for designing backup contracts, restore contracts, disaster simulation, and recovery certification. Without these, reliability targets are aspirational rather than measurable.",
+  "campaignId": "0029",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Failure-domain map identifies all failure domains with dependency graph showing cascading failure paths",
+    "RTO/RPO table defines tiered objectives per domain with SLI/SLO baselines",
+    "Architecture document covers recovery priority order and inter-domain recovery coordination"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "reliability",
+    "rto",
+    "rpo",
+    "failure-domain",
+    "recovery"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:55.567Z",
+  "updated_at": "2026-06-07T05:53:14.604Z"
+}

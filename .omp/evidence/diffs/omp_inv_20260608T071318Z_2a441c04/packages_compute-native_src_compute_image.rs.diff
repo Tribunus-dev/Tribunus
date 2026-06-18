@@ -1,0 +1,30 @@
+--- a/packages/compute-native/src/compute_image.rs
++++ b/packages/compute-native/src/compute_image.rs
+@@ -189,7 +189,26 @@
+     pub structural_verification: bool,
+     /// Native dependency identity captured at compile time.
+     pub native_dependency_report: NativeCapabilityReport,
+-   pub stage_profile: StageProfile,
++    pub stage_profile: StageProfile,
++}
++
++#[derive(Debug, Clone, Serialize, Deserialize, Default)]
++pub struct StageProfile {
++    pub source_discovery_ms: u64,
++    pub source_hashing_ms: u64,
++    pub header_parsing_ms: u64,
++    pub architecture_normalization_ms: u64,
++    pub binding_validation_ms: u64,
++    pub layout_planning_ms: u64,
++    pub payload_emission_ms: u64,
++    pub segment_hashing_ms: u64,
++    pub manifest_generation_ms: u64,
++    pub verification_ms: u64,
++    pub total_source_bytes: u64,
++    pub total_emitted_bytes: u64,
++    pub peak_rss_bytes: u64,
++    pub peak_mlx_active_bytes: u64,
++    pub peak_mlx_cache_bytes: u64,
+ }
+ 
+ #[derive(Clone, Serialize, Deserialize)]

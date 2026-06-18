@@ -1,0 +1,570 @@
+{
+  "schema": "rig.relay.research-context-packet.v1",
+  "schema_version": "v1",
+  "id": "rcp-1780740426439-x5gux6",
+  "type": "research_context_packet",
+  "research_topic": "Data Architecture Technology Stack for Tribunus: PGlite + Valkey + DuckDB + ElectricSQL + pgvector evaluation",
+  "transcript_summary": "Deep research on the data architecture stack for Tribunus: PGlite (WASM Postgres), Valkey (Redis fork), DuckDB (OLAP), ElectricSQL (sync engine), pgvector, and PowerSync. The research evaluated each technology's capabilities, maturity, licensing, and architectural fit. ElectricSQL + PGlite form a tightly integrated Postgres ecosystem (server -> sync -> WASM Postgres in client). Valkey serves as coordination/streaming layer. DuckDB provides analytics. pgvector enables vector search in PGlite. PowerSync is a SQLite-based alternative with stronger mobile/offline story but source-available licensing.",
+  "research_findings": [
+    {
+      "category": "architecture",
+      "title": "PGlite v0.4.6 - WASM Postgres for client-side database",
+      "finding": "PGlite is a full Postgres compiled to WASM (~3MB gzipped) running in browser (IndexedDB), Node.js, Bun, Deno. Supports pgvector, PostGIS extensions, live queries (live.query(), live.incrementalQuery(), live.changes()) for reactive subscriptions, and an alpha sync plugin (@electric-sql/pglite-sync) for syncing Electric shapes into PGlite tables. However, it is single-user/connection, no process forking, and the sync plugin is alpha with no outbound write sync or conflict resolution.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://github.com/electric-sql/pglite",
+          "title": "PGlite GitHub",
+          "relevance": "Primary source for PGlite capabilities, versioning, and docs",
+          "key_excerpts": [
+            "@electric-sql/pglite v0.4.6",
+            "Full Postgres compiled to WASM via Emscripten"
+          ]
+        },
+        {
+          "url": "https://pglite.dev",
+          "title": "PGlite Documentation",
+          "relevance": "Official docs for live queries and sync plugin",
+          "key_excerpts": [
+            "live.query(), live.incrementalQuery(), live.changes()",
+            "syncShapeToTable() / syncShapesToTables()"
+          ]
+        },
+        {
+          "url": "https://pglite.dev/docs/live-queries",
+          "title": "PGlite Live Queries",
+          "relevance": "Details reactive query API",
+          "key_excerpts": [
+            "Reactive subscriptions to Postgres table changes"
+          ]
+        },
+        {
+          "url": "https://pglite.dev/docs/sync",
+          "title": "PGlite Sync Plugin",
+          "relevance": "Details alpha sync plugin capabilities and limitations",
+          "key_excerpts": [
+            "Alpha stage, no outbound sync, no conflict resolution"
+          ]
+        },
+        {
+          "url": "https://www.npmjs.com/package/@electric-sql/pglite",
+          "title": "PGlite NPM",
+          "relevance": "Download stats and version info",
+          "key_excerpts": [
+            "~9.1M weekly downloads"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "WASM",
+        "Postgres",
+        "ElectricSQL",
+        "pgvector",
+        "live queries",
+        "IndexedDB"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Valkey v9.1 - Linux Foundation coordination/streaming layer",
+      "finding": "Valkey is the Linux Foundation fork of Redis (BSD 3-clause). API-compatible with Redis 7.2 for drop-in migration. Key capabilities: Streams with consumer groups (XADD/XREADGROUP/XACK/XCLAIM), sorted sets, pub/sub, TTL/expiry, hash field expiration (new in 9.0), search capabilities for AI workloads. Running on AWS ElastiCache since May 2026. Rapid development under Linux Foundation with Rust integration and cluster scaling improvements in progress.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io",
+          "title": "Valkey Official",
+          "relevance": "Official docs and downloads",
+          "key_excerpts": [
+            "Valkey 9.1 released 2026-05-19",
+            "BSD 3-clause license",
+            "Linux Foundation governance"
+          ]
+        },
+        {
+          "url": "https://github.com/valkey-io/valkey",
+          "title": "Valkey GitHub",
+          "relevance": "Source code and release details",
+          "key_excerpts": [
+            "API-compatible with Redis 7.2",
+            "Streams, sorted sets, pub/sub"
+          ]
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Valkey",
+          "title": "Valkey Wikipedia",
+          "relevance": "Background and governance info",
+          "key_excerpts": [
+            "Accepted into Linux Foundation March 2024"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/streams-intro/",
+          "title": "Valkey Streams Intro",
+          "relevance": "Stream capabilities and consumer groups",
+          "key_excerpts": [
+            "O(1) inserts, radix tree implementation",
+            "Consumer groups for fan-out"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Redis",
+        "streams",
+        "consumer groups",
+        "pub/sub",
+        "sorted sets",
+        "hash field expiration"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "DuckDB v1.5.3 - Columnar analytics engine",
+      "finding": "DuckDB is an in-process OLAP columnar storage engine for analytical workloads. v1.5.3 (2026-05-20) with v2.0.0 expected Fall 2026 (breaking changes). Includes DuckDB-Wasm for browser-based analytical SQL. Supports SQL window functions, CTEs, complex joins, direct Parquet/CSV/JSON file querying read_parquet(), multi-threaded parallel execution, and a rich extension ecosystem (httpfs, parquet, json, excel, spatial).",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://duckdb.org",
+          "title": "DuckDB Official",
+          "relevance": "Primary docs and download",
+          "key_excerpts": [
+            "v1.5.3 released 2026-05-20",
+            "In-process OLAP columnar storage",
+            "MIT license"
+          ]
+        },
+        {
+          "url": "https://duckdb.org/docs/stable/installation/versioning",
+          "title": "DuckDB Versioning",
+          "relevance": "Version history and roadmap",
+          "key_excerpts": [
+            "v2.0.0 Fall 2026",
+            "v1.5.4 June 2026"
+          ]
+        },
+        {
+          "url": "https://github.com/duckdb/duckdb",
+          "title": "DuckDB GitHub",
+          "relevance": "Source and community",
+          "key_excerpts": [
+            "Multi-threaded parallel query"
+          ]
+        },
+        {
+          "url": "https://duckdb.org/docs/stable/api/wasm/overview",
+          "title": "DuckDB-Wasm",
+          "relevance": "WASM variant for browser",
+          "key_excerpts": [
+            "Full WebAssembly build",
+            "Efficient analytical SQL in browser"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "OLAP",
+        "columnar",
+        "Parquet",
+        "WASM",
+        "MotherDuck"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "ElectricSQL 1.0 GA - Postgres sync engine",
+      "finding": "ElectricSQL is a Postgres read-path sync engine consuming Postgres logical replication (CDC) streams. Shapes provide partial replication with WHERE clauses and column subsets. Hub-and-spoke model: Postgres -> Electric sync service -> HTTP to any client. Client libraries for TypeScript, React (useShape), TanStack DB integration. Benchmarks show 1M+ concurrent readers, 99% CDN cache hit rate. Pivoted in April 2026 toward agent platform with Durable Streams and Electric Agents. Serverless agents announced June 2026.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://github.com/electric-sql/electric",
+          "title": "ElectricSQL GitHub",
+          "relevance": "Primary source for sync engine",
+          "key_excerpts": [
+            "10,215 stars",
+            "Apache 2.0",
+            "1.0 GA March 2025"
+          ]
+        },
+        {
+          "url": "https://electric.ax",
+          "title": "Electric SQL Official",
+          "relevance": "Official site and docs",
+          "key_excerpts": [
+            "Postgres CDC sync engine",
+            "Shapes with partial replication"
+          ]
+        },
+        {
+          "url": "https://electric.ax/docs/sync/",
+          "title": "Electric SQL Sync Docs",
+          "relevance": "Sync protocol and setup",
+          "key_excerpts": [
+            "Hub-and-spoke model",
+            "HTTP delivery, CDN integration"
+          ]
+        },
+        {
+          "url": "https://electric.ax/blog/2026/04/29/introducing-electric-agents",
+          "title": "Electric Agents Blog",
+          "relevance": "Agent platform pivot",
+          "key_excerpts": [
+            "Durable long-lived agents",
+            "Durable Streams over HTTP"
+          ]
+        },
+        {
+          "url": "https://electric.ax/blog/2026/06/04/serverless-agents",
+          "title": "Serverless Agents Blog",
+          "relevance": "Latest agent platform news",
+          "key_excerpts": [
+            "Managed agents in functions"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "CDC",
+        "logical replication",
+        "postgres sync",
+        "offline-first",
+        "shapes",
+        "PGlite"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "pgvector 0.8.2 - Vector search in Postgres/PGlite",
+      "finding": "pgvector 0.8.2 (2026-02-25) provides HNSW and IVFFlat indexes for approximate nearest neighbor search in Postgres. Supports multiple distance functions (L2, inner product, cosine, L1, Hamming, Jaccard), data types (vector float32, halfvec float16, bit binary, sparsevec), and binary quantization. Dimensions: vector up to 2000, halfvec up to 4000. Parallel index builds in 0.8.0+. pg_textsearch BM25 from ParadeDB complements pgvector for hybrid keyword+semantic search. pgvector runs in PGlite as a WASM extension.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://github.com/pgvector/pgvector",
+          "title": "pgvector GitHub",
+          "relevance": "Primary source",
+          "key_excerpts": [
+            "21,626 stars",
+            "HNSW index with configurable parameters",
+            "Multiple distance functions"
+          ]
+        },
+        {
+          "url": "https://github.com/pgvector/pgvector/blob/master/CHANGELOG.md",
+          "title": "pgvector Changelog",
+          "relevance": "Version history and features",
+          "key_excerpts": [
+            "0.8.2 released 2026-02-25",
+            "Parallel index builds"
+          ]
+        },
+        {
+          "url": "https://github.com/pgvector/pgvector#hnsw",
+          "title": "pgvector HNSW Docs",
+          "relevance": "HNSW index details",
+          "key_excerpts": [
+            "m=16, ef_construction=64, ef_search=40",
+            "vector up to 2000 dimensions"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "vector search",
+        "HNSW",
+        "embeddings",
+        "semantic search",
+        "BM25",
+        "hybrid search"
+      ]
+    },
+    {
+      "category": "comparison",
+      "title": "PowerSync vs ElectricSQL - sync engine comparison",
+      "finding": "PowerSync (Journey Mobile) offers SQLite-based bi-directional partial sync from Postgres, MongoDB, MySQL, SQL Server. Stronger mobile story with SDKs for Flutter, Swift, Kotlin Multiplatform, React Native. Production-ready write-back sync with JWT auth, upload queue, conflict resolution. SOC 2 Type II + HIPAA compliance (Jan 2026). TanStack ecosystem partner. Key limitation for Tribunus: uses SQLite not Postgres, so incompatible with PGlite/ElectricSQL's Postgres-native ecosystem. Licensing is mixed open-source/source-available (not fully Apache 2.0).",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://www.powersync.com",
+          "title": "PowerSync Official",
+          "relevance": "Product info and features",
+          "key_excerpts": [
+            "SQLite sync engine",
+            "Multiple backend support"
+          ]
+        },
+        {
+          "url": "https://docs.powersync.com",
+          "title": "PowerSync Docs",
+          "relevance": "SDK and feature documentation",
+          "key_excerpts": [
+            "JWT auth, upload queue",
+            "Conflict resolution"
+          ]
+        },
+        {
+          "url": "https://github.com/powersync-ja",
+          "title": "PowerSync GitHub",
+          "relevance": "Source and community",
+          "key_excerpts": [
+            "Mixed open-source / source-available"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "SQLite sync",
+        "offline-first",
+        "conflict resolution",
+        "mobile SDKs"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "PGlite sync plugin alpha - no outbound write sync",
+      "finding": "The PGlite sync plugin (@electric-sql/pglite-sync) is alpha stage. It supports inbound sync from Electric shapes into PGlite tables but has no outbound write sync (local PGlite writes do not propagate back to server) and no conflict resolution. This limits PGlite to read-replica scenarios currently. ElectricSQL's April 2026 pivot toward agent platform may shift sync engine development priorities.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://pglite.dev/docs/sync",
+          "title": "PGlite Sync Plugin Docs",
+          "relevance": "Describes alpha limitations",
+          "key_excerpts": [
+            "No local writes synced out yet",
+            "No conflict resolution",
+            "Single-shape-per-table restriction"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "PGlite",
+        "ElectricSQL",
+        "sync",
+        "alpha",
+        "write-back"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "DuckDB v2.0 breaking changes expected Fall 2026",
+      "finding": "DuckDB v2.0.0 is expected in Fall 2026 with breaking changes. This means any integration code written against v1.5.x may need updates. The WASM variant will also need to be updated. Migration planning should account for this timeline.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://duckdb.org",
+          "title": "DuckDB Official",
+          "relevance": "Roadmap",
+          "key_excerpts": [
+            "v2.0.0 Fall 2026 major release with breaking changes"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "DuckDB",
+        "migration",
+        "breaking changes"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "ElectricSQL pivot to agent platform may shift sync priorities",
+      "finding": "ElectricSQL (Electric) introduced Electric Agents and Durable Streams in April 2026, with serverless agents announced June 2026. While the sync engine (Shapes, CDC replication) remains core infrastructure, the company's product focus has broadened to agent orchestration. This may affect the pace of PGlite sync plugin development (outbound writes, conflict resolution).",
+      "confidence": "medium",
+      "sources": [
+        {
+          "url": "https://electric.ax/blog/2026/04/29/introducing-electric-agents",
+          "title": "Electric Agents Blog",
+          "relevance": "Product pivot announcement",
+          "key_excerpts": [
+            "Agent platform built on sync",
+            "Durable Streams for agent sessions"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "ElectricSQL",
+        "sync",
+        "agent platform",
+        "product direction"
+      ]
+    }
+  ],
+  "implementation_specs": [
+    {
+      "title": "Tribunus Data Architecture - PGlite + Valkey + DuckDB Integration",
+      "description": "Implementation specification for the three-tier data architecture: PGlite (WASM Postgres) for local client-side database with pgvector and live queries, Valkey for coordination/streaming (streams, pub/sub, sorted sets), DuckDB for columnar analytics. ElectricSQL bridges server Postgres to client PGlite via shape-based sync.",
+      "acceptance_criteria": [
+        "PGlite runs in browser with IndexedDB persistence, supports pgvector extension, and provides live queries",
+        "Valkey streams with consumer groups handle durable job queues between services",
+        "DuckDB-Wasm provides analytical queries on synced data in the browser",
+        "ElectricSQL syncs Postgres shapes into PGlite via the sync plugin",
+        "pgvector HNSW index enables semantic search on local PGlite data"
+      ],
+      "implementation_patterns": [
+        {
+          "name": "PGlite initialization with extensions",
+          "description": "Create PGlite instance with pgvector extension loaded, persistence configured, and live query subscriptions",
+          "code_example": "const pg = await PGlite.create({ dataDir: 'idb://tribunus-db', extensions: { vector: pgvector } });\nawait pg.sql`CREATE EXTENSION IF NOT EXISTS vector`;\nconst liveQuery = pg.live.query('SELECT * FROM items ORDER BY created_at DESC');",
+          "references": [
+            "https://pglite.dev/docs/live-queries"
+          ]
+        },
+        {
+          "name": "Valkey stream consumer group",
+          "description": "Use Valkey streams with consumer groups for reliable work queue processing between services",
+          "code_example": "XADD task:queue * type analyze payload '{\"id\":\"abc\"}'\nXREADGROUP GROUP workers worker-1 COUNT 1 BLOCK 5000 STREAMS task:queue >\nXACK task:queue workers entry-id",
+          "references": [
+            "https://valkey.io/topics/streams-intro/"
+          ]
+        },
+        {
+          "name": "DuckDB-Wasm analytical queries",
+          "description": "Initialize DuckDB in WASM for client-side analytical queries on Parquet/CSV data",
+          "code_example": "import * as duckdb from '@duckdb/duckdb-wasm';\nconst db = new duckdb.AsyncDuckDB();\nawait db.instantiate(duckdb.getPlatform());\nconst conn = await db.connect();\nconst result = await conn.query('SELECT category, COUNT(*) FROM read_parquet(\"analytics/*.parquet\") GROUP BY category');",
+          "references": [
+            "https://duckdb.org/docs/stable/api/wasm/overview"
+          ]
+        },
+        {
+          "name": "ElectricSQL shape sync into PGlite",
+          "description": "Sync Electric shapes from Postgres into PGlite using the sync plugin's shape subscription API",
+          "code_example": "import { syncShapeToTable } from '@electric-sql/pglite-sync';\nawait syncShapeToTable(pg, { shape: { url: 'https://electric.example.com/v1/shape', params: { table: 'projects', where: 'owner_id = $1', bind: [userId] } }, table: 'projects_sync' });",
+          "references": [
+            "https://pglite.dev/docs/sync"
+          ]
+        },
+        {
+          "name": "Hybrid search with pgvector + BM25",
+          "description": "Combine pgvector semantic search with BM25 keyword ranking for hybrid retrieval",
+          "code_example": "SELECT id, title, (1 - (embedding <=> '[0.1, 0.2, ...]')) * 0.7 + ts_rank(to_tsvector('english', title), plainto_tsquery('search terms')) * 0.3 AS score\nFROM items\nORDER BY score DESC\nLIMIT 10;",
+          "references": [
+            "https://github.com/pgvector/pgvector#hnsw"
+          ]
+        }
+      ],
+      "suggested_campaign": {
+        "title": "Data Architecture Implementation",
+        "objective": "Implement the three-tier data architecture (PGlite + Valkey + DuckDB) with ElectricSQL sync, documented in ADR 0003"
+      },
+      "suggested_missions": [
+        {
+          "title": "PGlite Client Database Integration",
+          "purpose": "Integrate PGlite as the local client-side database with pgvector, live queries, and persistence",
+          "acceptance_criteria": [
+            "PGlite initializes in browser with IndexedDB persistence",
+            "pgvector extension loads and supports HNSW index",
+            "Live queries provide reactive subscriptions",
+            "Multi-tab worker support works via SharedArrayBuffer"
+          ],
+          "priority": 80,
+          "suggested_lanes": [
+            {
+              "title": "PGlite Setup and Configuration",
+              "scope": "pglite-init",
+              "description": "Initialize PGlite instance with proper configuration, persistence, and extension loading",
+              "write_paths": [
+                "src/client/db/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Create PGlite initialization module",
+                  "description": "Create a PGlite factory that configures WASM loading, IndexedDB persistence, and extension registration",
+                  "estimated_effort": "2 days",
+                  "priority": 80,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement pgvector extension loading",
+                  "description": "Ensure pgvector WASM extension loads correctly with PGlite and HNSW index creation works",
+                  "estimated_effort": "1 day",
+                  "priority": 70,
+                  "depends_on": [
+                    "Create PGlite initialization module"
+                  ]
+                },
+                {
+                  "title": "Wire live query subscriptions",
+                  "description": "Implement reactive subscriptions using PGlite live queries for automatic UI updates",
+                  "estimated_effort": "1 day",
+                  "priority": 60,
+                  "depends_on": [
+                    "Create PGlite initialization module"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Valkey Coordination Layer",
+          "purpose": "Implement Valkey as the coordination/streaming layer for service communication",
+          "acceptance_criteria": [
+            "Stream consumer groups process durable job queues",
+            "Pub/sub channels handle real-time agent events",
+            "Sorted sets enable priority scheduling"
+          ],
+          "priority": 70,
+          "suggested_lanes": [
+            {
+              "title": "Valkey Stream Integration",
+              "scope": "valkey-streams",
+              "description": "Implement Valkey stream consumer groups for reliable work queues",
+              "write_paths": [
+                "src/server/valkey/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Create Valkey stream adapter",
+                  "description": "Implement a service adapter wrapping Valkey XADD/XREADGROUP/XACK operations with consumer group management",
+                  "estimated_effort": "2 days",
+                  "priority": 70,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement job queue with consumer groups",
+                  "description": "Build a durable job queue using Valkey streams with configurable consumer groups, retry logic, and dead-letter handling",
+                  "estimated_effort": "2 days",
+                  "priority": 60,
+                  "depends_on": [
+                    "Create Valkey stream adapter"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "DuckDB Analytics Integration",
+          "purpose": "Integrate DuckDB for client-side and server-side analytical queries",
+          "acceptance_criteria": [
+            "DuckDB-Wasm initializes in browser for analytical queries",
+            "Parquet/CSV files load and query correctly",
+            "Extensions (httpfs, parquet) work"
+          ],
+          "priority": 50,
+          "suggested_lanes": [
+            {
+              "title": "DuckDB-Wasm Client Setup",
+              "scope": "duckdb-wasm",
+              "description": "Set up DuckDB-Wasm for in-browser analytics on synced data",
+              "write_paths": [
+                "src/client/analytics/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Initialize DuckDB-Wasm module",
+                  "description": "Create async factory for DuckDB-Wasm with proper WASM loading and extension configuration",
+                  "estimated_effort": "1 day",
+                  "priority": 50,
+                  "depends_on": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "linked_entities": [
+    {
+      "entity_type": "adr",
+      "entity_id": "0003",
+      "relationship": "decision"
+    }
+  ],
+  "session_id": "unknown",
+  "created_at": "2026-06-06T10:07:06.439Z"
+}

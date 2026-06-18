@@ -1,0 +1,42 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0217-memory-export-and-erasure",
+  "type": "mission",
+  "name": "Memory Export and Erasure",
+  "slug": "memory-export-and-erasure",
+  "description": "Export memories in standard formats. Erase memories completely with cascading link cleanup. Supports GDPR-style erasure requests with audit trail.",
+  "purpose": "Fulfill data portability and right-to-erasure requirements by providing clean export in standard formats and complete erasure with cascading cleanup of links, references, and derived data.",
+  "campaignId": "0016",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Export formats: JSON, JSON-LD, CSV",
+    "Export by scope: memory, bank, project, organization level",
+    "Export includes provenance and metadata, not just content",
+    "Erasure removes memory and all its links, references, and derived data",
+    "Cascading erasure respects reference boundaries — does not delete referenced entities",
+    "Erasure produces an audit record: what was deleted, when, by whom",
+    "Erasure is reversible within a configurable grace period"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "depends_on": [
+    "0212-memory-link-evolution",
+    "0214-entity-resolution"
+  ],
+  "unlocks": [],
+  "authority_scope": "memory:compliance",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "Restore from soft-delete graveyard; rebuild erased links",
+  "recovery_strategy": "Restore from grace-period backup; replay erasure journal for audit",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:46:26.869Z",
+  "updated_at": "2026-06-07T05:51:21.526Z"
+}

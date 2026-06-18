@@ -1,0 +1,11 @@
+--- a/packages/compute-native/models/gemma_mlp.py
++++ b/packages/compute-native/models/gemma_mlp.py
+@@ -147,7 +147,7 @@
+     mlmodelc_path = compile_mlprogram(
+         prog,
+         args.output_name,
+-        compute_units="cpuAndGPU",
++        compute_units="CPU_AND_GPU",
+         deployment_target="iOS18",
+     )
+ 

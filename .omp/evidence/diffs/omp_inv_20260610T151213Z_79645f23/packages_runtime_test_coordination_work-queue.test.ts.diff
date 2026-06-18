@@ -1,0 +1,11 @@
+--- a/packages/runtime/test/coordination/work-queue.test.ts
++++ b/packages/runtime/test/coordination/work-queue.test.ts
+@@ -247,7 +247,7 @@
+     )
+ 
+     const reclaimed = await queue2.reclaimExpired(10)
+-    expect(reclaimed.reclaimedCount).toBeGreaterThanOrEqual(1)
++    expect(reclaimed.length).toBeGreaterThanOrEqual(1)
+     expect(reclaimed.some(e => e.envelope.workId === "reclaim-test")).toBe(true)
+   })
+ })

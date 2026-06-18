@@ -1,0 +1,31 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0029",
+  "type": "lane",
+  "name": "Receipt enum hardening",
+  "slug": "receipt-enum-hardening",
+  "description": "Replace stringly receipt domains with stable enum-backed shapes wherever the domain is already known and keep builders and emitters aligned.",
+  "scope": "compute-native-receipts-schema",
+  "missionId": "0237",
+  "status": "idle",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/compute-native/src/engine_receipts.rs",
+    "packages/compute-native/src/receipts.rs"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "receipts",
+    "schema"
+  ],
+  "created_at": "2026-06-13T10:57:05.258Z",
+  "updated_at": "2026-06-13T10:57:05.258Z"
+}

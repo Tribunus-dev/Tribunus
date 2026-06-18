@@ -1,0 +1,34 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0028",
+  "type": "lane",
+  "name": "Exported module truth",
+  "slug": "exported-module-truth",
+  "description": "Classify every exported compute-native surface as implemented, test-only, scaffold, or removable without introducing a second contract.",
+  "scope": "compute-native-surface-truth",
+  "missionId": "0237",
+  "status": "idle",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/compute-native/src/lib.rs",
+    "packages/compute-native/src/decode_attribution/mod.rs",
+    "packages/compute-native/src/inference_profile/mod.rs",
+    "packages/compute-native/src/compute_image.rs",
+    "packages/compute-native/src/worker_supervisor.rs"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "exports",
+    "truth-contract"
+  ],
+  "created_at": "2026-06-13T10:57:05.257Z",
+  "updated_at": "2026-06-13T10:57:05.257Z"
+}

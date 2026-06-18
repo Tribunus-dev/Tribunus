@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/builder_publication_record.v1",
+  "title": "Builder Publication Record",
+  "description": "Schema for builder publication records that capture the claim, proof, alternatives, boundary, and publication status of a lane's work.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "description": "Version of this schema"
+    },
+    "builderClaim": {
+      "type": "string",
+      "description": "Builder's claim about the work"
+    },
+    "requiredProof": {
+      "type": "string",
+      "description": "Required proof for the claim"
+    },
+    "observedProof": {
+      "type": "string",
+      "description": "Observed proof of the claim"
+    },
+    "alternativesRejected": {
+      "type": "array",
+      "description": "List of alternatives rejected by the builder",
+      "items": { "type": "string" }
+    },
+    "intendedBoundary": {
+      "type": "string",
+      "description": "Intended boundary identifier"
+    },
+    "consumerPurpose": {
+      "type": "string",
+      "description": "Consumer purpose of the work"
+    },
+    "implementedCapabilities": {
+      "type": "array",
+      "description": "List of implemented capabilities",
+      "items": { "type": "string" }
+    },
+    "unimplementedCapabilities": {
+      "type": "array",
+      "description": "List of unimplemented capabilities",
+      "items": { "type": "string" }
+    },
+    "testsRun": {
+      "type": "array",
+      "description": "List of tests run",
+      "items": { "type": "object" }
+    },
+    "schemasProduced": {
+      "type": "array",
+      "description": "List of schemas produced",
+      "items": { "type": "object" }
+    },
+    "auditsProduced": {
+      "type": "array",
+      "description": "List of audits produced",
+      "items": { "type": "object" }
+    },
+    "externalEffectsExecuted": {
+      "type": "array",
+      "description": "List of external effects executed",
+      "items": { "type": "object" }
+    },
+    "externalEffectsNotExecuted": {
+      "type": "array",
+      "description": "List of external effects not executed",
+      "items": { "type": "object" }
+    },
+    "dirtyPaths": {
+      "type": "array",
+      "description": "List of dirty paths",
+      "items": { "type": "string" }
+    },
+    "strongestWeakness": {
+      "type": "string",
+      "description": "Strongest weakness identified"
+    },
+    "reviewerAttackSurface": {
+      "type": "string",
+      "description": "Attack surface identified by reviewers"
+    },
+    "prepublicationReviewDigest": {
+      "type": "string",
+      "description": "Digest of the prepublication review"
+    },
+    "publicationStatus": {
+      "type": "string",
+      "description": "Current publication status"
+    }
+  },
+  "required": ["schemaVersion", "builderClaim", "publicationStatus"]
+}

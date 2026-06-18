@@ -1,0 +1,19 @@
+--- a/packages/compute-native/src/pipeline_parity.rs
++++ b/packages/compute-native/src/pipeline_parity.rs
+@@ -80,14 +80,14 @@
+ }
+ 
+ /// Description of one tensor entering or leaving a pipeline phase.
+-#[derive(Debug, Clone)]
++#[derive(Debug, Clone, Copy)]
+ pub struct TensorContract {
+     /// Canonical name (e.g. "q", "k", "v", "hidden", "residual", "mask", "logits").
+     pub name: &'static str,
+     /// Role in the phase.
+     pub role: TensorRole,
+     /// Shape pattern (e.g. `[Dim::Known(1), Dim::Symbol("hidden_dim")]`).
+-    pub shape_pattern: Vec<Dim>,
++    pub shape_pattern: &'static [Dim],
+     /// Element type (e.g. "float32").
+     pub dtype: &'static str,
+ }

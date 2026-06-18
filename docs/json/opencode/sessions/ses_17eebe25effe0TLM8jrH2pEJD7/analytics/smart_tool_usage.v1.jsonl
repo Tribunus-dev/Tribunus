@@ -1,0 +1,10 @@
+{"at":"2026-06-01T02:49:52.849Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","pattern":"health.*handler|handler.*health|healthEndpoint|HealthHandler","path":"packages/opencode/src/server"}
+{"at":"2026-06-01T02:49:53.803Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","pattern":"fromDirectory","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:51:23.775Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","pattern":"*.ts","path":"packages/opencode/src/server"}
+{"at":"2026-06-01T02:52:00.435Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","pattern":"health|HealthRegistry","path":"packages/opencode/src/server/routes/instance/httpapi/groups"}
+{"at":"2026-06-01T02:52:01.150Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","pattern":"bootstrap*.ts","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:52:40.741Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","pattern":"\\\"health\\\"|healthy|HealthRegistry","path":"packages/opencode/src/server"}
+{"at":"2026-06-01T02:54:12.840Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","pattern":"disposeContext|dispose.*health|health.*dispose","path":"packages/opencode/src/server"}
+{"at":"2026-06-01T02:55:06.217Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","pattern":"test.*health|health.*test","path":"packages/opencode"}
+{"at":"2026-06-01T02:55:07.390Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","pattern":"Effect\\.runSync|Effect\\.runPromise","path":"packages/opencode"}
+{"at":"2026-06-01T02:56:31.694Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","pattern":"bunfig*","path":"packages/opencode"}

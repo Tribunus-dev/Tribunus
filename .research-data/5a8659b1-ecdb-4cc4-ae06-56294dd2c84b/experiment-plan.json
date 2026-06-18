@@ -1,0 +1,22 @@
+{
+  "experiment_id": "EXP-0000",
+  "title": "V3 Authoritative Baseline",
+  "hypothesis": "Unchanged Hardening Pass v3 produces deterministic first token.",
+  "optimization_id": "OPT-0000",
+  "baseline_config": {},
+  "treatment_config": {},
+  "workloads": [
+    "eight-token-qualification"
+  ],
+  "machine_profile_id": "m1-16gb",
+  "run_grade": "claim_candidate",
+  "instrumentation_mode": "research_standard",
+  "primary_metric": "token_correctness",
+  "secondary_metrics": [],
+  "repetition_policy": {
+    "min_repetitions": 1,
+    "warmup_policy": "none",
+    "run_ordering": "sequential"
+  },
+  "timeout_seconds": 3600
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0007",
+  "title": "Phase-Local Scratch Memory",
+  "status": "proposed",
+  "component_type": "memory_component",
+  "owner_subsystem": "phase_scope",
+  "definition": "Scratch memory exists only inside a PhaseScope and is never authority-visible unless committed into runtime memory truth.",
+  "invariants": [
+    "Scratch memory may exist only inside a PhaseScope.",
+    "Scratch memory is never authority-visible.",
+    "Scratch memory cannot cross a phase boundary unless committed and receipted."
+  ],
+  "allowed_states": [
+    "temporary",
+    "private",
+    "phase_local"
+  ],
+  "forbidden_states": [
+    "authority_visible",
+    "cross_boundary_truth"
+  ],
+  "required_receipts": [
+    "scratch_allocation_receipt"
+  ],
+  "required_validators": [
+    "scratch_boundary_validator"
+  ],
+  "imported_by": [
+    "ADR-0021"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

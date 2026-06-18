@@ -1,0 +1,6 @@
+{"at":"2026-06-01T04:29:33.278Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","pattern":"Cause\\.isDie|isDie|Cause\\.isFail|Cause\\.isInterrupt","path":"packages/opencode"}
+{"at":"2026-06-01T04:32:20.949Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_find","pattern":"effect","path":"node_modules"}
+{"at":"2026-06-01T04:33:37.839Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_find","pattern":"node_modules","path":"packages/opencode"}
+{"at":"2026-06-01T04:34:26.050Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","pattern":"Cause\\.(isDie|isFail|isInterrupt|isEmpty|pretty|contains)","path":"packages/opencode"}
+{"at":"2026-06-01T04:35:20.111Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","pattern":"isFailReason|isDieReason|Cause\\.contains","path":"packages/opencode"}
+{"at":"2026-06-01T04:36:46.761Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","pattern":"latestEntry","path":"packages/opencode"}

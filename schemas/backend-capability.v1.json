@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/backend-capability/v1.json",
+  "title": "BackendCapability",
+  "description": "A backend's self-declared capability certificate. Documents how a specific backend realizes the abstract Tribunus machine on real hardware. Every gap or limitation is a declared, audited capability, not a silent fallback.",
+  "type": "object",
+  "required": [
+    "backend_id", "platform", "artifact_identity_level",
+    "island_memory", "command_replay",
+    "has_runtime_code_path",
+    "observability", "notes"
+  ],
+  "properties": {
+    "backend_id": { "type": "string", "examples": ["mlx_metal", "accelerate", "coreml", "vulkan_amd", "level_zero_intel", "xDNA_npu"] },
+    "platform": { "type": "string", "examples": ["macos", "linux", "windows"] },
+    "artifact_identity_level": {
+      "$ref": "golden-machine.v1.json#/definitions/artifact_identity_level",
+      "description": "Strongest identity guarantee this backend can provide."
+    },
+    "island_memory": {
+      "$ref": "golden-machine.v1.json#/definitions/island_memory_mode",
+      "description": "How this backend interacts with the executor's memory island."
+    },
+    "zero_copy": { "type": "boolean" },
+    "zero_copy_notes": { "type": "string" },
+    "command_replay": {
+      "$ref": "golden-machine.v1.json#/definitions/command_replay_mode",
+      "description": "How this backend dispatches work."
+    },
+    "has_runtime_code_path": { "type": "boolean", "description": "True if this backend compiles or loads code at runtime that the executor cannot pre-verify. If true, the executor wraps it in an evidence adapter that records artifact identity at qualification time." },
+    "runtime_code_path_mitigation": { "type": "string" },
+    "observability": {
+      "type": "object",
+      "required": ["kernel_timing", "memory_tracking", "error_reporting"],
+      "properties": {
+        "kernel_timing": { "type": "boolean" },
+        "memory_tracking": { "type": "boolean" },
+        "error_reporting": { "type": "string", "enum": ["structured", "opaque", "none"] }
+      }
+    },
+    "notes": { "type": "string" }
+  }
+}

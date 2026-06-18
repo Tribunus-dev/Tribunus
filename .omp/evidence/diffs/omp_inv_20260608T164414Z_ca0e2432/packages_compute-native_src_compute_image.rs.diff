@@ -1,0 +1,14 @@
+--- a/packages/compute-native/src/compute_image.rs
++++ b/packages/compute-native/src/compute_image.rs
+@@ -12,6 +12,11 @@
+ pub const STORAGE_ABI_COPIED_V0: &str = "copied-v0";
+ /// Storage ABI identifier for the mapped, no-copy (Metal-buffer) path.
+ pub const STORAGE_ABI_MAPPED_NO_COPY_V1: &str = "mapped-no-copy-v1";
++
++/// Return true if `abi` is a recognised storage ABI identifier.
++pub fn is_valid_storage_abi(abi: &str) -> bool {
++    abi == STORAGE_ABI_COPIED_V0 || abi == STORAGE_ABI_MAPPED_NO_COPY_V1
++}
+ 
+ use mlx_rs::Array;
+ use serde::{Deserialize, Serialize};

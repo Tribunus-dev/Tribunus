@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/service-level-indicators.v1",
+  "title": "Tribunus Service-Level Indicators and Alert Classification",
+  "description": "SLI definitions for every production service, plus the three-tier alert classification system.",
+  "service_level_indicators": {
+    "availability": {
+      "measurement": "uptime / (uptime + downtime) over the measurement window",
+      "target": "99.9% monthly for core services (coordination, session, tool, provider)",
+      "sources": ["Health probe endpoint", "PGlite connectivity check", "Valkey connectivity check"]
+    },
+    "latency": {
+      "measurement": "p50, p95, p99 of request duration in milliseconds",
+      "targets": {
+        "tool_execution": "p95 < 5000ms",
+        "session_create": "p95 < 500ms",
+        "provider_invoke": "p95 < 30000ms (streaming)",
+        "http_api": "p95 < 200ms"
+      },
+      "sources": ["OpenTelemetry span duration", "Histogram metrics"]
+    },
+    "error_rate": {
+      "measurement": "failed_requests / total_requests over the measurement window",
+      "target": "< 1% for all services",
+      "classification": "Uses failure_classification taxonomy (introduced_regression, pre_existing_failure, infrastructure_failure, flaky_test, resource_exhaustion, invalid_test_assumption)"
+    },
+    "throughput": {
+      "measurement": "requests per second averaged over 1-minute windows",
+      "targets": {
+        "tool_execution": "> 10 req/s sustained",
+        "session_create": "> 5 req/s sustained",
+        "http_api": "> 100 req/s sustained"
+      }
+    },
+    "durability": {
+      "measurement": "successful_PGlite_writes / attempted_PGlite_writes",
+      "target": "> 99.99%",
+      "sources": ["PGlite write success counters", "PGlite error logs"]
+    }
+  },
+  "alert_classification": {
+    "critical": {
+      "severity": "highest",
+      "description": "Service is down or severely degraded. User-visible impact is immediate.",
+      "response": "Immediate human response required. Paging or on-call escalation.",
+      "target_response_time": "5 minutes",
+      "examples": ["PGlite unavailable", "Valkey connection lost", "All sessions failing", "Database corruption detected"]
+    },
+    "warning": {
+      "severity": "medium",
+      "description": "Service is degraded but not down. User impact may be partial or delayed.",
+      "response": "Investigation required within business hours. Automated ticket created.",
+      "target_response_time": "4 business hours",
+      "examples": ["Error rate > 2% for 5 minutes", "p95 latency > 2x baseline", "Disk usage > 85%", "Heartbeat misses > 3 consecutive"]
+    },
+    "info": {
+      "severity": "low",
+      "description": "Notable but non-urgent condition. No user impact expected.",
+      "response": "Acknowledge within 1 week. Review in weekly ops review.",
+      "target_response_time": "1 week",
+      "examples": ["Deprecation timeline approaching", "New schema version published", "Capacity forecast indicates 30-day headroom", "Successful recovery operation completed"]
+    }
+  },
+  "routing": {
+    "critical": ["On-call engineer (PagerDuty/OpsGenie)", "Security council (if security-related)"],
+    "warning": ["Engineering Slack channel", "Weekly ops review agenda"],
+    "info": ["Ops dashboard notification", "Monthly report"]
+  }
+}

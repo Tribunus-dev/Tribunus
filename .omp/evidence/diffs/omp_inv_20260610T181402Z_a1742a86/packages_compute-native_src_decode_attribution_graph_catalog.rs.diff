@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/decode_attribution/graph_catalog.rs
++++ b/packages/compute-native/src/decode_attribution/graph_catalog.rs
+@@ -283,7 +283,7 @@
+         let dummy = seeded_f32(40 + i as u64, 16);
+         b = b.const_f32(&format!("dummy_{}", i), &dummy, &[4, 4]);
+     }
+-    b.const_f32("w", &w, &profile.weight_shape())
++    b.const_f32("w", &w, &profile.weight_shape_i64())
+         .matmul("x", "w_40")
+         .output("matmul_40")
+ }

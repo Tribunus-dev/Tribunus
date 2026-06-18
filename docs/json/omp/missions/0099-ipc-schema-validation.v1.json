@@ -1,0 +1,43 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0099-ipc-schema-validation",
+  "type": "mission",
+  "name": "IPC Schema Validation",
+  "slug": "ipc-schema-validation",
+  "description": "All IPC messages (both ipcMain/ipcRenderer and contextBridge channels) must be validated against JSON schemas. Malformed messages are rejected with structured receipts. Unknown channels are blocked at the boundary.",
+  "purpose": "Prevent IPC-based attacks by enforcing schema validation on all inter-process messages, ensuring only well-formed, expected messages cross process boundaries.",
+  "campaignId": "0018",
+  "status": "completed",
+  "priority": 85,
+  "acceptanceCriteria": [
+    "Every IPC channel has a registered JSON schema",
+    "All incoming IPC messages are validated against their channel schema before dispatch",
+    "Malformed messages are rejected with a structured receipt (error code, channel, timestamp)",
+    "Unknown IPC channels are rejected at the handler registration boundary",
+    "Schema validation runs in the receiving process before any business logic executes"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "missions0018"
+  ],
+  "tags": [
+    "security",
+    "ipc",
+    "schema-validation"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:44:20.023Z",
+  "updated_at": "2026-06-07T05:48:22.949Z"
+}

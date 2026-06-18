@@ -1,0 +1,10 @@
+--- a/packages/compute-native/src/lib.rs
++++ b/packages/compute-native/src/lib.rs
+@@ -7,6 +7,7 @@
+ mod bridge;
+ pub mod capability;
+ pub mod compute_image;
++pub mod compile_progress;
+ pub mod config;
+ pub mod coreml_bridge;
+ pub mod coreml_state;

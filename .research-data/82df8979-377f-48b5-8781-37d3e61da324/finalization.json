@@ -1,0 +1,30 @@
+{
+  "run_id": "82df8979-377f-48b5-8781-37d3e61da324",
+  "timestamp": "2026-06-09T05:50:53.518Z",
+  "final_digest": "d9bc8e369f6ceaf27c811f1e3e614e6d2ccbe1f8fbd2fdfc1eb58aa1215ec18c",
+  "checksums_path": "/Users/user/Developer/GitHub/Tribunus/.research-data/82df8979-377f-48b5-8781-37d3e61da324.partial/checksums.sha256",
+  "file_count": 5,
+  "byte_count": 25943,
+  "validations": [
+    {
+      "file": "/Users/user/Developer/GitHub/Tribunus/.research-data/82df8979-377f-48b5-8781-37d3e61da324.partial/experiment-plan.json",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "/Users/user/Developer/GitHub/Tribunus/.research-data/82df8979-377f-48b5-8781-37d3e61da324.partial/provenance.json",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "/Users/user/Developer/GitHub/Tribunus/.research-data/82df8979-377f-48b5-8781-37d3e61da324.partial/workload.json",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "/Users/user/Developer/GitHub/Tribunus/.research-data/82df8979-377f-48b5-8781-37d3e61da324.partial/run-manifest.json",
+      "valid": true,
+      "errors": []
+    }
+  ]
+}

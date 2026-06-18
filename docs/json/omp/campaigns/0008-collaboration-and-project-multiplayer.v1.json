@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0008",
+  "type": "campaign",
+  "name": "Collaboration and Project Multiplayer",
+  "slug": "collaboration-and-project-multiplayer",
+  "description": "League of Legends mental model: users are champions, agents are minions, projects are the map, lanes are workstreams. Models presence, cursors, live project state, agent assignments, contested resources, locks/fences, review queues, shared artifacts, merge pressure, conflict resolution, and real-time cockpit state.",
+  "objective": "Model and implement real-time multiplayer collaboration with presence, locks, conflict resolution, and shared project state.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-06",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "collaboration",
+    "multiplayer",
+    "presence"
+  ],
+  "maturity": "modeled",
+  "horizon": "strategic",
+  "created_at": "2026-06-06T17:52:03.421Z",
+  "updated_at": "2026-06-06T17:52:03.421Z"
+}

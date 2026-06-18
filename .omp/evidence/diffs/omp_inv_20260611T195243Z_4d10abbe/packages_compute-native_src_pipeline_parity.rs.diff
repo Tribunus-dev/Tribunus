@@ -1,0 +1,15 @@
+--- a/packages/compute-native/src/pipeline_parity.rs
++++ b/packages/compute-native/src/pipeline_parity.rs
+@@ -121,6 +121,12 @@
+     QkvProjection,
+     /// Read KV from cache.
+     KvRead,
++    /// Write KV key-value at position.
++    KvWrite,
++    /// Append KV key-value to cache.
++    KvAppend,
++    /// View slice from cache without mutation.
++    KvView,
+     /// Compute attention scores: Q @ K^T.
+     AttentionScores,
+     /// Apply causal mask to attention scores.

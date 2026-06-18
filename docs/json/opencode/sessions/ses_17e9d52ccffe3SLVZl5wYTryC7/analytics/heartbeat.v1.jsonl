@@ -1,0 +1,102 @@
+{"at":"2026-06-01T04:24:51.372Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"\"@/effect/runtime-flags\""}
+{"at":"2026-06-01T04:24:51.373Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T04:27:58.362Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"Layer\\.toRuntime|ManagedRuntime\\.make|Layer\\.build"}
+{"at":"2026-06-01T04:27:58.592Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"24 matches in 500 files"}
+{"at":"2026-06-01T04:31:49.607Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/instance-trace-smoke.ts"}
+{"at":"2026-06-01T04:31:49.607Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/instance-trace-smoke.ts"}
+{"at":"2026-06-01T04:32:31.456Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:32:32.102Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:33:47.744Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"\"effect\""}
+{"at":"2026-06-01T04:33:47.750Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T04:33:48.716Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"catchAllCause|catchAllDefect|onError"}
+{"at":"2026-06-01T04:33:48.826Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"30 matches in 208 files"}
+{"at":"2026-06-01T04:35:06.671Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"Effect\\.catchAll|\\.pipe\\(Effect\\.catch|Effect\\.catchTag"}
+{"at":"2026-06-01T04:35:06.766Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"30 matches in 197 files"}
+{"at":"2026-06-01T04:35:06.781Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"effect.*version|\"effect\""}
+{"at":"2026-06-01T04:35:06.781Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T04:35:36.162Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:35:36.236Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T04:35:59.284Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"install"}
+{"at":"2026-06-01T04:36:04.224Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"install exit=0"}
+{"at":"2026-06-01T04:48:45.461Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:48:45.500Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T04:49:29.867Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/_check-effect-api.ts"}
+{"at":"2026-06-01T04:49:29.870Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/_check-effect-api.ts"}
+{"at":"2026-06-01T04:50:06.709Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:50:07.306Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T04:56:57.088Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"\"test\"|\"typecheck\"|\"scripts\""}
+{"at":"2026-06-01T04:56:57.089Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T04:56:58.047Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T04:56:58.240Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"typecheck exit=0"}
+{"at":"2026-06-01T04:57:56.795Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"catchAllCause"}
+{"at":"2026-06-01T04:57:56.990Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T04:57:57.003Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"\"effect\""}
+{"at":"2026-06-01T04:57:57.004Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T04:58:52.047Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"\"effect\""}
+{"at":"2026-06-01T04:58:52.048Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T04:58:52.764Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"effect"}
+{"at":"2026-06-01T04:58:52.767Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"30 matches in 1 files"}
+{"at":"2026-06-01T04:59:17.653Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T04:59:17.919Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T04:59:51.267Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T04:59:56.823Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T05:00:15.647Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:00:21.378Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T05:00:38.299Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:00:44.154Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T05:00:59.044Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:00:59.186Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T05:01:11.391Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:01:11.498Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T05:01:22.653Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/_run-instance-trace-tests.ts"}
+{"at":"2026-06-01T05:01:22.654Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/_run-instance-trace-tests.ts"}
+{"at":"2026-06-01T05:14:26.259Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:14:28.448Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:14:44.429Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/_run-instance-trace-tests.ts"}
+{"at":"2026-06-01T05:14:44.464Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/_run-instance-trace-tests.ts"}
+{"at":"2026-06-01T05:14:56.601Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:14:58.945Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T05:16:32.135Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/instance-trace-smoke.ts"}
+{"at":"2026-06-01T05:16:32.164Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/instance-trace-smoke.ts"}
+{"at":"2026-06-01T05:16:42.012Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:16:42.851Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:17:48.884Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/instance-trace-smoke.ts"}
+{"at":"2026-06-01T05:17:48.909Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/instance-trace-smoke.ts"}
+{"at":"2026-06-01T05:18:03.398Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:18:04.082Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:18:33.075Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/_test-polyfill.ts"}
+{"at":"2026-06-01T05:18:33.076Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/_test-polyfill.ts"}
+{"at":"2026-06-01T05:18:40.994Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:18:41.429Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:19:11.696Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/_test-polyfill.ts"}
+{"at":"2026-06-01T05:19:11.734Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/_test-polyfill.ts"}
+{"at":"2026-06-01T05:19:20.802Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:19:21.345Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T05:21:13.400Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_edit","phase":"started","detail":"packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T05:21:13.400Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_edit","phase":"failed","detail":"text not found"}
+{"at":"2026-06-01T05:21:32.797Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"started","detail":"catchAllCause"}
+{"at":"2026-06-01T05:21:32.797Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T05:29:38.934Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:29:39.350Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:31:04.809Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/instance-trace-smoke.ts"}
+{"at":"2026-06-01T05:31:04.841Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/instance-trace-smoke.ts"}
+{"at":"2026-06-01T05:31:18.611Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:31:19.522Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T05:31:34.003Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:31:34.567Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T05:31:44.060Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:31:44.792Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T05:31:57.305Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:31:57.326Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:32:25.636Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:32:25.659Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T05:33:25.894Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:33:25.980Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T05:36:54.820Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:37:00.925Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T05:37:39.221Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:37:39.261Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T05:39:06.399Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/_check-effect-api.ts"}
+{"at":"2026-06-01T05:39:06.425Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_edit","phase":"completed","detail":"packages/opencode/scripts/_check-effect-api.ts"}
+{"at":"2026-06-01T05:41:15.147Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:41:15.824Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","tool":"smart_bun","phase":"completed","detail":"run exit=0"}

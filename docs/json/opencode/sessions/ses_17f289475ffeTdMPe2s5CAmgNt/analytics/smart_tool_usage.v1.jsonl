@@ -1,0 +1,9 @@
+{"at":"2026-06-01T01:43:44.470Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"annotateLogs","path":"packages/opencode"}
+{"at":"2026-06-01T01:43:45.098Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"Effect\\.logError","path":"packages/opencode/src"}
+{"at":"2026-06-01T01:45:33.151Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"from.*[\"']\\.\\/auth[\"']|from.*[\"']\\.\\.\\/mcp\\/auth[\"']|McpAuth","path":"packages/opencode/src"}
+{"at":"2026-06-01T01:45:33.816Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"decodeAuthData\\b","path":"packages/opencode"}
+{"at":"2026-06-01T01:45:34.827Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"from.*[\"']\\.\\/oauth-callback[\"']|from.*[\"']\\.\\.\\/mcp\\/oauth-callback[\"']|McpOAuthCallback","path":"packages/opencode/src"}
+{"at":"2026-06-01T01:48:18.886Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"decodeAuthData","path":"packages/opencode"}
+{"at":"2026-06-01T01:48:19.465Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"Effect\\.catchAll","path":"packages/opencode/src/mcp"}
+{"at":"2026-06-01T01:50:07.442Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"annotateLogs","path":"packages/opencode/src"}
+{"at":"2026-06-01T01:50:08.132Z","session_id":"ses_17f289475ffeTdMPe2s5CAmgNt","agent":"coupling-auditor","tool":"smart_grep","pattern":"Effect\\.orDie","path":"packages/opencode/src/mcp"}

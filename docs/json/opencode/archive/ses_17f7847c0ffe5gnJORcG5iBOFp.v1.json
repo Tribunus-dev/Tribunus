@@ -1,0 +1,14 @@
+{
+  "schema": "v1",
+  "session_id": "ses_17f7847c0ffe5gnJORcG5iBOFp",
+  "agent": "general-man-agent",
+  "archived_at": "2026-06-01T08:10:00.847Z",
+  "summary": "Instance Bootstrap Trace session — 4 concurrent lanes delivered the diagnostic layer between sidecar process health and per-project instance usability. Lane 1 (ib-bootstrap-phases): durable JSONL instance startup trace (instance-trace.ts, 131 lines, 11 tests). Lane 2 (ib-error-gaps): typed failure taxonomy (diagnostic/instance-failure-codes.ts, 84 lines, 15 codes, Cause-aware classifyError). Lane 3 (ib-sidecar-boundary): two-level health model (InstanceHealthStore, BootstrapResult with failedServices, 4 BusEvents, instance_healthy endpoint). Lane 4 (ib-plugin-mcp-observe): trace observation hooks (plugin silent catch fix, mcp classifyErrorCode, bridge.fork try/catch). Total: ~16 production files modified, 4 new modules created. 3 repair rounds across lanes. Deferred: cross-lane bootstrap.ts consolidation, Cause.pretty path leak, test coverage gaps, BusEvent wiring.",
+  "friction_entries": 8,
+  "friction_summary": [
+    "Session isolation: task_board shows 139 agents across all concurrent sessions (lc-*, tc-*, mcp-*, ib-*). No way to filte",
+    "Stale agent pollution: 21 stale agents from prior sessions clog the task board (lc-diag 2982s, lifecycle-te 3908s, etc.)",
+    "Handoff body truncation: read(action=\"messages\") cuts handoff JSON bodies mid-string with \"...\" truncation. I cannot rea"
+  ],
+  "handoffs": 775
+}

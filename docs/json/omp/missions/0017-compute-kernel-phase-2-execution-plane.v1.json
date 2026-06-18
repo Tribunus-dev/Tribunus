@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0017",
+  "type": "mission",
+  "name": "Compute Kernel — Phase 2: Execution Plane",
+  "slug": "compute-kernel-phase-2-execution-plane",
+  "description": "Add the execution plane: lazy operation graph construction, dependency tracking, command submission, fences/events, backend planning and routing, and CPU/GPU synchronization rules. Backend targeting: Metal, CUDA, HIP/ROCm, oneAPI/SYCL, Vulkan/WebGPU.",
+  "purpose": "Operations are declared, dependency-analyzed, and dispatched to the optimal backend. The kernel owns the execution plan; workers execute under its governance.",
+  "campaignId": "0005",
+  "status": "completed",
+  "priority": 55,
+  "acceptanceCriteria": [
+    "Lazy operation graph construction with dependency tracking",
+    "Command submission and fence/event synchronization",
+    "Backend planning selects optimal accelerator per operation",
+    "CPU/GPU synchronization rules prevent race conditions",
+    "Backend routing supports Metal, CUDA, HIP/ROCm, SYCL, Vulkan/WebGPU",
+    "Execution receipts link operations to specific backend and timing"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:49:25.077Z",
+  "updated_at": "2026-06-06T11:54:21.108Z"
+}

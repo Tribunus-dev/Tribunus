@@ -1,0 +1,32 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0220-community-compute-protocol-design",
+  "type": "mission",
+  "name": "Community Compute Protocol Design",
+  "slug": "community-compute-protocol-design",
+  "description": "Design the protocol for advertising idle compute resources, submitting compute offers and requests, workload classification, trusted execution boundaries, privacy-preserving input packaging, result verification, redundant execution, malicious contributor detection, and resource quota enforcement.",
+  "purpose": "A well-specified protocol is required before any implementation of the community compute marketplace can begin. This mission scopes the wire format, lifecycle states, trusted execution boundaries, and threat model so that implementation missions have a complete specification to build against. Without this, parallel implementation work would diverge on interface contracts and security assumptions.",
+  "campaignId": "0024",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Protocol specification document covering compute offer/request lifecycle, workload classification taxonomy, and resource advertisement format",
+    "Trusted execution boundary analysis with threat model identifying attack surfaces in input packaging, result verification, and redundant execution",
+    "Protocol specification reviewed by security and architecture review teams with documented approval"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "community-compute",
+    "protocol",
+    "trusted-execution",
+    "threat-model"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:51.709Z",
+  "updated_at": "2026-06-07T05:51:21.528Z"
+}

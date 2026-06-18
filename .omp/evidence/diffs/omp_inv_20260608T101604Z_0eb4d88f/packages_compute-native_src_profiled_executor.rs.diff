@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/profiled_executor.rs
++++ b/packages/compute-native/src/profiled_executor.rs
+@@ -61,6 +61,8 @@
+ /// - No source checkpoint access
+ /// - Profile validation must pass
+ ///
++/// Fails closed on canary failure.
++
+ /// Load tensor data from a MappedImage segment file using seek + read_exact.
+ fn load_tensor_from_segment_file(
+     segment_file: &std::fs::File,

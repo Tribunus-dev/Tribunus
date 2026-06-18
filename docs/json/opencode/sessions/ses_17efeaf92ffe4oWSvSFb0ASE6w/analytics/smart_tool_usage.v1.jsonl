@@ -1,0 +1,13 @@
+{"at":"2026-06-01T02:30:28.361Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"OPN_NO_INSTANCE_TRACE|instance-startup\\.jsonl|InstanceTrace","path":"packages/opencode"}
+{"at":"2026-06-01T02:32:14.369Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"tapErrorCause","path":"packages/opencode"}
+{"at":"2026-06-01T02:32:14.764Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"catchCause","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:32:15.856Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"appendFileSync|appendFile","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:33:30.136Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"\\.init\\(\\).*catchCause|\\.init\\(\\).*tap","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:34:21.496Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"\\.rig[/\\\\]","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:34:54.146Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"\\.rig/","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:34:54.849Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"mkdirSync|mkdir","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:37:43.199Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"Context\\.Service|_tag","path":"packages/opencode/src/project/bootstrap-service.ts"}
+{"at":"2026-06-01T02:38:10.529Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"class Service extends Context","path":"packages/opencode/src/lsp"}
+{"at":"2026-06-01T02:38:11.177Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"class Service extends Context","path":"packages/opencode/src/plugin"}
+{"at":"2026-06-01T02:38:11.788Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"class Service extends Context","path":"packages/opencode/src/format"}
+{"at":"2026-06-01T02:38:12.423Z","session_id":"ses_17efeaf92ffe4oWSvSFb0ASE6w","agent":"debuggability-forecaster","tool":"smart_grep","pattern":"class Service extends Context","path":"packages/opencode/src/file"}

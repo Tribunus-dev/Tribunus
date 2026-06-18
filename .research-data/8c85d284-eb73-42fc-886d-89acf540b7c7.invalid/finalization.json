@@ -1,0 +1,33 @@
+{
+  "run_id": "8c85d284-eb73-42fc-886d-89acf540b7c7",
+  "timestamp": "2026-06-09T05:48:06.757Z",
+  "final_digest": "6c8ced2fc926c34e614e601e9ecba7ed7889be50960175cbe49b08514c156954",
+  "checksums_path": "/Users/user/Developer/GitHub/Tribunus/.research-data/8c85d284-eb73-42fc-886d-89acf540b7c7.partial/checksums.sha256",
+  "file_count": 5,
+  "byte_count": 26892,
+  "validations": [
+    {
+      "file": "/Users/user/Developer/GitHub/Tribunus/.research-data/8c85d284-eb73-42fc-886d-89acf540b7c7.partial/experiment-plan.json",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "/Users/user/Developer/GitHub/Tribunus/.research-data/8c85d284-eb73-42fc-886d-89acf540b7c7.partial/provenance.json",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "/Users/user/Developer/GitHub/Tribunus/.research-data/8c85d284-eb73-42fc-886d-89acf540b7c7.partial/workload.json",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "file": "/Users/user/Developer/GitHub/Tribunus/.research-data/8c85d284-eb73-42fc-886d-89acf540b7c7.partial/run-manifest.json",
+      "valid": false,
+      "errors": [
+        "invalid JSON: JSON Parse error: Unable to parse JSON string"
+      ]
+    }
+  ],
+  "error": "finalization blocked: one or more schema validations failed"
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0061-app-shell-navigation-and-window-lifecycle",
+  "type": "mission",
+  "name": "App Shell Navigation and Window Lifecycle",
+  "slug": "app-shell-navigation-and-window-lifecycle",
+  "description": "Navigation model: views, routes, deep links, window creation/destruction, multi-window state sharing.",
+  "purpose": "Navigation is predictable and state is coherent across windows.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Navigation actions are dispatched through a central router, not ad-hoc URL construction",
+    "Window creation opens at a specified route and inherits parent window context",
+    "Window destruction drains in-flight operations and persists view state before close",
+    "Multi-window state is synchronized through a shared store, not direct cross-window references",
+    "Deep links resolve to routes and navigate within existing window or open new window",
+    "Navigation history is preserved per-window with back/forward semantics"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "navigation",
+    "window-lifecycle",
+    "routing",
+    "multi-window",
+    "deep-links"
+  ],
+  "depends_on": [
+    "0057-main-process-renderer-worker-and-sidecar-boundaries",
+    "0060-resource-ownership-and-deterministic-teardown"
+  ],
+  "unlocks": [
+    "0062-deep-link-and-protocol-handler-lifecycle"
+  ],
+  "authority_scope": "navigation",
+  "allowed_paths": [
+    "packages/app/src/navigation/**",
+    "packages/desktop/src/windows/**"
+  ],
+  "required_evidence": [
+    "Central router dispatch test (no ad-hoc URL construction)",
+    "Window creation at route with inherited context test",
+    "Window destruction drains in-flight ops and persists state test",
+    "Multi-window shared store synchronization test",
+    "Deep link route resolution test",
+    "Per-window navigation history test"
+  ],
+  "acceptance_gates": [
+    "Navigation dispatched through central router",
+    "Window creation opens at specified route with inherited context",
+    "Window destruction drains ops and persists state",
+    "Multi-window state shared through store, not cross-window references",
+    "Deep links resolve to routes in existing or new window",
+    "Per-window history with back/forward semantics"
+  ],
+  "rollback_strategy": "Navigation failure rolls back to previous route; window creation failure does not create partial window",
+  "recovery_strategy": "On window crash, restore window state from shared store on next open",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "Navigation routing failures escalate to user with route and fallback option",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.496Z",
+  "updated_at": "2026-06-07T05:45:51.153Z"
+}

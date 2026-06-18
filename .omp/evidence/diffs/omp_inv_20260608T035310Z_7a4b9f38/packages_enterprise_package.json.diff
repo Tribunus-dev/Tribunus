@@ -1,0 +1,9 @@
+--- a/packages/enterprise/package.json
++++ b/packages/enterprise/package.json
+@@ -1,5 +1,5 @@
+ {
+-  "name": "@opencode-ai/enterprise",
++  "name": "@tribunus/enterprise",
+   "version": "1.15.12",
+   "private": true,
+   "type": "module",

@@ -1,0 +1,9 @@
+{
+  "category": "F",
+  "browserWindows": [],
+  "webContents": [],
+  "playwrightPages": [],
+  "evaluateOk": false,
+  "launchMs": 38,
+  "error": "Error: launch: Failed to launch: Error: ENOENT: no such file or directory, posix_spawn '/app/node_modules/.bun/electron@41.2.1/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron'\nCall log:\n\u001b[2m  - <launching> /app/node_modules/.bun/electron@41.2.1/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron --no-sandbox --inspect=0 --remote-debugging-port=0 /app/packages/desktop/out/main/index.js\u001b[22m\n\u001b[2m  - [pid=N/A] starting temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=N/A]"
+}

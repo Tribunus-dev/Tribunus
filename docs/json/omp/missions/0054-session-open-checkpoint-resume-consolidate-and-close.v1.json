@@ -1,0 +1,63 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0054-session-open-checkpoint-resume-consolidate-and-close",
+  "type": "mission",
+  "name": "Session Open, Checkpoint, Resume, Consolidate, and Close",
+  "slug": "session-open-checkpoint-resume-consolidate-and-close",
+  "description": "Full session lifecycle with checkpoint persistence, resume from checkpoint, session consolidation on close, and cleanup.",
+  "purpose": "Every session state transition is durable and recoverable.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Session open creates a durable session record with unique ID and timestamp",
+    "Checkpoints capture full session state at configurable intervals",
+    "Resume from checkpoint restores session to exact state at checkpoint time",
+    "Close consolidates session state, writes final checkpoint, and cleans up temporary resources",
+    "Session close is idempotent — double-close does not corrupt state",
+    "Each session state transition is logged with before/after snapshots"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "session",
+    "lifecycle",
+    "checkpoint",
+    "resume",
+    "durability"
+  ],
+  "depends_on": [
+    "0053-instance-bootstrap-and-dependency-assembly",
+    "0060-resource-ownership-and-deterministic-teardown"
+  ],
+  "unlocks": [
+    "0056-crash-recovery-and-abandoned-session-reconciliation"
+  ],
+  "authority_scope": "sessions",
+  "allowed_paths": [
+    "packages/app/src/runtime/sessions/**"
+  ],
+  "required_evidence": [
+    "Session open creates durable record with unique ID test",
+    "Checkpoint capture/restore round-trip test",
+    "Close consolidation and cleanup test",
+    "Double-close idempotency test"
+  ],
+  "acceptance_gates": [
+    "Session open creates durable record",
+    "Checkpoint captures full state at configurable intervals",
+    "Resume restores exact state from checkpoint",
+    "Close is idempotent and cleans up temp resources"
+  ],
+  "rollback_strategy": "Session open that fails mid-sequence rolls back via implicit resource teardown (resource registry)",
+  "recovery_strategy": "Recover from last checkpoint on crash; consolidate on explicit close",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "Session state corruption escalates to user with recovery checkpoint options",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.476Z",
+  "updated_at": "2026-06-07T05:42:50.310Z"
+}

@@ -1,0 +1,11 @@
+--- a/artifacts/identity/source-cutover/migration-waves.json
++++ b/artifacts/identity/source-cutover/migration-waves.json
+@@ -39,7 +39,7 @@
+           "importReferences": []
+         },
+         {
+-          "currentName": "@opencode-ai/console-function",
++          "currentName": "@tribunus/console-function",
+           "intendedName": "@tribunus/console-function",
+           "path": "packages/console/function",
+           "renameDirectory": false,

@@ -1,0 +1,3 @@
+{"at":"2026-06-01T07:11:36.938Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"read-only search to locate create() function context","occurrences":1}
+{"at":"2026-06-01T07:16:27.649Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"read-only: locate create function with context","occurrences":1}
+{"at":"2026-06-01T07:26:52.821Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/mcp/index.ts","reason":"read-only: verify defaultLayer location for context","occurrences":1}

@@ -1,0 +1,33 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0227-data-classification-and-consent-registry-design",
+  "type": "mission",
+  "name": "Data Classification and Consent Registry Design",
+  "slug": "data-classification-and-consent-registry-design",
+  "description": "Design the data classification taxonomy and purpose-based consent registry. Define classification levels (public, internal, confidential, restricted), classification metadata tagging, and automatic classification rules. Design the consent registry schema with purpose (GDPR Art. 6/9), legal basis, processing activity, consent scope, withdrawal semantics, and linkage to data subjects and processing records.",
+  "purpose": "Privacy compliance requires classifying all data assets by sensitivity and tracking user consent at a granular, purpose-based level. A sound classification taxonomy and consent registry are prerequisites for retention, export, deletion, and cross-border controls.",
+  "campaignId": "0028",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Classification taxonomy document defines levels, metadata tagging scheme, and automatic classification rules",
+    "Consent registry schema captures purpose, legal basis, processing activity, consent scope, and withdrawal semantics",
+    "Architecture covers consent lifecycle: grant, modify, withdraw, expire, and linkage to data subjects and processing records"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "privacy",
+    "classification",
+    "consent",
+    "gdpr",
+    "data-governance"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:55.565Z",
+  "updated_at": "2026-06-07T05:53:14.604Z"
+}

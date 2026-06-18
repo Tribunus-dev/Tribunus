@@ -1,0 +1,2 @@
+{"at":"2026-06-01T07:18:44.020Z","session_id":"ses_17dfb086bffeSF3ggZVLI8SYUN","agent":"fire-drill","tool":"smart_write","phase":"started","detail":"docs/json/testing/two_level_health_model_e2e_scenarios.v1.json"}
+{"at":"2026-06-01T07:18:44.020Z","session_id":"ses_17dfb086bffeSF3ggZVLI8SYUN","agent":"fire-drill","tool":"smart_write","phase":"completed","detail":"docs/json/testing/two_level_health_model_e2e_scenarios.v1.json"}

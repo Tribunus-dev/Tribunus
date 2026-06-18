@@ -1,0 +1,49 @@
+name: mlx-rs backend lifecycle
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  rust-metadata:
+    name: Rust metadata validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Check backend lifecycle metadata
+        working-directory: mlx-rs
+        run: |
+          cargo check --features evidence
+          cargo test --features evidence backend::reference
+  macos-backend-lifecycle:
+    name: macOS MLX backend lifecycle
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Print platform
+        run: |
+          uname -a
+          sw_vers
+          sysctl -n machdep.cpu.brand_string || true
+      - name: Run Rust lifecycle tests
+        working-directory: mlx-rs
+        run: cargo test --features evidence
+      - name: Emit backend capabilities
+        working-directory: mlx-rs
+        run: cargo run --features evidence --example backend_capabilities > backend-capabilities.json
+      - name: Emit backend conformance evidence
+        working-directory: mlx-rs
+        run: cargo run --features evidence --example backend_conformance > backend-conformance.jsonl
+      - name: Upload backend evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlx-rs-backend-evidence
+          path: |
+            mlx-rs/backend-capabilities.json
+            mlx-rs/backend-conformance.jsonl

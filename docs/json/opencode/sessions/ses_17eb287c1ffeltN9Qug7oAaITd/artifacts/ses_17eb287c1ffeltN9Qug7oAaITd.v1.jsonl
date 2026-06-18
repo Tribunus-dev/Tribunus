@@ -1,0 +1,3 @@
+{"at":"2026-06-01T03:50:37.767Z","tool":"smart_bun","action":"ran","command":"typecheck","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T03:52:18.394Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T03:54:20.216Z","tool":"smart_bun","action":"ran","command":"tsc","exit_code":1,"cwd":"packages/opencode"}

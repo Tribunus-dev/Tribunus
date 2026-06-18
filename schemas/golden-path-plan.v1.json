@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/golden-path-plan/v1.json",
+  "title": "GoldenPathPlan",
+  "description": "Signed static execution plan for attested local inference. Contains model metadata, machine profile, memory layout, dispatch table, transition graph, backend artifacts, and conformance fixtures. The plan is the compiler output and the executor's sole authority.",
+  "type": "object",
+  "required": [
+    "plan_version", "compiler_identity",
+    "manifest", "model_profile", "machine_profile",
+    "memory_layout", "dispatch_table", "transition_table",
+    "backend_artifacts", "conformance", "audit_policy",
+    "signature"
+  ],
+  "properties": {
+    "plan_version": { "type": "string", "const": "tribunus-plan-v1" },
+    "compiler_identity": {
+      "type": "object",
+      "required": ["name", "version", "timestamp"],
+      "properties": {
+        "name": { "type": "string", "const": "tribunus-compiler" },
+        "version": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "manifest": {
+      "$ref": "#/definitions/manifest",
+      "description": "Root of trust. Names every object in the bundle by content hash."
+    },
+    "model_profile": {
+      "$ref": "#/definitions/model_profile",
+      "description": "Derived from GGUF metadata. Immutable for the compiled model instance."
+    },
+    "machine_profile": {
+      "$ref": "#/definitions/machine_profile",
+      "description": "Hardware + backend capabilities recorded at compile time. Separates observed facts from compiler assumptions."
+    },
+    "memory_layout": {
+      "$ref": "#/definitions/memory_layout",
+      "description": "Fixed logical offsets for all tensors. The executor allocates the island from this layout."
+    },
+    "dispatch_table": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/dispatch_entry" },
+      "description": "Ordered list of dispatch entries. The executor processes these in cursor order."
+    },
+    "transition_table": {
+      "type": "array",
+      "items": { "$ref": "golden-machine.v1.json#/definitions/golden_transition" },
+      "description": "State transition graph. Each dispatch entry corresponds to one or more transitions."
+    },
+    "backend_artifacts": {
+      "type": "object",
+      "description": "Per-backend artifact manifests. Keys are backend IDs.",
+      "additionalProperties": { "$ref": "#/definitions/backend_artifact_manifest" }
+    },
+    "conformance": {
+      "$ref": "#/definitions/conformance_profile",
+      "description": "Expected tolerances and checksums for conformance verification."
+    },
+    "audit_policy": {
+      "$ref": "golden-machine.v1.json#/definitions/audit_policy",
+      "description": "Default audit policy. Individual transitions may override."
+    },
+    "signature": {
+      "$ref": "#/definitions/signature",
+      "description": "Ed25519 signature over the manifest hash. Verifies plan integrity and compiler provenance."
+    }
+  },
+  "definitions": {
+    "manifest": {
+      "type": "object",
+      "required": ["manifest_hash", "objects"],
+      "properties": {
+        "manifest_hash": { "$ref": "golden-machine.v1.json#/definitions/hash256" },
+        "objects": {
+          "type": "object",
+          "description": "Every named object in the bundle, keyed by path, valued by content hash.",
+          "additionalProperties": { "$ref": "golden-machine.v1.json#/definitions/hash256" }
+        }
+      },
+      "description": "Merkle root. The signature covers the manifest hash. All integrity verification starts here."
+    },
+    "model_profile": {
+      "type": "object",
+      "required": [
+        "architecture", "model_graph_hash",
+        "num_layers", "num_heads", "num_kv_heads", "hidden_size",
+        "intermediate_size", "vocab_size", "max_context_length",
+        "rope_theta", "rope_scaling", "quantization_scheme",
+        "tensor_hashes"
+      ],
+      "properties": {
+        "architecture": { "type": "string", "enum": ["llama", "gemma", "mistral"] },
+        "model_graph_hash": { "$ref": "golden-machine.v1.json#/definitions/hash256" },
+        "num_layers": { "type": "integer" },
+        "num_heads": { "type": "integer" },
+        "num_kv_heads": { "type": "integer" },
+        "hidden_size": { "type": "integer" },
+        "intermediate_size": { "type": "integer" },
+        "vocab_size": { "type": "integer" },
+        "max_context_length": { "type": "integer" },
+        "rope_theta": { "type": "number" },
+        "rope_scaling": { "type": "object", "properties": { "type": { "type": "string" }, "factor": { "type": "number" } } },
+        "quantization_scheme": {
+          "type": "object",
+          "required": ["weight_dtype", "kv_cache_dtype", "activation_dtype"],
+          "properties": {
+            "weight_dtype": { "type": "string", "enum": ["f32", "f16", "q4_0", "q8_0", "q4_k", "q5_k", "q6_k", "fp8"] },
+            "kv_cache_dtype": { "type": "string", "enum": ["f32", "f16", "fp8"] },
+            "activation_dtype": { "type": "string", "enum": ["f32", "f16"] }
+          }
+        },
+        "tensor_hashes": {
+          "type": "object",
+          "description": "SHA-256 hash of each weight tensor's raw bytes. Maps tensor name to hash.",
+          "additionalProperties": { "$ref": "golden-machine.v1.json#/definitions/hash256" }
+        }
+      },
+      "description": "Immutable model metadata extracted from the source GGUF file. Does not include file paths or timestamps."
+    },
+    "machine_profile": {
+      "type": "object",
+      "required": ["hardware_facts", "backend_capabilities", "compiler_assumptions"],
+      "properties": {
+        "hardware_facts": {
+          "type": "object",
+          "required": ["os", "cpu_arch", "cpu_cores", "memory_bytes", "page_size_bytes"],
+          "properties": {
+            "os": { "type": "string" },
+            "cpu_arch": { "type": "string" },
+            "cpu_cores": { "type": "integer" },
+            "memory_bytes": { "type": "integer" },
+            "page_size_bytes": { "type": "integer" },
+            "metal_device_name": { "type": "string" },
+            "metal_feature_family": { "type": "string" }
+          }
+        },
+        "backend_capabilities": {
+          "type": "object",
+          "properties": {
+            "accelerate_version": { "type": "string" },
+            "mlx_version": { "type": "string" },
+            "metal_supported": { "type": "boolean" },
+            "coreml_available": { "type": "boolean" },
+            "vulkan_version": { "type": "string" }
+          }
+        },
+        "compiler_assumptions": {
+          "type": "object",
+          "description": "Assumptions made by the compiler. Separated from facts so runtime can detect mismatch.",
+          "properties": {
+            "max_tile_size": { "type": "integer" },
+            "register_budget": { "type": "integer" },
+            "shared_memory_per_block": { "type": "integer" },
+            "l1_cache_size": { "type": "integer" },
+            "l2_cache_size": { "type": "integer" }
+          }
+        }
+      },
+      "description": "Machine capabilities recorded at compile time. Three sections separated by certainty."
+    },
+    "memory_layout": {
+      "type": "object",
+      "required": ["regions", "total_size"],
+      "properties": {
+        "total_size": { "type": "integer" },
+        "regions": {
+          "type": "object",
+          "properties": {
+            "weights": { "$ref": "#/definitions/memory_region" },
+            "activations": { "$ref": "#/definitions/memory_region" },
+            "kv_cache": { "$ref": "#/definitions/memory_region" },
+            "scratch": { "$ref": "#/definitions/memory_region" },
+            "logits": { "$ref": "#/definitions/memory_region" }
+          }
+        },
+        "views": {
+          "type": "object",
+          "additionalProperties": { "$ref": "golden-machine.v1.json#/definitions/memory_view" }
+        }
+      },
+      "description": "Fixed logical memory layout. The executor allocates the island from this specification."
+    },
+    "memory_region": {
+      "type": "object",
+      "required": ["offset", "size", "mode"],
+      "properties": {
+        "offset": { "type": "integer" },
+        "size": { "type": "integer" },
+        "mode": { "type": "string", "enum": ["shared_host", "backend_staged"] },
+        "backend": { "type": "string", "description": "Preferred backend for this region. Empty means any." }
+      }
+    },
+    "dispatch_entry": {
+      "type": "object",
+      "required": [
+        "block_id", "layer_index", "phase_kind",
+        "backend_id", "artifact_id",
+        "input_views", "output_views", "scratch_views",
+        "shape_key", "dtype", "tolerance",
+        "sync_before", "sync_after"
+      ],
+      "properties": {
+        "block_id": { "type": "string" },
+        "layer_index": { "type": "integer" },
+        "phase_kind": {
+          "type": "string",
+          "enum": [
+            "token_embedding", "rms_norm", "linear_qkv", "rope", "kv_append",
+            "kv_view", "attention_score", "attention_softmax", "attention_value",
+            "attention_out", "residual_add", "rms_norm_ffn", "linear_gate_up",
+            "swiglu", "linear_down", "residual_add_ffn", "final_norm", "lm_head",
+            "logits", "sampling",
+            "fused_rmsnorm_qkv_rope", "fused_attention", "fused_swiglu"
+          ]
+        },
+        "backend_id": { "type": "string" },
+        "artifact_id": { "type": "string" },
+        "input_views": { "type": "array", "items": { "type": "string" } },
+        "output_views": { "type": "array", "items": { "type": "string" } },
+        "scratch_views": { "type": "array", "items": { "type": "string" } },
+        "shape_key": { "type": "string" },
+        "dtype": { "type": "string" },
+        "tolerance": { "type": "number" },
+        "sync_before": { "type": "array", "items": { "type": "string" } },
+        "sync_after": { "type": "array", "items": { "type": "string" } }
+      },
+      "description": "A single dispatch entry in the execution schedule. The executor processes these in order."
+    },
+    "backend_artifact_manifest": {
+      "type": "object",
+      "required": ["backend_id", "artifacts"],
+      "properties": {
+        "backend_id": { "type": "string" },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["artifact_id", "kind", "hash"],
+            "properties": {
+              "artifact_id": { "type": "string" },
+              "kind": { "type": "string", "enum": ["spir_v_kernel", "metal_library", "metal_binary_archive", "coreml_model", "accel_descriptor", "mlx_observed"] },
+              "hash": { "$ref": "golden-machine.v1.json#/definitions/hash256" },
+              "source_hash": { "$ref": "golden-machine.v1.json#/definitions/hash256" },
+              "mlx_version": { "type": "string" },
+              "metal_feature_set": { "type": "string" },
+              "pipeline_descriptor_hash": { "$ref": "golden-machine.v1.json#/definitions/hash256" }
+            }
+          }
+        }
+      },
+      "description": "Complete artifact manifest for a single backend."
+    },
+    "conformance_profile": {
+      "type": "object",
+      "required": ["expected_logits_digest", "tolerance_mae"],
+      "properties": {
+        "expected_logits_digest": { "$ref": "golden-machine.v1.json#/definitions/tensor_digest" },
+        "tolerance_mae": { "type": "number" },
+        "fixture_artifacts": {
+          "type": "object",
+          "properties": {
+            "input_ids": { "type": "array", "items": { "type": "integer" } },
+            "reference_logits": { "type": "array", "items": { "type": "number" } }
+          }
+        }
+      },
+      "description": "Conformance expectations. The executor can verify output against these after execution."
+    },
+    "signature": {
+      "type": "object",
+      "required": ["algorithm", "value", "public_key"],
+      "properties": {
+        "algorithm": { "type": "string", "const": "ed25519" },
+        "value": { "type": "string", "description": "Hex-encoded Ed25519 signature over the manifest hash." },
+        "public_key": { "type": "string", "description": "Hex-encoded Ed25519 public key for verification." }
+      },
+      "description": "Ed25519 signature. The signer is the compiler; the verifier is the executor."
+    }
+  }
+}

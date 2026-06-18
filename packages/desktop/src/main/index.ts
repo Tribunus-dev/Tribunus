@@ -1,0 +1,518 @@
+import { randomUUID } from "node:crypto"
+import { EventEmitter } from "node:events"
+import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs"
+import * as http from "node:http"
+import { createServer } from "node:net"
+import { homedir, tmpdir } from "node:os"
+import { join } from "node:path"
+import { getCACertificates, setDefaultCACertificates } from "node:tls"
+import type { Event } from "electron"
+import { app, BrowserWindow } from "electron"
+
+// Process-wide error handlers — crash fast on unhandled rejections/exceptions
+process.on("unhandledRejection", (reason) => {
+  console.error("[fatal] unhandled rejection:", reason)
+  process.exit(1)
+})
+process.on("uncaughtException", (error) => {
+  console.error("[fatal] uncaught exception:", error)
+  process.exit(1)
+})
+
+import contextMenu from "electron-context-menu"
+
+import type { InitStep, ServerReadyData, StorageMigrationProgress, WslConfig } from "../preload/types"
+import { checkAppExists, resolveAppPath, wslPath } from "./apps"
+import { APP_IDS, CHANNEL, getUpdaterEnabled } from "./constants"
+import { electronPlatformPaths } from "./platform-config"
+import { parseDeepLink } from "./deep-link"
+import { registerIpcHandlers, sendDeepLinks, sendMenuCommand, sendStorageMigrationProgress } from "./ipc"
+import { exportDebugLogs, initCrashReporter, initLogging, startNetLog, write as writeLog } from "./logging"
+import { parseMarkdown } from "./markdown"
+import { IPC } from "./ipc-channels"
+import { createMenu } from "./menu"
+import {
+  getDefaultServerUrl,
+  getWslConfig,
+  preferAppEnv,
+  setDefaultServerUrl,
+  setWslConfig,
+  type SidecarListener,
+} from "./server"
+import { createWatchdog } from "./watchdog"
+import {
+  createLoadingWindow,
+  createMainWindow,
+  registerRendererProtocol,
+  setRelaunchHandler,
+  setBackgroundColor,
+  setDockIcon,
+  transitionToSafeMode,
+} from "./windows"
+import { migrate } from "./migrate"
+import { checkUpdate, checkForUpdates, installUpdate, setupAutoUpdater } from "./updater"
+import { registerAutoUpdater } from "./auto-updater"
+import { Deferred, Effect, Fiber } from "effect"
+import * as Sentry from "@sentry/electron"
+
+const APP_NAMES: Record<string, string> = {
+  dev: "Tribunus Dev",
+  beta: "Tribunus Beta",
+  prod: "Tribunus",
+}
+const TEST_ONBOARDING = process.env.TRIBUNUS_TEST_ONBOARDING === "1"
+const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
+
+let logger: ReturnType<typeof initLogging>
+let mainWindow: BrowserWindow | null = null
+let server: SidecarListener | null = null
+
+const initEmitter = new EventEmitter()
+let initStep: InitStep = { phase: "server_waiting" }
+
+const pendingDeepLinks: string[] = []
+
+function useEnvProxy() {
+  try {
+    // Electron 41.2 runs Node 24.14.1; latest @types/node@24 is 24.12.2.
+    ;(http as any).setGlobalProxyFromEnv()
+  } catch (error) {
+    logger.warn("failed to load proxy environment", error)
+  }
+}
+
+function emitDeepLinks(urls: string[]) {
+  if (urls.length === 0) return
+
+  const normalizedUrls = urls
+    .map((url) => parseDeepLink(url, mainWindow))
+    .filter((url): url is string => url !== null)
+
+  if (normalizedUrls.length === 0) return
+
+  pendingDeepLinks.push(...normalizedUrls)
+  if (mainWindow) sendDeepLinks(mainWindow, normalizedUrls)
+}
+
+function setInitStep(step: InitStep) {
+  initStep = step
+  logger.log("init step", { step })
+  initEmitter.emit("step", step)
+}
+
+async function killSidecar() {
+  const lockPath = join(electronPlatformPaths.getPath("userData"), ".crash_lock")
+  try { unlinkSync(lockPath) } catch { /* ignore */ }
+  if (!server) return
+  const current = server
+  server = null
+  await current.stop()
+}
+
+function ensureLoopbackNoProxy() {
+  const loopback = ["127.0.0.1", "localhost", "::1"]
+  const upsert = (key: string) => {
+    const items = (process.env[key] ?? "")
+      .split(",")
+      .map((value: string) => value.trim())
+      .filter((value: string) => Boolean(value))
+
+    for (const host of loopback) {
+      if (items.some((value: string) => value.toLowerCase() === host)) continue
+      items.push(host)
+    }
+
+    process.env[key] = items.join(",")
+  }
+
+  upsert("NO_PROXY")
+  upsert("no_proxy")
+}
+
+const main = Effect.gen(function* () {
+  contextMenu({ showSaveImageAs: true, showLookUpSelection: false, showSearchWithGoogle: false })
+
+  // on macOS apps run in `/` which can cause issues with ripgrep
+  try {
+    process.chdir(homedir())
+  } catch {}
+
+  process.env.TRIBUNUS_DISABLE_EMBEDDED_WEB_UI = "true"
+
+  const appId = electronPlatformPaths.getAppId()
+  const onboardingTestRoot = ((): string | undefined => {
+    if (!TEST_ONBOARDING) return
+
+    const root = join(tmpdir(), `tribunus-onboarding-${randomUUID()}`)
+    rmSync(root, { recursive: true, force: true })
+    ;["data", "config", "cache", "state", "desktop", "session"].forEach((dir) =>
+      mkdirSync(join(root, dir), { recursive: true }),
+    )
+    process.env.TRIBUNUS_DB = ":memory:"
+    process.env.XDG_DATA_HOME = join(root, "data")
+    process.env.XDG_CONFIG_HOME = join(root, "config")
+    process.env.XDG_CACHE_HOME = join(root, "cache")
+    process.env.XDG_STATE_HOME = join(root, "state")
+    return root
+  })()
+  app.setName(electronPlatformPaths.isPackaged ? APP_NAMES[CHANNEL] : "Tribunus Dev")
+  app.setAppUserModelId(appId)
+  electronPlatformPaths.setPath(
+    "userData",
+    onboardingTestRoot ? join(onboardingTestRoot, "desktop") : join(electronPlatformPaths.getPath("appData"), appId),
+  )
+  if (onboardingTestRoot) electronPlatformPaths.setPath("sessionData", join(onboardingTestRoot, "session"))
+  logger = initLogging()
+  initCrashReporter()
+
+  try {
+    setDefaultCACertificates([...new Set([...getCACertificates("default"), ...getCACertificates("system")])])
+  } catch (error) {
+    logger.warn("failed to load system certificates", error)
+  }
+
+  logger.log("app starting", {
+    version: electronPlatformPaths.getVersion(),
+    packaged: electronPlatformPaths.isPackaged,
+    onboardingTest: Boolean(onboardingTestRoot),
+  })
+
+  Sentry.setContext("electron", {
+    platform: process.platform,
+    arch: process.arch,
+    electronVersion: app.getVersion(),
+    userDataPath: app.getPath("userData"),
+    packaged: app.isPackaged,
+  })
+
+  ensureLoopbackNoProxy()
+  useEnvProxy()
+  app.commandLine.appendSwitch("proxy-bypass-list", "<-loopback>")
+  const features = app.commandLine.getSwitchValue("enable-features")
+  app.commandLine.appendSwitch("enable-features", features ? `${jsCallStackFeature},${features}` : jsCallStackFeature)
+  if (!electronPlatformPaths.isPackaged) app.commandLine.appendSwitch("remote-debugging-port", "9222")
+
+
+
+  if (!app.requestSingleInstanceLock()) {
+    app.quit()
+    return
+  }
+
+  preferAppEnv(electronPlatformPaths.getPath("userData"))
+
+  // ── Valkey Sidecar ──────────────────────────────────────
+  const valkeyEnabled = process.env.TRIBUNUS_COORDINATION_BACKEND === "local-valkey" || process.env.TRIBUNUS_COORDINATION_BACKEND === "remote-valkey" || process.env.OPENCODE_COORDINATION_BACKEND === "local-valkey" || process.env.OPENCODE_COORDINATION_BACKEND === "remote-valkey"
+  let valkeySupervisor: ReturnType<typeof import("./valkey-supervisor").createValkeySupervisor> | undefined
+  if (valkeyEnabled) {
+    void (async () => {
+      const { createValkeySupervisor } = await import("./valkey-supervisor")
+      valkeySupervisor = createValkeySupervisor(electronPlatformPaths.getPath("userData"))
+      const valkeyStatus = await valkeySupervisor.start()
+      if (valkeyStatus.ready) {
+        process.env.TRIBUNUS_VALKEY_URL = valkeyStatus.url!
+        process.env.OPENCODE_VALKEY_URL = valkeyStatus.url!
+        logger.info("Valkey sidecar started", { url: valkeyStatus.url, pid: valkeyStatus.pid })
+      } else {
+        logger.warn("Valkey failed to start — falling back to local coordination", { error: valkeyStatus.lastError })
+      }
+    })()
+  }
+
+  app.on("second-instance", (_event: Event, argv: string[]) => {
+    const urls = (argv ?? []).filter((arg: string) => arg.startsWith("tribunus://"))
+    if (urls.length) {
+      logger.log("deep link received via second-instance", { urls })
+      emitDeepLinks(urls)
+    }
+    if (mainWindow) {
+      mainWindow.show()
+      mainWindow.focus()
+    }
+  })
+
+  app.on("open-url", (event: Event, url: string) => {
+    event.preventDefault()
+    logger.log("deep link received via open-url", { url })
+    emitDeepLinks([url])
+  })
+
+  app.on("before-quit", () => {
+    void killSidecar()
+  })
+
+  app.on("will-quit", () => {
+    valkeySupervisor?.stop()
+    void killSidecar()
+  })
+
+  app.on("child-process-gone", (_event, details) => {
+    writeLog("utility", "child process gone", { details }, "error")
+  })
+
+  app.on("render-process-gone", (_event, webContents, details) => {
+    writeLog("window", "app render process gone", { url: webContents.getURL(), details }, "error")
+  })
+
+  setRelaunchHandler(() => {
+    void killSidecar().finally(() => {
+      app.relaunch()
+      app.exit(0)
+    })
+  })
+
+  for (const signal of ["SIGINT", "SIGTERM"] as const) {
+    process.on(signal, () => {
+      void killSidecar().finally(() => app.exit(0))
+    })
+  }
+
+  const serverReady = Deferred.makeUnsafe<ServerReadyData>()
+  const loadingComplete = Deferred.makeUnsafe<void>()
+
+  registerIpcHandlers({
+    killSidecar: () => killSidecar(),
+    awaitInitialization: Effect.fnUntraced(
+      function* (sendStep) {
+        sendStep(initStep)
+        const listener = (step: InitStep) => sendStep(step)
+        initEmitter.on("step", listener)
+        try {
+          logger.log("awaiting server ready")
+          const res = yield* Deferred.await(serverReady)
+          logger.log("server ready", { url: res.url })
+          sendStep({ phase: "done" })
+          return res
+        } finally {
+          initEmitter.off("step", listener)
+        }
+      },
+      (e) => Effect.runPromise(e),
+    ),
+    getWindowConfig: () => ({ updaterEnabled: getUpdaterEnabled() }),
+    consumeInitialDeepLinks: () => pendingDeepLinks.splice(0),
+    getDefaultServerUrl: () => getDefaultServerUrl(),
+    setDefaultServerUrl: (url) => setDefaultServerUrl(url),
+    getWslConfig: () => Promise.resolve(getWslConfig()),
+    setWslConfig: (config: WslConfig) => setWslConfig(config),
+    getDisplayBackend: async () => null,
+    setDisplayBackend: async () => undefined,
+    parseMarkdown: async (markdown) => parseMarkdown(markdown),
+    checkAppExists: (appName) => checkAppExists(appName),
+    wslPath: async (path, mode) => wslPath(path, mode),
+    resolveAppPath: async (appName) => resolveAppPath(appName),
+    loadingWindowComplete: () => Deferred.doneUnsafe(loadingComplete, Effect.void),
+    rendererReady: () => {
+      logger.log("renderer reported ready")
+    },
+    runUpdater: async (alertOnFail) => checkForUpdates(alertOnFail, killSidecar),
+    checkUpdate: async () => checkUpdate(),
+    installUpdate: async () => installUpdate(killSidecar),
+    setBackgroundColor: (color) => setBackgroundColor(color),
+    exportDebugLogs: () => exportDebugLogs(),
+    recordFatalRendererError: (error) => writeLog("renderer", "fatal renderer error", { ...error }, "error"),
+    getSafeModeDiagnostics: async () => {
+      let sidecarFailure = null
+      try {
+        const failurePath = join(electronPlatformPaths.getPath("userData"), "sidecar-boot-failure.json")
+        if (existsSync(failurePath)) {
+          sidecarFailure = JSON.parse(readFileSync(failurePath, "utf8"))
+        }
+      } catch {
+        // File missing or corrupt — not fatal
+      }
+      return {
+        error: { message: "No diagnostics available", component: "unknown" },
+        systemInfo: {
+          platform: process.platform,
+          arch: process.arch,
+          version: electronPlatformPaths.getVersion(),
+          userDataPath: electronPlatformPaths.getPath("userData"),
+          logPath: join(electronPlatformPaths.getPath("userData"), "logs"),
+        },
+        sidecarFailure,
+      }
+    },
+    safeModeAction: async (action) => {
+      switch (action) {
+        case "retry_normal_startup":
+          app.relaunch()
+          app.exit(0)
+          break
+        default:
+          writeLog("safe-mode", `safe mode action: ${action}`, {}, "info")
+      }
+    },
+  })
+
+  yield* Effect.promise(() => app.whenReady())
+
+  let overlay: BrowserWindow | null = null
+  const crashLock = join(electronPlatformPaths.getPath("userData"), ".crash_lock")
+  const safeModeRequested = process.argv.includes("--safe-mode") || process.env.TRIBUNUS_SAFE_MODE === "1"
+  const crashDetected = existsSync(crashLock)
+  const inSafeMode = safeModeRequested || crashDetected
+  if (inSafeMode) {
+    overlay = transitionToSafeMode(createLoadingWindow(), {
+      message: safeModeRequested ? "Safe mode requested" : "Previous session crashed",
+      component: "system",
+    })
+  } else {
+    writeFileSync(crashLock, String(process.pid), "utf-8")
+  }
+
+  if (!TEST_ONBOARDING) migrate()
+  app.setAsDefaultProtocolClient("tribunus")
+  registerRendererProtocol()
+  setDockIcon()
+  setupAutoUpdater()
+  registerAutoUpdater()
+  yield* Effect.promise(() => startNetLog()).pipe(
+    Effect.catch((error) =>
+      Effect.sync(() => {
+        logger.warn("failed to start net log", error)
+      }),
+    ),
+  )
+
+  const needsMigration = inSafeMode ? false : ((): boolean => {
+    if (process.env.TRIBUNUS_DB === ":memory:") return false
+
+    // Checks for PGlite/WAL directory — detects if first-time setup is needed
+    const xdg = process.env.XDG_DATA_HOME
+    const base = xdg && xdg.length > 0 ? xdg : join(homedir(), ".local", "share")
+    return !existsSync(join(base, "tribunus", "tribunus.db"))
+  })()
+
+  let loadingTask: Fiber.Fiber<void, unknown> = yield* Effect.void.pipe(Effect.forkChild)
+
+  if (!inSafeMode) {
+    const port = yield* Effect.gen(function* () {
+      const fromEnv = process.env.TRIBUNUS_PORT
+      if (fromEnv) {
+        const parsed = Number.parseInt(fromEnv, 10)
+        if (!Number.isNaN(parsed)) return parsed
+      }
+
+      const res = yield* Deferred.make<number, unknown>()
+      const server = createServer()
+      server.on("error", (e) => Deferred.failSync(res, () => e))
+      server.listen(0, "127.0.0.1", () => {
+        const address = server.address()
+        if (typeof address !== "object" || !address) {
+          server.close()
+          Deferred.failSync(res, () => new Error("Failed to get port"))
+          return
+        }
+        const p = address.port
+        server.close(() => Effect.runSync(Deferred.succeed(res, p)))
+      })
+
+      return yield* Deferred.await(res)
+    })
+    const hostname = "127.0.0.1"
+    const url = `http://${hostname}:${port}`
+    const password = randomUUID()
+
+    loadingTask = yield* Effect.gen(function* () {
+      logger.log("sidecar connection started", { url })
+
+    initEmitter.on("migration-progress", (progress: StorageMigrationProgress) => {
+      if (overlay) sendStorageMigrationProgress(overlay, progress)
+      if (mainWindow) sendStorageMigrationProgress(mainWindow, progress)
+    })
+
+    ensureLoopbackNoProxy()
+    useEnvProxy()
+
+    logger.log("spawning sidecar", { url })
+    const { listener, health } = yield* Effect.promise(() =>
+      createWatchdog({
+        hostname,
+        port,
+        password,
+        needsMigration,
+        userDataPath: electronPlatformPaths.getPath("userData"),
+        onMigrationProgress: (progress) => initEmitter.emit("migration-progress", progress),
+        onStdout: (message) => writeLog("server", "stdout", { message }),
+        onStderr: (message) => writeLog("server", "stderr", { message }, "warn"),
+        onCrash: (count) => {
+          writeLog("server", "sidecar crashed, watchdog restarting", { count }, "error")
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send(IPC.push.WATCHDOG_STATUS, { state: "restarting", count })
+          }
+        },
+      }),
+    )
+    server = listener
+    yield* Deferred.succeed(serverReady, {
+      url,
+      username: "tribunus",
+      password,
+    })
+
+    yield* Effect.promise(() => health.wait).pipe(
+      Effect.timeout("30 seconds"),
+      Effect.catch((e) =>
+        Effect.sync(() => {
+          logger.error("sidecar health check failed", e.toString())
+        }),
+      ),
+    )
+
+    logger.log("loading task finished")
+  }).pipe(Effect.forkChild)
+  }
+
+  if (!inSafeMode && needsMigration) {
+    const show = yield* loadingTask.pipe(
+      Fiber.await,
+      Effect.timeout("1 second"),
+      Effect.as(false),
+      Effect.catch(() => Effect.succeed(true)),
+    )
+    if (show) {
+      overlay = createLoadingWindow()
+      yield* Effect.sleep("1 second")
+    }
+  }
+
+  if (!inSafeMode) {
+    yield* Fiber.await(loadingTask)
+    setInitStep({ phase: "done" })
+
+    if (overlay) {
+      yield* Deferred.await(loadingComplete).pipe(
+        Effect.timeout("5 seconds"),
+        Effect.catch(() =>
+          Effect.sync(() => {
+            logger.warn("loading overlay did not report completion; continuing to main window")
+          }),
+        ),
+      )
+    }
+
+    mainWindow = createMainWindow()
+  }
+  if (mainWindow) {
+    createMenu({
+      trigger: (id) => {
+        const win = BrowserWindow.getFocusedWindow() ?? mainWindow
+        if (win) sendMenuCommand(win, id)
+      },
+      checkForUpdates: () => {
+        void checkForUpdates(true, killSidecar)
+      },
+      relaunch: () => {
+        void killSidecar().finally(() => {
+          app.relaunch()
+          app.exit(0)
+        })
+      },
+    })
+  }
+
+  overlay?.close()
+})
+
+Effect.runFork(main)

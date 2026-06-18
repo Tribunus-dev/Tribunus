@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "0025",
+  "type": "task",
+  "name": "Implement cold-start rebuild from PGlite into Valkey",
+  "slug": "implement-cold-start-rebuild-from-pglite-into-valkey",
+  "description": "Replace the current manual/simulated rebuild with PGlite-derived rebuild. Scan non-terminal PGlite rows (enqueue_pending, in_progress, retry_scheduled), derive the Valkey structures that should exist (stream entries, sorted set members, TTL keys), and emit recovery receipts. Must not rebuild completed, failed-terminal, cancelled, or dead-lettered work. Must be idempotent and run in under 1 second.",
+  "laneId": "0007",
+  "missionId": "0004",
+  "status": "completed",
+  "priority": 90,
+  "estimatedEffort": "3 days",
+  "actualEffort": null,
+  "dependsOn": [
+    "Bind completeAndAck/failTerminalAndAck/failRetryableAndAck/deadLetterAndAck to PGlite lifecycle writes"
+  ],
+  "blocks": [],
+  "assignedTo": "system",
+  "startedAt": "2026-06-06T11:24:47.415Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T10:42:39.683Z",
+  "updated_at": "2026-06-06T17:56:34.643Z",
+  "completedAt": "2026-06-06T17:56:34.643Z"
+}

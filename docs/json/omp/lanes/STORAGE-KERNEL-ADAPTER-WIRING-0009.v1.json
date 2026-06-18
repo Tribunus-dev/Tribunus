@@ -1,0 +1,23 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "type": "lane",
+  "name": "Storage Kernel Adapter Wiring",
+  "slug": "storage-kernel-adapter-wiring-0009",
+  "description": "Implement real adapters for PGlite, Valkey, DuckDB behind storage kernel ports. Single-writer scope for storage-adapters module.",
+  "scope": "storage-adapters",
+  "missionId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "status": "idle",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/compute-native/compute-core/src/storage_adapters.rs"
+  ],
+  "streamKey": "storage-adapters-0009",
+  "consumerGroup": "compute-core",
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": ["storage-kernel", "adapters", "0009"],
+  "created_at": "2026-06-14T19:00:00.000Z",
+  "updated_at": "2026-06-14T19:00:00.000Z"
+}

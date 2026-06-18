@@ -1,0 +1,154 @@
+{
+  "schema": "tribunus.semantic_review.manifest.v1",
+  "packet_id": "tribunus-gemini-ir",
+  "artifact_id": "01_manifest.json",
+  "generated_at": "2026-06-14T00:18:49.154Z",
+  "repo_root_name": "Tribunus",
+  "git_head_sha": "709b19e482e73643354a0cdfe1430fdc317766d8",
+  "git_branch": "main",
+  "dirty": true,
+  "generator_version": "code_review_export@gemini_structured_ir_v1",
+  "profile": "gemini_structured_ir_v1",
+  "limits": {
+    "max_zip_files": 10,
+    "max_zip_bytes": 104857600,
+    "target_uncompressed_bytes": 20971520,
+    "max_embedded_source_bytes_per_file": 2097152,
+    "max_total_embedded_source_bytes": 16777216
+  },
+  "counts": {
+    "discovered_files": 6674,
+    "included_files": 4643,
+    "excluded_files": 2031,
+    "parsed_files": 540,
+    "parse_error_files": 5,
+    "typescript_programs": 1,
+    "unresolved_imports": 400,
+    "missing_required_paths": 0,
+    "embedded_full_files": 1,
+    "embedded_excerpts": 3231,
+    "source_graph_files": 2731,
+    "source_graph_parse_errors": 1,
+    "source_graph_parse_ms": 1940,
+    "source_graph_resolve_ms": 4524,
+    "source_graph_static_imports": 13738,
+    "source_graph_static_exports": 10366,
+    "source_graph_dynamic_imports": 318,
+    "source_graph_resolved_edges": 12791,
+    "source_graph_unresolved_edges": 0
+  },
+  "review_priority": [
+    "01_manifest.json",
+    "10_review_findings.json",
+    "06_tool_kernel_ir.json",
+    "07_pglite_duckdb_ir.json",
+    "08_tests_and_ci_ir.json",
+    "03_module_graph.json",
+    "04_symbol_index.json",
+    "05_type_api_surface.json",
+    "09_architecture_context.json",
+    "02_file_index.json"
+  ],
+  "recommended_read_order": [
+    "01_manifest.json",
+    "10_review_findings.json",
+    "06_tool_kernel_ir.json",
+    "07_pglite_duckdb_ir.json",
+    "08_tests_and_ci_ir.json",
+    "03_module_graph.json",
+    "04_symbol_index.json",
+    "05_type_api_surface.json",
+    "09_architecture_context.json",
+    "02_file_index.json"
+  ],
+  "required_focus_areas": [
+    {
+      "id": "tool-kernel",
+      "description": "OMPs tool kernel authority, flow, and safety properties.",
+      "artifact_ids": [
+        "06_tool_kernel_ir.json",
+        "05_type_api_surface.json",
+        "10_review_findings.json"
+      ]
+    },
+    {
+      "id": "pglite-duckdb",
+      "description": "PGlite relational truth and DuckDB analytical projection.",
+      "artifact_ids": [
+        "07_pglite_duckdb_ir.json",
+        "10_review_findings.json"
+      ]
+    },
+    {
+      "id": "tests-ci",
+      "description": "Tool tests, CI workflows, and coverage matrix.",
+      "artifact_ids": [
+        "08_tests_and_ci_ir.json",
+        "10_review_findings.json"
+      ]
+    },
+    {
+      "id": "module-graph",
+      "description": "Dependency closure and unresolved import classification.",
+      "artifact_ids": [
+        "03_module_graph.json",
+        "10_review_findings.json"
+      ]
+    },
+    {
+      "id": "architecture-context",
+      "description": "Bootstrap constraints, doctrine, and board context.",
+      "artifact_ids": [
+        "09_architecture_context.json"
+      ]
+    }
+  ],
+  "artifact_checksums": [
+    {
+      "path": "02_file_index.json",
+      "sha256": "8eb2cec79e2661277875837ecef1af782d94161d6a5cf7c8ec8ec9c2f3a1a422",
+      "size_bytes": 4104352
+    },
+    {
+      "path": "03_module_graph.json",
+      "sha256": "24c1c09d3ce47a53b36e56b8db6b3ee129217e77f1d860e0ff4fbe9acd34f93f",
+      "size_bytes": 8922451
+    },
+    {
+      "path": "04_symbol_index.json",
+      "sha256": "83c0bc75a4637b0a63cc1003f5f65ed6bc9e7a368a6844d297dfcf1156d65349",
+      "size_bytes": 10001525
+    },
+    {
+      "path": "05_type_api_surface.json",
+      "sha256": "078f91584f550e6b315094d804f633f94fb4f26c56850727dd15173229b8865d",
+      "size_bytes": 19479404
+    },
+    {
+      "path": "06_tool_kernel_ir.json",
+      "sha256": "a9a66635388aa50653b146819563b6de6df791564177072dece980df3b10a486",
+      "size_bytes": 473
+    },
+    {
+      "path": "07_pglite_duckdb_ir.json",
+      "sha256": "e5a6c43c144bb98fb9249f453be9a6903533cc023d1da1cf264d47115b4e5e0e",
+      "size_bytes": 25956
+    },
+    {
+      "path": "08_tests_and_ci_ir.json",
+      "sha256": "36856432e41324ad64e1e9a6316850973e74966cb6b974f7a0f00af9a29e6f45",
+      "size_bytes": 112417
+    },
+    {
+      "path": "09_architecture_context.json",
+      "sha256": "6157ecef32d9d04dbfd65ae8ce2cad50315c61a8ae7399971b16d440299b5672",
+      "size_bytes": 66635
+    },
+    {
+      "path": "10_review_findings.json",
+      "sha256": "7764484aa90c05f770f66df157f03795519febf1feeb1d0ad2a1ab53976ed36d",
+      "size_bytes": 665834
+    }
+  ],
+  "generation_warnings": []
+}

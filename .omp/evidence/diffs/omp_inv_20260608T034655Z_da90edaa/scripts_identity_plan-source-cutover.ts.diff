@@ -1,0 +1,30 @@
+--- a/scripts/identity/plan-source-cutover.ts
++++ b/scripts/identity/plan-source-cutover.ts
+@@ -284,18 +284,15 @@
+   label: "Foundation Packages",
+   description: "Core infrastructure packages with broad workspace consumer base",
+   predicate: (dir, name) => {
+-    // Foundation: core, llm, ui, protocol, compute (no workspace deps in regular deps)
+-    // But these are consumed by many downstream packages
+-    const foundations = new Set([
+-      "packages/core",
+-      "packages/llm",
+-      "packages/ui",
+-      "packages/protocol",
+-      "packages/compute",
+-      "packages/compute-native",
+-      "packages/sdk/js", // SDK is technically a foundation — but we put it in wave 3 with plugin
+-    ]);
+-    if (foundations.has(dir)) return true;
++    const foundations: Record<string, true> = {
++      "packages/core": true,
++      "packages/llm": true,
++      "packages/ui": true,
++      "packages/protocol": true,
++      "packages/compute": true,
++      "packages/compute-native": true,
++    };
++    if (foundations[dir]) return true;
+     return false;
+   },
+ };

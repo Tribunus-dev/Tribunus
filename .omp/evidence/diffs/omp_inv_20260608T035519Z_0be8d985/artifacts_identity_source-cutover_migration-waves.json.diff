@@ -1,0 +1,11 @@
+--- a/artifacts/identity/source-cutover/migration-waves.json
++++ b/artifacts/identity/source-cutover/migration-waves.json
+@@ -138,7 +138,7 @@
+           "importReferences": []
+         },
+         {
+-          "currentName": "@opencode-ai/stats-app",
++          "currentName": "@tribunus/stats-app",
+           "intendedName": "@tribunus/stats-app",
+           "path": "packages/stats/app",
+           "renameDirectory": false,

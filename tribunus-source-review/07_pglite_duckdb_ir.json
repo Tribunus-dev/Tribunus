@@ -1,0 +1,892 @@
+{
+  "schema": "tribunus.semantic_review.pglite_duckdb_ir.v1",
+  "packet_id": "tribunus-gemini-ir",
+  "artifact_id": "07_pglite_duckdb_ir.json",
+  "generated_at": "2026-06-14T00:18:49.154Z",
+  "repo_root_name": "Tribunus",
+  "git_head_sha": "709b19e482e73643354a0cdfe1430fdc317766d8",
+  "git_branch": "main",
+  "dirty": true,
+  "generator_version": "code_review_export@gemini_structured_ir_v1",
+  "pglite": {
+    "store_files": [],
+    "migrations": [],
+    "tables": [
+      {
+        "table": "actors",
+        "purpose": "actor registry",
+        "columns": [
+          {
+            "name": "actor_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "kind",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "provider",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "model",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "display_name",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "created_at",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ],
+        "authority_role": "session_truth"
+      },
+      {
+        "table": "sessions",
+        "purpose": "session lifecycle truth",
+        "columns": [
+          {
+            "name": "session_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "actor_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "purpose",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "started_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "last_heartbeat_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "closed_at",
+            "type": "TEXT",
+            "nullable": true
+          }
+        ],
+        "authority_role": "session_truth"
+      },
+      {
+        "table": "work_items",
+        "purpose": "work queue truth",
+        "columns": [
+          {
+            "name": "work_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "kind",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "title",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "priority",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "created_by_session_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "created_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "updated_at",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ],
+        "authority_role": "work_claim_truth"
+      },
+      {
+        "table": "work_claims",
+        "purpose": "work claim truth",
+        "columns": [
+          {
+            "name": "claim_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "work_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "session_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "claimed_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "expires_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "released_at",
+            "type": "TEXT",
+            "nullable": true
+          }
+        ],
+        "authority_role": "work_claim_truth"
+      },
+      {
+        "table": "path_locks",
+        "purpose": "path lock truth",
+        "columns": [
+          {
+            "name": "lock_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "path",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "lock_kind",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "session_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "work_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "acquired_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "expires_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "released_at",
+            "type": "TEXT",
+            "nullable": true
+          }
+        ],
+        "authority_role": "path_lock_truth"
+      },
+      {
+        "table": "tool_invocations",
+        "purpose": "tool invocation truth",
+        "columns": [
+          {
+            "name": "invocation_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "session_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "work_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "tool_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "tool_version",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "risk_level",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "started_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "finished_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "duration_ms",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "input_sha256",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "output_sha256",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "receipt_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "error_code",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "error_message",
+            "type": "TEXT",
+            "nullable": true
+          }
+        ],
+        "authority_role": "tool_invocation_truth"
+      },
+      {
+        "table": "tool_receipts",
+        "purpose": "receipt index",
+        "columns": [
+          {
+            "name": "receipt_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "invocation_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "session_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "tool_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "tool_version",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "created_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "receipt_path",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "receipt_sha256",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "event_path",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "journal_path",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "summary",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ],
+        "authority_role": "receipt_index"
+      },
+      {
+        "table": "tool_file_effects",
+        "purpose": "file effect truth",
+        "columns": [
+          {
+            "name": "effect_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "receipt_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "invocation_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "session_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "path",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "action",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "before_sha256",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "expected_before_sha256",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "after_sha256",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "before_size_bytes",
+            "type": "INTEGER",
+            "nullable": true
+          },
+          {
+            "name": "after_size_bytes",
+            "type": "INTEGER",
+            "nullable": true
+          },
+          {
+            "name": "diff_path",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "diff_sha256",
+            "type": "TEXT",
+            "nullable": true
+          }
+        ],
+        "authority_role": "file_effect_truth"
+      },
+      {
+        "table": "write_journals",
+        "purpose": "journal truth",
+        "columns": [
+          {
+            "name": "journal_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "receipt_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "invocation_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "session_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "created_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "updated_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "journal_path",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ],
+        "authority_role": "journal_truth"
+      },
+      {
+        "table": "coordination_events",
+        "purpose": "coordination event log",
+        "columns": [
+          {
+            "name": "event_id",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "session_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "work_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "invocation_id",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "event_type",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "payload_json",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "created_at",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ],
+        "authority_role": "coordination_event_log"
+      },
+      {
+        "table": "schema_migrations",
+        "purpose": "migration state",
+        "columns": [
+          {
+            "name": "version",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "applied_at",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "checksum",
+            "type": "TEXT",
+            "nullable": true
+          }
+        ],
+        "authority_role": "migration_state"
+      }
+    ],
+    "store_methods": [
+      {
+        "name": "migrate",
+        "signature": "migrate(): Promise<void>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 234,
+          "end_line": 234,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:migrate"
+        }
+      },
+      {
+        "name": "createActor",
+        "signature": "createActor(input: CreateActorInputV1): Promise<ActorRecordV1>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 235,
+          "end_line": 235,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:createActor"
+        }
+      },
+      {
+        "name": "createSession",
+        "signature": "createSession(input: CreateSessionInputV1): Promise<SessionRecordV1>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 236,
+          "end_line": 236,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:createSession"
+        }
+      },
+      {
+        "name": "heartbeatSession",
+        "signature": "heartbeatSession(session_id: string): Promise<void>",
+        "transaction_scope": "single_write",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 237,
+          "end_line": 237,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:heartbeatSession"
+        }
+      },
+      {
+        "name": "closeSession",
+        "signature": "closeSession(session_id: string): Promise<void>",
+        "transaction_scope": "single_write",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 238,
+          "end_line": 238,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:closeSession"
+        }
+      },
+      {
+        "name": "abandonExpiredSessions",
+        "signature": "abandonExpiredSessions(now?: Date): Promise<ExpiredSessionReportV1>",
+        "transaction_scope": "unknown",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 239,
+          "end_line": 239,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:abandonExpiredSessions"
+        }
+      },
+      {
+        "name": "claimWork",
+        "signature": "claimWork(input: ClaimWorkInputV1): Promise<ClaimWorkResultV1>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 240,
+          "end_line": 240,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:claimWork"
+        }
+      },
+      {
+        "name": "releaseWorkClaim",
+        "signature": "releaseWorkClaim(claim_id: string): Promise<void>",
+        "transaction_scope": "single_write",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 241,
+          "end_line": 241,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:releaseWorkClaim"
+        }
+      },
+      {
+        "name": "acquirePathLocks",
+        "signature": "acquirePathLocks(input: AcquirePathLocksInputV1): Promise<AcquirePathLocksResultV1>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "store_transaction",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 242,
+          "end_line": 242,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:acquirePathLocks"
+        }
+      },
+      {
+        "name": "releasePathLocks",
+        "signature": "releasePathLocks(input: ReleasePathLocksInputV1): Promise<void>",
+        "transaction_scope": "single_write",
+        "authority_role": "store_transaction",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 243,
+          "end_line": 243,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:releasePathLocks"
+        }
+      },
+      {
+        "name": "findConflictingLocks",
+        "signature": "findConflictingLocks(paths: string[]): Promise<PathLockRecordV1[]>",
+        "transaction_scope": "read_only",
+        "authority_role": "path_lock_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 244,
+          "end_line": 244,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:findConflictingLocks"
+        }
+      },
+      {
+        "name": "recordInvocation",
+        "signature": "recordInvocation(input: ToolInvocationRecordV1): Promise<void>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "store_transaction",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 245,
+          "end_line": 245,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:recordInvocation"
+        }
+      },
+      {
+        "name": "recordMutation",
+        "signature": "recordMutation(input: RecordMutationInputV1): Promise<void>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "store_transaction",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 246,
+          "end_line": 246,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:recordMutation"
+        }
+      },
+      {
+        "name": "recordInvocationWithMutations",
+        "signature": "recordInvocationWithMutations(input: {\n    invocation: ToolInvocationRecordV1\n    mutations: RecordMutationInputV1[]\n  }): Promise<void>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "store_transaction",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 247,
+          "end_line": 247,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:recordInvocationWithMutations"
+        }
+      },
+      {
+        "name": "recordRead",
+        "signature": "recordRead(input: RecordReadInputV1): Promise<void>",
+        "transaction_scope": "unknown",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 251,
+          "end_line": 251,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:recordRead"
+        }
+      },
+      {
+        "name": "createWriteJournal",
+        "signature": "createWriteJournal(input: WriteJournalRecordV1): Promise<void>",
+        "transaction_scope": "multi_statement_transaction",
+        "authority_role": "store_transaction",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 252,
+          "end_line": 252,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:createWriteJournal"
+        }
+      },
+      {
+        "name": "updateWriteJournalStatus",
+        "signature": "updateWriteJournalStatus(input: UpdateWriteJournalStatusInputV1): Promise<void>",
+        "transaction_scope": "single_write",
+        "authority_role": "store_transaction",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 253,
+          "end_line": 253,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:updateWriteJournalStatus"
+        }
+      },
+      {
+        "name": "findPendingJournals",
+        "signature": "findPendingJournals(): Promise<WriteJournalRecordV1[]>",
+        "transaction_scope": "read_only",
+        "authority_role": "journal_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 254,
+          "end_line": 254,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:findPendingJournals"
+        }
+      },
+      {
+        "name": "listRecentInvocations",
+        "signature": "listRecentInvocations(limit: number): Promise<ToolInvocationRecordV1[]>",
+        "transaction_scope": "read_only",
+        "authority_role": "session_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 255,
+          "end_line": 255,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:listRecentInvocations"
+        }
+      },
+      {
+        "name": "listEffectsForPath",
+        "signature": "listEffectsForPath(path: string): Promise<ToolFileEffectRecordV1[]>",
+        "transaction_scope": "read_only",
+        "authority_role": "file_effect_truth",
+        "anchor": {
+          "path": ".omp/tools/_lib/store/pglite-types.ts",
+          "start_line": 256,
+          "end_line": 256,
+          "sha256": "f971d1ae65f80790564ced02c7556344a27e43a4cc797d678a891b7f1164db6c",
+          "language": "typescript",
+          "symbol_id": "store:listEffectsForPath"
+        }
+      }
+    ],
+    "lock_protocol": {
+      "table": "path_locks",
+      "active_write_lock_index_present": true,
+      "acquire_method": "acquirePathLocks",
+      "release_method": "releasePathLocks",
+      "ttl_supported": true,
+      "conflict_error_code": "PATH_LOCK_CONFLICT",
+      "notes": [
+        "The store enforces one active write lock per path via a partial unique index.",
+        "acquirePathLocks checks conflicts before inserting rows and releasePathLocks clears active rows for the owning session."
+      ]
+    },
+    "recovery_protocol": {
+      "expired_sessions_detectable": true,
+      "stale_locks_detectable": true,
+      "pending_journals_detectable": true,
+      "automatic_repair": true,
+      "notes": [
+        "abandonExpiredSessions marks stale sessions abandoned and expires related locks/claims.",
+        "findPendingJournals exposes journals that remain uncommitted or need rollback."
+      ]
+    }
+  },
+  "duckdb": {
+    "projector_files": [],
+    "views": [],
+    "write_path_usage": {
+      "duckdb_used_in_write_path": false,
+      "evidence": [
+        {
+          "path": ".omp/tools/_lib/analytics/duckdb-projector.ts",
+          "start_line": 1,
+          "end_line": 1,
+          "sha256": "24d70e27a750015de9547be8f5b384b6107d0155979e324431ccc821785dea8f",
+          "language": "typescript",
+          "symbol_id": "duckdb:projector"
+        }
+      ],
+      "expected": false
+    }
+  },
+  "findings": []
+}

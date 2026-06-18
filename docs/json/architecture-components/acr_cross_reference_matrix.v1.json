@@ -1,0 +1,78 @@
+{
+  "schema_version": "v1",
+  "generated_at": "2026-06-14T00:00:00Z",
+  "generated_by": "system",
+  "title": "ADR to ACR Cross Reference Matrix",
+  "adr_to_acr": [
+    {
+      "adr_id": "0021",
+      "adr_title": "IOSurface Single-Island Runtime with Tokio-Valkey Orchestration",
+      "imports": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003",
+        "ACR-0004",
+        "ACR-0005"
+      ],
+      "extends": [
+        {
+          "component_id": "ACR-0004",
+          "extension": "Tokio PhaseScope governs MLX golden paths, Core ML blocking lanes, and Accelerate ring-buffer execution."
+        },
+        {
+          "component_id": "ACR-0005",
+          "extension": "IOSurface Runtime Island is Apple Silicon v1 canonical memory truth for MLX, Core ML, and Accelerate."
+        }
+      ]
+    },
+    {
+      "adr_id": "0022",
+      "adr_title": "Tribunus Runtime Truth Spine",
+      "imports": [
+        "ACR-0001",
+        "ACR-0002",
+        "ACR-0003",
+        "ACR-0004",
+        "ACR-0005"
+      ],
+      "extends": [
+        {
+          "component_id": "ACR-0001",
+          "extension": "Durable authority is the global finality layer for runtime receipts."
+        },
+        {
+          "component_id": "ACR-0002",
+          "extension": "Receipt-before-ack is a board-wide invariant for recoverable work."
+        }
+      ]
+    }
+  ],
+  "acr_to_adr": [
+    {
+      "acr_id": "ACR-0001",
+      "adr_ids": ["0021", "0022"]
+    },
+    {
+      "acr_id": "ACR-0002",
+      "adr_ids": ["0021", "0022"]
+    },
+    {
+      "acr_id": "ACR-0003",
+      "adr_ids": ["0021", "0022"]
+    },
+    {
+      "acr_id": "ACR-0004",
+      "adr_ids": ["0021", "0022"]
+    },
+    {
+      "acr_id": "ACR-0005",
+      "adr_ids": ["0021", "0022"]
+    }
+  ],
+  "validator_observations": {
+    "receipt_ordering_violation": "Not present in ADR-0021 or ADR-0022.",
+    "backend_truth_owner_violation": "Not present in ADR-0021 or ADR-0022.",
+    "iosurface_truth_violation": "Not present in ADR-0021 or ADR-0022.",
+    "phase_scope_violation": "Not present in ADR-0021 or ADR-0022."
+  }
+}

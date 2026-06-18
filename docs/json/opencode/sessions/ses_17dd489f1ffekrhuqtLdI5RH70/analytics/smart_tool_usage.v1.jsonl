@@ -1,0 +1,5 @@
+{"at":"2026-06-01T07:54:59.551Z","session_id":"ses_17dd489f1ffekrhuqtLdI5RH70","agent":"surgeon","tool":"smart_bun","command":"typecheck","elapsed_ms":18710,"exit_code":2}
+{"at":"2026-06-01T07:55:22.330Z","session_id":"ses_17dd489f1ffekrhuqtLdI5RH70","agent":"surgeon","tool":"smart_bun","command":"run","elapsed_ms":17577,"exit_code":2}
+{"at":"2026-06-01T07:55:27.408Z","session_id":"ses_17dd489f1ffekrhuqtLdI5RH70","agent":"surgeon","tool":"smart_bun","command":"tsgo","elapsed_ms":134,"exit_code":2}
+{"at":"2026-06-01T07:55:50.803Z","session_id":"ses_17dd489f1ffekrhuqtLdI5RH70","agent":"surgeon","tool":"smart_bun","command":"tsgo","elapsed_ms":18231,"exit_code":2}
+{"at":"2026-06-01T07:56:17.518Z","session_id":"ses_17dd489f1ffekrhuqtLdI5RH70","agent":"surgeon","tool":"smart_grep","pattern":"instance-health|instance-store","path":"/dev/stdin"}

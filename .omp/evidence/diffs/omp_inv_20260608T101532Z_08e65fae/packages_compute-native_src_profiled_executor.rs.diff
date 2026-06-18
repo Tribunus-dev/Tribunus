@@ -1,0 +1,66 @@
+--- a/packages/compute-native/src/profiled_executor.rs
++++ b/packages/compute-native/src/profiled_executor.rs
+@@ -61,6 +61,63 @@
+ /// - No source checkpoint access
+ /// - Profile validation must pass
+ ///
++/// Load tensor data from a MappedImage segment file using seek + read_exact.
++fn load_tensor_from_segment_file(
++    segment_file: &std::fs::File,
++    entry: &TensorEntry,
++    byte_counter: &mut u64,
++) -> napi::Result<mlx_rs::Array> {
++    let mut file = segment_file
++        .try_clone()
++        .map_err(|e| napi::Error::from_reason(format!("clone file handle: {}", e)))?;
++    file.seek(SeekFrom::Start(entry.offset))
++        .map_err(|e| napi::Error::from_reason(format!(
++            "seek tensor {} at offset {}: {}", entry.name, entry.offset, e
++        )))?;
++    let mut buf = vec![0u8; entry.byte_length as usize];
++    file.read_exact(&mut buf)
++        .map_err(|e| napi::Error::from_reason(format!("read tensor {}: {}", entry.name, e)))?;
++    *byte_counter += entry.byte_length;
++    let dims: Vec<i32> = entry.physical_shape.iter().map(|&d| d as i32).collect();
++    match entry.storage_dtype.as_str() {
++        "U8" | "Uint8" => Ok(mlx_rs::Array::from_slice(&buf, &dims)),
++        "F32" | "Float32" => {
++            if buf.len() % 4 != 0 {
++                return Err(napi::Error::from_reason(format!(
++                    "f32 payload length {} not multiple of 4", buf.len()
++                )));
++            }
++            let data: Vec<f32> = buf
++                .chunks_exact(4)
++                .map(|c| f32::from_le_bytes([c[0], c[1], c[2], c[3]]))
++                .collect();
++            Ok(mlx_rs::Array::from_slice(&data, &dims))
++        }
++        "BF16" | "BFloat16" => {
++            if buf.len() % 2 != 0 {
++                return Err(napi::Error::from_reason(format!(
++                    "bf16 payload length {} not multiple of 2", buf.len()
++                )));
++            }
++            let data: Vec<f32> = buf
++                .chunks_exact(2)
++                .map(|c| {
++                    let bf = u16::from_le_bytes([c[0], c[1]]);
++                    f32::from_bits((bf as u32) << 16)
++                })
++                .collect();
++            Ok(mlx_rs::Array::from_slice(&data, &dims))
++        }
++        "I8" | "Int8" => {
++            let data: Vec<i8> = buf.iter().map(|&b| b as i8).collect();
++            Ok(mlx_rs::Array::from_slice(&data, &dims))
++        }
++        other => Err(napi::Error::from_reason(format!(
++            "unsupported storage dtype in profiled executor: {}", other
++        ))),
++    }
++}
++
+ /// Fails closed on canary failure.
+ pub fn execute_profiled(
+     image_dir: &Path,

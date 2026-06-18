@@ -1,0 +1,12 @@
+{"at":"2026-06-01T02:01:54.282Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_grep","pattern":"PushGateService|PushGateContext|evaluateGate|evaluateAll|allGatesPass","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:01:54.869Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_find","pattern":"push-gate*","path":"packages/opencode"}
+{"at":"2026-06-01T02:03:39.658Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_find","pattern":"*push-gate*test*","path":"packages/opencode"}
+{"at":"2026-06-01T02:07:12.123Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_find","pattern":"*test*campaign*","path":"packages/opencode"}
+{"at":"2026-06-01T02:07:12.921Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_grep","pattern":"push.gate|push-gate|PushGate","path":"packages/opencode/test"}
+{"at":"2026-06-01T02:10:08.239Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_grep","pattern":"PushGateService|pushGateLayer|PushGateContext","path":"packages/opencode"}
+{"at":"2026-06-01T02:11:57.761Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_grep","pattern":"PushGateService|pushGateLayer|push-gate","path":"packages"}
+{"at":"2026-06-01T02:11:58.513Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_grep","pattern":"PushGateContext|evaluateGate|allGatesPass","path":"packages"}
+{"at":"2026-06-01T02:13:34.363Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_grep","pattern":"PushRecordService|pushRecordLayer|push-record","path":"packages"}
+{"at":"2026-06-01T02:15:07.906Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_grep","pattern":"TODO\\(F4\\)","path":"packages/opencode/src/campaign"}
+{"at":"2026-06-01T02:15:08.487Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_find","pattern":"*","path":"packages/opencode/src/campaign"}
+{"at":"2026-06-01T02:20:34.045Z","session_id":"ses_17f1aba39ffeyWGZr0LaKpjnzV","agent":"error-trace-auditor","tool":"smart_grep","pattern":"push.gate|PushGate|push.gate","path":"packages/opencode"}

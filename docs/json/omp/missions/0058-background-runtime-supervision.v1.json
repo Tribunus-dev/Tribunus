@@ -1,0 +1,65 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0058-background-runtime-supervision",
+  "type": "mission",
+  "name": "Background Runtime Supervision",
+  "slug": "background-runtime-supervision",
+  "description": "Supervise background tasks: agent executions, file indexing, sync operations, build watchers. Detect hangs, apply timeouts, restart or escalate.",
+  "purpose": "Background work is visible and managed.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Every background task has a registered supervision record with timeout and retry policy",
+    "Supervisor heartbeat checks run at configurable interval",
+    "Tasks exceeding their timeout are terminated and the escalation policy is triggered",
+    "Supervisor publishes status events for each supervised task (running, completed, failed, timed-out)",
+    "Restart loops are bounded — exceeding max restarts escalates instead of retrying",
+    "Supervisor survivies individual task crashes without itself terminating"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "supervision",
+    "background-tasks",
+    "timeout",
+    "health",
+    "escalation"
+  ],
+  "depends_on": [
+    "0055-workspace-open-and-close-semantics",
+    "0057-main-process-renderer-worker-and-sidecar-boundaries",
+    "0060-resource-ownership-and-deterministic-teardown"
+  ],
+  "unlocks": [],
+  "authority_scope": "supervision",
+  "allowed_paths": [
+    "packages/app/src/runtime/supervision/**"
+  ],
+  "required_evidence": [
+    "Supervision record registration with timeout and retry policy test",
+    "Heartbeat check at configurable interval test",
+    "Timeout termination and escalation test",
+    "Status event publishing test (running, completed, failed, timed-out)",
+    "Bounded restart loop test (max restarts escalates)",
+    "Supervisor crash isolation test"
+  ],
+  "acceptance_gates": [
+    "Every background task has a supervision record",
+    "Heartbeat checks run at configurable interval",
+    "Timeout terminates and escalates",
+    "Restart loops are bounded",
+    "Supervisor survives individual task crashes"
+  ],
+  "rollback_strategy": "Task termination is rollback — supervisor kills the task; no additional state to revert",
+  "recovery_strategy": "Task restart with backoff; if max restarts exceeded, escalate and do not restart",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "After max restarts for any task, escalate to user with task identity and error history",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.485Z",
+  "updated_at": "2026-06-07T05:45:37.002Z"
+}

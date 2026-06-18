@@ -1,0 +1,11 @@
+--- a/packages/compute-native/tools/coreml-compiler/preflight.py
++++ b/packages/compute-native/tools/coreml-compiler/preflight.py
+@@ -42,7 +42,7 @@
+     @mb.program(input_specs=[mb.TensorSpec(shape=(1, 2), dtype=types.fp16)])
+     def probe_prog(x):
+         # constant weight
+-    w = mb.const(val=[1.0, 2.0], name="weight", dtype=types.fp16)
++        w = mb.const(val=[1.0, 2.0], name="weight", dtype=types.fp16)
+         return mb.mul(x=x, y=w, name="output")
+ 
+     tmpdir = tempfile.mkdtemp(prefix="coreml-preflight-")

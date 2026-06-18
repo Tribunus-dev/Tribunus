@@ -1,0 +1,27 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0031",
+  "type": "campaign",
+  "name": "Ecosystem Integrations and Migration",
+  "slug": "ecosystem-integrations-and-migration",
+  "description": "GitHub integration, GitLab integration, Bitbucket research, VS Code migration bridge, Chrome Extension compatibility research, MCP server and client interoperability, ACP interoperability, CI provider integration, issue tracker adapters, chat and notification adapters, cloud storage adapters, import from existing agent tools, export to open formats, integration permission model, connector health monitoring, and third-party integration conformance.",
+  "objective": "Build ecosystem bridges: GitHub, GitLab, VS Code, MCP, ACP, CI providers, chat, storage, and migration tooling.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "integrations",
+    "migration",
+    "github",
+    "gitlab",
+    "vscode"
+  ],
+  "maturity": "modeled",
+  "horizon": "strategic",
+  "created_at": "2026-06-07T04:36:07.247Z",
+  "updated_at": "2026-06-07T04:36:07.247Z"
+}

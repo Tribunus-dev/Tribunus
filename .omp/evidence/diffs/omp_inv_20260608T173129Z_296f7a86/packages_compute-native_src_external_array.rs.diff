@@ -1,0 +1,325 @@
+--- a/packages/compute-native/src/external_array.rs
++++ b/packages/compute-native/src/external_array.rs
+@@ -524,8 +524,322 @@
+             assert!(
+                 (v - (i as f32)).abs() < 1e-6,
+                 "data corrupted after array drop at index {i}: {v} != {i}",
++            );
++        }
++    }
++
++    // -----------------------------------------------------------------------
++    // Change 1: Deleter panic containment -- the catch_unwind in the
++    // deleter_trampoline prevents panics from becoming aborts.
++    // -----------------------------------------------------------------------
++
++    /// Storage wrapper that panics when dropped.  Used to verify the
++    /// catch_unwind inside `deleter_trampoline` contains the panic.
++    struct PanicOnDropStorage {
++        ptr: *mut u8,
++        len: usize,
++        layout: Layout,
++    }
++
++    // SAFETY: The pointer is uniquely owned in this test (single-threaded).
++    unsafe impl Send for PanicOnDropStorage {}
++    unsafe impl Sync for PanicOnDropStorage {}
++
++    impl PanicOnDropStorage {
++        fn new(size: usize) -> Self {
++            let layout = Layout::from_size_align(size, 1).unwrap();
++            let ptr = unsafe { std::alloc::alloc_zeroed(layout) };
++            assert!(!ptr.is_null(), "PanicOnDropStorage alloc failed");
++            let slice = unsafe { std::slice::from_raw_parts_mut(ptr as *mut u8, size) };
++            for (i, v) in slice.iter_mut().enumerate() {
++                *v = (i & 0xFF) as u8;
++            }
++            Self { ptr, len: size, layout }
++        }
++    }
++
++    impl ExternalStorage for PanicOnDropStorage {
++        fn data_ptr(&self) -> *const u8 {
++            self.ptr
++        }
++        fn byte_len(&self) -> usize {
++            self.len
++        }
++    }
++
++    impl Drop for PanicOnDropStorage {
++        fn drop(&mut self) {
++            panic!("intentional panic in PanicOnDropStorage::drop");
++        }
++    }
++
++    #[test]
++    fn test_deleter_panic_does_not_abort() {
++        reset_deleter_count();
++
++        let shape = &[2i32, 4i32];
++        let n: usize = (shape[0] * shape[1]) as usize;
++        let byte_len = n * 4;
++
++        let panic_storage: Arc<dyn ExternalStorage + Send + Sync> =
++            Arc::new(PanicOnDropStorage::new(byte_len));
++
++        let arr = unsafe { new_external_array(panic_storage, shape, Dtype::Float32) }
++            .expect("arr from panic-storage");
++
++        drop(arr);
++
++        wait_for_deleter(1);
++        assert!(
++            deleter_count() >= 1,
++            "deleter must fire despite storage panic (count={})",
++            deleter_count()
++        );
++    }
++
++    // -----------------------------------------------------------------------
++    // Change 2: Multiple MLX arrays created from the same Arc<OwnedBuffer>
++    // -----------------------------------------------------------------------
++
++    #[test]
++    fn test_multiple_segment_views() {
++        reset_deleter_count();
++
++        let shape = &[2i32, 4i32];
++        let n: usize = (shape[0] * shape[1]) as usize;
++        let byte_len = n * 4;
++
++        let buf = OwnedBuffer::new(byte_len);
++        {
++            let slice =
++                unsafe { std::slice::from_raw_parts_mut(buf.as_mut_ptr() as *mut f32, n) };
++            for (i, v) in slice.iter_mut().enumerate() {
++                *v = i as f32;
++            }
++        }
++
++        let holder: Arc<OwnedBuffer> = Arc::new(buf);
++
++        let storage1: Arc<dyn ExternalStorage + Send + Sync> = holder.clone();
++        let storage2: Arc<dyn ExternalStorage + Send + Sync> = holder.clone();
++
++        let arr1 = unsafe { new_external_array(storage1, shape, Dtype::Float32) }
++            .expect("arr1");
++        let arr2 = unsafe { new_external_array(storage2, shape, Dtype::Float32) }
++            .expect("arr2");
++
++        let two = Array::from_slice(&[2.0f32], &[1]);
++        let r1 = arr1.multiply(&two).expect("multiply1");
++        let r2 = arr2.multiply(&two).expect("multiply2");
++        r1.eval().expect("eval1");
++        r2.eval().expect("eval2");
++
++        let out1: Vec<f32> = r1.try_as_slice::<f32>().unwrap().to_vec();
++        let out2: Vec<f32> = r2.try_as_slice::<f32>().unwrap().to_vec();
++
++        for (i, &v) in out1.iter().enumerate() {
++            assert!((v - (i as f32) * 2.0).abs() < 1e-6, "arr1 mismatch at {i}");
++        }
++        for (i, &v) in out2.iter().enumerate() {
++            assert!((v - (i as f32) * 2.0).abs() < 1e-6, "arr2 mismatch at {i}");
++        }
++
++        drop(arr1);
++        drop(arr2);
++
++        wait_for_deleter(2);
++        assert_eq!(
++            deleter_count(),
++            2,
++            "deleter must fire twice for two arrays (got {})",
++            deleter_count()
++        );
++
++        let data = unsafe { std::slice::from_raw_parts(holder.as_ptr() as *const f32, n) };
++        for (i, &v) in data.iter().enumerate() {
++            assert!(
++                (v - (i as f32)).abs() < 1e-6,
++                "backing data corrupted after array drops at {i}: {v} != {i}",
++            );
++        }
++    }
++
++    // -----------------------------------------------------------------------
++    // Change 3: Cloned Array preserves the storage mapping (single deleter fire)
++    // -----------------------------------------------------------------------
++
++    #[test]
++    fn test_cloned_array_preserves_mapping() {
++        reset_deleter_count();
++
++        let shape = &[2i32, 4i32];
++        let n: usize = (shape[0] * shape[1]) as usize;
++        let byte_len = n * 4;
++
++        let mut buf = OwnedBuffer::new(byte_len);
++        {
++            let slice =
++                unsafe { std::slice::from_raw_parts_mut(buf.as_mut_ptr() as *mut f32, n) };
++            for (i, v) in slice.iter_mut().enumerate() {
++                *v = i as f32;
++            }
++        }
++
++        let storage: Arc<dyn ExternalStorage + Send + Sync> = Arc::new(buf);
++
++        let arr = unsafe { new_external_array(storage, shape, Dtype::Float32) }
++            .expect("arr");
++
++        let arr_clone = arr.clone();
++
++        let two = Array::from_slice(&[2.0f32], &[1]);
++        let three = Array::from_slice(&[3.0f32], &[1]);
++
++        let r1 = arr.multiply(&two).expect("multiply1");
++        let r2 = arr_clone.multiply(&three).expect("multiply2");
++
++        r1.eval().expect("eval1");
++        r2.eval().expect("eval2");
++
++        let out1: Vec<f32> = r1.try_as_slice::<f32>().unwrap().to_vec();
++        let out2: Vec<f32> = r2.try_as_slice::<f32>().unwrap().to_vec();
++
++        for (i, &v) in out1.iter().enumerate() {
++            assert!((v - (i as f32) * 2.0).abs() < 1e-6, "arr mismatch at {i}");
++        }
++        for (i, &v) in out2.iter().enumerate() {
++            assert!((v - (i as f32) * 3.0).abs() < 1e-6, "clone mismatch at {i}");
++        }
++
++        drop(arr);
++        drop(arr_clone);
++        drop(r1);
++        drop(r2);
++        wait_for_deleter(1);
++        assert_eq!(
++            deleter_count(),
++            1,
++            "deleter must fire exactly once for cloned arrays (got {})",
++            deleter_count()
++        );
++    }
++
++    // -----------------------------------------------------------------------
++    // Change 4: Storage lives until all arrays dropped (drop OwnedBuffer early)
++    // -----------------------------------------------------------------------
++
++    #[test]
++    fn test_storage_lives_until_all_arrays_dropped() {
++        reset_deleter_count();
++
++        let shape = &[2i32, 4i32];
++        let n: usize = (shape[0] * shape[1]) as usize;
++        let byte_len = n * 4;
++
++        let buf = OwnedBuffer::new(byte_len);
++        {
++            let slice =
++                unsafe { std::slice::from_raw_parts_mut(buf.as_mut_ptr() as *mut f32, n) };
++            for (i, v) in slice.iter_mut().enumerate() {
++                *v = i as f32;
++            }
++        }
++
++        let holder: Arc<OwnedBuffer> = Arc::new(buf);
++        let storage: Arc<dyn ExternalStorage + Send + Sync> = holder.clone();
++
++        let arr = unsafe { new_external_array(storage, shape, Dtype::Float32) }
++            .expect("arr");
++
++        drop(holder);
++
++        let two = Array::from_slice(&[2.0f32], &[1]);
++        let result = arr.multiply(&two).expect("multiply");
++        result.eval().expect("eval");
++
++        let out: Vec<f32> = result.try_as_slice::<f32>().unwrap().to_vec();
++        assert_eq!(out.len(), n);
++        for (i, &v) in out.iter().enumerate() {
++            let expected = (i as f32) * 2.0;
++            assert!(
++                (v - expected).abs() < 1e-6,
++                "data valid after buffer drop at {i}: {v} != {expected}",
++            );
++        }
++
++        drop(arr);
++        drop(result);
++        wait_for_deleter(1);
++        assert_eq!(
++            deleter_count(),
++            1,
++            "deleter must fire exactly once (got {})",
++            deleter_count()
++        );
++    }
++
++    // -----------------------------------------------------------------------
++    // Change 5: Static storage survives forced drop without deallocation
++    // -----------------------------------------------------------------------
++
++    static TEST_STATIC_DATA: [u8; 32] = [
++        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
++        0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
++        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
++        0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
++    ];
++
++    #[test]
++    fn test_static_storage_survives_forced_drop() {
++        reset_deleter_count();
++
++        let shape = &[2i32, 4i32];
++        let byte_len = 32;
++
++        let static_storage: Arc<dyn ExternalStorage + Send + Sync> = Arc::new(unsafe {
++            StaticStorage::new(TEST_STATIC_DATA.as_ptr(), byte_len)
++        });
++
++        let arr = unsafe {
++            new_external_array(static_storage, shape, Dtype::Uint8)
++        }
++        .expect("arr from static storage");
++
++        let one = Array::from_slice(&[1u8], &[1]);
++        let result = arr.add(&one).expect("add");
++        result.eval().expect("eval");
++
++        let out: Vec<u8> = result.try_as_slice::<u8>().unwrap().to_vec();
++        for (i, &v) in out.iter().enumerate() {
++            let expected = (i as u8).wrapping_add(1);
++            assert_eq!(
++                v, expected,
++                "static array result mismatch at {i}: {v} != {expected}",
+             );
+         }
++
++        drop(arr);
++        drop(result);
++        wait_for_deleter(1);
++        assert_eq!(
++            deleter_count(),
++            1,
++            "deleter must fire exactly once (got {})",
++            deleter_count()
++        );
++
++        assert_eq!(
++            TEST_STATIC_DATA[0], 0x00,
++            "static data[0] unchanged"
++        );
++        assert_eq!(
++            TEST_STATIC_DATA[15], 0x0F,
++            "static data[15] unchanged"
++        );
++        assert_eq!(
++            TEST_STATIC_DATA[31], 0x1F,
++            "static data[31] unchanged"
++        );
+     }
+ }
+ 

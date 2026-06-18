@@ -1,0 +1,17 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "9997",
+  "title": "Invalid MLX Ambient Laziness Example",
+  "status": "proposed",
+  "date": "2026-06-14",
+  "last_modified": "2026-06-14T00:00:00Z",
+  "component_imports": [
+    "ACR-0008"
+  ],
+  "decision": "Ambient lazy MLX graphs are authority and may improvise execution in this example. MLX owns durable authority truth here.",
+  "context": "",
+  "consequences": "",
+  "supersedes": [],
+  "superseded_by": []
+}

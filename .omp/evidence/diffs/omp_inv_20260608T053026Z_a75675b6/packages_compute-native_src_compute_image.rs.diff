@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/compute_image.rs
++++ b/packages/compute-native/src/compute_image.rs
+@@ -3064,8 +3064,6 @@
+             "unexpected segment corruption error: {}",
+             err
+         );
+-    }
+-}
+     }
+ 
+     #[test]

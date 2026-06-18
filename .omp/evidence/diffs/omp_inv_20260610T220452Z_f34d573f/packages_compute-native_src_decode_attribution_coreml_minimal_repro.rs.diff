@@ -1,0 +1,60 @@
+--- a/packages/compute-native/src/decode_attribution/coreml_minimal_repro.rs
++++ b/packages/compute-native/src/decode_attribution/coreml_minimal_repro.rs
+@@ -424,33 +424,32 @@
+                             if let Some(tensor_val) = &tv.value {
+                                 match tensor_val {
+                                     tensor_value::Value::Floats(floats) => {
+-                                        // Verify const tensor length.
+-                                    for out in &op.outputs {
++                                        for out in &op.outputs {
+                                             if let Some(vt) = &out.r#type {
+                                                 if let Some(tt) = &vt.r#type {
+                                                     if let mil_spec::value_type::Type::TensorType(tensor_type) = tt {
+-                                                    let product: u64 = tensor_type.dimensions.iter()
++                                                        let product: u64 = tensor_type.dimensions.iter()
+                                                             .filter_map(|d| match &d.dimension {
+                                                                 Some(dimension::Dimension::Constant(cd)) => Some(cd.size),
+                                                                 None => None,
+-                                                        })
+-                                                        .product();
+-                                                    if product > 0 && product != floats.values.len() as u64 {
+-                                                        errors.push(VerificationError {
+-                                                            code: VerificationErrorCode::ConstLengthMismatch,
+-                                                            message: format!(
+-                                                                "const output '{}' shape {:?} implies {} elements, but has {} float values",
+-                                                                out.name, tensor_type.dimensions, product,
+-                                                                floats.values.len()
+-                                                            ),
+-                                                        });
+-                                                    }
++                                                            })
++                                                            .product();
++                                                        if product > 0 && product != floats.values.len() as u64 {
++                                                            errors.push(VerificationError {
++                                                                code: VerificationErrorCode::ConstLengthMismatch,
++                                                                message: format!(
++                                                                    "const output '{}' shape {:?} implies {} elements, but has {} float values",
++                                                                    out.name, tensor_type.dimensions, product,
++                                                                    floats.values.len()
++                                                                ),
++                                                            });
++                                                        }
+                                                     }
+                                                 }
+                                             }
+                                         }
+                                     }
+-                                _ => {}
++                                    _ => {}
+                                 }
+                             }
+                         }
+@@ -458,7 +457,7 @@
+                 }
+             }
+         }
+-                                                }
++    }
+     }
+ 
+     if errors.is_empty() {

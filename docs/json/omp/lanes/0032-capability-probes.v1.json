@@ -1,0 +1,32 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0032",
+  "type": "lane",
+  "name": "Capability probes",
+  "slug": "capability-probes",
+  "description": "Replace hardcoded capability outputs with probe-derived or explicitly unknown/unqualified results and update the callers that read them.",
+  "scope": "compute-native-capability-probes",
+  "missionId": "0237",
+  "status": "idle",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/compute-native/src/capability.rs",
+    "packages/compute-native/src/compute_image.rs",
+    "packages/compute-native/src/worker_supervisor.rs"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "capability",
+    "probes"
+  ],
+  "created_at": "2026-06-13T10:57:05.260Z",
+  "updated_at": "2026-06-13T10:57:05.260Z"
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "study_id": "tribunus-gemma4-12b-m1-v1",
+  "experiment_id": "EXP-0000",
+  "optimization_id": "OPT-0000",
+  "run_id": "5a8659b1-ecdb-4cc4-ae06-56294dd2c84b",
+  "trial_index": 0,
+  "run_grade": "claim_candidate",
+  "status": "completed",
+  "start_time": "2026-06-09T05:58:21.133Z",
+  "end_time": "2026-06-09T05:58:21.133Z",
+  "source_revision": "7b7ce5b62d4feaa05045993d5802ae12a9f0e7ab",
+  "model_identity": {
+    "image_hash": "d042df1e4062a53e3a003af4e2e8c714924fcf19f03b7cf0dd5f67293355d924",
+    "storage_abi": "copied-v0",
+    "runtime_abi": "v3",
+    "tokenizer_hash": "pending"
+  },
+  "machine_profile": {
+    "anon_id": "m1-16gb",
+    "model_id": "MacBookPro18,3",
+    "chip": "M1 Pro",
+    "cores": 10,
+    "memory": "16 GB",
+    "os_version": "15.5"
+  },
+  "workload_id": "eight-token-qualification",
+  "configuration_id": "v3-baseline",
+  "instrumentation_mode": "research_standard",
+  "final_manifest_hash": "pending"
+}

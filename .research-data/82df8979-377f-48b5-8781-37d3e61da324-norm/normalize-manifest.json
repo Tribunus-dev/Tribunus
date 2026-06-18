@@ -1,0 +1,49 @@
+{
+  "run_id": "82df8979-377f-48b5-8781-37d3e61da324",
+  "normalized_dir": "/Users/user/Developer/GitHub/Tribunus/.research-data/82df8979-377f-48b5-8781-37d3e61da324-norm",
+  "files": [
+    {
+      "name": "runs.arrow",
+      "row_count": 1,
+      "sha256": "c023a0960d3d94bc62f5df6ff204448f95598e65e6d0deb112a293a698ccd32a",
+      "byte_size": 8314,
+      "format": "arrow_ipc"
+    },
+    {
+      "name": "stage_events.arrow",
+      "row_count": 48,
+      "sha256": "90a44a35c56c0d50cffb174748252ef145adebe6007ed44bac05174f34ba0590",
+      "byte_size": 9674,
+      "format": "arrow_ipc"
+    },
+    {
+      "name": "memory_samples.arrow",
+      "row_count": 0,
+      "sha256": "e181b6c013a1421f7592af819326004b4d1f51f6cdaded2505741e9277fe6041",
+      "byte_size": 194,
+      "format": "arrow_ipc"
+    },
+    {
+      "name": "token_metrics.arrow",
+      "row_count": 0,
+      "sha256": "e181b6c013a1421f7592af819326004b4d1f51f6cdaded2505741e9277fe6041",
+      "byte_size": 194,
+      "format": "arrow_ipc"
+    },
+    {
+      "name": "correctness_checkpoints.arrow",
+      "row_count": 0,
+      "sha256": "e181b6c013a1421f7592af819326004b4d1f51f6cdaded2505741e9277fe6041",
+      "byte_size": 194,
+      "format": "arrow_ipc"
+    }
+  ],
+  "referential_integrity": {
+    "valid": true,
+    "run_ids_in_events": 1,
+    "run_ids_in_runs": [
+      "82df8979-377f-48b5-8781-37d3e61da324"
+    ],
+    "orphaned_run_ids": []
+  }
+}

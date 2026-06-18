@@ -1,0 +1,655 @@
+<!DOCTYPE html><html lang="de-DE" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-xopdttpj"> <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>SDK | Tribunus</title><link rel="canonical" href="https://dev.tribunus.dev/de/sdk/"/><link rel="alternate" hreflang="en" href="https://dev.tribunus.dev/sdk/"/><link rel="alternate" hreflang="ar" href="https://dev.tribunus.dev/ar/sdk/"/><link rel="alternate" hreflang="bs-BA" href="https://dev.tribunus.dev/bs/sdk/"/><link rel="alternate" hreflang="da-DK" href="https://dev.tribunus.dev/da/sdk/"/><link rel="alternate" hreflang="de-DE" href="https://dev.tribunus.dev/de/sdk/"/><link rel="alternate" hreflang="es-ES" href="https://dev.tribunus.dev/es/sdk/"/><link rel="alternate" hreflang="fr-FR" href="https://dev.tribunus.dev/fr/sdk/"/><link rel="alternate" hreflang="it-IT" href="https://dev.tribunus.dev/it/sdk/"/><link rel="alternate" hreflang="ja-JP" href="https://dev.tribunus.dev/ja/sdk/"/><link rel="alternate" hreflang="ko-KR" href="https://dev.tribunus.dev/ko/sdk/"/><link rel="alternate" hreflang="nb-NO" href="https://dev.tribunus.dev/nb/sdk/"/><link rel="alternate" hreflang="pl-PL" href="https://dev.tribunus.dev/pl/sdk/"/><link rel="alternate" hreflang="pt-BR" href="https://dev.tribunus.dev/pt-br/sdk/"/><link rel="alternate" hreflang="ru-RU" href="https://dev.tribunus.dev/ru/sdk/"/><link rel="alternate" hreflang="th-TH" href="https://dev.tribunus.dev/th/sdk/"/><link rel="alternate" hreflang="tr-TR" href="https://dev.tribunus.dev/tr/sdk/"/><link rel="alternate" hreflang="zh-CN" href="https://dev.tribunus.dev/zh-cn/sdk/"/><link rel="alternate" hreflang="zh-TW" href="https://dev.tribunus.dev/zh-tw/sdk/"/><link rel="sitemap" href="/sitemap-index.xml"/><link rel="icon" href="/favicon-v3.ico" sizes="32x32"/><link rel="icon" type="image/png" href="/favicon-96x96-v3.png" sizes="96x96"/><link rel="apple-touch-icon" href="/apple-touch-icon-v3.png" sizes="180x180"/><link rel="shortcut icon" href="/favicon-v3.svg" type="image/svg+xml"/><meta name="generator" content="Astro v5.7.13"/><meta name="generator" content="Starlight v0.34.3"/><meta property="og:title" content="SDK"/><meta property="og:type" content="article"/><meta property="og:url" content="https://dev.tribunus.dev/de/sdk/"/><meta property="og:locale" content="de-DE"/><meta property="og:description" content="Typsicherer JS-Client fuer den opencode-Server."/><meta property="og:site_name" content="Tribunus"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="Typsicherer JS-Client fuer den opencode-Server."/><meta property="og:image" content="https://social-cards.sst.dev/opencode-docs/U0RL.png?desc=Typsicherer%20JS-Client%20fuer%20den%20opencode-Server.">
+  <meta property="twitter:image" content="https://social-cards.sst.dev/opencode-docs/U0RL.png?desc=Typsicherer%20JS-Client%20fuer%20den%20opencode-Server."><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.DNXP8c50.css" media="print"><link rel="stylesheet" href="/_astro/_id_.CA6aLT_b.css">
+<style>@layer starlight.components{:root{--sl-badge-default-border: var(--sl-color-accent);--sl-badge-default-bg: var(--sl-color-accent-low);--sl-badge-default-text: #fff;--sl-badge-note-border: var(--sl-color-blue);--sl-badge-note-bg: var(--sl-color-blue-low);--sl-badge-note-text: #fff;--sl-badge-danger-border: var(--sl-color-red);--sl-badge-danger-bg: var(--sl-color-red-low);--sl-badge-danger-text: #fff;--sl-badge-success-border: var(--sl-color-green);--sl-badge-success-bg: var(--sl-color-green-low);--sl-badge-success-text: #fff;--sl-badge-caution-border: var(--sl-color-orange);--sl-badge-caution-bg: var(--sl-color-orange-low);--sl-badge-caution-text: #fff;--sl-badge-tip-border: var(--sl-color-purple);--sl-badge-tip-bg: var(--sl-color-purple-low);--sl-badge-tip-text: #fff}[data-theme=light]:root{--sl-badge-default-bg: var(--sl-color-accent-high);--sl-badge-note-bg: var(--sl-color-blue-high);--sl-badge-danger-bg: var(--sl-color-red-high);--sl-badge-success-bg: var(--sl-color-green-high);--sl-badge-caution-bg: var(--sl-color-orange-high);--sl-badge-tip-bg: var(--sl-color-purple-high)}.sl-badge:where(.astro-mrfmtbqb){display:inline-block;border:1px solid var(--sl-color-border-badge);border-radius:.25rem;font-family:var(--sl-font-system-mono);line-height:normal;color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere}.sidebar-content .sl-badge:where(.astro-mrfmtbqb){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-mrfmtbqb){--sl-color-bg-badge: transparent;--sl-color-border-badge: currentColor;color:inherit}.default:where(.astro-mrfmtbqb){--sl-color-bg-badge: var(--sl-badge-default-bg);--sl-color-border-badge: var(--sl-badge-default-border);--sl-color-text-badge: var(--sl-badge-default-text)}.note:where(.astro-mrfmtbqb){--sl-color-bg-badge: var(--sl-badge-note-bg);--sl-color-border-badge: var(--sl-badge-note-border);--sl-color-text-badge: var(--sl-badge-note-text)}.danger:where(.astro-mrfmtbqb){--sl-color-bg-badge: var(--sl-badge-danger-bg);--sl-color-border-badge: var(--sl-badge-danger-border);--sl-color-text-badge: var(--sl-badge-danger-text)}.success:where(.astro-mrfmtbqb){--sl-color-bg-badge: var(--sl-badge-success-bg);--sl-color-border-badge: var(--sl-badge-success-border);--sl-color-text-badge: var(--sl-badge-success-text)}.tip:where(.astro-mrfmtbqb){--sl-color-bg-badge: var(--sl-badge-tip-bg);--sl-color-border-badge: var(--sl-badge-tip-border);--sl-color-text-badge: var(--sl-badge-tip-text)}.caution:where(.astro-mrfmtbqb){--sl-color-bg-badge: var(--sl-badge-caution-bg);--sl-color-border-badge: var(--sl-badge-caution-border);--sl-color-text-badge: var(--sl-badge-caution-text)}.small:where(.astro-mrfmtbqb){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-mrfmtbqb){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-mrfmtbqb){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-mrfmtbqb){vertical-align:middle}}
+@layer starlight.components{svg:where(.astro-q6vyc2yh){color:var(--sl-icon-color);font-size:var(--sl-icon-size, 1em);width:1em;height:1em}}
+@layer starlight.components{starlight-tabs:where(.astro-k6cn4qi5){display:block}.tablist-wrapper:where(.astro-k6cn4qi5){overflow-x:auto}:where(.astro-k6cn4qi5)[role=tablist]{display:flex;list-style:none;border-bottom:2px solid var(--sl-color-gray-5);padding:0}.tab:where(.astro-k6cn4qi5){margin-bottom:-2px}.tab:where(.astro-k6cn4qi5)>:where(.astro-k6cn4qi5)[role=tab]{display:flex;align-items:center;gap:.5rem;padding:0 1.25rem;text-decoration:none;border-bottom:2px solid var(--sl-color-gray-5);color:var(--sl-color-gray-3);outline-offset:var(--sl-outline-offset-inside);overflow-wrap:initial}.tab:where(.astro-k6cn4qi5) :where(.astro-k6cn4qi5)[role=tab][aria-selected=true]{color:var(--sl-color-white);border-color:var(--sl-color-text-accent);font-weight:600}.tablist-wrapper:where(.astro-k6cn4qi5)~[role=tabpanel]{margin-top:1rem}}
+@layer starlight.components{.sl-steps{--bullet-size: calc(var(--sl-line-height) * 1rem);--bullet-margin: .375rem;list-style:none;counter-reset:steps-counter var(--sl-steps-start, 0);padding-inline-start:0}.sl-steps>li{counter-increment:steps-counter;position:relative;padding-inline-start:calc(var(--bullet-size) + 1rem);padding-bottom:1px;min-height:calc(var(--bullet-size) + var(--bullet-margin))}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);position:absolute;top:0;inset-inline-start:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);font-weight:600;text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);border-radius:99rem;box-shadow:inset 0 0 0 1px var(--sl-color-gray-5)}.sl-steps>li:after{--guide-width: 1px;content:"";position:absolute;top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2);width:var(--guide-width);background-color:var(--sl-color-hairline-light)}}@layer starlight.content{.sl-steps>li>:first-child{--lh: calc(1em * var(--sl-line-height));--shift-y: calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh: calc(1em * var(--sl-line-height-headings))}@supports (--prop: 1lh){.sl-steps>li>:first-child{--lh: 1lh}}}
+@layer starlight.components{.sl-link-button:where(.astro-bgnsitxd){align-items:center;border:1px solid transparent;border-radius:999rem;display:inline-flex;font-size:var(--sl-text-sm);gap:.5em;line-height:1.1875;outline-offset:.25rem;padding:.4375rem 1.125rem;text-decoration:none}.sl-link-button:where(.astro-bgnsitxd).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-bgnsitxd).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-bgnsitxd).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-bgnsitxd).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-bgnsitxd) svg{flex-shrink:0}@media(min-width:50rem){.sl-link-button:where(.astro-bgnsitxd){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-bgnsitxd){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-bgnsitxd):not(:where(p *)){margin-block:1rem}}
+</style><script type="module" src="/_astro/page.7qqag-5g.js"></script></head> <body class="astro-xopdttpj"> <a href="#_top" class="astro-j4ylnvj2">Zum Inhalt springen</a>  <div class="page sl-flex astro-7ek7tfvf"> <header class="header astro-7ek7tfvf"><div class="header sl-flex astro-7tzxqxrx"> <div class="title-wrapper sl-flex astro-7tzxqxrx"> <a href="/de" class="site-title sl-flex astro-idrpryed">  <img class="light:sl-hidden print:hidden astro-idrpryed" alt src="/_astro/logo-dark.C3W0CJu_.svg" width="720" height="129"> <img class="dark:sl-hidden print:block astro-idrpryed" alt src="/_astro/logo-light.tRk7dwoM.svg" width="720" height="129"> <span class="sr-only astro-idrpryed" translate="no"> Tribunus </span> </a>  </div> <div class="middle-group sl-flex astro-7tzxqxrx">  </div> <div class="sl-hidden md:sl-flex right-group astro-7tzxqxrx"> <div class="sl-flex social-icons astro-7tzxqxrx"> <a href="https://github.com/tribunus-dev/tribunus" rel="me" target="_blank" class="astro-7tzxqxrx"> <svg aria-hidden="true" class="astro-7tzxqxrx astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg> </a><a href="https://tribunus.dev/discord" rel="me" target="_blank" class="astro-7tzxqxrx"> <svg aria-hidden="true" class="astro-7tzxqxrx astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.93-1.51 13.78 13.78 0 0 0-.64 1.28 18.27 18.27 0 0 0-5.5 0 12.64 12.64 0 0 0-.64-1.28h-.05A19.74 19.74 0 0 0 3.64 4.4 20.26 20.26 0 0 0 .11 18.09l.02.02a19.9 19.9 0 0 0 6.04 3.03l.04-.02a14.24 14.24 0 0 0 1.23-2.03.08.08 0 0 0-.05-.07 13.1 13.1 0 0 1-1.9-.92.08.08 0 0 1 .02-.1 10.2 10.2 0 0 0 .41-.31h.04a14.2 14.2 0 0 0 12.1 0l.04.01a9.63 9.63 0 0 0 .4.32.08.08 0 0 1-.03.1 12.29 12.29 0 0 1-1.9.91.08.08 0 0 0-.02.1 15.97 15.97 0 0 0 1.27 2.01h.04a19.84 19.84 0 0 0 6.03-3.05v-.03a20.12 20.12 0 0 0-3.57-13.69ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.22 0 2.18 1.1 2.16 2.42 0 1.34-.94 2.42-2.16 2.42Z"/></svg> </a> </div> <site-search class="astro-7tzxqxrx astro-sn7mgvsf" data-translations="{&#34;placeholder&#34;:&#34;Suchen&#34;}"> <button data-open-modal disabled aria-label="Suchen" aria-keyshortcuts="Control+K" class="astro-sn7mgvsf"> <svg aria-hidden="true" class="astro-sn7mgvsf astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg> <span class="sl-hidden md:sl-block astro-sn7mgvsf" aria-hidden="true">Suchen</span> <kbd class="sl-hidden md:sl-flex astro-sn7mgvsf" style="display: none;"> <kbd class="astro-sn7mgvsf">Strg</kbd><kbd class="astro-sn7mgvsf">K</kbd> </kbd> </button> <dialog style="padding:0" aria-label="Suchen" class="astro-sn7mgvsf"> <div class="dialog-frame sl-flex astro-sn7mgvsf">  <button data-close-modal class="sl-flex md:sl-hidden astro-sn7mgvsf"> Abbrechen </button> <div class="search-container astro-sn7mgvsf"> <div id="starlight__search" class="astro-sn7mgvsf"></div> </div> </div> </dialog> </site-search>  <script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.CLg7mG-P.js"></script>   </div> </div> </header> <nav class="sidebar print:hidden astro-7ek7tfvf" aria-label="Hauptnavigation"> <starlight-menu-button class="print:hidden astro-35icszuf"> <button aria-expanded="false" aria-label="Menü" aria-controls="starlight__sidebar" class="sl-flex md:sl-hidden astro-35icszuf"> <svg aria-hidden="true" class="open-menu astro-35icszuf astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg> <svg aria-hidden="true" class="close-menu astro-35icszuf astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg> </button> </starlight-menu-button> <script type="module">class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);</script>   <div id="starlight__sidebar" class="sidebar-pane astro-7ek7tfvf"> <div class="sidebar-content sl-flex astro-7ek7tfvf"> <sl-sidebar-state-persist data-hash="0sjg56u" class="astro-npcl4vys"> <script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script>  <ul class="top-level astro-fqqbzjuq"> <li class="astro-fqqbzjuq"> <a href="/de/" aria-current="false" class="large astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Einführung</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/config/" aria-current="false" class="large astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Konfiguration</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/providers/" aria-current="false" class="large astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Anbieter</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/network/" aria-current="false" class="large astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Netzwerk</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/enterprise/" aria-current="false" class="large astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Unternehmen</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/troubleshooting/" aria-current="false" class="large astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Fehlerbehebung</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/windows-wsl" aria-current="false" class="large astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Windows</span>  </a> </li><li class="astro-fqqbzjuq"> <details open class="astro-fqqbzjuq"> <sl-sidebar-restore data-index="0"></sl-sidebar-restore> <summary class="astro-fqqbzjuq"> <div class="group-label astro-fqqbzjuq"> <span class="large astro-fqqbzjuq">Nutzung</span>  </div> <svg aria-hidden="true" class="caret astro-fqqbzjuq astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <ul class="astro-fqqbzjuq"> <li class="astro-fqqbzjuq"> <a href="/de/go/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Go</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/tui/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">TUI</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/cli/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">CLI</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/web/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Web</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/ide/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">IDE</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/zen/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Zen</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/share/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Teilen</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/github/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">GitHub</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/gitlab/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">GitLab</span>  </a> </li> </ul>  </details> </li><li class="astro-fqqbzjuq"> <details open class="astro-fqqbzjuq"> <sl-sidebar-restore data-index="1"></sl-sidebar-restore> <summary class="astro-fqqbzjuq"> <div class="group-label astro-fqqbzjuq"> <span class="large astro-fqqbzjuq">Konfiguration</span>  </div> <svg aria-hidden="true" class="caret astro-fqqbzjuq astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <ul class="astro-fqqbzjuq"> <li class="astro-fqqbzjuq"> <a href="/de/tools/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Tools</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/rules/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Regeln</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/agents/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Agenten</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/models/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Modelle</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/themes/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Themes</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/keybinds/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Tastenkombinationen</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/commands/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Befehle</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/formatters/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Formatierer</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/permissions/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Berechtigungen</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/lsp/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">LSP Server</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/mcp-servers/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">MCP Server</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/acp/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">ACP-Unterstützung</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/skills/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Agenten-Skills</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/custom-tools/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Benutzerdefinierte Tools</span>  </a> </li> </ul>  </details> </li><li class="astro-fqqbzjuq"> <details open class="astro-fqqbzjuq"> <sl-sidebar-restore data-index="2"></sl-sidebar-restore> <summary class="astro-fqqbzjuq"> <div class="group-label astro-fqqbzjuq"> <span class="large astro-fqqbzjuq">Entwicklung</span>  </div> <svg aria-hidden="true" class="caret astro-fqqbzjuq astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <ul class="astro-fqqbzjuq"> <li class="astro-fqqbzjuq"> <a href="/de/sdk/" aria-current="page" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">SDK</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/server/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Server</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/plugins/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Plugins</span>  </a> </li><li class="astro-fqqbzjuq"> <a href="/de/ecosystem/" aria-current="false" class="astro-fqqbzjuq"> <span class="astro-fqqbzjuq">Ökosystem</span>  </a> </li> </ul>  </details> </li> </ul>   <script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script> </sl-sidebar-state-persist>  <div class="md:sl-hidden"> <div class="mobile-preferences sl-flex astro-bawwy5dg"> <div class="social-icons astro-bawwy5dg"> <a href="https://github.com/tribunus-dev/tribunus" rel="me" class="sl-flex astro-36vfjfvx"><span class="sr-only astro-36vfjfvx">GitHub</span><svg aria-hidden="true" class="astro-36vfjfvx astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://tribunus.dev/discord" rel="me" class="sl-flex astro-36vfjfvx"><span class="sr-only astro-36vfjfvx">Discord</span><svg aria-hidden="true" class="astro-36vfjfvx astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.93-1.51 13.78 13.78 0 0 0-.64 1.28 18.27 18.27 0 0 0-5.5 0 12.64 12.64 0 0 0-.64-1.28h-.05A19.74 19.74 0 0 0 3.64 4.4 20.26 20.26 0 0 0 .11 18.09l.02.02a19.9 19.9 0 0 0 6.04 3.03l.04-.02a14.24 14.24 0 0 0 1.23-2.03.08.08 0 0 0-.05-.07 13.1 13.1 0 0 1-1.9-.92.08.08 0 0 1 .02-.1 10.2 10.2 0 0 0 .41-.31h.04a14.2 14.2 0 0 0 12.1 0l.04.01a9.63 9.63 0 0 0 .4.32.08.08 0 0 1-.03.1 12.29 12.29 0 0 1-1.9.91.08.08 0 0 0-.02.1 15.97 15.97 0 0 0 1.27 2.01h.04a19.84 19.84 0 0 0 6.03-3.05v-.03a20.12 20.12 0 0 0-3.57-13.69ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.22 0 2.18 1.1 2.16 2.42 0 1.34-.94 2.42-2.16 2.42Z"/></svg></a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-p752cdkp"> <span class="sr-only astro-p752cdkp">Farbschema wählen</span> <svg aria-hidden="true" class="icon label-icon astro-p752cdkp astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select value="auto" autocomplete="off" class="astro-p752cdkp"> <option value="dark" class="astro-p752cdkp">Dunkel</option><option value="light" class="astro-p752cdkp">Hell</option><option value="auto" selected class="astro-p752cdkp">System</option> </select> <svg aria-hidden="true" class="icon caret astro-p752cdkp astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label>  </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script> <script type="module">const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStorage<"u"&&localStorage.getItem(r));function n(e){typeof localStorage<"u"&&localStorage.setItem(r,e==="light"||e==="dark"?e:"")}const l=()=>matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);</script> <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-p752cdkp"> <span class="sr-only astro-p752cdkp">Sprache wählen</span> <svg aria-hidden="true" class="icon label-icon astro-p752cdkp astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select value="/de/sdk/" autocomplete="off" class="astro-p752cdkp"> <option value="/sdk/" class="astro-p752cdkp">English</option><option value="/ar/sdk/" class="astro-p752cdkp">العربية</option><option value="/bs/sdk/" class="astro-p752cdkp">Bosanski</option><option value="/da/sdk/" class="astro-p752cdkp">Dansk</option><option value="/de/sdk/" selected class="astro-p752cdkp">Deutsch</option><option value="/es/sdk/" class="astro-p752cdkp">Español</option><option value="/fr/sdk/" class="astro-p752cdkp">Français</option><option value="/it/sdk/" class="astro-p752cdkp">Italiano</option><option value="/ja/sdk/" class="astro-p752cdkp">日本語</option><option value="/ko/sdk/" class="astro-p752cdkp">한국어</option><option value="/nb/sdk/" class="astro-p752cdkp">Norsk Bokmål</option><option value="/pl/sdk/" class="astro-p752cdkp">Polski</option><option value="/pt-br/sdk/" class="astro-p752cdkp">Português (Brasil)</option><option value="/ru/sdk/" class="astro-p752cdkp">Русский</option><option value="/th/sdk/" class="astro-p752cdkp">ไทย</option><option value="/tr/sdk/" class="astro-p752cdkp">Türkçe</option><option value="/zh-cn/sdk/" class="astro-p752cdkp">简体中文</option><option value="/zh-tw/sdk/" class="astro-p752cdkp">繁體中文</option> </select> <svg aria-hidden="true" class="icon caret astro-p752cdkp astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-lang-select> </div>  </div> </div> </div> </nav> <div class="main-frame astro-7ek7tfvf">  <script type="module">const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);</script> <div class="lg:sl-flex astro-ahmtlkql"> <aside class="right-sidebar-container print:hidden astro-ahmtlkql"> <div class="right-sidebar astro-ahmtlkql"> <div class="lg:sl-hidden astro-imueiioz"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-5ucupfkk"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-5ucupfkk"><details id="starlight__mobile-toc" class="astro-5ucupfkk"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-5ucupfkk"><div class="toggle sl-flex astro-5ucupfkk">Auf dieser Seite<svg aria-hidden="true" class="caret astro-5ucupfkk astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></div><span class="display-current astro-5ucupfkk"></span></summary><div class="dropdown astro-5ucupfkk"><ul class="isMobile astro-tiety2ff" style="--depth: 0;"> <li class="astro-tiety2ff" style="--depth: 0;"> <a href="#_top" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Überblick</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#installation" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Installation</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#client-erstellen" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Client erstellen</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#config" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Config</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#nur-client" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Nur Client</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#typen" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Typen</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#fehler" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Fehler</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#structured-output" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Structured Output</span> </a> <ul class="isMobile astro-tiety2ff" style="--depth: 1;"> <li class="astro-tiety2ff" style="--depth: 1;"> <a href="#grundlegende-verwendung" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Grundlegende Verwendung</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#ausgabeformate" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Ausgabeformate</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#json-schema-format" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">JSON-Schema-Format</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#fehlerbehandlung" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Fehlerbehandlung</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#best-practices" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Best Practices</span> </a>  </li> </ul>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#apis" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">APIs</span> </a> <ul class="isMobile astro-tiety2ff" style="--depth: 1;"> <li class="astro-tiety2ff" style="--depth: 1;"> <a href="#global" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Global</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#app" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">App</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#project" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Project</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#path" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Path</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#config-1" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Config</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#sessions" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Sessions</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#files" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Files</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#tui" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">TUI</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#auth" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Auth</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#events" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Events</span> </a>  </li> </ul>  </li> </ul> </div></details></nav></mobile-starlight-toc><script type="module" src="/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.C181hMzK.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-imueiioz"><div class="sl-container astro-imueiioz"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">Auf dieser Seite</h2><ul class="astro-tiety2ff" style="--depth: 0;"> <li class="astro-tiety2ff" style="--depth: 0;"> <a href="#_top" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Überblick</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#installation" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Installation</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#client-erstellen" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Client erstellen</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#config" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Config</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#nur-client" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Nur Client</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#typen" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Typen</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#fehler" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Fehler</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#structured-output" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">Structured Output</span> </a> <ul class="astro-tiety2ff" style="--depth: 1;"> <li class="astro-tiety2ff" style="--depth: 1;"> <a href="#grundlegende-verwendung" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Grundlegende Verwendung</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#ausgabeformate" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Ausgabeformate</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#json-schema-format" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">JSON-Schema-Format</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#fehlerbehandlung" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Fehlerbehandlung</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#best-practices" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Best Practices</span> </a>  </li> </ul>  </li><li class="astro-tiety2ff" style="--depth: 0;"> <a href="#apis" class="astro-tiety2ff" style="--depth: 0;"> <span class="astro-tiety2ff" style="--depth: 0;">APIs</span> </a> <ul class="astro-tiety2ff" style="--depth: 1;"> <li class="astro-tiety2ff" style="--depth: 1;"> <a href="#global" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Global</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#app" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">App</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#project" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Project</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#path" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Path</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#config-1" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Config</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#sessions" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Sessions</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#files" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Files</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#tui" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">TUI</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#auth" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Auth</span> </a>  </li><li class="astro-tiety2ff" style="--depth: 1;"> <a href="#events" class="astro-tiety2ff" style="--depth: 1;"> <span class="astro-tiety2ff" style="--depth: 1;">Events</span> </a>  </li> </ul>  </li> </ul> </nav></starlight-toc><script type="module" src="/_astro/TableOfContents.astro_astro_type_script_index_0_lang.CKWWgpjV.js"></script></div></div> </div> </aside> <div class="main-pane astro-ahmtlkql">  <main data-pagefind-body class="astro-xopdttpj" lang="de-DE" dir="ltr">    <div class="content-panel astro-iz6il3mh"> <div class="sl-container astro-iz6il3mh"> <h1 id="_top" class="astro-etwmoesh">SDK</h1>  </div> </div>  <div class="content-panel astro-iz6il3mh"> <div class="sl-container astro-iz6il3mh"> <div class="sl-markdown-content"> <p>Das opencode JS/TS SDK bietet einen typsicheren Client fuer die Server-API.
+Damit kannst du Integrationen bauen und opencode programmatisch steuern.</p>
+<p><a href="/docs/server">Mehr zum Server</a>. Beispiele findest du in den <a href="/docs/ecosystem#projects">Community-Projekten</a>.</p>
+<hr>
+<h2 id="installation"><a href="#installation">Installation</a></h2>
+<p>Installiere das SDK ueber npm:</p>
+<div class="expressive-code"><link rel="stylesheet" href="/_astro/ec.4c0k7.css"><script type="module" src="/_astro/ec.0vx5m.js"></script><figure class="frame is-terminal not-content"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal-Fenster</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#6F42C1;--1:#B392F0">npm</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">install</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">@tribunus/sdk</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="npm install @tribunus/sdk"><div></div></button></div></figure></div>
+<hr>
+<h2 id="client-erstellen"><a href="#client-erstellen">Client erstellen</a></h2>
+<p>Erstelle eine opencode-Instanz:</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">import</span><span style="--0:#24292E;--1:#E1E4E8"> { createOpencode } </span><span style="--0:#BF3441;--1:#F97583">from</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">"@tribunus/sdk"</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> { </span><span style="--0:#005CC5;--1:#79B8FF">client</span><span style="--0:#24292E;--1:#E1E4E8"> } </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#6F42C1;--1:#B392F0">createOpencode</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="import { createOpencode } from &#x22;@tribunus/sdk&#x22;const { client } = await createOpencode()"><div></div></button></div></figure></div>
+<p>Das startet Server und Client.</p>
+<h4 id="optionen"><a href="#optionen">Optionen</a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Option</th><th>Type</th><th>Description</th><th>Default</th></tr></thead><tbody><tr><td><code dir="auto">hostname</code></td><td><code dir="auto">string</code></td><td>Server hostname</td><td><code dir="auto">127.0.0.1</code></td></tr><tr><td><code dir="auto">port</code></td><td><code dir="auto">number</code></td><td>Server port</td><td><code dir="auto">4096</code></td></tr><tr><td><code dir="auto">signal</code></td><td><code dir="auto">AbortSignal</code></td><td>Abort signal for cancellation</td><td><code dir="auto">undefined</code></td></tr><tr><td><code dir="auto">timeout</code></td><td><code dir="auto">number</code></td><td>Timeout in ms for server start</td><td><code dir="auto">5000</code></td></tr><tr><td><code dir="auto">config</code></td><td><code dir="auto">Config</code></td><td>Configuration object</td><td><code dir="auto">{}</code></td></tr></tbody></table>
+<hr>
+<h2 id="config"><a href="#config">Config</a></h2>
+<p>Du kannst ein Konfigurationsobjekt uebergeben, um das Verhalten anzupassen.
+<code dir="auto">opencode.json</code> wird weiterhin geladen, kann aber inline ueberschrieben oder erweitert werden:</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">import</span><span style="--0:#24292E;--1:#E1E4E8"> { createOpencode } </span><span style="--0:#BF3441;--1:#F97583">from</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">"@tribunus/sdk"</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">opencode</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#6F42C1;--1:#B392F0">createOpencode</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">hostname: </span><span style="--0:#032F62;--1:#9ECBFF">"127.0.0.1"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">port: </span><span style="--0:#005CC5;--1:#79B8FF">4096</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">config: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">model: </span><span style="--0:#032F62;--1:#9ECBFF">"anthropic/claude-3-5-sonnet-20241022"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">console.</span><span style="--0:#6F42C1;--1:#B392F0">log</span><span style="--0:#24292E;--1:#E1E4E8">(</span><span style="--0:#032F62;--1:#9ECBFF">`Server running at ${</span><span style="--0:#24292E;--1:#E1E4E8">opencode</span><span style="--0:#032F62;--1:#9ECBFF">.</span><span style="--0:#24292E;--1:#E1E4E8">server</span><span style="--0:#032F62;--1:#9ECBFF">.</span><span style="--0:#24292E;--1:#E1E4E8">url</span><span style="--0:#032F62;--1:#9ECBFF">}`</span><span style="--0:#24292E;--1:#E1E4E8">)</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">opencode.server.</span><span style="--0:#6F42C1;--1:#B392F0">close</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="import { createOpencode } from &#x22;@tribunus/sdk&#x22;const opencode = await createOpencode({  hostname: &#x22;127.0.0.1&#x22;,  port: 4096,  config: {    model: &#x22;anthropic/claude-3-5-sonnet-20241022&#x22;,  },})console.log(&#x60;Server running at ${opencode.server.url}&#x60;)opencode.server.close()"><div></div></button></div></figure></div>
+<h2 id="nur-client"><a href="#nur-client">Nur Client</a></h2>
+<p>Wenn opencode bereits laeuft, kannst du nur einen Client erstellen und verbinden:</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">import</span><span style="--0:#24292E;--1:#E1E4E8"> { createOpencodeClient } </span><span style="--0:#BF3441;--1:#F97583">from</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">"@tribunus/sdk"</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">client</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#6F42C1;--1:#B392F0">createOpencodeClient</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">baseUrl: </span><span style="--0:#032F62;--1:#9ECBFF">"http://localhost:4096"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="import { createOpencodeClient } from &#x22;@tribunus/sdk&#x22;const client = createOpencodeClient({  baseUrl: &#x22;http://localhost:4096&#x22;,})"><div></div></button></div></figure></div>
+<h4 id="optionen-1"><a href="#optionen-1">Optionen</a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Option</th><th>Type</th><th>Description</th><th>Default</th></tr></thead><tbody><tr><td><code dir="auto">baseUrl</code></td><td><code dir="auto">string</code></td><td>URL of the server</td><td><code dir="auto">http://localhost:4096</code></td></tr><tr><td><code dir="auto">fetch</code></td><td><code dir="auto">function</code></td><td>Custom fetch implementation</td><td><code dir="auto">globalThis.fetch</code></td></tr><tr><td><code dir="auto">parseAs</code></td><td><code dir="auto">string</code></td><td>Response parsing method</td><td><code dir="auto">auto</code></td></tr><tr><td><code dir="auto">responseStyle</code></td><td><code dir="auto">string</code></td><td>Return style: <code dir="auto">data</code> or <code dir="auto">fields</code></td><td><code dir="auto">fields</code></td></tr><tr><td><code dir="auto">throwOnError</code></td><td><code dir="auto">boolean</code></td><td>Throw errors instead of return</td><td><code dir="auto">false</code></td></tr></tbody></table>
+<hr>
+<h2 id="typen"><a href="#typen">Typen</a></h2>
+<p>Das SDK bringt TypeScript-Definitionen fuer alle API-Typen mit.
+Du kannst sie direkt importieren:</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="typescript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">import</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">type</span><span style="--0:#24292E;--1:#E1E4E8"> { Session, Message, Part } </span><span style="--0:#BF3441;--1:#F97583">from</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">"@tribunus/sdk"</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="import type { Session, Message, Part } from &#x22;@tribunus/sdk&#x22;"><div></div></button></div></figure></div>
+<p>Alle Typen werden aus der OpenAPI-Spezifikation des Servers generiert und sind in der <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Typdatei</a> verfuegbar.</p>
+<hr>
+<h2 id="fehler"><a href="#fehler">Fehler</a></h2>
+<p>Das SDK kann Fehler werfen, die du abfangen und behandeln kannst:</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="typescript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">try</span><span style="--0:#24292E;--1:#E1E4E8"> {</span></div></div><div class="ec-line"><div class="code"><span class="indent">  </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.session.</span><span style="--0:#6F42C1;--1:#B392F0">get</span><span style="--0:#24292E;--1:#E1E4E8">({ path: { id: </span><span style="--0:#032F62;--1:#9ECBFF">"invalid-id"</span><span style="--0:#24292E;--1:#E1E4E8"> } })</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">} </span><span style="--0:#BF3441;--1:#F97583">catch</span><span style="--0:#24292E;--1:#E1E4E8"> (error) {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">console.</span><span style="--0:#6F42C1;--1:#B392F0">error</span><span style="--0:#24292E;--1:#E1E4E8">(</span><span style="--0:#032F62;--1:#9ECBFF">"Failed to get session:"</span><span style="--0:#24292E;--1:#E1E4E8">, (error </span><span style="--0:#BF3441;--1:#F97583">as</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#6F42C1;--1:#B392F0">Error</span><span style="--0:#24292E;--1:#E1E4E8">).message)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">}</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="try {  await client.session.get({ path: { id: &#x22;invalid-id&#x22; } })} catch (error) {  console.error(&#x22;Failed to get session:&#x22;, (error as Error).message)}"><div></div></button></div></figure></div>
+<hr>
+<h2 id="structured-output"><a href="#structured-output">Structured Output</a></h2>
+<p>Du kannst eine strukturierte JSON-Ausgabe vom Modell anfordern, indem du ein <code dir="auto">format</code> mit einem JSON-Schema angibst. Das Modell verwendet dann ein <code dir="auto">StructuredOutput</code>-Tool, um validiertes JSON zurueckzugeben, das deinem Schema entspricht.</p>
+<h3 id="grundlegende-verwendung"><a href="#grundlegende-verwendung">Grundlegende Verwendung</a></h3>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="typescript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">result</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.session.</span><span style="--0:#6F42C1;--1:#B392F0">prompt</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">path: { id: sessionId },</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">body: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">parts: [{ type: </span><span style="--0:#032F62;--1:#9ECBFF">"text"</span><span style="--0:#24292E;--1:#E1E4E8">, text: </span><span style="--0:#032F62;--1:#9ECBFF">"Recherchiere Anthropic und gib Firmeninfos zurueck"</span><span style="--0:#24292E;--1:#E1E4E8"> }],</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">format: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">      </span></span><span style="--0:#24292E;--1:#E1E4E8">type: </span><span style="--0:#032F62;--1:#9ECBFF">"json_schema"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">      </span></span><span style="--0:#24292E;--1:#E1E4E8">schema: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">        </span></span><span style="--0:#24292E;--1:#E1E4E8">type: </span><span style="--0:#032F62;--1:#9ECBFF">"object"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">        </span></span><span style="--0:#24292E;--1:#E1E4E8">properties: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">          </span></span><span style="--0:#24292E;--1:#E1E4E8">company: { type: </span><span style="--0:#032F62;--1:#9ECBFF">"string"</span><span style="--0:#24292E;--1:#E1E4E8">, description: </span><span style="--0:#032F62;--1:#9ECBFF">"Firmenname"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">          </span></span><span style="--0:#24292E;--1:#E1E4E8">founded: { type: </span><span style="--0:#032F62;--1:#9ECBFF">"number"</span><span style="--0:#24292E;--1:#E1E4E8">, description: </span><span style="--0:#032F62;--1:#9ECBFF">"Gruendungsjahr"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">          </span></span><span style="--0:#24292E;--1:#E1E4E8">products: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">            </span></span><span style="--0:#24292E;--1:#E1E4E8">type: </span><span style="--0:#032F62;--1:#9ECBFF">"array"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">            </span></span><span style="--0:#24292E;--1:#E1E4E8">items: { type: </span><span style="--0:#032F62;--1:#9ECBFF">"string"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">            </span></span><span style="--0:#24292E;--1:#E1E4E8">description: </span><span style="--0:#032F62;--1:#9ECBFF">"Hauptprodukte"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">          </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">        </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">        </span></span><span style="--0:#24292E;--1:#E1E4E8">required: [</span><span style="--0:#032F62;--1:#9ECBFF">"company"</span><span style="--0:#24292E;--1:#E1E4E8">, </span><span style="--0:#032F62;--1:#9ECBFF">"founded"</span><span style="--0:#24292E;--1:#E1E4E8">],</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">      </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Zugriff auf die strukturierte Ausgabe</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">console.</span><span style="--0:#6F42C1;--1:#B392F0">log</span><span style="--0:#24292E;--1:#E1E4E8">(result.data.info.structured_output)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// { company: "Anthropic", founded: 2021, products: ["Claude", "Claude API"] }</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="const result = await client.session.prompt({  path: { id: sessionId },  body: {    parts: [{ type: &#x22;text&#x22;, text: &#x22;Recherchiere Anthropic und gib Firmeninfos zurueck&#x22; }],    format: {      type: &#x22;json_schema&#x22;,      schema: {        type: &#x22;object&#x22;,        properties: {          company: { type: &#x22;string&#x22;, description: &#x22;Firmenname&#x22; },          founded: { type: &#x22;number&#x22;, description: &#x22;Gruendungsjahr&#x22; },          products: {            type: &#x22;array&#x22;,            items: { type: &#x22;string&#x22; },            description: &#x22;Hauptprodukte&#x22;,          },        },        required: [&#x22;company&#x22;, &#x22;founded&#x22;],      },    },  },})// Zugriff auf die strukturierte Ausgabeconsole.log(result.data.info.structured_output)// { company: &#x22;Anthropic&#x22;, founded: 2021, products: [&#x22;Claude&#x22;, &#x22;Claude API&#x22;] }"><div></div></button></div></figure></div>
+<h3 id="ausgabeformate"><a href="#ausgabeformate">Ausgabeformate</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code dir="auto">text</code></td><td>Standard. Normale Textantwort (keine strukturierte Ausgabe)</td></tr><tr><td><code dir="auto">json_schema</code></td><td>Gibt validiertes JSON zurueck, das dem Schema entspricht</td></tr></tbody></table>
+<h3 id="json-schema-format"><a href="#json-schema-format">JSON-Schema-Format</a></h3>
+<p>Bei Verwendung von <code dir="auto">type: 'json_schema'</code> musst du Folgendes angeben:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code dir="auto">type</code></td><td><code dir="auto">'json_schema'</code></td><td>Erforderlich. Gibt den JSON-Schema-Modus an</td></tr><tr><td><code dir="auto">schema</code></td><td><code dir="auto">object</code></td><td>Erforderlich. JSON-Schema-Objekt, das die Struktur definiert</td></tr><tr><td><code dir="auto">retryCount</code></td><td><code dir="auto">number</code></td><td>Optional. Anzahl der Validierungswiederholungen (Standard: 2)</td></tr></tbody></table>
+<h3 id="fehlerbehandlung"><a href="#fehlerbehandlung">Fehlerbehandlung</a></h3>
+<p>Wenn das Modell nach allen Wiederholungen keine valide strukturierte Ausgabe liefert, enthaelt die Antwort einen <code dir="auto">StructuredOutputError</code>:</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="typescript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">if</span><span style="--0:#24292E;--1:#E1E4E8"> (result.data.info.error?.name </span><span style="--0:#BF3441;--1:#F97583">===</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">"StructuredOutputError"</span><span style="--0:#24292E;--1:#E1E4E8">) {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">console.</span><span style="--0:#6F42C1;--1:#B392F0">error</span><span style="--0:#24292E;--1:#E1E4E8">(</span><span style="--0:#032F62;--1:#9ECBFF">"Strukturierte Ausgabe fehlgeschlagen:"</span><span style="--0:#24292E;--1:#E1E4E8">, result.data.info.error.message)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">console.</span><span style="--0:#6F42C1;--1:#B392F0">error</span><span style="--0:#24292E;--1:#E1E4E8">(</span><span style="--0:#032F62;--1:#9ECBFF">"Versuche:"</span><span style="--0:#24292E;--1:#E1E4E8">, result.data.info.error.retries)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">}</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="if (result.data.info.error?.name === &#x22;StructuredOutputError&#x22;) {  console.error(&#x22;Strukturierte Ausgabe fehlgeschlagen:&#x22;, result.data.info.error.message)  console.error(&#x22;Versuche:&#x22;, result.data.info.error.retries)}"><div></div></button></div></figure></div>
+<h3 id="best-practices"><a href="#best-practices">Best Practices</a></h3>
+<ol>
+<li><strong>Klare Beschreibungen</strong>: Gib in deinen Schema-Properties klare Beschreibungen an, damit das Modell versteht, welche Daten extrahiert werden sollen.</li>
+<li><strong><code dir="auto">required</code> nutzen</strong>: Definiere, welche Felder zwingend vorhanden sein muessen.</li>
+<li><strong>Schemas einfach halten</strong>: Komplexe verschachtelte Schemas sind fuer das Modell schwerer korrekt auszufuellen.</li>
+<li><strong><code dir="auto">retryCount</code> anpassen</strong>: Erhoehe den Wert bei komplexen Schemas, verringere ihn bei einfachen.</li>
+</ol>
+<hr>
+<h2 id="apis"><a href="#apis">APIs</a></h2>
+<p>Das SDK stellt alle Server-APIs ueber einen typsicheren Client bereit.</p>
+<hr>
+<h3 id="global"><a href="#global">Global</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">global.health()</code></td><td>Prueft Server-Status und Version</td><td><code dir="auto">{ healthy: true, version: string }</code></td></tr></tbody></table>
+<hr>
+<h4 id="beispiele"><a href="#beispiele">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">health</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.global.</span><span style="--0:#6F42C1;--1:#B392F0">health</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">console.</span><span style="--0:#6F42C1;--1:#B392F0">log</span><span style="--0:#24292E;--1:#E1E4E8">(health.data.version)</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="const health = await client.global.health()console.log(health.data.version)"><div></div></button></div></figure></div>
+<hr>
+<h3 id="app"><a href="#app">App</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">app.log()</code></td><td>Schreibt einen Log-Eintrag</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">app.agents()</code></td><td>Listet alle verfuegbaren Agenten</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Agent[]</code></a></td></tr></tbody></table>
+<hr>
+<h4 id="beispiele-1"><a href="#beispiele-1">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Write a log entry</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.app.</span><span style="--0:#6F42C1;--1:#B392F0">log</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">body: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">service: </span><span style="--0:#032F62;--1:#9ECBFF">"my-app"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">level: </span><span style="--0:#032F62;--1:#9ECBFF">"info"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">message: </span><span style="--0:#032F62;--1:#9ECBFF">"Operation completed"</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// List available agents</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">agents</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.app.</span><span style="--0:#6F42C1;--1:#B392F0">agents</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="// Write a log entryawait client.app.log({  body: {    service: &#x22;my-app&#x22;,    level: &#x22;info&#x22;,    message: &#x22;Operation completed&#x22;,  },})// List available agentsconst agents = await client.app.agents()"><div></div></button></div></figure></div>
+<hr>
+<h3 id="project"><a href="#project">Project</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">project.list()</code></td><td>Listet alle Projekte</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Project[]</code></a></td></tr><tr><td><code dir="auto">project.current()</code></td><td>Ruft das aktuelle Projekt ab</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Project</code></a></td></tr></tbody></table>
+<hr>
+<h4 id="beispiele-2"><a href="#beispiele-2">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// List all projects</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">projects</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.project.</span><span style="--0:#6F42C1;--1:#B392F0">list</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Get current project</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">currentProject</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.project.</span><span style="--0:#6F42C1;--1:#B392F0">current</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="// List all projectsconst projects = await client.project.list()// Get current projectconst currentProject = await client.project.current()"><div></div></button></div></figure></div>
+<hr>
+<h3 id="path"><a href="#path">Path</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">path.get()</code></td><td>Ruft den aktuellen Pfad ab</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Path</code></a></td></tr></tbody></table>
+<hr>
+<h4 id="beispiele-3"><a href="#beispiele-3">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Get current path information</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">pathInfo</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.path.</span><span style="--0:#6F42C1;--1:#B392F0">get</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="// Get current path informationconst pathInfo = await client.path.get()"><div></div></button></div></figure></div>
+<hr>
+<h3 id="config-1"><a href="#config-1">Config</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">config.get()</code></td><td>Ruft Konfigurationsinfos ab</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Config</code></a></td></tr><tr><td><code dir="auto">config.providers()</code></td><td>Listet Provider und Standard-Modelle</td><td><code dir="auto">{ providers: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Provider[]</code></a><code dir="auto">, default: { [key: string]: string } }</code></td></tr></tbody></table>
+<hr>
+<h4 id="beispiele-4"><a href="#beispiele-4">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">config</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.config.</span><span style="--0:#6F42C1;--1:#B392F0">get</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> { </span><span style="--0:#005CC5;--1:#79B8FF">providers</span><span style="--0:#24292E;--1:#E1E4E8">, </span><span style="--0:#AE4B07;--1:#FFAB70">default</span><span style="--0:#24292E;--1:#E1E4E8">: </span><span style="--0:#005CC5;--1:#79B8FF">defaults</span><span style="--0:#24292E;--1:#E1E4E8"> } </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.config.</span><span style="--0:#6F42C1;--1:#B392F0">providers</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="const config = await client.config.get()const { providers, default: defaults } = await client.config.providers()"><div></div></button></div></figure></div>
+<hr>
+<h3 id="sessions"><a href="#sessions">Sessions</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Notes</th></tr></thead><tbody><tr><td><code dir="auto">session.list()</code></td><td>Listet Sessions</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session[]</code></a> zurueck</td></tr><tr><td><code dir="auto">session.get({ path })</code></td><td>Ruft Session ab</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a> zurueck</td></tr><tr><td><code dir="auto">session.children({ path })</code></td><td>Listet Kind-Sessions</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session[]</code></a> zurueck</td></tr><tr><td><code dir="auto">session.create({ body })</code></td><td>Erstellt Session</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a> zurueck</td></tr><tr><td><code dir="auto">session.delete({ path })</code></td><td>Loescht Session</td><td>Gibt <code dir="auto">boolean</code> zurueck</td></tr><tr><td><code dir="auto">session.update({ path, body })</code></td><td>Aktualisiert Session-Eigenschaften</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a> zurueck</td></tr><tr><td><code dir="auto">session.init({ path, body })</code></td><td>Analysiert App und erstellt <code dir="auto">AGENTS.md</code></td><td>Gibt <code dir="auto">boolean</code> zurueck</td></tr><tr><td><code dir="auto">session.abort({ path })</code></td><td>Bricht eine laufende Session ab</td><td>Gibt <code dir="auto">boolean</code> zurueck</td></tr><tr><td><code dir="auto">session.share({ path })</code></td><td>Teilt Session</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a> zurueck</td></tr><tr><td><code dir="auto">session.unshare({ path })</code></td><td>Hebt Teilen der Session auf</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a> zurueck</td></tr><tr><td><code dir="auto">session.summarize({ path, body })</code></td><td>Fasst Session zusammen</td><td>Gibt <code dir="auto">boolean</code> zurueck</td></tr><tr><td><code dir="auto">session.messages({ path })</code></td><td>Listet Nachrichten einer Session</td><td>Gibt <code dir="auto">{ info: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Message</code></a><code dir="auto">, parts: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Part[]</code></a><code dir="auto">}[]</code> zurueck</td></tr><tr><td><code dir="auto">session.message({ path })</code></td><td>Ruft Nachrichtendetails ab</td><td>Gibt <code dir="auto">{ info: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Message</code></a><code dir="auto">, parts: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Part[]</code></a><code dir="auto">}</code> zurueck</td></tr><tr><td><code dir="auto">session.prompt({ path, body })</code></td><td>Sendet Prompt-Nachricht</td><td><code dir="auto">body.noReply: true</code> gibt UserMessage (nur Kontext) zurueck. Standard gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>AssistantMessage</code></a> mit AI-Antwort zurueck. Unterstuetzt <code dir="auto">body.outputFormat</code> fuer <a href="#structured-output">strukturierte Ausgabe</a></td></tr><tr><td><code dir="auto">session.command({ path, body })</code></td><td>Sendet Befehl an Session</td><td>Gibt <code dir="auto">{ info: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>AssistantMessage</code></a><code dir="auto">, parts: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Part[]</code></a><code dir="auto">}</code> zurueck</td></tr><tr><td><code dir="auto">session.shell({ path, body })</code></td><td>Fuehrt Shell-Befehl aus</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>AssistantMessage</code></a> zurueck</td></tr><tr><td><code dir="auto">session.revert({ path, body })</code></td><td>Setzt Nachricht zurueck</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a> zurueck</td></tr><tr><td><code dir="auto">session.unrevert({ path })</code></td><td>Stellt zurueckgesetzte Nachrichten wieder her</td><td>Gibt <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a> zurueck</td></tr><tr><td><code dir="auto">postSessionByIdPermissionsByPermissionId({ path, body })</code></td><td>Antwortet auf eine Berechtigungsanfrage</td><td>Gibt <code dir="auto">boolean</code> zurueck</td></tr></tbody></table>
+<hr>
+<h4 id="beispiele-5"><a href="#beispiele-5">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Create and manage sessions</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">session</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.session.</span><span style="--0:#6F42C1;--1:#B392F0">create</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">body: { title: </span><span style="--0:#032F62;--1:#9ECBFF">"My session"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">sessions</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.session.</span><span style="--0:#6F42C1;--1:#B392F0">list</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Send a prompt message</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">result</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.session.</span><span style="--0:#6F42C1;--1:#B392F0">prompt</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">path: { id: session.id },</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">body: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">model: { providerID: </span><span style="--0:#032F62;--1:#9ECBFF">"anthropic"</span><span style="--0:#24292E;--1:#E1E4E8">, modelID: </span><span style="--0:#032F62;--1:#9ECBFF">"claude-3-5-sonnet-20241022"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">parts: [{ type: </span><span style="--0:#032F62;--1:#9ECBFF">"text"</span><span style="--0:#24292E;--1:#E1E4E8">, text: </span><span style="--0:#032F62;--1:#9ECBFF">"Hello!"</span><span style="--0:#24292E;--1:#E1E4E8"> }],</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Inject context without triggering AI response (useful for plugins)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.session.</span><span style="--0:#6F42C1;--1:#B392F0">prompt</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">path: { id: session.id },</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">body: {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">noReply: </span><span style="--0:#005CC5;--1:#79B8FF">true</span><span style="--0:#24292E;--1:#E1E4E8">,</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">    </span></span><span style="--0:#24292E;--1:#E1E4E8">parts: [{ type: </span><span style="--0:#032F62;--1:#9ECBFF">"text"</span><span style="--0:#24292E;--1:#E1E4E8">, text: </span><span style="--0:#032F62;--1:#9ECBFF">"You are a helpful assistant."</span><span style="--0:#24292E;--1:#E1E4E8"> }],</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">},</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="// Create and manage sessionsconst session = await client.session.create({  body: { title: &#x22;My session&#x22; },})const sessions = await client.session.list()// Send a prompt messageconst result = await client.session.prompt({  path: { id: session.id },  body: {    model: { providerID: &#x22;anthropic&#x22;, modelID: &#x22;claude-3-5-sonnet-20241022&#x22; },    parts: [{ type: &#x22;text&#x22;, text: &#x22;Hello!&#x22; }],  },})// Inject context without triggering AI response (useful for plugins)await client.session.prompt({  path: { id: session.id },  body: {    noReply: true,    parts: [{ type: &#x22;text&#x22;, text: &#x22;You are a helpful assistant.&#x22; }],  },})"><div></div></button></div></figure></div>
+<hr>
+<h3 id="files"><a href="#files">Files</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">find.text({ query })</code></td><td>Sucht Text in Dateien</td><td>Array of match objects with <code dir="auto">path</code>, <code dir="auto">lines</code>, <code dir="auto">line_number</code>, <code dir="auto">absolute_offset</code>, <code dir="auto">submatches</code></td></tr><tr><td><code dir="auto">find.files({ query })</code></td><td>Findet Dateien und Verzeichnisse nach Namen</td><td><code dir="auto">string[]</code> (paths)</td></tr><tr><td><code dir="auto">find.symbols({ query })</code></td><td>Findet Workspace-Symbole</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Symbol[]</code></a></td></tr><tr><td><code dir="auto">file.read({ query })</code></td><td>Liest eine Datei</td><td><code dir="auto">{ type: "raw" | "patch", content: string }</code></td></tr><tr><td><code dir="auto">file.status({ query? })</code></td><td>Ruft Status fuer getrackte Dateien ab</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>File[]</code></a></td></tr></tbody></table>
+<p><code dir="auto">find.files</code> unterstuetzt einige optionale Query-Felder:</p>
+<ul>
+<li><code dir="auto">type</code>: <code dir="auto">"file"</code> oder <code dir="auto">"directory"</code></li>
+<li><code dir="auto">directory</code>: Ueberschreibt das Projekt-Root fuer die Suche</li>
+<li><code dir="auto">limit</code>: Maximale Ergebnisse (1–200)</li>
+</ul>
+<hr>
+<h4 id="beispiele-6"><a href="#beispiele-6">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Search and read files</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">textResults</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.find.</span><span style="--0:#6F42C1;--1:#B392F0">text</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">query: { pattern: </span><span style="--0:#032F62;--1:#9ECBFF">"function.*opencode"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">files</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.find.</span><span style="--0:#6F42C1;--1:#B392F0">files</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">query: { query: </span><span style="--0:#032F62;--1:#9ECBFF">"*.ts"</span><span style="--0:#24292E;--1:#E1E4E8">, type: </span><span style="--0:#032F62;--1:#9ECBFF">"file"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">directories</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.find.</span><span style="--0:#6F42C1;--1:#B392F0">files</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">query: { query: </span><span style="--0:#032F62;--1:#9ECBFF">"packages"</span><span style="--0:#24292E;--1:#E1E4E8">, type: </span><span style="--0:#032F62;--1:#9ECBFF">"directory"</span><span style="--0:#24292E;--1:#E1E4E8">, limit: </span><span style="--0:#005CC5;--1:#79B8FF">20</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">content</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.file.</span><span style="--0:#6F42C1;--1:#B392F0">read</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">query: { path: </span><span style="--0:#032F62;--1:#9ECBFF">"src/index.ts"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="// Search and read filesconst textResults = await client.find.text({  query: { pattern: &#x22;function.*opencode&#x22; },})const files = await client.find.files({  query: { query: &#x22;*.ts&#x22;, type: &#x22;file&#x22; },})const directories = await client.find.files({  query: { query: &#x22;packages&#x22;, type: &#x22;directory&#x22;, limit: 20 },})const content = await client.file.read({  query: { path: &#x22;src/index.ts&#x22; },})"><div></div></button></div></figure></div>
+<hr>
+<h3 id="tui"><a href="#tui">TUI</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">tui.appendPrompt({ body })</code></td><td>Haengt Text an den Prompt an</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">tui.openHelp()</code></td><td>Oeffnet den Hilfedialog</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">tui.openSessions()</code></td><td>Oeffnet die Session-Auswahl</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">tui.openThemes()</code></td><td>Oeffnet die Theme-Auswahl</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">tui.openModels()</code></td><td>Oeffnet die Modell-Auswahl</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">tui.submitPrompt()</code></td><td>Sendet den aktuellen Prompt ab</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">tui.clearPrompt()</code></td><td>Leert den Prompt</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">tui.executeCommand({ body })</code></td><td>Fuehrt einen Befehl aus</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">tui.showToast({ body })</code></td><td>Zeigt Toast-Benachrichtigung</td><td><code dir="auto">boolean</code></td></tr></tbody></table>
+<hr>
+<h4 id="beispiele-7"><a href="#beispiele-7">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Control TUI interface</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.tui.</span><span style="--0:#6F42C1;--1:#B392F0">appendPrompt</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">body: { text: </span><span style="--0:#032F62;--1:#9ECBFF">"Add this to prompt"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.tui.</span><span style="--0:#6F42C1;--1:#B392F0">showToast</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">body: { message: </span><span style="--0:#032F62;--1:#9ECBFF">"Task completed"</span><span style="--0:#24292E;--1:#E1E4E8">, variant: </span><span style="--0:#032F62;--1:#9ECBFF">"success"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="// Control TUI interfaceawait client.tui.appendPrompt({  body: { text: &#x22;Add this to prompt&#x22; },})await client.tui.showToast({  body: { message: &#x22;Task completed&#x22;, variant: &#x22;success&#x22; },})"><div></div></button></div></figure></div>
+<hr>
+<h3 id="auth"><a href="#auth">Auth</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">auth.set({ ... })</code></td><td>Setzt Authentifizierungsdaten</td><td><code dir="auto">boolean</code></td></tr></tbody></table>
+<hr>
+<h4 id="beispiele-8"><a href="#beispiele-8">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.auth.</span><span style="--0:#6F42C1;--1:#B392F0">set</span><span style="--0:#24292E;--1:#E1E4E8">({</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">path: { id: </span><span style="--0:#032F62;--1:#9ECBFF">"anthropic"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">body: { type: </span><span style="--0:#032F62;--1:#9ECBFF">"api"</span><span style="--0:#24292E;--1:#E1E4E8">, key: </span><span style="--0:#032F62;--1:#9ECBFF">"your-api-key"</span><span style="--0:#24292E;--1:#E1E4E8"> },</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">})</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="await client.auth.set({  path: { id: &#x22;anthropic&#x22; },  body: { type: &#x22;api&#x22;, key: &#x22;your-api-key&#x22; },})"><div></div></button></div></figure></div>
+<hr>
+<h3 id="events"><a href="#events">Events</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody><tr><td><code dir="auto">event.subscribe()</code></td><td>Server-Sent Events Stream</td><td>Server-sent events stream</td></tr></tbody></table>
+<hr>
+<h4 id="beispiele-9"><a href="#beispiele-9">Beispiele</a></h4>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="javascript"><code><div class="ec-line"><div class="code"><span style="--0:#616972;--1:#99A0A6">// Listen to real-time events</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">events</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> client.event.</span><span style="--0:#6F42C1;--1:#B392F0">subscribe</span><span style="--0:#24292E;--1:#E1E4E8">()</span></div></div><div class="ec-line"><div class="code"><span style="--0:#BF3441;--1:#F97583">for</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">await</span><span style="--0:#24292E;--1:#E1E4E8"> (</span><span style="--0:#BF3441;--1:#F97583">const</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">event</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#BF3441;--1:#F97583">of</span><span style="--0:#24292E;--1:#E1E4E8"> events.stream) {</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#24292E;--1:#E1E4E8">  </span></span><span style="--0:#24292E;--1:#E1E4E8">console.</span><span style="--0:#6F42C1;--1:#B392F0">log</span><span style="--0:#24292E;--1:#E1E4E8">(</span><span style="--0:#032F62;--1:#9ECBFF">"Event:"</span><span style="--0:#24292E;--1:#E1E4E8">, event.type, event.properties)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">}</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="In die Zwischenablage kopieren" data-copied="Kopiert!" data-code="// Listen to real-time eventsconst events = await client.event.subscribe()for await (const event of events.stream) {  console.log(&#x22;Event:&#x22;, event.type, event.properties)}"><div></div></button></div></figure></div> </div> <footer class="doc astro-sz7xmlte"><div class="meta sl-flex astro-sz7xmlte"><div class="astro-sz7xmlte"><a href="https://github.com/tribunus-dev/tribunus/edit/dev/packages/web/src/content/docs/de/sdk.mdx" target="_blank" rel="noopener noreferrer" class="sl-flex astro-sz7xmlte"><svg aria-hidden="true" class="astro-sz7xmlte astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-1.1-.22 1 1 0 0 0-.32.22l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8c.1-.1.17-.2.22-.33a1 1 0 0 0 0-.24v-.14l.07-.05ZM6.83 20H4v-2.83l9.93-9.93 2.83 2.83L6.83 20ZM18.17 8.66l-2.83-2.83 1.42-1.41 2.82 2.82-1.41 1.42Z"/></svg>Seite bearbeiten</a><a href="https://github.com/tribunus-dev/tribunus/issues/new" target="_blank" rel="noopener noreferrer" class="sl-flex astro-sz7xmlte"><svg aria-hidden="true" class="astro-sz7xmlte astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg>Found a bug? Open an issue</a><a href="https://tribunus.dev/discord" target="_blank" rel="noopener noreferrer" class="sl-flex astro-sz7xmlte"><svg aria-hidden="true" class="astro-sz7xmlte astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.93-1.51 13.78 13.78 0 0 0-.64 1.28 18.27 18.27 0 0 0-5.5 0 12.64 12.64 0 0 0-.64-1.28h-.05A19.74 19.74 0 0 0 3.64 4.4 20.26 20.26 0 0 0 .11 18.09l.02.02a19.9 19.9 0 0 0 6.04 3.03l.04-.02a14.24 14.24 0 0 0 1.23-2.03.08.08 0 0 0-.05-.07 13.1 13.1 0 0 1-1.9-.92.08.08 0 0 1 .02-.1 10.2 10.2 0 0 0 .41-.31h.04a14.2 14.2 0 0 0 12.1 0l.04.01a9.63 9.63 0 0 0 .4.32.08.08 0 0 1-.03.1 12.29 12.29 0 0 1-1.9.91.08.08 0 0 0-.02.1 15.97 15.97 0 0 0 1.27 2.01h.04a19.84 19.84 0 0 0 6.03-3.05v-.03a20.12 20.12 0 0 0-3.57-13.69ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.22 0 2.18 1.1 2.16 2.42 0 1.34-.94 2.42-2.16 2.42Z"/></svg>Join our Discord community</a><starlight-lang-select><label style="--sl-select-width: 7em" class="astro-p752cdkp"> <span class="sr-only astro-p752cdkp">Sprache wählen</span> <svg aria-hidden="true" class="icon label-icon astro-p752cdkp astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select value="/de/sdk/" autocomplete="off" class="astro-p752cdkp"> <option value="/sdk/" class="astro-p752cdkp">English</option><option value="/ar/sdk/" class="astro-p752cdkp">العربية</option><option value="/bs/sdk/" class="astro-p752cdkp">Bosanski</option><option value="/da/sdk/" class="astro-p752cdkp">Dansk</option><option value="/de/sdk/" selected class="astro-p752cdkp">Deutsch</option><option value="/es/sdk/" class="astro-p752cdkp">Español</option><option value="/fr/sdk/" class="astro-p752cdkp">Français</option><option value="/it/sdk/" class="astro-p752cdkp">Italiano</option><option value="/ja/sdk/" class="astro-p752cdkp">日本語</option><option value="/ko/sdk/" class="astro-p752cdkp">한국어</option><option value="/nb/sdk/" class="astro-p752cdkp">Norsk Bokmål</option><option value="/pl/sdk/" class="astro-p752cdkp">Polski</option><option value="/pt-br/sdk/" class="astro-p752cdkp">Português (Brasil)</option><option value="/ru/sdk/" class="astro-p752cdkp">Русский</option><option value="/th/sdk/" class="astro-p752cdkp">ไทย</option><option value="/tr/sdk/" class="astro-p752cdkp">Türkçe</option><option value="/zh-cn/sdk/" class="astro-p752cdkp">简体中文</option><option value="/zh-tw/sdk/" class="astro-p752cdkp">繁體中文</option> </select> <svg aria-hidden="true" class="icon caret astro-p752cdkp astro-q6vyc2yh" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-lang-select><script type="module">class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);</script></div><div class="astro-sz7xmlte"><p class="astro-sz7xmlte">&copy; <a target="_blank" rel="noopener noreferrer" href="https://anoma.ly" class="astro-sz7xmlte">Anomaly</a></p><p title="Zuletzt bearbeitet:" class="astro-sz7xmlte">Zuletzt bearbeitet: <time datetime="2026-06-08T04:04:03.000Z" class="astro-sz7xmlte">08.06.2026</time></p></div></div></footer> </div> </div>   </main> </div> </div>  </div> </div>  </body></html>

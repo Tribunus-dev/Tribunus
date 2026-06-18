@@ -1,0 +1,43 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0158-conflict-taxonomy",
+  "type": "mission",
+  "name": "Conflict Taxonomy",
+  "slug": "conflict-taxonomy",
+  "description": "Catalog conflict types: concurrent edits, delete-recreate, move-edit, rename-delete. Each has a documented resolution strategy.",
+  "purpose": "Systematically catalog every conflict type the system can encounter and prescribe a deterministic resolution strategy for each, ensuring no conflict is handled ad-hoc.",
+  "campaignId": "0020",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "All conflict types (concurrent edits, delete-recreate, move-edit, rename-delete, and others) are cataloged.",
+    "Each conflict type has a documented deterministic resolution strategy.",
+    "Resolution strategies are expressed as code, not just documentation.",
+    "Conflict detection is automatic at sync time.",
+    "Unresolvable conflicts are surfaced to the user with clear guidance."
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "sync",
+    "conflict",
+    "resolution"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:45:04.604Z",
+  "updated_at": "2026-06-07T05:49:12.730Z"
+}

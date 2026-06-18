@@ -1,0 +1,16 @@
+{"at":"2026-06-01T07:58:08.363Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T07:58:29.834Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T07:58:42.407Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_find","phase":"started","detail":"instance-health.ts"}
+{"at":"2026-06-01T07:58:42.742Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_find","phase":"completed","detail":"instance-health.ts"}
+{"at":"2026-06-01T07:58:43.015Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_find","phase":"started","detail":"instance-store.ts"}
+{"at":"2026-06-01T07:58:43.144Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_find","phase":"completed","detail":"instance-store.ts"}
+{"at":"2026-06-01T07:58:43.851Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:59:05.012Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T07:59:14.714Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_git","phase":"started","detail":"diff"}
+{"at":"2026-06-01T07:59:14.734Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_git","phase":"completed","detail":"diff exit=0"}
+{"at":"2026-06-01T07:59:15.373Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_git","phase":"started","detail":"diff"}
+{"at":"2026-06-01T07:59:15.406Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_git","phase":"completed","detail":"diff exit=0"}
+{"at":"2026-06-01T07:59:33.159Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:59:51.761Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","phase":"completed","detail":"tsgo exit=0"}
+{"at":"2026-06-01T07:59:59.836Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T08:00:20.227Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","phase":"completed","detail":"tsgo exit=0"}

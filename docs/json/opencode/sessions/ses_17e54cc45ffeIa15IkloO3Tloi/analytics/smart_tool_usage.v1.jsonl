@@ -1,0 +1,11 @@
+{"at":"2026-06-01T05:33:20.653Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"catchCause","path":"packages/opencode"}
+{"at":"2026-06-01T05:33:21.349Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"catchAllCause","path":"packages/opencode"}
+{"at":"2026-06-01T05:33:22.073Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"isDieReason","path":"packages/opencode"}
+{"at":"2026-06-01T05:33:22.637Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"failureOrCause","path":"packages/opencode"}
+{"at":"2026-06-01T05:34:47.651Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"isDie","path":"packages/opencode"}
+{"at":"2026-06-01T05:34:47.816Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"Cause\\.is","path":"packages/opencode/src"}
+{"at":"2026-06-01T05:39:52.995Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"catchAllCause|catchCause","path":"packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T05:39:53.167Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"Cause\\.pretty","path":"packages/opencode/src"}
+{"at":"2026-06-01T05:39:53.280Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"disableInstanceTrace","path":"packages/opencode/src"}
+{"at":"2026-06-01T05:43:23.325Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"const lines","path":"packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T05:43:24.277Z","session_id":"ses_17e54cc45ffeIa15IkloO3Tloi","agent":"root-cause-analyst","tool":"smart_grep","pattern":"\\.isDie\\(","path":"packages/opencode/src"}

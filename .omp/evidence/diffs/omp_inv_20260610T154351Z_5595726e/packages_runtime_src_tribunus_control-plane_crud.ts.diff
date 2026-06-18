@@ -1,0 +1,11 @@
+--- a/packages/runtime/src/tribunus/control-plane/crud.ts
++++ b/packages/runtime/src/tribunus/control-plane/crud.ts
+@@ -121,7 +121,7 @@
+     const existing = database.query("SELECT id FROM projects WHERE slug = ?").get(project.slug);
+     if (existing) {
+       return generateReceipt("create", "project", id, false, undefined, 
+-        `DUPLICATE_SLUG: Project with slug '${project.slug}' already exists (${existing.id})`,
++        `DUPLICATE_SLUG: Project with slug '${project.slug}' already exists (${(existing as { id: string }).id})`,
+         "fail");
+     }
+ 

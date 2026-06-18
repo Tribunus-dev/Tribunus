@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0009",
+  "type": "campaign",
+  "name": "Authority and Auditability",
+  "slug": "authority-and-auditability",
+  "description": "Tribunus's core differentiator. Owns receipts, evidence chains, capability checks, approval gates, durable ACKs, authority binding, identity-bound actions, replayability, signed artifacts, policy evaluation, escalation, revocation. Defines what must be proven before any subsystem can claim completion.",
+  "objective": "Define and implement the authority layer: every action produces verifiable receipts with durable evidence chains. No claim without observable backing.",
+  "status": "in_progress",
+  "projectId": null,
+  "startDate": "2026-06-06",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "authority",
+    "audit",
+    "receipts",
+    "evidence"
+  ],
+  "maturity": "modeled",
+  "horizon": "committed",
+  "created_at": "2026-06-06T17:52:03.422Z",
+  "updated_at": "2026-06-06T17:52:03.422Z"
+}

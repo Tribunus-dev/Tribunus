@@ -1,0 +1,20 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "implement-valkey-coordination-adapter-0009-02",
+  "type": "task",
+  "title": "Implement Valkey Coordination Adapter",
+  "description": "Create ValkeyCoordinationAdapter implementing CoordinationPort using redis crate. Feature-gate behind storage-adapters.",
+  "laneId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "missionId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "status": "pending",
+  "priority": 95,
+  "estimatedEffort": "1 day",
+  "dependsOn": [],
+  "blocks": [],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": ["storage-kernel", "valkey", "adapter", "0009"],
+  "created_at": "2026-06-14T19:00:00.000Z",
+  "updated_at": "2026-06-14T19:00:00.000Z"
+}

@@ -1,0 +1,27 @@
+--- a/packages/compute-native/src/projection_tests.rs
++++ b/packages/compute-native/src/projection_tests.rs
+@@ -25,23 +25,13 @@
+             use safetensors::Dtype;
+             let shape: Vec<i32> = t.shape().iter().map(|&d| d as i32).collect();
+             match t.dtype() {
+-                Dtype::U8 => {
+-                    // U32-packed quantized weights stored as raw U8 bytes in safetensors.
+-                    // Reinterpret as u32 for MLX (4 bytes per element).
++                Dtype::U32 => {
+                     let count = data.len() / 4;
+                     let mut u32_vec = Vec::with_capacity(count);
+                     for chunk in data.chunks_exact(4) {
+                         u32_vec.push(u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]));
+                     }
+                     Array::from_slice(&u32_vec, &shape)
+-                }
+-                Dtype::F32 => {
+-                    let count = data.len() / 4;
+-                    let mut f32_vec = Vec::with_capacity(count);
+-                    for chunk in data.chunks_exact(4) {
+-                        f32_vec.push(f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]));
+-                    }
+-                    Array::from_slice(&f32_vec, &shape)
+                 }
+                 Dtype::BF16 => {
+                     let count = data.len() / 2;

@@ -1,0 +1,45 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0186-sync-repair-tooling",
+  "type": "mission",
+  "name": "Sync Repair Tooling",
+  "slug": "sync-repair-tooling",
+  "description": "Tools to detect and repair sync inconsistencies: missing operations, divergent state, broken causal chains.",
+  "purpose": "Provide diagnostic and repair tooling to detect and fix sync inconsistencies including missing operations, divergent state, and broken causal chains.",
+  "campaignId": "0020",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Detect missing operations by comparing vector clocks or operation IDs across devices.",
+    "Detect divergent state by comparing snapshot checksums.",
+    "Detect broken causal chains (operations applied without all dependencies).",
+    "Repair tools can inject missing operations or perform a full snapshot resync.",
+    "Repair is interactive (show diff, ask for confirmation) or automated (configurable policy).",
+    "Tools produce a human-readable report of detected inconsistencies and repair actions taken."
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "sync",
+    "repair",
+    "diagnostics",
+    "inconsistency"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:45:24.715Z",
+  "updated_at": "2026-06-07T05:52:46.547Z"
+}

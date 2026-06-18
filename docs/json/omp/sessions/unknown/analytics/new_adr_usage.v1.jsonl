@@ -1,0 +1,4 @@
+{"at":"2026-06-06T10:07:38.762Z","tool":"new_adr","adrId":"0021","fileName":"0021-pglite-valkey-duckdb-data-architecture.v1.json","status":"success"}
+{"at":"2026-06-06T10:41:10.822Z","tool":"new_adr","adrId":"0022","fileName":"0022-durable-ack-authority-binding-coordination-kernel-durable-lifecycle-binding.v1.json","status":"success"}
+{"at":"2026-06-07T05:01:15.481Z","tool":"new_adr","adrId":"0023","fileName":"0023-authority-model-receipts-evidence-chains-and-capability-ontology.v1.json","status":"success"}
+{"at":"2026-06-07T05:02:25.261Z","tool":"new_adr","adrId":"0024","fileName":"0024-runtime-lifecycle-state-machine-boot-workspace-session-execution-recovery.v1.json","status":"success"}

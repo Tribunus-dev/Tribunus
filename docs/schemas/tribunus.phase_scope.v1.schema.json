@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.local/schemas/tribunus.phase_scope.v1.schema.json",
+  "title": "Tribunus Phase Scope",
+  "type": "object",
+  "required": [
+    "schema",
+    "schema_version",
+    "phase_scope_id",
+    "run_id",
+    "phase_id",
+    "backend_target",
+    "inputs",
+    "outputs",
+    "backend_views",
+    "scratch_policy",
+    "copy_policy",
+    "sync_policy",
+    "commit_policy",
+    "required_receipts",
+    "authority_mode"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "tribunus.phase_scope.v1" },
+    "schema_version": { "const": "v1" },
+    "phase_scope_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "phase_id": { "type": "string", "minLength": 1 },
+    "backend_target": {
+      "type": "string",
+      "enum": ["mlx", "coreml", "accelerate", "reference", "other"]
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "outputs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "backend_views": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["view_id", "tensor_id", "view_kind", "access_mode"],
+        "properties": {
+          "view_id": { "type": "string", "minLength": 1 },
+          "tensor_id": { "type": "string", "minLength": 1 },
+          "view_kind": {
+            "type": "string",
+            "enum": ["iosurface_direct_view", "mapped_host_view", "cpu_ring_buffer_view", "framework_copied_view", "opaque_private_view"]
+          },
+          "access_mode": {
+            "type": "string",
+            "enum": ["read", "write", "read_write"]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "scratch_policy": {
+      "type": "string",
+      "enum": ["none", "phase_local_only", "receipted_private_scratch"]
+    },
+    "copy_policy": {
+      "type": "string",
+      "enum": ["zero_copy", "metadata_only_view", "layout_reinterpret", "layout_transform_copy", "host_materialization_copy", "framework_forced_copy"]
+    },
+    "sync_policy": {
+      "type": "object",
+      "required": ["sync_before", "sync_after", "hash_required"],
+      "properties": {
+        "sync_before": { "type": "boolean" },
+        "sync_after": { "type": "boolean" },
+        "hash_required": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "commit_policy": {
+      "type": "string",
+      "enum": ["direct_writeback", "ring_buffer_writeback_copy", "receipt_only", "research_only"]
+    },
+    "required_receipts": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "authority_mode": {
+      "type": "string",
+      "enum": ["authority", "provisional", "fallback", "research"]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+--- a/packages/compute-native/src/compute_image.rs
++++ b/packages/compute-native/src/compute_image.rs
+@@ -1336,7 +1336,6 @@
+     {
+         let _ = limit_bytes;
+         0
+-fn system_memory_bytes() -> u64 {
+     }
+ }
+ 

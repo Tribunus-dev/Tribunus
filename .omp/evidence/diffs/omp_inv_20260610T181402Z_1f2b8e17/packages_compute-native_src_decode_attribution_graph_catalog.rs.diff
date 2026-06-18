@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/decode_attribution/graph_catalog.rs
++++ b/packages/compute-native/src/decode_attribution/graph_catalog.rs
+@@ -227,7 +227,7 @@
+ fn build_matmul(builder: MilBuilder, profile: &ShapeProfile) -> MilBuilder {
+     let w = seeded_f32(1, (profile.weight_rows * profile.weight_cols) as usize);
+     builder
+-        .const_f32("w", &w, &profile.weight_shape())
++        .const_f32("w", &w, &profile.weight_shape_i64())
+         .matmul("x", "w_0")
+         .output("matmul_1")
+ }

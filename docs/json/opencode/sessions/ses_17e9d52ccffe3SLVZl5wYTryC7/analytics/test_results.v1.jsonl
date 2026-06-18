@@ -1,0 +1,11 @@
+{"at":"2026-06-01T04:59:56.823Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","command":"test","cwd":"packages/opencode","elapsed_ms":5554,"pass":1,"fail":10,"total":38,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T04:59:56.824Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","cwd":"packages/opencode","elapsed_ms":5554,"pass":1,"fail":10,"total":38}
+{"at":"2026-06-01T05:00:21.377Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","command":"test","cwd":"packages/opencode","elapsed_ms":5728,"pass":1,"fail":10,"total":38,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T05:00:21.379Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","cwd":"packages/opencode","elapsed_ms":5728,"pass":1,"fail":10,"total":38}
+{"at":"2026-06-01T05:00:44.154Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","command":"test","cwd":"packages/opencode","elapsed_ms":5854,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T05:00:59.185Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","command":"test","cwd":"packages/opencode","elapsed_ms":141,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T05:01:11.498Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","command":"test","cwd":"packages/opencode","elapsed_ms":107,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T05:32:25.659Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","command":"test","cwd":"packages/opencode","elapsed_ms":23,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T05:33:25.979Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","command":"test","cwd":"packages/opencode","elapsed_ms":85,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T05:37:00.925Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","command":"test","cwd":"packages/opencode","elapsed_ms":6103,"pass":11,"fail":0,"total":38,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T05:37:00.926Z","session_id":"ses_17e9d52ccffe3SLVZl5wYTryC7","agent":"fire-drill","cwd":"packages/opencode","elapsed_ms":6103,"pass":11,"fail":0,"total":38}

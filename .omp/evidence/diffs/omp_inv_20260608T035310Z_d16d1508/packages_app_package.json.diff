@@ -1,0 +1,9 @@
+--- a/packages/app/package.json
++++ b/packages/app/package.json
+@@ -1,5 +1,5 @@
+ {
+-  "name": "@opencode-ai/app",
++  "name": "@tribunus/app",
+   "private": true,
+   "version": "1.15.12",
+   "author": {

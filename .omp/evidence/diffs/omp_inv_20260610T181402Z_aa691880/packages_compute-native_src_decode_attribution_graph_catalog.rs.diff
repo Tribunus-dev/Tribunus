@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/decode_attribution/graph_catalog.rs
++++ b/packages/compute-native/src/decode_attribution/graph_catalog.rs
+@@ -306,7 +306,7 @@
+ fn build_softmax_tail(builder: MilBuilder, profile: &ShapeProfile) -> MilBuilder {
+     let w = seeded_f32(60, (profile.weight_rows * profile.weight_cols) as usize);
+     let b = builder
+-        .const_f32("w", &w, &profile.weight_shape())
++        .const_f32("w", &w, &profile.weight_shape_i64())
+         .matmul("x", "w_60");
+     let b = op_softmax(b, "matmul_60", "softmax_61");
+     b.output("softmax_61")

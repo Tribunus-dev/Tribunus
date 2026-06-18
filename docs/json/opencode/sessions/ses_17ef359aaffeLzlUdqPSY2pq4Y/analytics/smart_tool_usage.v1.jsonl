@@ -1,0 +1,10 @@
+{"at":"2026-06-01T02:40:18.570Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_grep","pattern":"classifyError","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:40:19.218Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_find","pattern":"instance-failure-codes*","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:40:19.875Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_find","pattern":"typed-result*","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:40:53.371Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_grep","pattern":"NamedError|class.*Error.*extends|errorCode|errorKind","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:41:31.469Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_grep","pattern":"from \\\"@/diagnostic","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:42:09.039Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_grep","pattern":"class NamedError|NamedError.*extends|errorCode.*string|_tag.*=","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:42:10.565Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_grep","pattern":"plugin.*Error|PluginError|MCP.*Error|McpError","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:42:47.931Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_find","pattern":"error.ts","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:42:50.773Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_find","pattern":"**/util/error*","path":"packages"}
+{"at":"2026-06-01T02:43:11.134Z","session_id":"ses_17ef359aaffeLzlUdqPSY2pq4Y","agent":"impact-assessor","tool":"smart_grep","pattern":"NamedError.*export|export.*NamedError|export class NamedError","path":"packages/core/src"}

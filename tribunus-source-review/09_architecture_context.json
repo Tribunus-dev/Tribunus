@@ -1,0 +1,1922 @@
+{
+  "schema": "tribunus.semantic_review.architecture_context.v1",
+  "packet_id": "tribunus-gemini-ir",
+  "artifact_id": "09_architecture_context.json",
+  "generated_at": "2026-06-14T00:18:49.154Z",
+  "repo_root_name": "Tribunus",
+  "git_head_sha": "709b19e482e73643354a0cdfe1430fdc317766d8",
+  "git_branch": "main",
+  "dirty": true,
+  "generator_version": "code_review_export@gemini_structured_ir_v1",
+  "doctrine": [
+    {
+      "doctrine_id": "shipped_code_first",
+      "statement": "Shipped code first, docs second, intent last.",
+      "source_path": "AGENTS.md",
+      "relevance": "This governs how the review packet should separate implementation evidence from documentation."
+    },
+    {
+      "doctrine_id": "omp_tools_no_tribunus_imports",
+      "statement": "OMP tools must not import from Tribunus.",
+      "source_path": ".omp/tools/_lib/tool-context.ts",
+      "relevance": "Tool kernel files should not depend on application packages for authority."
+    },
+    {
+      "doctrine_id": "provider_adapters_no_authority",
+      "statement": "Provider adapters must not own authority.",
+      "source_path": ".omp/tools/_lib/adapters/index.ts",
+      "relevance": "Adapters route calls but do not decide policy."
+    },
+    {
+      "doctrine_id": "pglite_local_authority",
+      "statement": "PGlite is the local coordination authority.",
+      "source_path": ".omp/tools/_lib/store/pglite-store.ts",
+      "relevance": "Path locks, receipts, and mutation records are decided here."
+    },
+    {
+      "doctrine_id": "duckdb_derived_only",
+      "statement": "DuckDB is derived analytics only.",
+      "source_path": ".omp/tools/_lib/analytics/duckdb-projector.ts",
+      "relevance": "DuckDB should project PGlite truth, not mutate it."
+    },
+    {
+      "doctrine_id": "evidence_truth",
+      "statement": "Receipts, diffs, and journals remain file evidence.",
+      "source_path": ".omp/tools/_lib/receipts.ts",
+      "relevance": "Write tools should leave durable evidence trails."
+    },
+    {
+      "doctrine_id": "manifest_driven_export",
+      "statement": "Review export must be manifest-driven and completeness-checked.",
+      "source_path": ".omp/tools/code_review_export.ts",
+      "relevance": "The exporter should reject incomplete review packets."
+    }
+  ],
+  "adr_summaries": [
+    {
+      "adr_id": "0004-valkey-coordination-kernel",
+      "title": "ADR 004: Valkey as Coordination Kernel",
+      "status": "unknown",
+      "decision_summary": "# ADR 004: Valkey as Coordination Kernel  ## Status Accepted — June 2026  ## Context  ADR 003 established the data layer split: PGlite for durable intelligence, Valkey for live coordination, DuckDB for analytical reflection. This ADR defines the specific contr",
+      "consequences": [
+        "Consumer groups (`XGROUP CREATE`) ensure multiple workers don't duplicate work",
+        "Pending inspection (`XPENDING`) detects stuck workers",
+        "Claiming (`XCLAIM`) reassigns abandoned work",
+        "Acknowledgment (`XACK`) confirms completion",
+        "History visibility (`XRANGE`) enables replay and debugging"
+      ],
+      "source_path": "docs/adr/0004-valkey-coordination-kernel.md"
+    },
+    {
+      "adr_id": "0016-sandbox-cell",
+      "title": "ADR 016: Repository Sandbox Serving — Browser Sandbox Cell",
+      "status": "unknown",
+      "decision_summary": "# ADR 016: Repository Sandbox Serving — Browser Sandbox Cell  ## Status Accepted — June 2026  ## Context  ADR 014 defined the Tribunus Cell as a sovereign local authority domain. This ADR extends the model to multi-user collaboration through a browser sandbox ",
+      "consequences": [
+        "Source cell ID, project scope key",
+        "Base commit or content hash",
+        "Exported paths and allowlist",
+        "Capability policy (allowed agents, allowed commands, max runtime)",
+        "Export time and expiration"
+      ],
+      "source_path": "docs/adr/0016-sandbox-cell.md"
+    },
+    {
+      "adr_id": "0018-sdk-and-plugin-architecture",
+      "title": "ADR 0018: SDK and Plugin Architecture — Governed Runtime Contract",
+      "status": "unknown",
+      "decision_summary": "# ADR 0018: SDK and Plugin Architecture — Governed Runtime Contract  ## Status Accepted — June 2026  ## Context  Tribunus requires a stable public contract for external tools, extensions, agents, project spaces, and eventual federation. The existing architectu",
+      "consequences": [
+        "Event envelopes (federation, plugin, lifecycle)",
+        "Receipt schemas (governance, capability, dharma, audit)",
+        "Lifecycle enums (project state, session state, work item state, gate state)",
+        "Capability descriptors (permission classes, scope definitions, risk levels)",
+        "Work state transitions (valid state machines for all entities)"
+      ],
+      "source_path": "docs/adr/0018-sdk-and-plugin-architecture.md"
+    },
+    {
+      "adr_id": "0019-compute-kernel",
+      "title": "ADR 0019: Tribunus Compute Kernel — Governed, Copy-Honest Accelerator Runtime",
+      "status": "unknown",
+      "decision_summary": "# ADR 0019: Tribunus Compute Kernel — Governed, Copy-Honest Accelerator Runtime  ## Status Proposed — June 2026  ## Context  Tribunus needs local compute as a first-class runtime subsystem, not as an incidental ML library integration. The current architecture ",
+      "consequences": [
+        "**Apple Silicon:** `MTLStorageMode.shared` on UMA — no copies, but synchronization required.",
+        "**CUDA discrete:** Managed memory migrates pages; zero-copy via mapped pinned buffers; device memory is separate.",
+        "**HIP/ROCm:** Managed memory with page faulting; HMM enables system allocators.",
+        "**Intel:** `malloc_shared` migrates dynamically; `malloc_device` stays on device."
+      ],
+      "source_path": "docs/adr/0019-compute-kernel.md"
+    },
+    {
+      "adr_id": "0020-json-schema-governance",
+      "title": "ADR 0020: JSON Schema Governance",
+      "status": "unknown",
+      "decision_summary": "# ADR 0020: JSON Schema Governance  ## Status Accepted  ## Context The Tribunus project uses JSON Schema for documentation and validation across multiple subsystems. As the number of schemas grows, maintaining consistency, avoiding duplication, and ensuring lo",
+      "consequences": [
+        "**All schemas must use `https://json-schema.org/draft/2020-12/schema`**",
+        "This ensures consistency and access to the latest features",
+        "**Properties**: Use `camelCase` for all properties (e.g., `generatedAt`, `appVersion`)",
+        "**Definitions**: Use `PascalCase` for definition names (e.g., `HexColor`, `ToolCallSummary`)",
+        "**Files**: Use `kebab-case` for schema files (e.g., `desktop-theme.schema.json`)"
+      ],
+      "source_path": "docs/adr/0020-json-schema-governance.md"
+    },
+    {
+      "adr_id": "003-pglite-valkey-duckdb",
+      "title": "ADR 003: PGlite + Valkey + DuckDB Data Architecture",
+      "status": "unknown",
+      "decision_summary": "# ADR 003: PGlite + Valkey + DuckDB Data Architecture  ## Status Accepted — June 2026  ## Context  Tribunus requires three distinct runtime capabilities that no single database provides:",
+      "consequences": [
+        "Diagnostic packets (JSONB documents with full schema)",
+        "Dharma ledger (ACID transactions for every point earned or spent)",
+        "GitHub identity mappings",
+        "Packet provenance and confirmation chains",
+        "Packet status lifecycle (proposed → confirmed → propagated → superseded → deprecated)"
+      ],
+      "source_path": "docs/adr/003-pglite-valkey-duckdb.md"
+    },
+    {
+      "adr_id": "005-patent-landscape",
+      "title": "Tribunus — Patent Landscape & Filing Strategy",
+      "status": "unknown",
+      "decision_summary": "# Tribunus — Patent Landscape & Filing Strategy  ## Strongest Claims — Likely Novel  ### 1. Superseded Knowledge Codex with Novelty Pressure  A knowledge repository that preserves the full solution lineage (workaround → root cause → edge case → architectural r",
+      "consequences": [
+        "Vector similarity for bug matching (pgvector is standard infrastructure)",
+        "JSONB for structured packet storage (standard Postgres feature)",
+        "Consumer groups for agent work queues (Valkey/Redis Streams are standard)",
+        "Live queries for reactive UI (PGlite standard feature)",
+        "Automated PR generation from diagnostics (US11030071B2, Airbot)"
+      ],
+      "source_path": "docs/adr/005-patent-landscape.md"
+    },
+    {
+      "adr_id": "006-mobile-pwa-cockpit",
+      "title": "ADR 006: Mobile PWA as Remote Cockpit",
+      "status": "unknown",
+      "decision_summary": "# ADR 006: Mobile PWA as Remote Cockpit  ## Status Accepted — June 2026  ## Context  Tribunus is a native macOS desktop application. It spawns child processes (Valkey), owns the filesystem, runs agent orchestration, and hosts the coordination kernel. These cap",
+      "consequences": [
+        "Session status, active agents, gate requests, queue state, dharma stats, codex updates, diagnostics, receipts, failures",
+        "Delivered via WebSocket while the PWA is open",
+        "Chunked or cursored to handle backpressure (WebSocket API does not support native backpressure)",
+        "Phone caches last-known projections locally (convenience, not truth)",
+        "Approve gate, pause agent, resume session, cancel run, request diagnostic packet, mark help request handled"
+      ],
+      "source_path": "docs/adr/006-mobile-pwa-cockpit.md"
+    },
+    {
+      "adr_id": "007-unified-design-language",
+      "title": "ADR 007: Unified Design Language Across All Surfaces",
+      "status": "unknown",
+      "decision_summary": "# ADR 007: Unified Design Language Across All Surfaces  ## Status Accepted — June 2026  ## Context  Tribunus currently has four distinct surfaces, each with its own personality problem:",
+      "consequences": [
+        "Landing page rendered with the same components at rest",
+        "Simulated mission timeline, demo receipts, architecture cards",
+        "Codex browser (read-only public knowledge)",
+        "\"Ask a question\" intake lane → hosted queue → desktop reviews and optionally engages",
+        "Live projection stream from the desktop"
+      ],
+      "source_path": "docs/adr/007-unified-design-language.md"
+    },
+    {
+      "adr_id": "008-design-canvas-hard-parts",
+      "title": "Code-Native Design Canvas — The Hard Parts",
+      "status": "unknown",
+      "decision_summary": "# Code-Native Design Canvas — The Hard Parts  ## 1. Design Document Schema  **Foundation: W3C DTCG (Design Tokens Community Group) Specification v2025.10**  The W3C DTCG spec provides the token layer: `$value`, `$type` (color, dimension, typography, etc.), org",
+      "consequences": [
+        "Token compliance: every visual property references a valid token",
+        "Accessibility: WCAG 2.2 automated checks via axe-core (~57% of issues caught; remaining require manual review)",
+        "Responsive: Playwright renders the component at defined breakpoints, compares snapshots",
+        "Visual regression: Chromatic/Percy compares against baseline, AI-powered diff filters false positives",
+        "Code quality: Stylelint for CSS, TypeScript compiler for component code"
+      ],
+      "source_path": "docs/adr/008-design-canvas-hard-parts.md"
+    },
+    {
+      "adr_id": "009-design-council",
+      "title": "ADR 009: Design Council — Cartographer → Architect → Critic Loop for UI",
+      "status": "unknown",
+      "decision_summary": "# ADR 009: Design Council — Cartographer → Architect → Critic Loop for UI  ## Status Accepted — June 2026  ## Context  ADR 008 defined the hard problems for a code-native design canvas: schema, undo/redo, mutation safety, responsive validation, and taste enfor",
+      "consequences": [
+        "Component hierarchy (what elements exist, how they nest)",
+        "Content density (compact, standard, spacious)",
+        "User task (approval, monitoring, browsing, editing)",
+        "Viewport classes (phone-portrait, phone-landscape, tablet, desktop)",
+        "Interaction states present (default, hover, focus, active, loading, error, disabled)"
+      ],
+      "source_path": "docs/adr/009-design-council.md"
+    },
+    {
+      "adr_id": "010-community-contribution-license",
+      "title": "Tribunus Community Contribution License & Consent Architecture",
+      "status": "unknown",
+      "decision_summary": "# Tribunus Community Contribution License & Consent Architecture  ## Principle  > Raw AI-generated output may lack copyright protection when there is no human authorship, but Tribunus still obtains an explicit license because shared design schemas may contain ",
+      "consequences": [
+        "Request (user intent, natural language)",
+        "Constraints (heuristic profile, mode, model settings, temperature)",
+        "Role loop (cartographer map, architect patch plan, builder change receipt)",
+        "Artifact (design schema, code patch, rendered screenshot)",
+        "Evaluation (critic council verdicts — which rules passed, which screamed)"
+      ],
+      "source_path": "docs/adr/010-community-contribution-license.md"
+    }
+  ],
+  "board_state": {
+    "campaigns": [
+      {
+        "id": "0001",
+        "title": "Data Architecture and Coordination Kernel",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0002",
+        "title": "JSON Schema Governance and Protocol Spine",
+        "status": "in_progress",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0003",
+        "title": "SDK, Plugin System, and Trust Kernel",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0004",
+        "title": "Unified Design Language and Mobile PWA Cockpit",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0005",
+        "title": "Tribunus Compute Kernel",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0006",
+        "title": "Runtime Lifecycle and App Shell",
+        "status": "in_progress",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0007",
+        "title": "Federation and Social Protocol",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0008",
+        "title": "Collaboration and Project Multiplayer",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0009",
+        "title": "Authority and Auditability",
+        "status": "in_progress",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0010",
+        "title": "Release and Distribution",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0011",
+        "title": "Commercial Layer and Tributes",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0012",
+        "title": "Developer Experience and Extension Store",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0013",
+        "title": "Research and Intelligence Layer",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0014",
+        "title": "Operations and Observability",
+        "status": "in_progress",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0015",
+        "title": "Control Plane Convergence and PGlite Migration",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0016",
+        "title": "Memory Runtime and Knowledge Graph",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0017",
+        "title": "Identity, Accounts, Organizations, and Device Trust",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0018",
+        "title": "Security, Sandboxing, and Permission Broker",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0019",
+        "title": "Supply Chain, Signing, and Update Trust",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0020",
+        "title": "Offline-First Synchronization and State Replication",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0021",
+        "title": "Workspace, Repository, and Artifact Model",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0022",
+        "title": "Agent Runtime, Scheduling, and Recovery",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0023",
+        "title": "Model Provider Runtime and Routing",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0024",
+        "title": "Community Compute and Dharma Exchange",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0025",
+        "title": "Quality Engineering and Adversarial Verification",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0026",
+        "title": "Performance, Capacity, and Cost Governance",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0027",
+        "title": "Enterprise Governance and Administration",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0028",
+        "title": "Privacy, Compliance, Retention, and Data Portability",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0029",
+        "title": "Reliability, Recovery, and Disaster Preparedness",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0030",
+        "title": "Product Experience, Accessibility, and Interaction Architecture",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0031",
+        "title": "Ecosystem Integrations and Migration",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0032",
+        "title": "Public Launch, Documentation, Community, and Long-Term Maintenance",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      }
+    ],
+    "missions": [
+      {
+        "id": "0001",
+        "title": "PGlite Durable Intelligence Layer",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0002",
+        "title": "Valkey Coordination Kernel — Conductor Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0003",
+        "title": "DuckDB Analytical Reflection Layer",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0004",
+        "title": "Valkey Rebuild and Recovery Protocol",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0005",
+        "title": "Schema Standardization and Migration",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0006",
+        "title": "Schema Registry and Automated Validation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0007",
+        "title": "TypeScript Type Generation from Schemas",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0008",
+        "title": "@tribunus/protocol — Protocol Spine Package",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0009",
+        "title": "@tribunus/client — TypeScript SDK",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0010",
+        "title": "@tribunus/plugin — Capability-Scoped Extension SDK",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0011",
+        "title": "Trust Kernel Security Enforcement",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0012",
+        "title": "Design Token System and Lit Component Library",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0013",
+        "title": "Desktop Shell Migration to Tribunus Cockpit",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0014",
+        "title": "Mobile PWA Remote Cockpit",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0015",
+        "title": "GitHub Pages Landing Page and Public Intake Lane",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0016",
+        "title": "Compute Kernel — Phase 1: Data Plane",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0017",
+        "title": "Compute Kernel — Phase 2: Execution Plane",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0018",
+        "title": "Compute Kernel — Phase 3: Inference Primitives",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0019-durable-work-lifecycle-authority-layer",
+        "title": "Durable Work Lifecycle Authority Layer",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0020-authority-model-receipts-and-evidence-chains",
+        "title": "Authority Model — Receipts and Evidence Chains",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0021-authority-implementation-durable-ack-layer",
+        "title": "Distributed Durable ACK and Runtime Authority Convergence",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0022-runtime-lifecycle-model-state-machine-definition",
+        "title": "Runtime Lifecycle Model — State Machine Definition",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0023-federation-identity-model-handles-and-profiles",
+        "title": "Federation Identity Model — Handles and Profiles",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0024-bootstrap-sqlite-inventory",
+        "title": "Bootstrap SQLite Inventory",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0025-schema-ownership-and-namespace-rules",
+        "title": "Schema Ownership and Namespace Rules",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0026-generated-type-parity-enforcement",
+        "title": "Generated Type Parity Enforcement",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0027-migration-graph-and-compatibility-policy",
+        "title": "Migration Graph and Compatibility Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0028-artifact-validation-at-every-ingress",
+        "title": "Artifact Validation at Every Ingress",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0029-protocol-conformance-fixtures",
+        "title": "Protocol Conformance Fixtures",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0030-schema-publication-and-discovery",
+        "title": "Schema Publication and Discovery",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0031-deprecation-and-tombstone-handling",
+        "title": "Deprecation and Tombstone Handling",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0032-compatibility-matrices",
+        "title": "Compatibility Matrices",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0033-registry-observability",
+        "title": "Registry Observability",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0034-canonical-pglite-schema",
+        "title": "Canonical PGlite Schema",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0035-sqlite-to-pglite-migration-tool",
+        "title": "SQLite-to-PGlite Migration Tool",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0036-dual-read-characterization",
+        "title": "Dual-Read Characterization",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0037-unified-authority-vocabulary",
+        "title": "Unified Authority Vocabulary",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0038-principal-actor-delegate-and-service-identity",
+        "title": "Principal, Actor, Delegate, and Service Identity",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0039-capability-grant-model",
+        "title": "Capability Grant Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0040-policy-decision-and-enforcement-points",
+        "title": "Policy Decision and Enforcement Points",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0041-evidence-chain-format",
+        "title": "Evidence Chain Format",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0042-receipt-lineage-and-merkle-linking",
+        "title": "Receipt Lineage and Merkle Linking",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0043-durable-ack-authority-convergence",
+        "title": "Durable ACK Authority Convergence",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0044-approval-and-council-gates",
+        "title": "Approval and Council Gates",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0045-delegation-expiry-and-revocation",
+        "title": "Delegation Expiry and Revocation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0046-break-glass-authority",
+        "title": "Break-Glass Authority",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0047-human-override-semantics",
+        "title": "Human Override Semantics",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0048-authority-aware-recovery",
+        "title": "Authority-Aware Recovery",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0049-audit-query-api",
+        "title": "Audit Query API",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0050-audit-export-and-verification",
+        "title": "Audit Export and Verification",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0051-tamper-detection",
+        "title": "Tamper Detection",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0052-authority-invariant-test-suite",
+        "title": "Authority Invariant Test Suite",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0053-instance-bootstrap-and-dependency-assembly",
+        "title": "Instance Bootstrap and Dependency Assembly",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0054-session-open-checkpoint-resume-consolidate-and-close",
+        "title": "Session Open, Checkpoint, Resume, Consolidate, and Close",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0055-workspace-open-and-close-semantics",
+        "title": "Workspace Open and Close Semantics",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0056-crash-recovery-and-abandoned-session-reconciliation",
+        "title": "Crash Recovery and Abandoned Session Reconciliation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0057-main-process-renderer-worker-and-sidecar-boundaries",
+        "title": "Main Process, Renderer, Worker, and Sidecar Boundaries",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0058-background-runtime-supervision",
+        "title": "Background Runtime Supervision",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0059-runtime-upgrade-and-migration-hooks",
+        "title": "Runtime Upgrade and Migration Hooks",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0060-resource-ownership-and-deterministic-teardown",
+        "title": "Resource Ownership and Deterministic Teardown",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0061-app-shell-navigation-and-window-lifecycle",
+        "title": "App Shell Navigation and Window Lifecycle",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0062-deep-link-and-protocol-handler-lifecycle",
+        "title": "Deep Link and Protocol Handler Lifecycle",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0063-runtime-truth-projection-into-the-cockpit",
+        "title": "Runtime Truth Projection into the Cockpit",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0064-shadow-write-verification",
+        "title": "Shadow-Write Verification",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0065-control-plane-repository-interface",
+        "title": "Control-Plane Repository Interface",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0066-entity-porting-campaign-mission-lane-task",
+        "title": "Entity Porting: Campaign, Mission, Lane, Task",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0067-entity-porting-receipt-checkpoint-memory-link",
+        "title": "Entity Porting: Receipt, Checkpoint, Memory Link",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0068-transaction-boundary-definition",
+        "title": "Transaction Boundary Definition",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0069-constraint-and-index-parity",
+        "title": "Constraint and Index Parity",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0070-migration-rollback",
+        "title": "Migration Rollback",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0071-existing-board-import",
+        "title": "Existing Board Import",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0072-metrics-vocabulary",
+        "title": "Metrics Vocabulary",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0073-trace-context-propagation",
+        "title": "Trace Context Propagation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0074-structured-log-contract",
+        "title": "Structured Log Contract",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0075-local-first-operational-store",
+        "title": "Local-First Operational Store",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0076-opentelemetry-export-pipeline",
+        "title": "OpenTelemetry Export Pipeline",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0077-canonical-runtime-event-envelope",
+        "title": "Canonical Runtime Event Envelope",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0078-idempotency-and-replay-tests",
+        "title": "Idempotency and Replay Tests",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0079-control-plane-query-api",
+        "title": "Control-Plane Query API",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0080-removal-of-sqlite-authority",
+        "title": "Removal of SQLite Authority",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0081-final-authority-cutover-receipt",
+        "title": "Final Authority Cutover Receipt",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0082-error-budget-policy",
+        "title": "Error Budget Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0083-service-level-indicators",
+        "title": "Service-Level Indicators",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0084-cockpit-health-projection",
+        "title": "Cockpit Health Projection",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0085-incident-timeline-reconstruction",
+        "title": "Incident Timeline Reconstruction",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0086-privacy-aware-telemetry-redaction",
+        "title": "Privacy-Aware Telemetry Redaction",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0087-alert-classification",
+        "title": "Alert Classification",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0088-user-consent-and-export-controls",
+        "title": "User Consent and Export Controls",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0089-synthetic-health-probes",
+        "title": "Synthetic Health Probes",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0090-disaster-recovery-exercises",
+        "title": "Disaster-Recovery Exercises",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0091-capacity-dashboards",
+        "title": "Capacity Dashboards",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0092-performance-profiling",
+        "title": "Performance Profiling",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0093-operational-runbooks",
+        "title": "Operational Runbooks",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0094-shared-memoryruntime-service",
+        "title": "Shared MemoryRuntime Service",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0095-application-threat-model",
+        "title": "Application Threat Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0096-electron-main-and-renderer-isolation",
+        "title": "Electron Main and Renderer Isolation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0097-context-isolation-enforcement",
+        "title": "Context Isolation Enforcement",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0098-navigation-and-window-creation-policy",
+        "title": "Navigation and Window Creation Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0099-ipc-schema-validation",
+        "title": "IPC Schema Validation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0100-capability-permission-broker",
+        "title": "Capability Permission Broker",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0101-local-principal-model",
+        "title": "Local Principal Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0102-account-identity-provider-abstraction",
+        "title": "Account Identity Provider Abstraction",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0103-device-identity-and-enrollment",
+        "title": "Device Identity and Enrollment",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0104-device-key-rotation",
+        "title": "Device Key Rotation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0105-user-profile-and-handle-model",
+        "title": "User Profile and Handle Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0106-organization-and-team-hierarchy",
+        "title": "Organization and Team Hierarchy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0107-physical-bank-registry",
+        "title": "Physical Bank Registry",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0108-bank-creation-and-lifecycle",
+        "title": "Bank Creation and Lifecycle",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0109-membership-lifecycle",
+        "title": "Membership Lifecycle",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0110-role-and-group-model",
+        "title": "Role and Group Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0111-recovery-credentials",
+        "title": "Recovery Credentials",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0112-multi-device-session-management",
+        "title": "Multi-Device Session Management",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0113-authentication-event-audit",
+        "title": "Authentication Event Audit",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0114-offline-identity-cache",
+        "title": "Offline Identity Cache",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0115-dependency-inventory",
+        "title": "Dependency Inventory",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0116-lockfile-integrity-policy",
+        "title": "Lockfile Integrity Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0117-sbom-generation",
+        "title": "SBOM Generation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0118-build-provenance-attestations",
+        "title": "Build Provenance Attestations",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0119-artifact-signing",
+        "title": "Artifact Signing",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0120-publisher-identity-verification",
+        "title": "Publisher Identity Verification",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0121-transparency-log-integration",
+        "title": "Transparency Log Integration",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0122-release-key-and-role-separation",
+        "title": "Release Key and Role Separation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0123-update-metadata-repository",
+        "title": "Update Metadata Repository",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0124-dependency-vulnerability-intake",
+        "title": "Dependency Vulnerability Intake",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0125-malicious-package-quarantine",
+        "title": "Malicious Package Quarantine",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0126-reproducibility-verification",
+        "title": "Reproducibility Verification",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0127-third-party-binary-inventory",
+        "title": "Third-Party Binary Inventory",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0128-native-dependency-audit",
+        "title": "Native Dependency Audit",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0129-ci-runner-trust-policy",
+        "title": "CI Runner Trust Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0130-secretless-release-automation",
+        "title": "Secretless Release Automation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0131-compromise-and-revocation-drill",
+        "title": "Compromise and Revocation Drill",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0132-agent-principal-model",
+        "title": "Agent Principal Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0133-extension-memory-isolation",
+        "title": "Extension Memory Isolation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0134-agent-registration-and-capability-discovery",
+        "title": "Agent Registration and Capability Discovery",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0135-account-export-and-deletion",
+        "title": "Account Export and Deletion",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0136-organization-transfer",
+        "title": "Organization Transfer",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0137-suspicious-login-response",
+        "title": "Suspicious Login Response",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0138-task-dispatch-contract",
+        "title": "Task Dispatch Contract",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0139-filesystem-scope-enforcement",
+        "title": "Filesystem Scope Enforcement",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0140-network-egress-policy",
+        "title": "Network Egress Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0141-process-spawn-policy",
+        "title": "Process Spawn Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0142-secret-access-broker",
+        "title": "Secret Access Broker",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0143-clipboard-and-screen-capture-permissions",
+        "title": "Clipboard and Screen Capture Permissions",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0144-extension-sandbox-cells",
+        "title": "Extension Sandbox Cells",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0145-worker-and-sidecar-isolation",
+        "title": "Worker and Sidecar Isolation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0146-content-security-policy",
+        "title": "Content Security Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0147-untrusted-project-mode",
+        "title": "Untrusted Project Mode",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0148-security-event-receipts",
+        "title": "Security Event Receipts",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0149-vulnerability-response-workflow",
+        "title": "Vulnerability Response Workflow",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0150-fuzzing-and-malicious-extension-harness",
+        "title": "Fuzzing and Malicious Extension Harness",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0151-capacity-profiles",
+        "title": "Capacity Profiles",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0152-scheduling-policy",
+        "title": "Scheduling Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0153-project-and-organization-memory-boundaries",
+        "title": "Project and Organization Memory Boundaries",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0154-replicated-state-vocabulary",
+        "title": "Replicated State Vocabulary",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0155-local-operation-log",
+        "title": "Local Operation Log",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0156-causal-ordering",
+        "title": "Causal Ordering",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0157-idempotent-replay",
+        "title": "Idempotent Replay",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0158-conflict-taxonomy",
+        "title": "Conflict Taxonomy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0159-merge-policy-registry",
+        "title": "Merge Policy Registry",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0160-file-and-artifact-synchronization",
+        "title": "File and Artifact Synchronization",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0161-board-state-synchronization",
+        "title": "Board State Synchronization",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0162-priority-and-fairness",
+        "title": "Priority and Fairness",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0163-lease-and-heartbeat-convergence",
+        "title": "Lease and Heartbeat Convergence",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0164-memory-retention-policy",
+        "title": "Memory Retention Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0165-tool-execution-supervision",
+        "title": "Tool Execution Supervision",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0166-deadline-and-cancellation-semantics",
+        "title": "Deadline and Cancellation Semantics",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0167-retry-and-backoff",
+        "title": "Retry and Backoff",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0168-recall-ranking-and-provenance",
+        "title": "Recall Ranking and Provenance",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0169-workspace-identity",
+        "title": "Workspace Identity",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0170-repository-attachment-and-detachment",
+        "title": "Repository Attachment and Detachment",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0171-multi-repository-projects",
+        "title": "Multi-Repository Projects",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0172-worktree-and-branch-model",
+        "title": "Worktree and Branch Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0173-dirty-state-doctrine",
+        "title": "Dirty-State Doctrine",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0174-artifact-registry",
+        "title": "Artifact Registry",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0175-generated-artifact-ownership",
+        "title": "Generated Artifact Ownership",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0176-external-file-change-detection",
+        "title": "External File Change Detection",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0177-repository-capability-discovery",
+        "title": "Repository Capability Discovery",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0178-large-repository-indexing",
+        "title": "Large Repository Indexing",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0179-dead-letter-and-quarantine",
+        "title": "Dead-Letter and Quarantine",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0180-presence-versus-durable-state-separation",
+        "title": "Presence Versus Durable State Separation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0181-attachment-transfer",
+        "title": "Attachment Transfer",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0182-partial-replication",
+        "title": "Partial Replication",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0183-device-rejoin-and-catch-up",
+        "title": "Device Rejoin and Catch-Up",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0184-snapshot-and-compaction",
+        "title": "Snapshot and Compaction",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0185-partition-testing",
+        "title": "Partition Testing",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0186-sync-repair-tooling",
+        "title": "Sync Repair Tooling",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0187-recovery-controller",
+        "title": "Recovery Controller",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0188-provider-neutral-invocation-contract",
+        "title": "Provider-Neutral Invocation Contract",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0189-credential-and-api-key-vault",
+        "title": "Credential and API-Key Vault",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0190-model-capability-registry",
+        "title": "Model Capability Registry",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0191-context-window-and-modality-discovery",
+        "title": "Context Window and Modality Discovery",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0192-cost-and-rate-limit-model",
+        "title": "Cost and Rate-Limit Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0193-routing-policy",
+        "title": "Routing Policy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0194-fallback-and-circuit-breaking",
+        "title": "Fallback and Circuit Breaking",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0195-streaming-normalization",
+        "title": "Streaming Normalization",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0196-tool-calling-normalization",
+        "title": "Tool-Calling Normalization",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0197-structured-output-validation",
+        "title": "Structured Output Validation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0198-cache-and-single-flight-behavior",
+        "title": "Cache and Single-Flight Behavior",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0199-provider-error-taxonomy",
+        "title": "Provider Error Taxonomy",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0200-usage-receipts",
+        "title": "Usage Receipts",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0201-provider-conformance-matrix",
+        "title": "Provider Conformance Matrix",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0202-remember-deduplication",
+        "title": "Remember Deduplication",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0203-idempotent-task-replay",
+        "title": "Idempotent Task Replay",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0204-scheduler-chaos-testing",
+        "title": "Scheduler Chaos Testing",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0205-session-close-consolidation",
+        "title": "Session-Close Consolidation",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0206-ignore-and-inclusion-policies",
+        "title": "Ignore and Inclusion Policies",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0207-project-templates",
+        "title": "Project Templates",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0208-archive-and-restore",
+        "title": "Archive and Restore",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0209-workspace-export",
+        "title": "Workspace Export",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0210-cross-workspace-references",
+        "title": "Cross-Workspace References",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0211-durable-outcome-promotion",
+        "title": "Durable Outcome Promotion",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0212-memory-link-evolution",
+        "title": "Memory Link Evolution",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0213-knowledge-triple-model",
+        "title": "Knowledge Triple Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0214-entity-resolution",
+        "title": "Entity Resolution",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0215-transitive-graph-queries",
+        "title": "Transitive Graph Queries",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0216-contradiction-and-supersession-semantics",
+        "title": "Contradiction and Supersession Semantics",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0217-memory-export-and-erasure",
+        "title": "Memory Export and Erasure",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0218-adversarial-isolation-verification",
+        "title": "Adversarial Isolation Verification",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0219-dharma-economic-model-research",
+        "title": "Dharma Economic Model Research",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0220-community-compute-protocol-design",
+        "title": "Community Compute Protocol Design",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0221-test-taxonomy-and-coverage-baseline",
+        "title": "Test Taxonomy and Coverage Baseline",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0222-release-qualification-suite-design",
+        "title": "Release Qualification Suite Design",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0223-performance-budget-contract-definition",
+        "title": "Performance Budget Contract Definition",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0224-capacity-recommendation-engine-design",
+        "title": "Capacity Recommendation Engine Design",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0225-enterprise-tenant-and-sso-architecture",
+        "title": "Enterprise Tenant and SSO Architecture",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0226-policy-administration-and-compliance-evidence",
+        "title": "Policy Administration and Compliance Evidence",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0227-data-classification-and-consent-registry-design",
+        "title": "Data Classification and Consent Registry Design",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0228-retention-export-and-deletion-architecture",
+        "title": "Retention, Export, and Deletion Architecture",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0229-failure-domain-and-rtorpo-definition",
+        "title": "Failure-Domain and RTO/RPO Definition",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0230-disaster-simulation-and-recovery-certification-design",
+        "title": "Disaster Simulation and Recovery Certification Design",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0231-information-architecture-and-navigation-model",
+        "title": "Information Architecture and Navigation Model",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0232-accessibility-contract-and-localization-architecture",
+        "title": "Accessibility Contract and Localization Architecture",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0233-integration-permission-model-and-connector-architecture",
+        "title": "Integration Permission Model and Connector Architecture",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0234-migration-bridge-architecture",
+        "title": "Migration Bridge Architecture",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0235-documentation-system-and-release-notes-pipeline",
+        "title": "Documentation System and Release Notes Pipeline",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0236-public-beta-and-general-availability-gate-definition",
+        "title": "Public Beta and General Availability Gate Definition",
+        "status": "completed",
+        "relevance_to_omp": "board context"
+      },
+      {
+        "id": "0237-compute-kernel-phase-4-runtime-closure",
+        "title": "Compute Kernel — Phase 4: Runtime Closure",
+        "status": "not_started",
+        "relevance_to_omp": "board context"
+      }
+    ]
+  },
+  "workflow_rules": [
+    {
+      "path": "AGENTS.md",
+      "summary": "Use prose in updates, prefer tables for matrices, avoid bullets, and keep edits surgical.",
+      "constraints": [
+        "plain prose",
+        "no bullet lists",
+        "surgical edits"
+      ]
+    },
+    {
+      "path": "AGENTS.md",
+      "summary": "Run package commands from package directories, not root, and prefer Bun/tsgo tooling.",
+      "constraints": [
+        "package-local commands",
+        "bun runtime",
+        "tsgo typecheck"
+      ]
+    },
+    {
+      "path": ".omp/tools/code_review_export.ts",
+      "summary": "Review packets should be manifest-driven and completeness checked.",
+      "constraints": [
+        "10 JSON artifacts",
+        "completeness gate",
+        "no runtime evidence"
+      ]
+    }
+  ],
+  "mcp_authority_context": [],
+  "bootstrap_constraints": [
+    {
+      "constraint": "OMP tools must not import from Tribunus.",
+      "satisfied_by": [
+        ".omp/tools/*.ts",
+        "module graph"
+      ],
+      "violations": []
+    },
+    {
+      "constraint": "Provider adapters must not own authority.",
+      "satisfied_by": [
+        ".omp/tools/_lib/adapters/*.ts"
+      ],
+      "violations": []
+    },
+    {
+      "constraint": "PGlite is the local coordination authority.",
+      "satisfied_by": [
+        ".omp/tools/_lib/store/pglite-store.ts",
+        ".omp/tools/_lib/store/pglite-types.ts"
+      ],
+      "violations": []
+    },
+    {
+      "constraint": "DuckDB is derived analytics only.",
+      "satisfied_by": [
+        ".omp/tools/_lib/analytics/duckdb-projector.ts"
+      ],
+      "violations": []
+    },
+    {
+      "constraint": "Receipts/diffs/journals remain file evidence.",
+      "satisfied_by": [
+        ".omp/tools/_lib/receipts.ts",
+        ".omp/tools/_lib/write-journal.ts"
+      ],
+      "violations": []
+    },
+    {
+      "constraint": "Review export must be manifest-driven and completeness-checked.",
+      "satisfied_by": [
+        ".omp/tools/code_review_export.ts",
+        "01_manifest.json"
+      ],
+      "violations": []
+    }
+  ]
+}

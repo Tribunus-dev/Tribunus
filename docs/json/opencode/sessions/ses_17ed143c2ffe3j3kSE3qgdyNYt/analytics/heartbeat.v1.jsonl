@@ -1,0 +1,74 @@
+{"at":"2026-06-01T03:22:59.970Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/bus/global*"}
+{"at":"2026-06-01T03:23:00.120Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/bus/global*"}
+{"at":"2026-06-01T03:25:24.849Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/bootstrap*"}
+{"at":"2026-06-01T03:25:25.038Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/bootstrap*"}
+{"at":"2026-06-01T03:25:25.401Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/adapter*"}
+{"at":"2026-06-01T03:25:25.563Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/adapter*"}
+{"at":"2026-06-01T03:25:26.007Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/config*"}
+{"at":"2026-06-01T03:25:26.138Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/config*"}
+{"at":"2026-06-01T03:25:26.688Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/bus*"}
+{"at":"2026-06-01T03:25:27.093Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/bus*"}
+{"at":"2026-06-01T03:27:28.772Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:27:28.818Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:27:29.864Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"src/**"}
+{"at":"2026-06-01T03:27:31.714Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"src/**"}
+{"at":"2026-06-01T03:28:29.867Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/bootstrap.ts"}
+{"at":"2026-06-01T03:28:43.714Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/bootstrap.ts"}
+{"at":"2026-06-01T03:28:43.791Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/adapter.ts"}
+{"at":"2026-06-01T03:28:55.407Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/adapter.ts"}
+{"at":"2026-06-01T03:28:55.481Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/config.ts"}
+{"at":"2026-06-01T03:29:08.478Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/config.ts"}
+{"at":"2026-06-01T03:29:08.539Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"GlobalBus"}
+{"at":"2026-06-01T03:29:19.923Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"6 matches in 3 files"}
+{"at":"2026-06-01T03:30:55.245Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*.ts"}
+{"at":"2026-06-01T03:30:55.285Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*.ts"}
+{"at":"2026-06-01T03:30:56.182Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*.ts"}
+{"at":"2026-06-01T03:30:56.188Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*.ts"}
+{"at":"2026-06-01T03:32:24.362Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/bus*"}
+{"at":"2026-06-01T03:32:25.481Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/bus*"}
+{"at":"2026-06-01T03:32:25.588Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"**/global*"}
+{"at":"2026-06-01T03:32:26.409Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"**/global*"}
+{"at":"2026-06-01T03:33:41.669Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"GlobalBus|global.*bus|bus.*global"}
+{"at":"2026-06-01T03:33:42.210Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:33:42.782Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"classifyError|instance.failure|errorCode"}
+{"at":"2026-06-01T03:33:53.334Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T03:33:53.696Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"catchCause|onError"}
+{"at":"2026-06-01T03:33:54.228Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"24 matches in 10 files"}
+{"at":"2026-06-01T03:36:20.463Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"export.*bootstrap|bootstrap.*Effect"}
+{"at":"2026-06-01T03:36:20.997Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:36:21.454Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"applyMigrations|migration"}
+{"at":"2026-06-01T03:36:22.041Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"2 matches in 2 files"}
+{"at":"2026-06-01T03:36:22.426Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"AppFileSystem|FileSystem"}
+{"at":"2026-06-01T03:36:23.051Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"165 matches in 16 files"}
+{"at":"2026-06-01T03:40:20.529Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"index.ts"}
+{"at":"2026-06-01T03:40:20.584Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"index.ts"}
+{"at":"2026-06-01T03:41:20.850Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"\\.catch|catch.*\\(|console\\.(warn|error)"}
+{"at":"2026-06-01T03:41:20.854Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"7 matches in 1 files"}
+{"at":"2026-06-01T03:41:21.459Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"\\.catch|catch.*\\(|catchAll|cause"}
+{"at":"2026-06-01T03:41:21.460Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T03:41:22.304Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"\\.catch|catch.*\\(|catchAll"}
+{"at":"2026-06-01T03:41:22.308Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"17 matches in 1 files"}
+{"at":"2026-06-01T03:43:01.511Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"\\.catch\\(\\(\\)"}
+{"at":"2026-06-01T03:43:01.512Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T03:43:35.146Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"index.ts"}
+{"at":"2026-06-01T03:43:35.147Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"index.ts"}
+{"at":"2026-06-01T03:43:35.657Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"index.ts"}
+{"at":"2026-06-01T03:43:35.658Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"index.ts"}
+{"at":"2026-06-01T03:43:36.199Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"index.ts"}
+{"at":"2026-06-01T03:43:36.201Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"index.ts"}
+{"at":"2026-06-01T03:43:57.858Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"index.ts"}
+{"at":"2026-06-01T03:43:57.914Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"index.ts"}
+{"at":"2026-06-01T03:44:45.928Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*.test.ts"}
+{"at":"2026-06-01T03:44:45.944Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*.test.ts"}
+{"at":"2026-06-01T03:45:05.000Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*.test.ts"}
+{"at":"2026-06-01T03:45:05.002Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*.test.ts"}
+{"at":"2026-06-01T03:45:05.666Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*.test.ts"}
+{"at":"2026-06-01T03:45:05.676Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*.test.ts"}
+{"at":"2026-06-01T03:45:23.621Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"GlobalBus"}
+{"at":"2026-06-01T03:45:23.624Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"0 matches in 3 files"}
+{"at":"2026-06-01T03:46:08.716Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*sidecar*test*"}
+{"at":"2026-06-01T03:46:08.945Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*sidecar*test*"}
+{"at":"2026-06-01T03:46:09.536Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"classifyError|SIDECAR_FAILURE_CODES"}
+{"at":"2026-06-01T03:46:09.773Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"30 matches in 1 files"}
+{"at":"2026-06-01T03:47:29.525Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"from.*\\\"@/project|from.*\\\"@/config|from.*\\\"@/storage"}
+{"at":"2026-06-01T03:47:29.526Z","session_id":"ses_17ed143c2ffe3j3kSE3qgdyNYt","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}

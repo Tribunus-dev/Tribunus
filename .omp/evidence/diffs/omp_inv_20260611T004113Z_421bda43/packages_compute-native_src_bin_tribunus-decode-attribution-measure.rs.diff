@@ -1,0 +1,26 @@
+--- a/packages/compute-native/src/bin/tribunus-decode-attribution-measure.rs
++++ b/packages/compute-native/src/bin/tribunus-decode-attribution-measure.rs
+@@ -26,19 +26,20 @@
+ // ── Measurement shape profiles ───────────────────────────────────────────
+ 
+ /// Small: k=4, n=1 — [1,1] × [4,1]
++/// Small: k=4, n=1 — [1,4] × [4,1] = [1,1]
+ const MEASUREMENT_SMALL: ShapeProfile = ShapeProfile {
+     name: "small",
+     input_rows: 1,
+-    input_cols: 1,
++    input_cols: 4,
+     weight_rows: 4,
+     weight_cols: 1,
+ };
+ 
+-/// Medium: k=16, n=8 — [1,8] × [16,8] (harness-validation scale)
++/// Medium: k=16, n=8 — [1,16] × [16,8] = [1,8] (harness-validation scale)
+ const MEASUREMENT_MEDIUM: ShapeProfile = ShapeProfile {
+     name: "medium",
+     input_rows: 1,
+-    input_cols: 8,
++    input_cols: 16,
+     weight_rows: 16,
+     weight_cols: 8,
+ };

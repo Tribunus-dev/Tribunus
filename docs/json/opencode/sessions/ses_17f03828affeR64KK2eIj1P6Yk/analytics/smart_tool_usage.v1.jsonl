@@ -1,0 +1,11 @@
+{"at":"2026-06-01T02:23:05.198Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_find","pattern":"*.json","path":"docs/json/opencode/sessions"}
+{"at":"2026-06-01T02:25:01.388Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_find","pattern":"*failure-codes*","path":"docs/json"}
+{"at":"2026-06-01T02:25:07.872Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_find","pattern":"*instance-failure*","path":"docs/json"}
+{"at":"2026-06-01T02:26:12.998Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_find","pattern":"*plan*","path":"docs/json/opencode/plans"}
+{"at":"2026-06-01T02:26:42.280Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_find","pattern":"*.json","path":"docs/json/opencode/sessions/ses_17f1ec99fffe4MrUrFHjL1WbCL"}
+{"at":"2026-06-01T02:32:23.281Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_grep","pattern":"\\.catch\\(","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T02:32:24.227Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_grep","pattern":"console\\.warn|console\\.error","path":"packages/opencode/src/storage/adapter.ts"}
+{"at":"2026-06-01T02:33:35.604Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_grep","pattern":"Effect\\.catch|\\.catch\\(","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T02:34:23.582Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_grep","pattern":"updated|writeFileString|\\.catch\\(","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T02:39:16.015Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_grep","pattern":"diagnostic","path":"packages/opencode"}
+{"at":"2026-06-01T02:39:16.700Z","session_id":"ses_17f03828affeR64KK2eIj1P6Yk","agent":"critic","tool":"smart_grep","pattern":"\"paths\"","path":"packages/opencode/tsconfig.json"}

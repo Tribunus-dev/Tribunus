@@ -1,0 +1,252 @@
+{
+  "schema": "rig.relay.research-context-packet.v1",
+  "schema_version": "v1",
+  "id": "rcp-1781098096875-iw87ao",
+  "type": "research_context_packet",
+  "research_topic": "MCP Servers for Tribunus Compute Kernel Bootstrapping on Apple Silicon",
+  "transcript_summary": "The user requested deep research into MCP servers that can be installed locally to help bootstrap the Tribunus Compute Kernel. The Tribunus Compute Kernel (packages/compute-native/) is a Rust-based MLX inference engine targeting Apple Silicon M1 for Gemma-4-12B model inference. It involves: model acquisition (safetensors from HuggingFace), compilation (Cargo, CoreML MIL builder, ObjC++ bridge), Metal GPU profiling/optimization, NEON CPU benchmarking, DuckDB evidence analytics, and controlled experiment orchestration. The research spanned MCP server registries (Glama.ai ~22K servers, Smithery.ai ~7K servers, mcp.so ~22K servers) and GitHub to find servers in six categories: model acquisition, hardware monitoring, build/profiling, Metal/GPU/MLX, analytics/evidence, and infrastructure/containers.",
+  "research_findings": [
+    {
+      "category": "architecture",
+      "title": "Model Acquisition: HuggingFace + safetensors MCP servers exist",
+      "finding": "The official HuggingFace MCP Server (github.com/huggingface/mcp-server) allows AI assistants to search models, datasets, and Spaces on the Hub with metadata. The ComfyUI MCP Server can directly download safetensors files and place them in specified directories. However, no dedicated 'download and verify safetensors to a local path' MCP server exists for the Tribunus kernel's specific need of acquiring Gemma-4-12B MLX weights. The best approach is using the HuggingFace MCP Server for discovery + huggingface_hub Python library for download within a custom MCP tool.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://github.com/huggingface/mcp-server",
+          "title": "HuggingFace MCP Server",
+          "relevance": "Official HF MCP server for model discovery",
+          "key_excerpts": [
+            "Allows AI assistants to search and explore the HuggingFace Hub for models, datasets, and Spaces",
+            "Brings results back with metadata and links"
+          ]
+        },
+        {
+          "url": "https://glama.ai/mcp/comfyui",
+          "title": "ComfyUI MCP Server",
+          "relevance": "Can download safetensors directly",
+          "key_excerpts": [
+            "Can directly download models like sd_xl_base_1.0.safetensors from HuggingFace",
+            "Places them into appropriate directories"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "safetensors format",
+        "huggingface_hub CLI",
+        "Gemma-4-12B",
+        "MLX weight conversion"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Hardware Monitoring: CLI tools dominate, MCP wrappers emerging",
+      "finding": "For Apple Silicon real-time monitoring, CLI tools macmon (no sudo, HTTP endpoint) and asitop (sudo, powermetrics wrapper) are mature but not MCP-native. The Jungle Grid MCP Server on Glama enables GPU workload submission/monitoring via MCP. Feluda.ai offers a unified macOS MCP server with native Apple Silicon support bundling multiple tools. No MCP server exists that wraps macmon/powermetrics for GPU/ANE utilization streaming, but building one is straightforward given macmon's HTTP metrics endpoint.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://github.com/tragDate/macmon",
+          "title": "macmon",
+          "relevance": "Apple Silicon real-time monitor with HTTP endpoint",
+          "key_excerpts": [
+            "Provides CPU, GPU, and ANE power usage without sudo",
+            "Can serve metrics over HTTP for Prometheus/Grafana"
+          ]
+        },
+        {
+          "url": "https://feluda.ai",
+          "title": "Feluda.ai macOS MCP",
+          "relevance": "Native Apple Silicon unified MCP server",
+          "key_excerpts": [
+            "One app approach to manage numerous tools via single MCP endpoint",
+            "Full native performance on Apple Silicon M1-M4"
+          ]
+        },
+        {
+          "url": "https://glama.ai/mcp/jungle-grid",
+          "title": "Jungle Grid MCP Server",
+          "relevance": "GPU workload monitoring via MCP",
+          "key_excerpts": [
+            "Submit, estimate, monitor, and retrieve logs for GPU workloads",
+            "Inference, training, and fine-tuning"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "powermetrics",
+        "ANE utilization",
+        "GPU power draw",
+        "thermal throttling"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Build & Profiling: cargo-mcp and Xcode MCP servers available",
+      "finding": "cargo-mcp (on Glama) exposes cargo operations including cargo_bench for Rust build/benchmark orchestration. This directly applies to Tribunus's Cargo-based build system with custom profiles (image-build, inference-research, etc.). The Xcode MCP Server (Glama + Xcode 26.3 built-in) can build/test macOS projects, relevant for the ObjC++ bridge compilation via cc crate. XcodeBuildMCP proxies Xcode's internal MCP. The Instruments Profiling Skill on Smithery wraps xctrace for macOS performance profiling. Pprof Analyzer MCP generates flamegraphs from Go profiles — the concept maps to Rust but the tool doesn't.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://glama.ai/mcp/cargo-mcp",
+          "title": "cargo-mcp",
+          "relevance": "Cargo operations via MCP including benchmark",
+          "key_excerpts": [
+            "Provides access to various cargo operations for Rust projects",
+            "Including cargo_bench for benchmarking"
+          ]
+        },
+        {
+          "url": "https://glama.ai/mcp/xcode",
+          "title": "Xcode MCP Server",
+          "relevance": "Build and test macOS projects via MCP",
+          "key_excerpts": [
+            "Enables AI assistants to build and test Xcode projects directly",
+            "build for compiling iOS/macOS applications",
+            "xcode_build_for_device for physical devices"
+          ]
+        },
+        {
+          "url": "https://smithery.ai/skill/instruments-profiling",
+          "title": "Instruments Profiling Skill",
+          "relevance": "xctrace profiling via MCP",
+          "key_excerpts": [
+            "Uses xctrace for performance profiling and stack analysis"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "criterion.rs",
+        "cargo-flamegraph",
+        "Instruments.app",
+        "xctrace",
+        "Metal System Trace"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Metal/GPU/MLX: Metal Shader Expert skill + inference servers exist",
+      "finding": "The Metal Shader Expert skill on Smithery covers MSL development, GPU optimization, compute shaders, ray tracing on Apple Silicon, and GPU profiling/debugging — directly relevant to Tribunus's Metal megakernels and GPU profiling. MLX-based inference servers (mlx-serve, vllm-mlx, oMLX, MLX Manager) expose OpenAI-compatible APIs and could be wrapped as MCP servers for the inference verification pipeline. No dedicated MLX MCP server exists yet, but vllm-mlx (Apple Silicon, paged KV cache, multimodal) is the closest match and could be extended with MCP tooling.",
+      "confidence": "medium",
+      "sources": [
+        {
+          "url": "https://smithery.ai/skill/metal-shader-expert",
+          "title": "Metal Shader Expert Skill",
+          "relevance": "Metal GPU profiling via MCP",
+          "key_excerpts": [
+            "Metal Shading Language development, Apple GPU optimization",
+            "GPU profiling and debugging"
+          ]
+        },
+        {
+          "url": "https://github.com/vllm-project/vllm-mlx",
+          "title": "vllm-mlx",
+          "relevance": "MLX inference server for Apple Silicon",
+          "key_excerpts": [
+            "OpenAI and Anthropic compatible server for Apple Silicon",
+            "Continuous batching, paged KV cache, multimodal support"
+          ]
+        },
+        {
+          "url": "https://github.com/madroidmaq/mlx-serve",
+          "title": "mlx-serve",
+          "relevance": "Hot-swap MLX models on demand",
+          "key_excerpts": [
+            "Local inference server for Apple Silicon that hot-swaps MLX models",
+            "LLM, vision, embeddings, TTS, STT"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Metal Performance HUD",
+        "GPU Frame Debugger",
+        "ANE microcode compilation",
+        "MIL builder",
+        "Core AI framework"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Analytics/Evidence: DuckDB MCP servers mature and well-integrated",
+      "finding": "Three DuckDB MCP servers exist: ktanaka101/mcp-server-duckdb (Python, basic LLM integration), duckdb-mcp by Inxo (Go, SELECT/DDL/DML with env config), and the duckdb_mcp community extension (dual-mode client+server, stdio/TCP/WebSocket). The structured.sh memory MCP uses DuckDB WASM + Parquet for persistent agent memory. These directly address the evidence pipeline: Tribunus emits NDJSON research traces that land in DuckDB via Apache Arrow batches. An MCP-wrapped DuckDB would let AI agents query benchmark results, optimization records, and experiment outcomes conversationally.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://github.com/ktanaka101/mcp-server-duckdb",
+          "title": "ktanaka101/mcp-server-duckdb",
+          "relevance": "Python DuckDB MCP server",
+          "key_excerpts": [
+            "Python-based MCP server allowing LLM agents to interact with DuckDB databases",
+            "Exposes SQL capabilities through MCP standard"
+          ]
+        },
+        {
+          "url": "https://github.com/inxomnyaa/duckdb-mcp",
+          "title": "duckdb-mcp by Inxo",
+          "relevance": "Go DuckDB MCP server with DDL/DML",
+          "key_excerpts": [
+            "Written in Go, supports SELECT queries, DDL/DML",
+            "Configuration via env vars and .env files"
+          ]
+        },
+        {
+          "url": "https://duckdb.org/docs/extensions/duckdb_mcp",
+          "title": "duckdb_mcp Community Extension",
+          "relevance": "Dual-mode MCP extension for DuckDB",
+          "key_excerpts": [
+            "Functions as MCP client for remote resources via SQL",
+            "And as MCP server for exposing database content",
+            "Supports stdio, TCP, WebSocket transports"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Apache Arrow",
+        "Parquet",
+        "NDJSON evidence traces",
+        "benchmark analytics",
+        "experiment orchestration"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Infrastructure: GitHub MCP + Apple Containers MCP",
+      "finding": "The official GitHub MCP Server enables repo management, PRs, issues, and code analysis — useful for the mlx-rs-fork management and Tribunus monorepo CI. ACMS (Apple Container MCP Server) provides 50+ container operations via macOS container CLI, useful for isolated build environments. The GitHub MCP Server for Apple Containers (transcendr) provides native ARM64 execution without Docker Desktop overhead.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://github.com/github/mcp-server",
+          "title": "GitHub MCP Server",
+          "relevance": "Official GitHub MCP for repo management",
+          "key_excerpts": [
+            "Allows AI tools to interact directly with GitHub APIs",
+            "Reading repositories, managing issues, analyzing code"
+          ]
+        },
+        {
+          "url": "https://github.com/transcendr/github-mcp-apple-containers",
+          "title": "GitHub MCP for Apple Containers",
+          "relevance": "Native Apple Silicon containers",
+          "key_excerpts": [
+            "Native Apple container implementation",
+            "Better performance, simpler setup, lower resource usage on Apple Silicon"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "mlx-rs-fork",
+        "monorepo CI",
+        "isolated build environments",
+        "Valkey supervisor"
+      ]
+    }
+  ],
+  "implementation_specs": [],
+  "linked_entities": [
+    {
+      "entity_type": "campaign",
+      "entity_id": "0001-inference-optimization",
+      "relationship": "context"
+    }
+  ],
+  "session_id": "unknown",
+  "created_at": "2026-06-10T13:28:16.875Z"
+}

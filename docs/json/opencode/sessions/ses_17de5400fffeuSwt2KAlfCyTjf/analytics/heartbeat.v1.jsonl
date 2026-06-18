@@ -1,0 +1,6 @@
+{"at":"2026-06-01T07:35:17.277Z","session_id":"ses_17de5400fffeuSwt2KAlfCyTjf","agent":"surgeon","tool":"smart_batch","phase":"started","detail":"batch edit"}
+{"at":"2026-06-01T07:35:17.330Z","session_id":"ses_17de5400fffeuSwt2KAlfCyTjf","agent":"surgeon","tool":"smart_batch","phase":"completed","detail":"5 edits across 3 files"}
+{"at":"2026-06-01T07:35:36.591Z","session_id":"ses_17de5400fffeuSwt2KAlfCyTjf","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T07:36:01.098Z","session_id":"ses_17de5400fffeuSwt2KAlfCyTjf","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T07:38:03.336Z","session_id":"ses_17de5400fffeuSwt2KAlfCyTjf","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:38:29.618Z","session_id":"ses_17de5400fffeuSwt2KAlfCyTjf","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "1",
+  "source": {
+    "repo_url": "https://github.com/Tribunus-dev/Tribunus",
+    "commit_sha": "694c08e475fd7c6701ad54c97b45b980e69748aa",
+    "branch": "main",
+    "commit_timestamp": "2026-06-09T06:14:46.000Z",
+    "dirty": false,
+    "tree_hash": "66d7e983b93ae53ef3ea19a1bc1c42afec07e381"
+  },
+  "dependencies": {},
+  "toolchain": {
+    "rust_version": "1.96.0",
+    "target_triple": "aarch64-apple-darwin",
+    "linker": "ld64",
+    "opt_profile": "release",
+    "feature_flags": [],
+    "env_flags": []
+  },
+  "binaries": [],
+  "model": {
+    "image_hash": "d042df1e4062a53e3a003af4e2e8c714924fcf19f03b7cf0dd5f67293355d924",
+    "storage_abi": "copied-v0",
+    "runtime_abi": "v3",
+    "manifest_hash": "pending",
+    "execution_plan_hash": "pending",
+    "arch_hash": "pending",
+    "quant_hash": "pending",
+    "tokenizer_hash": "pending",
+    "model_revision": "gemma4-12b-8bit"
+  },
+  "machine": {
+    "anon_id": "m1-16gb",
+    "model_identifier": "MacBookPro18,3",
+    "chip_family": "Apple",
+    "perf_cores": 8,
+    "eff_cores": 2,
+    "gpu_cores": 16,
+    "physical_memory": "16 GB",
+    "os_version": "15.5",
+    "kernel_version": "24.5"
+  },
+  "environment": {
+    "variables": {},
+    "redacted_paths": [],
+    "redaction_metadata": {}
+  }
+}

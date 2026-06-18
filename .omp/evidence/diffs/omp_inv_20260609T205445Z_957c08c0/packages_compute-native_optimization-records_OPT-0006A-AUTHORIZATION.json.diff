@@ -1,0 +1,21 @@
+--- a/packages/compute-native/optimization-records/OPT-0006A-AUTHORIZATION.json
++++ b/packages/compute-native/optimization-records/OPT-0006A-AUTHORIZATION.json
+@@ -99,6 +99,17 @@
+   },
+   "next_safe_action": "Implement pipeline warm-up at model load (one synthetic projection per unique kernel signature) and bounded rolling page prefetch. Analyze layer-scoped Metal captures in Xcode GPU Frame Capture.",
+   "run_timestamp": "2026-06-09T17:30:00Z",
+-  "revision": 2
++  "oracle_correctness_gate": {
++    "status": "implemented_not_run",
++    "method": "dequantize_and_matmul_reference",
++    "description": "Oracle uses mlx_rs::ops::dequantize(weight, scale, bias, 64, 8) to recover F32 weights, transpose_all to [K,N], then regular matmul with deterministic input (all 0.5). This is the canonical correctness reference — identical to the parity check in projection_tests.rs.",
++    "blockers": ["compute_image_not_accessible_on_current_machine"],
++    "source_branch": "research/opt-0001-decode-attribution",
++    "source_file": "packages/compute-native/src/replay_projection.rs::compare_oracle()",
++    "implementation_date": "2026-06-09T23:45:00Z",
++    "requires": "frozen ComputeImage d042df1e for execution",
++    "tolerance_policy": "max_abs < 1e-4 and max_rel < 1e-2 for M=1 decode shapes"
++  },
++  "revision": 3
+ }
+ 

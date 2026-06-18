@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/metrics-vocabulary.v1",
+  "title": "Tribunus Metrics Vocabulary",
+  "description": "Standard metrics vocabulary for all Tribunus subsystems. Every metric emitted follows this contract.",
+  "metric_types": {
+    "counter": {
+      "description": "A monotonically increasing count. Never decreases. Used for: request count, error count, bytes processed.",
+      "example": "tribunus_tool_executions_total{service=\"coordination\", result=\"completed\"} 1423"
+    },
+    "gauge": {
+      "description": "A value that can go up and down. Used for: active sessions, queue depth, memory usage, open file handles.",
+      "example": "tribunus_active_sessions{service=\"session\"} 47"
+    },
+    "histogram": {
+      "description": "A distribution of values across configurable buckets. Used for: request latency, message size, token count.",
+      "example": "tribunus_llm_latency_ms_bucket{service=\"provider\", model=\"claude-sonnet-4\", le=\"100\"} 523"
+    },
+    "summary": {
+      "description": "A summary with quantiles. Used when bucket boundaries are not known in advance.",
+      "example": "tribunus_tool_duration_ms{service=\"tool\", tool=\"bash\", quantile=\"0.99\"} 4500"
+    }
+  },
+  "standard_labels": {
+    "service": { "description": "Subsystem emitting the metric (coordination, session, tool, provider, http, cockpit)", "required": true },
+    "instance": { "description": "Instance or process identifier", "required": true },
+    "operation": { "description": "The operation being measured (e.g., completeAndAck, stream.read, prompt.execute)", "required": true },
+    "result": { "description": "Outcome of the operation (completed, failed, timeout, cancelled)", "required": true },
+    "model": { "description": "LLM model identifier (for provider metrics)", "required": false },
+    "provider": { "description": "LLM provider name (for provider metrics)", "required": false },
+    "tool": { "description": "Tool name (for tool metrics)", "required": false },
+    "error_kind": { "description": "Error classification (for error metrics)", "required": false }
+  },
+  "naming_convention": {
+    "pattern": "tribunus_{metric_name}_{unit}",
+    "rules": [
+      "All lowercase with underscores",
+      "Prefix: tribunus_",
+      "Suffix: unit (seconds, bytes, total, count, ratio)",
+      "Labels in alphabetical order"
+    ]
+  },
+  "emission_contract": {
+    "format": "OpenTelemetry-compatible metric export",
+    "exporters": ["OTLP", "Prometheus"],
+    "frequency": "Configurable per metric type (default: counter on change, gauge every 15s, histogram/summary on observation)"
+  }
+}

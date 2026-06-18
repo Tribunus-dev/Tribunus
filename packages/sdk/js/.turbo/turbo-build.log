@@ -1,0 +1,19 @@
+$ bun ./script/build.ts
+ 95 |     }
+ 96 |     env(newEnv) {
+ 97 |       if (this.#throwIfRunning(), typeof newEnv > "u")
+ 98 |         newEnv = defaultEnv;
+ 99 |       return this.#args.setEnv(newEnv), this;
+100 |     #run() {
+              ^
+error: No such file or directory
+    path: "/Users/user/Developer/GitHub/Tribunus/packages/opencode",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at #run (100:9)
+      at then (150:9)
+
+Bun v1.3.14 (macOS arm64)
+error: script "build" exited with code 1

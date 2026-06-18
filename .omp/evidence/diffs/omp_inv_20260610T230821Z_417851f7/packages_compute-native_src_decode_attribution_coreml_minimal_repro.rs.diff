@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/decode_attribution/coreml_minimal_repro.rs
++++ b/packages/compute-native/src/decode_attribution/coreml_minimal_repro.rs
+@@ -1103,7 +1103,7 @@
+             producer_map: &[("matmul_1", 1, "matmul", "matmul_1")],
+             op_inputs: &[(1, "x", "x"), (1, "y", "w_0")],
+             expected_fate: "expected_pass",
+-            build: |b| b,
++            build: |b| Ok(b),
+         };
+ 
+         let result = verify_graph_contract(&program, &contract);
