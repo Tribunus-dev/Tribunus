@@ -88,6 +88,27 @@ Discrete GPU wake latency (30-50 ms) makes power-gated GPUs unsuitable for inter
 - **Demand-based**: Full power only during inference, wake latency on cold start
 - **NPU-first**: Small models route to NPU (< 1W idle), GPU reserved for large models
 
+### Heterogeneous GPU Topologies
+
+Systems may contain GPUs from different vendors. The topology discovery must handle mixed-vendor configurations.
+
+**Per-vendor driver stacks:** Each vendor uses a completely separate driver stack. AMD + NVIDIA = ROCm/HIP + CUDA. These do not share contexts, events, or memory.
+
+**Mixed-vendor routing rules:**
+1. Each GPU is an independent compute island with its own memory domain and queue family.
+2. Cross-vendor data must route through host memory (system RAM) — no NVLink between AMD and NVIDIA.
+3. The planner minimizes cross-vendor transfers. Ideally the model runs entirely on one vendor\'s GPUs.
+4. If cross-vendor is required, the compiler inserts host-staging copies at the boundary.
+5. BackendRealizer (ADR 0037) selects per-phase kernels based on which vendor executes that phase.
+
+**Same-vendor multi-GPU:** GPUs from the same vendor (e.g., 2x RTX 4090) can use PCIe P2P or NVLink.
+
+**AMD CPU + Intel GPU:** CPU AMX handles small-batch decode (low latency), Intel Arc handles prefill (throughput).
+
+**Heterogeneous VRAM:** GPUs with different capacities (24 GB + 12 GB) get proportional weight shards.
+
+**Discovery order:** CUDA -> HIP/ROCm -> Level Zero -> Vulkan -> unified topology -> select primary coordinator -> assign secondary islands.
+
 ### Backend Mapping
 
 | Vendor | File | API | Graph dispatch | ADR |

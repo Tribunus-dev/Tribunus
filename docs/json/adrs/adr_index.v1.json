@@ -247,11 +247,38 @@
       "file": "docs/json/adrs/0036-arena-ring-lease-runtime-architecture.v1.json",
       "supersedes": [],
       "superseded_by": []
+    },
+    {
+      "id": "0037",
+      "title": "Backend Realization Contract \u2014 Phase-Contract System for Multi-Backend Kernel Selection, Capability Queries, and Compilation Evidence",
+      "status": "proposed",
+      "date": "2026-06-18",
+      "file": "docs/json/adrs/0037-backend-realization-contract.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0038",
+      "title": "Numerical Governance and Autotuning \u2014 Operator-Level Tolerance Contracts, Differential Oracle, and Evidence-Based Kernel Selection Infrastructure",
+      "status": "proposed",
+      "date": "2026-06-18",
+      "file": "docs/json/adrs/0038-numerical-governance-autotuning.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0039",
+      "title": "Tribunus Datacenter \u2014 Evidence-Driven Inference Control Plane for Multi-Engine, Multi-Vendor, Multi-Scale Serving",
+      "status": "proposed",
+      "date": "2026-06-18",
+      "file": "docs/json/adrs/0039-tribunus-datacenter-control-plane.v1.json",
+      "supersedes": [],
+      "superseded_by": []
     }
   ],
   "stats": {
-    "total": 27,
-    "proposed": 12,
+    "total": 30,
+    "proposed": 15,
     "accepted": 16,
     "deprecated": 0,
     "superseded": 0
