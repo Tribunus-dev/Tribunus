@@ -1,3 +1,4 @@
+pub mod cuda;
 pub mod runtime;
 //! Tribunus Compute Kernel — native MLX backend via napi-rs.
 
