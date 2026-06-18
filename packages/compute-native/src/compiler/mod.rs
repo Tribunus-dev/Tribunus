@@ -14,6 +14,7 @@ pub mod scheduled;
 pub mod pass;
 pub mod lowering;
 pub mod ane;
+pub mod pipeline_spec;
 
 #[cfg(test)]
 mod pipeline_tests;
@@ -81,3 +82,4 @@ pub trait BackendLowering {
         region: &scheduled::ScheduledRegion,
     ) -> Result<(Self::Artifact, LoweringReceipt), String>;
 }
+pub mod pipeline_arena;

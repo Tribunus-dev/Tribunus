@@ -274,11 +274,38 @@
       "file": "docs/json/adrs/0039-tribunus-datacenter-control-plane.v1.json",
       "supersedes": [],
       "superseded_by": []
+    },
+    {
+      "id": "0040",
+      "title": "Runtime Inference Pipelines — Six Deterministic Execution Stages for Precompiled Compute Images",
+      "status": "proposed",
+      "date": "2026-06-18",
+      "file": "docs/json/adrs/0040-runtime-inference-pipelines.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0041",
+      "title": "Tribunus Server UX — Terminal Dashboard, Model Management, CLI Ergonomics, and Developer Experience for Local Inference",
+      "status": "proposed",
+      "date": "2026-06-18",
+      "file": "docs/json/adrs/0041-tribunus-server-ux.v1.json",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "id": "0041",
+      "title": "Tribunus Server UX — Terminal Dashboard, Model Management, CLI Ergonomics, and Developer Experience for Local Inference",
+      "status": "proposed",
+      "date": "2026-06-18",
+      "file": "docs/json/adrs/0041-tribunus-server-ux.v1.json",
+      "supersedes": [],
+      "superseded_by": []
     }
   ],
   "stats": {
-    "total": 30,
-    "proposed": 15,
+    "total": 33,
+    "proposed": 17,
     "accepted": 16,
     "deprecated": 0,
     "superseded": 0

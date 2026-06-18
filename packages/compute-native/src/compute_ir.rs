@@ -247,3 +247,4 @@ impl Default for ComputeExecutionIR {
         Self::new()
     }
 }
+pub type PhaseIR = IrRegion;
