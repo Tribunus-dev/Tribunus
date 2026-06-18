@@ -66,6 +66,7 @@ pub mod mlx_patch_register;
 pub mod native_kernel;
 pub mod residency;
 pub mod runtime_trace;
+pub mod runtime;
 pub mod sidecar;
 pub mod streaming;
 pub mod receipts;
