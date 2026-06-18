@@ -1,4 +1,4 @@
-import { Menu, Tray, nativeImage, type MenuItemConstructorOptions } from "electron"
+import { Menu, Tray, nativeImage, type MenuItemConstructorOptions, BrowserWindow } from "electron"
 import { join } from "node:path"
 import { app } from "electron"
 import type { SidecarState } from "./server"
@@ -13,7 +13,14 @@ type Deps = {
 let tray: Tray | null = null
 let refreshTimer: NodeJS.Timeout | null = null
 
-export function createMenuBarHelper(deps: Deps): void {
+export function createMenuBarHelper(deps: Deps, mainWindow?: BrowserWindow): Tray | null | void {
+  if (process.platform === 'linux' && mainWindow) {
+    const tray = createLinuxTray(mainWindow)
+    if (tray) return tray
+    // Fall through to no tray (headless mode)
+    return null
+  }
+
   if (process.platform !== "darwin") return
   if (tray) return
 
@@ -66,4 +73,35 @@ function buildTemplate(status: SidecarState, deps: Deps): MenuItemConstructorOpt
       click: () => deps.quit(),
     },
   ]
+}
+
+
+export function createLinuxTray(mainWindow: BrowserWindow): Tray | null {
+  if (process.platform !== 'linux') return null
+
+  try {
+    const iconPath = app.isPackaged
+      ? join(process.resourcesPath, 'icon.png')
+      : join(__dirname, '../../resources/icon.png')
+    const icon = nativeImage.createFromPath(iconPath)
+    const tray = new Tray(icon.resize({ width: 22, height: 22 }))
+
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Open Tribunus', click: () => { mainWindow.show(); mainWindow.focus() } },
+      { type: 'separator' },
+      { label: 'Start Server', click: () => { mainWindow.webContents.send('server:start') } },
+      { label: 'Stop Server', click: () => { mainWindow.webContents.send('server:stop') } },
+      { type: 'separator' },
+      { label: 'Check Status', click: () => { mainWindow.webContents.send('server:status') } },
+      { type: 'separator' },
+      { label: 'Quit', click: () => { app.quit() } }
+    ])
+
+    tray.setToolTip('Tribunus')
+    tray.setContextMenu(contextMenu)
+    return tray
+  } catch (err) {
+    console.warn('[linux-tray] Failed to create tray:', err)
+    return null
+  }
 }
