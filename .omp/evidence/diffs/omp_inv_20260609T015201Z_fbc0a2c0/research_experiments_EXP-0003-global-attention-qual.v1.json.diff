@@ -1,0 +1,10 @@
+--- a/research/experiments/EXP-0003-global-attention-qual.v1.json
++++ b/research/experiments/EXP-0003-global-attention-qual.v1.json
+@@ -7,7 +7,6 @@
+   "treatment_config": "v3-baseline",
+   "workloads": ["global-attention-layer"],
+   "machine_profile_id": "apple-m1-pro",
+-  "run_grade": "experimental",
+   "run_grade": "claim_candidate",
+   "instrumentation_mode": "research_standard",
+   "primary_metric": "token_correctness",

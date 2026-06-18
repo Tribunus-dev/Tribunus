@@ -1,0 +1,3 @@
+{"at":"2026-06-01T02:03:04.077Z","session_id":"ses_17f1a3ef2ffe06xm5cGsfMG89Y","agent":"reversibility-checker","tool":"smart_grep","pattern":"TODO\\(F4\\)","path":"packages/opencode/src/campaign"}
+{"at":"2026-06-01T02:04:31.973Z","session_id":"ses_17f1a3ef2ffe06xm5cGsfMG89Y","agent":"reversibility-checker","tool":"smart_grep","pattern":"from.*[\"']\\.\\/binder[\"']|from.*[\"'].*binder[\"']","path":"packages/opencode/src/campaign/index.ts"}
+{"at":"2026-06-01T02:04:32.985Z","session_id":"ses_17f1a3ef2ffe06xm5cGsfMG89Y","agent":"reversibility-checker","tool":"smart_grep","pattern":"export.*from.*binder","path":"packages/opencode/src/campaign"}

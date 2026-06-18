@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0016",
+  "type": "campaign",
+  "name": "Memory Runtime and Knowledge Graph",
+  "slug": "memory-runtime-and-knowledge-graph",
+  "description": "Shared MemoryRuntime service with physical bank registry, extension memory isolation, project/organization memory boundaries, retention policy, recall ranking, deduplication, session-close consolidation, durable outcome promotion, knowledge triple model, entity resolution, transitive graph queries, contradiction semantics, export/erasure, encryption, and adversarial isolation verification.",
+  "objective": "Build the unified memory runtime and knowledge graph spanning banks, triples, resolution, contradiction detection, and adversarial verification.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "memory",
+    "knowledge-graph",
+    "mnemopi",
+    "isolation"
+  ],
+  "maturity": "modeled",
+  "horizon": "planned",
+  "created_at": "2026-06-07T04:35:40.916Z",
+  "updated_at": "2026-06-07T04:35:40.916Z"
+}

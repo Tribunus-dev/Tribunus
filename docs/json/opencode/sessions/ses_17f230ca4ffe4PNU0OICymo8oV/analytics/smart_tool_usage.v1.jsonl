@@ -1,0 +1,12 @@
+{"at":"2026-06-01T02:01:48.853Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"fromDirectory","path":"packages/opencode/src/project/project.ts"}
+{"at":"2026-06-01T02:04:18.899Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"fromDirectory","path":"packages/opencode/src/project/project.ts"}
+{"at":"2026-06-01T02:13:22.175Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"Schema\\.Literal\\(true\\)","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:14:13.944Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"global.health","path":"packages/sdk"}
+{"at":"2026-06-01T02:14:14.846Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"BusEvent\\.define\\(","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:15:16.420Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"global.health","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:16:08.819Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"global_health|GlobalHealth","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:17:24.013Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"GlobalHealthData","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:18:35.125Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"export type GlobalHealthData","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:20:40.611Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"WorkspaceContext","path":"packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T02:20:41.316Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"workspaceID","path":"packages/opencode/src/control-plane/workspace-context.ts"}
+{"at":"2026-06-01T02:21:18.286Z","session_id":"ses_17f230ca4ffe4PNU0OICymo8oV","agent":"architect","tool":"smart_grep","pattern":"GlobalBus|WorkspaceContext","path":"packages/opencode/src/project/bootstrap.ts"}

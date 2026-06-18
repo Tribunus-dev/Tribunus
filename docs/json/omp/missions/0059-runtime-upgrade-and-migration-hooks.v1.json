@@ -1,0 +1,68 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0059-runtime-upgrade-and-migration-hooks",
+  "type": "mission",
+  "name": "Runtime Upgrade and Migration Hooks",
+  "slug": "runtime-upgrade-and-migration-hooks",
+  "description": "When the application upgrades, migration hooks run: database migrations, config migrations, state format migrations. Rollback on failure.",
+  "purpose": "Upgrades are safe and reversible.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Migration hooks are registered with version range and ordered by dependency",
+    "Each migration is transactional — failure triggers automatic rollback of that migration",
+    "Migration runner detects previous version and applies only unapplied migrations in order",
+    "Failed migration rolls back the complete migration chain, not just the failed step",
+    "Pre-upgrade snapshot of mutable state is taken before migration execution",
+    "Post-upgrade health check verifies migrated state is consistent",
+    "Migration logs are written for audit trail and post-mortem"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "upgrade",
+    "migration",
+    "hooks",
+    "rollback",
+    "audit"
+  ],
+  "depends_on": [
+    "0053-instance-bootstrap-and-dependency-assembly",
+    "0060-resource-ownership-and-deterministic-teardown"
+  ],
+  "unlocks": [],
+  "authority_scope": "migration",
+  "allowed_paths": [
+    "packages/app/src/runtime/migrations/**"
+  ],
+  "required_evidence": [
+    "Migration hook registration with version range and ordering test",
+    "Transactional migration with rollback on failure test",
+    "Only unapplied migrations run on upgrade test",
+    "Full chain rollback on mid-chain failure test",
+    "Pre-upgrade snapshot test",
+    "Post-upgrade health check test",
+    "Audit log output test"
+  ],
+  "acceptance_gates": [
+    "Migrations registered with version range and ordered by dependency",
+    "Each migration is transactional with rollback",
+    "Only unapplied migrations run",
+    "Failed migration rolls back full chain",
+    "Pre-upgrade snapshot taken",
+    "Post-upgrade health check passes",
+    "Audit trail written"
+  ],
+  "rollback_strategy": "Full migration chain rollback on any step failure — restore pre-upgrade snapshot",
+  "recovery_strategy": "Restore from pre-upgrade snapshot and retry migration with fixed version",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "After max failed upgrade attempts, escalate to user with migration failure diagnostics",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.491Z",
+  "updated_at": "2026-06-07T05:45:37.007Z"
+}

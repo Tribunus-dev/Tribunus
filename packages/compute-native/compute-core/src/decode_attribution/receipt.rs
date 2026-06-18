@@ -1,0 +1,566 @@
+use serde::{Deserialize, Serialize};
+
+/// Structured per-backend version information.
+///
+/// Each backend has its own fields; null + diagnostic for unavailable info.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BackendVersionInfo {
+    // ── Core ML ──────────────────────────────────────────────────────────
+    /// Xcode version (e.g. "17.0"), null if unknown.
+    pub coreml_xcode_version: Option<String>,
+    /// Path to coremlcompiler binary found via xcrun.
+    pub coreml_coremlcompiler_path: Option<String>,
+    /// Core ML compiler version string, null if unavailable.
+    pub coreml_compiler_version: Option<String>,
+    /// Diagnostic note if any Core ML version is unavailable.
+    pub coreml_diagnostic: Option<String>,
+    // ── MLX ──────────────────────────────────────────────────────────────
+    /// MLX library version string (e.g. "0.22.1"), null if unknown.
+    pub mlx_version: Option<String>,
+    /// Diagnostic note if MLX version is unavailable.
+    pub mlx_diagnostic: Option<String>,
+    // ── Accelerate ───────────────────────────────────────────────────────
+    /// Accelerate SDK / macOS version string (e.g. "15.5"), null if unknown.
+    pub accelerate_sdk_version: Option<String>,
+    /// Observed or set BLAS threading controls, null if none.
+    pub accelerate_blas_threading_controls: Option<String>,
+    /// Diagnostic note if Accelerate version is unavailable.
+    pub accelerate_diagnostic: Option<String>,
+}
+
+impl Default for BackendVersionInfo {
+    fn default() -> Self {
+        Self {
+            coreml_xcode_version: None,
+            coreml_coremlcompiler_path: None,
+            coreml_compiler_version: None,
+            coreml_diagnostic: None,
+            mlx_version: None,
+            mlx_diagnostic: None,
+            accelerate_sdk_version: None,
+            accelerate_blas_threading_controls: None,
+            accelerate_diagnostic: None,
+        }
+    }
+}
+
+/// What engine actually executed the graph for this row.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ExecutionKind {
+    /// The named backend ran the graph directly.
+    NativeBackend,
+    /// A CPU-specific domain adapter (not the generic reference evaluator).
+    DomainCpuAdapter,
+    /// The generic pure-Rust reference evaluator produced the output.
+    ReferenceEvaluator,
+    /// Intentionally unsupported family for this backend.
+    Unsupported,
+    /// Native bridge fault during execution; no engine reached predict.
+    Crashed,
+}
+
+impl Default for ExecutionKind {
+    fn default() -> Self {
+        Self::Unsupported
+    }
+}
+
+/// Structured proof of what engine executed each operation in this row.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExecutionProof {
+    /// Engine identifier: "coreml", "mlx", "accelerate", "reference", "domain_cpu".
+    pub engine: String,
+    /// Operations executed by the named backend.
+    pub accelerated_ops: Vec<String>,
+    /// Operations executed by CPU fallback/adapter.
+    pub cpu_ops: Vec<String>,
+    /// Operations executed by the generic reference evaluator.
+    pub reference_ops: Vec<String>,
+    /// Accelerate BLAS operations (e.g., "matmul:cblas_sgemm").
+    pub accelerate_blas_ops: Vec<String>,
+    /// Accelerate vDSP operations (e.g., "add:vDSP_vadd", "mul:vDSP_vmul").
+    pub accelerate_vdsp_ops: Vec<String>,
+    /// Accelerate vForce operations (e.g., "sigmoid:vvexpf").
+    pub accelerate_vforce_ops: Vec<String>,
+    /// Tribunus-owned CPU glue (scalar loops, negate, reciprocal, etc.).
+    pub cpu_glue_ops: Vec<String>,
+    /// Backend execution path (Core ML model path, MLX eval path).
+    pub bridge_path: Option<String>,
+    /// Human-readable execution summary.
+    pub notes: Option<String>,
+}
+
+impl Default for ExecutionProof {
+    fn default() -> Self {
+        Self {
+            engine: String::new(),
+            accelerated_ops: vec![],
+            cpu_ops: vec![],
+            reference_ops: vec![],
+            accelerate_blas_ops: vec![],
+            accelerate_vdsp_ops: vec![],
+            accelerate_vforce_ops: vec![],
+            cpu_glue_ops: vec![],
+            bridge_path: None,
+            notes: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DecodeAttributionReceipt {
+    // ── Provenance scopes ─────────────────────────────────────────────────
+    pub run_id: String,
+    #[serde(default)]
+    pub lattice_cell_id: String,
+    pub commit_sha: String,
+    pub branch: String,
+    /// Structured proof of what executed each operation.
+    pub execution_proof: ExecutionProof,
+    /// True when any file in the repo is dirty.
+    pub repo_dirty_tree_global: bool,
+    /// True when dirty files exist under packages/compute-native/.
+    pub compute_dirty_tree: bool,
+    /// True when Cargo.toml, Cargo.lock, build.rs, or .cargo/ is dirty.
+    pub dependency_scope_dirty: bool,
+    pub timestamp: String,
+    pub schema_version: String,
+    pub host_chip: String,
+    pub macos_version: String,
+    pub xcode_version: String,
+    pub coremlcompiler_version: String,
+    /// Structured per-backend version information (replaces flat fields where structured form is useful).
+    pub backend_versions: Option<BackendVersionInfo>,
+    // ── Timer overhead metadata ───────────────────────────────────────────
+    /// Measured empty-loop Instant::now() overhead in ns, null if not measured.
+    pub timer_overhead_ns: Option<u64>,
+    /// How timer_overhead_ns was measured: "empty_loop_calibration" or "back_to_back_now".
+    pub timer_overhead_method: Option<String>,
+    /// False this gate — raw timings are not adjusted for overhead.
+    pub raw_timing_adjusted: bool,
+    // ── Skipped-by-support diagnostics ────────────────────────────────────
+    /// When status="skipped_by_support": why the adapter does not support this family.
+    pub unsupported_reason: Option<String>,
+    /// When status="skipped_by_support": which adapter module would need implementation.
+    pub missing_adapter: Option<String>,
+    /// When status="skipped_by_support": list of families this backend does support.
+    pub supported_families: Vec<String>,
+    /// Canonical inference pipeline phase (e.g. "qkv_projection", "activation").
+    /// `None` for harness control families or legacy receipts that predate this field.
+    pub pipeline_phase: Option<String>,
+    /// Phase variant disambiguating different operations within a phase
+    /// (e.g. "generic_projection" vs "parallel_projection_rejoin" for projection phases).
+    #[serde(default)]
+    pub phase_variant: String,
+    /// Full semantic contract ID encoding (phase/variant), enabling comparison
+    /// grouping to distinguish different operations within the same phase.
+    #[serde(default)]
+    pub semantic_contract_id: String,
+    pub graph_family: String,
+    pub shape_profile: String,
+    pub graph_status: String,
+    pub op_count: u32,
+    pub input_shape: Vec<u32>,
+    pub weight_shape: Vec<u32>,
+    pub output_shapes: Vec<Vec<u32>>,
+    pub dtype: String,
+    pub matrix_name: String,
+    pub matrix_required: bool,
+    pub configured_warmup_iterations: u32,
+    pub configured_steady_iterations: u32,
+    pub tolerance: f64,
+    pub percentile_method: String,
+    pub materialize_duration_ns: u64,
+    pub source_package_sha256: String,
+    pub compile_duration_ns: u64,
+    pub compiled_artifact_sha256: String,
+    pub compile_exit_status: i32,
+    pub compile_diagnostics: Vec<String>,
+    pub compiler_stdout_sha256: String,
+    pub compiler_stderr_sha256: String,
+    pub compiler_stdout_sidecar_path: Option<String>,
+    pub compiler_stderr_sidecar_path: Option<String>,
+    pub runtime_compute_units: String,
+    pub backend: String,
+    pub backend_runtime_policy: String,
+    pub backend_support_status: String,
+    pub backend_prepare_duration_ns: u64,
+    pub materialization_kind: String,
+    pub compile_kind: String,
+    pub load_kind: String,
+    pub execution_kind: String,
+    pub materialize_status: String,
+    pub compile_status: String,
+    pub load_status: String,
+    pub cold_status: String,
+    pub warmup_status: String,
+    pub steady_status: String,
+    pub reference_status: String,
+    pub mlx_device: String,
+    pub mlx_eval_forced: bool,
+    pub mlx_eval_method: String,
+    pub load_duration_ns: u64,
+    pub load_success: bool,
+    pub model_description_summary: Option<String>,
+    pub compute_plan_status: String,
+    pub compute_plan_summary: Option<String>,
+    pub cold_first_predict_ns: u64,
+    pub cold_output_hashes: Vec<String>,
+    pub warmup_iterations: u32,
+    pub warmup_total_ns: u64,
+    pub steady_iterations: u32,
+    pub steady_sample_ns: Vec<u64>,
+    pub steady_total_ns: u64,
+    pub steady_p50_ns: u64,
+    pub steady_p90_ns: u64,
+    pub steady_p99_ns: u64,
+    pub steady_min_ns: u64,
+    pub steady_max_ns: u64,
+    pub steady_mean_ns: f64,
+    pub steady_stddev_ns: f64,
+    pub steady_mad_ns: f64,
+    pub steady_iqr_ns: f64,
+    pub steady_outlier_count: u32,
+    pub memory_measurement_method: String,
+    pub process_rss_before_materialize_kb: u64,
+    pub process_rss_before_load_kb: u64,
+    pub process_rss_after_load_kb: u64,
+    pub process_rss_after_cold_predict_kb: u64,
+    pub process_rss_after_steady_kb: u64,
+    pub max_absolute_error: f64,
+    pub max_relative_error: f64,
+    pub mean_absolute_error: f64,
+    pub cosine_similarity: f64,
+    pub matches_tolerance: bool,
+    pub reference_output_hashes: Vec<String>,
+    /// True when reference evaluator ran and produced hashes for this row (always true in lattice mode).
+    pub reference_output_hashes_populated: bool,
+    pub accelerate_status: String,
+    pub accelerate_duration_ns: Option<u64>,
+    pub accelerate_output_hashes: Vec<String>,
+    pub status: String,
+    /// Observed runtime outcome: pass | materialize_limited | compile_limited | load_blocked | predict_blocked | numerical_divergence | timeout | memory_oom | skipped_by_support.
+    pub predict_status: String,
+    /// Phase-specific failure classification for non-pass rows.
+    pub predict_failure_classification: String,
+    /// Last completed predict breadcrumb before crash (empty if predict completed).
+    pub last_completed_predict_breadcrumb: String,
+    /// Static capability tier: supported_native | supported_composed | unsupported_graph | not_implemented.
+    pub support_tier: String,
+    /// True if package SHA changed between runs for same graph/shape (determinism failure).
+    pub package_determinism_failure: bool,
+    pub failure_reason: Option<String>,
+    /// True if MLX compile() was attempted (false for this gate; future gates may set true).
+    pub mlx_compile_attempted: bool,
+    /// MLX phase-split timing: time to construct MLX arrays from host data.
+    pub mlx_array_construct_ns: u64,
+    /// MLX phase-split timing: time to build lazy graph nodes (ops, no eval).
+    pub mlx_graph_build_ns: u64,
+    /// MLX phase-split timing: time for .eval() only (no graph build, no readback).
+    pub mlx_eval_only_ns: u64,
+    /// MLX phase-split timing: time to read output back to host (.try_as_slice).
+    pub mlx_readback_ns: u64,
+    /// True if MLX cache hit (plan cache reuse) — always false for this gate.
+    pub mlx_cache_hit: bool,
+    /// Time spent in Python boundary (ns) — 0 for Rust-native, nonzero placeholder for future Python path.
+    pub python_boundary_ns: Option<u64>,
+    /// Core ML phase-split: time to build MIL program (proto generation).
+    pub coreml_mil_build_ns: u64,
+    /// Core ML phase-split: time to serialize .mlpackage to disk.
+    pub coreml_package_write_ns: u64,
+    /// Core ML phase-split: time for xcrun coremlcompiler invocation.
+    pub coreml_compiler_ns: u64,
+    /// Core ML phase-split: time to load .mlmodelc via CoreMlModel::load.
+    pub coreml_model_load_ns: u64,
+    /// Cache hit: true when cache key (graph_hash+shape+policy+target+version) matched and reused.
+    pub compile_cache_hit: bool,
+    /// Amortization factor: cold_first_predict_ns / steady_p50_ns (null if predict never reached).
+    pub amortization_factor: Option<f64>,
+    /// Terminal phase: exact sub-phase where execution terminated (enum serialized as snake_case).
+    pub terminal_phase: String,
+    /// Raw xcrun coremlcompiler stdout.
+    pub compiler_stdout: Option<String>,
+    /// Raw xcrun coremlcompiler stderr.
+    pub compiler_stderr: Option<String>,
+    /// coremlcompiler exit code.
+    pub compiler_exit_code: Option<i32>,
+    /// Non-compiler failure diagnostics (load error, predict bridge error, output spec mismatch).
+    pub failure_diagnostics: Option<String>,
+    /// Structural verification status: "pending" | "pass" | "fail" with specific error code.
+    pub structural_status: String,
+    /// Machine-readable structural error codes (comma-separated).
+    pub structural_errors: String,
+    // ── Build Provenance ──────────────────────────────────────────────────
+    pub target_cpu: String,
+    pub target_triple: String,
+    pub linker: String,
+    pub mlx_fork_identity: String,
+    pub is_local_override: bool,
+    pub authority_eligible: bool,
+}
+
+impl Default for DecodeAttributionReceipt {
+    fn default() -> Self {
+        let rustflags = option_env!("TRIBUNUS_RUSTFLAGS").unwrap_or("");
+        let target_cpu = rustflags
+            .split_whitespace()
+            .find(|f| f.starts_with("target-cpu="))
+            .map(|f| f.trim_start_matches("target-cpu=").to_string())
+            .unwrap_or_else(|| "default".to_string());
+
+        Self {
+            run_id: String::new(),
+            lattice_cell_id: String::new(),
+            commit_sha: String::new(),
+            branch: String::new(),
+            execution_proof: ExecutionProof::default(),
+            repo_dirty_tree_global: false,
+            compute_dirty_tree: false,
+            dependency_scope_dirty: false,
+            timestamp: String::new(),
+            schema_version: String::new(),
+            host_chip: String::new(),
+            macos_version: String::new(),
+            xcode_version: String::new(),
+            coremlcompiler_version: String::new(),
+            backend_versions: None,
+            timer_overhead_ns: None,
+            timer_overhead_method: None,
+            raw_timing_adjusted: false,
+            unsupported_reason: None,
+            missing_adapter: None,
+            supported_families: vec![],
+            pipeline_phase: None,
+            phase_variant: String::new(),
+            semantic_contract_id: String::new(),
+            graph_family: String::new(),
+            shape_profile: String::new(),
+            graph_status: String::new(),
+            op_count: 0,
+            input_shape: vec![],
+            weight_shape: vec![],
+            output_shapes: vec![],
+            dtype: String::new(),
+            matrix_name: String::new(),
+            matrix_required: false,
+            configured_warmup_iterations: 0,
+            configured_steady_iterations: 0,
+            tolerance: 0.0,
+            percentile_method: String::new(),
+            materialize_duration_ns: 0,
+            source_package_sha256: String::new(),
+            compile_duration_ns: 0,
+            compiled_artifact_sha256: String::new(),
+            compile_exit_status: 0,
+            compile_diagnostics: vec![],
+            compiler_stdout_sha256: String::new(),
+            compiler_stderr_sha256: String::new(),
+            compiler_stdout_sidecar_path: None,
+            compiler_stderr_sidecar_path: None,
+            runtime_compute_units: String::new(),
+            backend: String::new(),
+            backend_runtime_policy: String::new(),
+            backend_support_status: String::new(),
+            backend_prepare_duration_ns: 0,
+            materialization_kind: String::new(),
+            compile_kind: String::new(),
+            load_kind: String::new(),
+            execution_kind: String::new(),
+            materialize_status: String::new(),
+            compile_status: String::new(),
+            load_status: String::new(),
+            cold_status: String::new(),
+            warmup_status: String::new(),
+            steady_status: String::new(),
+            reference_status: String::new(),
+            mlx_device: String::new(),
+            mlx_eval_forced: false,
+            mlx_eval_method: String::new(),
+            load_duration_ns: 0,
+            load_success: false,
+            model_description_summary: None,
+            compute_plan_status: String::new(),
+            compute_plan_summary: None,
+            cold_first_predict_ns: 0,
+            cold_output_hashes: vec![],
+            warmup_iterations: 0,
+            warmup_total_ns: 0,
+            steady_iterations: 0,
+            steady_sample_ns: vec![],
+            steady_total_ns: 0,
+            steady_p50_ns: 0,
+            steady_p90_ns: 0,
+            steady_p99_ns: 0,
+            steady_min_ns: 0,
+            steady_max_ns: 0,
+            steady_mean_ns: 0.0,
+            steady_stddev_ns: 0.0,
+            steady_mad_ns: 0.0,
+            steady_iqr_ns: 0.0,
+            steady_outlier_count: 0,
+            memory_measurement_method: String::new(),
+            process_rss_before_materialize_kb: 0,
+            process_rss_before_load_kb: 0,
+            process_rss_after_load_kb: 0,
+            process_rss_after_cold_predict_kb: 0,
+            process_rss_after_steady_kb: 0,
+            max_absolute_error: 0.0,
+            max_relative_error: 0.0,
+            mean_absolute_error: 0.0,
+            cosine_similarity: 0.0,
+            matches_tolerance: false,
+            reference_output_hashes: vec![],
+            reference_output_hashes_populated: false,
+            accelerate_status: String::new(),
+            accelerate_duration_ns: None,
+            accelerate_output_hashes: vec![],
+            status: String::new(),
+            predict_status: String::new(),
+            predict_failure_classification: String::new(),
+            last_completed_predict_breadcrumb: String::new(),
+            support_tier: String::new(),
+            package_determinism_failure: false,
+            failure_reason: None,
+            mlx_compile_attempted: false,
+            mlx_array_construct_ns: 0,
+            mlx_graph_build_ns: 0,
+            mlx_eval_only_ns: 0,
+            mlx_readback_ns: 0,
+            mlx_cache_hit: false,
+            python_boundary_ns: None,
+            coreml_mil_build_ns: 0,
+            coreml_package_write_ns: 0,
+            coreml_compiler_ns: 0,
+            coreml_model_load_ns: 0,
+            compile_cache_hit: false,
+            amortization_factor: None,
+            terminal_phase: String::new(),
+            compiler_stdout: None,
+            compiler_stderr: None,
+            compiler_exit_code: None,
+            failure_diagnostics: None,
+            structural_status: "pending".to_string(),
+            structural_errors: String::new(),
+            target_cpu,
+            target_triple: option_env!("TRIBUNUS_TARGET")
+                .unwrap_or("unknown")
+                .to_string(),
+            linker: option_env!("TRIBUNUS_LINKER")
+                .unwrap_or("default")
+                .to_string(),
+            mlx_fork_identity: option_env!("TRIBUNUS_MLX_IDENTITY")
+                .unwrap_or("unknown")
+                .to_string(),
+            is_local_override: option_env!("TRIBUNUS_MLX_LOCAL_OVERRIDE").is_some(),
+            authority_eligible: option_env!("TRIBUNUS_MLX_LOCAL_OVERRIDE").is_none()
+                && option_env!("TRIBUNUS_LINKER")
+                    .map(|ld| ld == "apple-ld")
+                    .unwrap_or(true),
+        }
+    }
+}
+
+impl DecodeAttributionReceipt {
+    pub fn mark_passed(&mut self) {
+        self.status = "pass".to_string();
+        self.predict_status = "pass".to_string();
+        self.predict_failure_classification.clear();
+        self.terminal_phase = "complete".to_string();
+        self.materialize_status = "ok".to_string();
+        self.compile_status = "ok".to_string();
+        self.load_status = "ok".to_string();
+    }
+
+    pub fn mark_skipped_by_support(&mut self, reason: String) {
+        self.status = "skipped_by_support".to_string();
+        self.predict_status = "skipped_by_support".to_string();
+        self.predict_failure_classification = "skipped_by_support".to_string();
+        self.terminal_phase = "skipped_by_support".to_string();
+        self.unsupported_reason = Some(reason);
+    }
+
+    pub fn mark_compile_limited(&mut self, reason: String) {
+        self.status = "compile_error".to_string();
+        self.predict_status = "compile_limited".to_string();
+        self.predict_failure_classification = "compile_limited".to_string();
+        self.terminal_phase = "mil_build".to_string();
+        self.failure_reason = Some(reason);
+    }
+
+    pub fn mark_predict_blocked(&mut self, phase: &str, reason: String) {
+        self.status = "prediction_error".to_string();
+        self.predict_status = "predict_blocked".to_string();
+        self.predict_failure_classification = "predict_blocked".to_string();
+        self.terminal_phase = phase.to_string();
+        self.failure_reason = Some(reason);
+    }
+
+    pub fn mark_predict_crashed(&mut self, phase: &str, classification: String, reason: String) {
+        self.status = "prediction_error".to_string();
+        self.predict_status = "predict_crashed".to_string();
+        self.predict_failure_classification = classification;
+        self.terminal_phase = phase.to_string();
+        self.failure_reason = Some(reason);
+    }
+
+    pub fn mark_numerical_divergence(&mut self, max_abs_err: f64) {
+        self.status = "numerical_divergence".to_string();
+        self.predict_status = "numerical_divergence".to_string();
+        self.predict_failure_classification = "numerical_divergence".to_string();
+        self.terminal_phase = "conformance".to_string();
+        self.max_absolute_error = max_abs_err;
+    }
+
+    pub fn set_supported_native(&mut self) {
+        self.support_tier = "supported_native".to_string();
+        self.backend_support_status = "supported".to_string();
+    }
+
+    pub fn set_supported_composed(&mut self) {
+        self.support_tier = "supported_composed".to_string();
+        self.backend_support_status = "supported".to_string();
+    }
+
+    pub fn set_unsupported_graph(&mut self) {
+        self.support_tier = "unsupported_graph".to_string();
+        self.backend_support_status = "unsupported_graph".to_string();
+    }
+
+    pub fn set_not_implemented(&mut self) {
+        self.support_tier = "not_implemented".to_string();
+        self.backend_support_status = "not_implemented".to_string();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json;
+
+    #[test]
+    fn json_round_trip() {
+        let receipt = DecodeAttributionReceipt::default();
+        let json = serde_json::to_string(&receipt).expect("serialize");
+        let deserialized: DecodeAttributionReceipt =
+            serde_json::from_str(&json).expect("deserialize");
+        assert_eq!(receipt.run_id, deserialized.run_id);
+        assert_eq!(receipt.lattice_cell_id, deserialized.lattice_cell_id);
+    }
+
+    #[test]
+    fn json_round_trip_with_custom_run_id() {
+        let receipt = DecodeAttributionReceipt {
+            run_id: "DA-0001-20260610".to_string(),
+            lattice_cell_id: "coverage-lattice.v2/coreml/matmul/medium/cpuOnly".to_string(),
+            ..DecodeAttributionReceipt::default()
+        };
+        let json = serde_json::to_string(&receipt).expect("serialize");
+        let deserialized: DecodeAttributionReceipt =
+            serde_json::from_str(&json).expect("deserialize");
+        assert_eq!(deserialized.run_id, "DA-0001-20260610");
+        assert_eq!(
+            deserialized.lattice_cell_id,
+            "coverage-lattice.v2/coreml/matmul/medium/cpuOnly"
+        );
+    }
+}

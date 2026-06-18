@@ -1,0 +1,14 @@
+{"at":"2026-06-01T06:32:48.241Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"test","elapsed_ms":2241,"exit_code":0}
+{"at":"2026-06-01T06:32:59.379Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"test","elapsed_ms":11115,"exit_code":1}
+{"at":"2026-06-01T06:33:29.502Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_find","pattern":"instance-trace.test.ts","path":"packages/opencode"}
+{"at":"2026-06-01T06:33:30.113Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_find","pattern":"instance-bootstrap.test.ts","path":"packages/opencode"}
+{"at":"2026-06-01T06:33:30.862Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_find","pattern":"instance.test.ts","path":"packages/opencode"}
+{"at":"2026-06-01T06:33:41.213Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"test","elapsed_ms":21,"exit_code":1}
+{"at":"2026-06-01T06:33:57.837Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"test","elapsed_ms":1786,"exit_code":1}
+{"at":"2026-06-01T06:34:14.999Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"run","elapsed_ms":1699,"exit_code":0}
+{"at":"2026-06-01T06:34:23.493Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"run","elapsed_ms":1848,"exit_code":0}
+{"at":"2026-06-01T06:35:29.144Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"run","elapsed_ms":65612,"exit_code":1}
+{"at":"2026-06-01T06:35:57.044Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"run","elapsed_ms":2206,"exit_code":0}
+{"at":"2026-06-01T06:36:04.400Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"run","elapsed_ms":1889,"exit_code":0}
+{"at":"2026-06-01T06:36:18.781Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"run","elapsed_ms":1817,"exit_code":0}
+{"at":"2026-06-01T06:37:24.062Z","session_id":"ses_17e1f1d6fffenIKCq7d39UZW3L","agent":"trial","tool":"smart_bun","command":"run","elapsed_ms":65113,"exit_code":0}

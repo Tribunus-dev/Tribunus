@@ -1,0 +1,87 @@
+--- a/packages/compute-native/models/gemma_mlp.py
++++ b/packages/compute-native/models/gemma_mlp.py
+@@ -189,8 +189,84 @@
+     print(f"MANIFEST: {manifest_path}")
+     print(f"MODEL: {mlmodelc_path}")
+     print("GATE: DONE")
++
++    # ── Parity comparison: MLX reference vs Core ML ──
++    import mlx.core as mx
++
++    # Reproduce weights with same seed as compiled model
++    rng = np.random.RandomState(42)
++    gate_proj_np = rng.normal(0, 0.02, (INTERMEDIATE_SIZE, HIDDEN_SIZE)).astype(np.float16)
++    up_proj_np = rng.normal(0, 0.02, (INTERMEDIATE_SIZE, HIDDEN_SIZE)).astype(np.float16)
++    down_proj_np = rng.normal(0, 0.02, (HIDDEN_SIZE, INTERMEDIATE_SIZE)).astype(np.float16)
++
++    gate_proj_mx = mx.array(gate_proj_np, dtype=mx.float16)
++    up_proj_mx = mx.array(up_proj_np, dtype=mx.float16)
++    down_proj_mx = mx.array(down_proj_np, dtype=mx.float16)
++
++    # Test input: sin(i/100.0) for i in 0..3839
++    input_np = np.sin(np.arange(HIDDEN_SIZE, dtype=np.float32) / 100.0).astype(np.float16).reshape(1, HIDDEN_SIZE)
++    input_mx = mx.array(input_np, dtype=mx.float16)
++
++    # MLX reference: silu(x @ gate_proj^T) * (x @ up_proj^T) @ down_proj^T
++    gate_ref = mx.silu(input_mx @ gate_proj_mx.T)
++    up_ref = input_mx @ up_proj_mx.T
++    gated_ref = gate_ref * up_ref
++    mlx_output = gated_ref @ down_proj_mx.T
++    mlx_output_np = np.array(mlx_output)
++
++    # Core ML prediction
++    import coremltools as ct
++    model = ct.models.MLModel(mlmodelc_path)
++    coreml_output = model.predict({"x": input_np})
++    output_key = [k for k in coreml_output.keys() if k != "x"][0]
++    coreml_output_np = coreml_output[output_key]
++
++    # Compute error metrics
++    c = mx.array(coreml_output_np)
++    r = mx.array(mlx_output_np)
++
++    shape_match = c.shape == r.shape
++    dtype_match = str(c.dtype) == str(r.dtype)
++    c_finite = mx.all(mx.isfinite(c))
++    r_finite = mx.all(mx.isfinite(r))
++    abs_diff = mx.abs(c - r)
++    max_abs_error = float(mx.max(abs_diff))
++    mean_abs_error = float(mx.mean(abs_diff))
++    rel_err = mx.abs(c - r) / mx.maximum(mx.abs(r), mx.array(1e-6))
++    max_rel_error = float(mx.max(rel_err))
++
++    # Cosine similarity
++    c_flat = mx.reshape(c, (-1,))
++    r_flat = mx.reshape(r, (-1,))
++    dot = mx.sum(c_flat * r_flat)
++    norm_c = mx.sqrt(mx.sum(c_flat * c_flat))
++    norm_r = mx.sqrt(mx.sum(r_flat * r_flat))
++    cosine = float(dot / (norm_c * norm_r))
++
++    parity = {
++        "shape_match": shape_match,
++        "coreml_shape": list(c.shape),
++        "mlx_shape": list(r.shape),
++        "coreml_dtype": str(c.dtype),
++        "mlx_dtype": str(r.dtype),
++        "coreml_finite": bool(c_finite),
++        "mlx_finite": bool(r_finite),
++        "max_abs_error": max_abs_error,
++        "mean_abs_error": mean_abs_error,
++        "max_rel_error": max_rel_error,
++        "cosine_similarity": cosine,
++    }
++
++    json_path = "/tmp/tribunus-gemma-mlp-parity.json"
++    with open(json_path, "w") as f:
++        json.dump(parity, f, indent=2)
++
++    if max_abs_error < 1e-2 and cosine > 0.999:
++        print(f"PARITY: PASS  max_abs_error={max_abs_error:.6e}  cosine={cosine:.6f}")
++    else:
++        print(f"PARITY: FAIL  max_abs_error={max_abs_error:.6e}  mean_abs_error={mean_abs_error:.6e}  max_rel_error={max_rel_error:.6e}  cosine={cosine:.6f}")
+ 
+ 
+ if __name__ == "__main__":
+     main()
+ 

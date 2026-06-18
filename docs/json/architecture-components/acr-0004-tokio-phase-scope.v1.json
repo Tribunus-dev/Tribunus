@@ -1,0 +1,38 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0004",
+  "title": "Tokio Phase Scope",
+  "status": "proposed",
+  "component_type": "state_machine",
+  "owner_subsystem": "Tokio",
+  "definition": "Tokio owns in-process task scheduling, phase execution, deadlines, cancellation, permits, and blocking-work integration within a bounded phase scope.",
+  "invariants": [
+    "Every phase execution must occur inside a phase scope.",
+    "Blocking or native work must not starve the async executor."
+  ],
+  "allowed_states": [
+    "open",
+    "executing",
+    "synchronized",
+    "committed",
+    "closed"
+  ],
+  "forbidden_states": [
+    "ambient_unscoped_execution",
+    "unbounded_phase"
+  ],
+  "required_receipts": [
+    "phase_open_receipt",
+    "phase_commit_receipt"
+  ],
+  "required_validators": [
+    "phase_scope_validator"
+  ],
+  "imported_by": [
+    "ADR-0021",
+    "ADR-0022"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

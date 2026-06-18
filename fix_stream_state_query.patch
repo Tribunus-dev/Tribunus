@@ -1,0 +1,21 @@
+--- packages/runtime/src/coordination/durable-store.ts
++++ packages/runtime/src/coordination/durable-store.ts
+@@ -1684,12 +1684,13 @@
+   ): Effect.Effect<StreamState | null, DatabaseError> {
+     return this.query(async db => {
+       // This is a more complex query - we need to find stream state by entry ID
+-      // For now, we'll query all stream states and filter
+-      // TODO: Optimize with proper indexing if needed
+-      const states = await db.select().from(StreamStateTable).execute()
+-      // In a real implementation, we'd join with the stream entries
+-      // For now, return null as this is a best-effort lookup
+-      return null
++      const [state] = await db
++        .select()
++        .from(StreamStateTable)
++        .where(db.or(db.eq(StreamStateTable.last_entry_id, entryId), db.eq(StreamStateTable.last_processed_entry_id, entryId)))
++        .limit(1)
++        .execute()
++      return state ?? null
+     })
+   }

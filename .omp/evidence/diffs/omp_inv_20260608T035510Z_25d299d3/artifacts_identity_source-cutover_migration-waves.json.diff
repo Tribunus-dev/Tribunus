@@ -1,0 +1,11 @@
+--- a/artifacts/identity/source-cutover/migration-waves.json
++++ b/artifacts/identity/source-cutover/migration-waves.json
+@@ -551,7 +551,7 @@
+       "@opencode-ai/console-core",
+       "@opencode-ai/console-resource"
+     ],
+-    "@opencode-ai/console-support": [
++    "@tribunus/console-support": [
+       "@opencode-ai/console-core"
+     ],
+     "@opencode-ai/console-mail": [],

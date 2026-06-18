@@ -1,0 +1,18 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "9991",
+  "title": "Invalid Receipt Order Example",
+  "status": "proposed",
+  "date": "2026-06-14",
+  "last_modified": "2026-06-14T00:00:00Z",
+  "component_imports": [
+    "ACR-0001",
+    "ACR-0002"
+  ],
+  "decision": "This example says xack before commit to prove the validator rejects receipt-before-ack drift.",
+  "context": "",
+  "consequences": "",
+  "supersedes": [],
+  "superseded_by": []
+}

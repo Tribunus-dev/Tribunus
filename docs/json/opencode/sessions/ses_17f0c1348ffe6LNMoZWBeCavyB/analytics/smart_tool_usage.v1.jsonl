@@ -1,0 +1,11 @@
+{"at":"2026-06-01T02:20:40.506Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_find","pattern":"tsconfig*.json","path":"packages"}
+{"at":"2026-06-01T02:20:58.721Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_find","pattern":"pnpm-workspace.yaml","path":""}
+{"at":"2026-06-01T02:27:20.965Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"\"typecheck\"","path":"packages"}
+{"at":"2026-06-01T02:34:19.320Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"@tsconfig/node22","path":"packages"}
+{"at":"2026-06-01T02:34:22.092Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"@tsconfig/bun","path":"packages"}
+{"at":"2026-06-01T02:34:33.633Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"@tsconfig/node22","path":""}
+{"at":"2026-06-01T02:37:07.333Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"@tsconfig/bun","path":""}
+{"at":"2026-06-01T02:40:05.167Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"\"tsgo\"","path":"packages"}
+{"at":"2026-06-01T02:42:47.503Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"@typescript/native-preview","path":"packages"}
+{"at":"2026-06-01T02:42:49.450Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"\"tsgo\"","path":"packages"}
+{"at":"2026-06-01T02:45:38.315Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","pattern":"tsgo","path":"packages"}

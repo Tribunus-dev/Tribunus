@@ -1,0 +1,78 @@
+{"at":"2026-06-01T05:37:11.009Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"Cause\\.pretty"}
+{"at":"2026-06-01T05:37:11.211Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"10 matches in 500 files"}
+{"at":"2026-06-01T05:37:11.701Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"import.*classifyError"}
+{"at":"2026-06-01T05:37:11.891Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"3 matches in 500 files"}
+{"at":"2026-06-01T05:37:12.609Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"self-export|export \\* as .* from \"\\./\""}
+{"at":"2026-06-01T05:37:12.609Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T05:37:13.475Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"logWarning|logError|annotateLogs"}
+{"at":"2026-06-01T05:37:13.476Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T05:38:29.212Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"export \\* as InstanceFailureCodes"}
+{"at":"2026-06-01T05:38:29.214Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T05:38:29.973Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"\\."}
+{"at":"2026-06-01T05:38:29.975Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"53 matches in 1 files"}
+{"at":"2026-06-01T05:40:02.738Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"export \\* as \\w+ from \"\\.\""}
+{"at":"2026-06-01T05:40:02.916Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"20 matches in 329 files"}
+{"at":"2026-06-01T05:41:15.866Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"classifyError"}
+{"at":"2026-06-01T05:41:15.867Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T05:41:16.341Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"classifyError"}
+{"at":"2026-06-01T05:41:16.342Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T05:41:17.187Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"classifyError|InstanceFailureCodes"}
+{"at":"2026-06-01T05:41:17.188Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T05:43:22.258Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"Log\\.warn"}
+{"at":"2026-06-01T05:43:22.476Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T05:43:23.150Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"Effect\\.logWarning"}
+{"at":"2026-06-01T05:43:23.317Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T05:59:46.922Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"log\\.warn"}
+{"at":"2026-06-01T05:59:46.923Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"14 matches in 1 files"}
+{"at":"2026-06-01T05:59:47.770Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"logWarning"}
+{"at":"2026-06-01T05:59:47.771Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:01:57.258Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"^const log |^export const log |Log\\.create|Log\\.logger"}
+{"at":"2026-06-01T06:01:57.259Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T06:04:33.105Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"@opencode-ai/core/util/log"}
+{"at":"2026-06-01T06:04:33.222Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"5 matches in 12 files"}
+{"at":"2026-06-01T06:05:22.534Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"\"#db\"|'#db'"}
+{"at":"2026-06-01T06:05:22.825Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"3 matches in 500 files"}
+{"at":"2026-06-01T06:06:08.662Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"Effect\\.logWarning.*cause"}
+{"at":"2026-06-01T06:06:08.798Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T06:06:09.408Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"Effect\\.log"}
+{"at":"2026-06-01T06:06:09.475Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"20 matches in 280 files"}
+{"at":"2026-06-01T06:06:26.827Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T06:07:07.220Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T06:09:31.068Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T06:10:01.011Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T06:10:32.694Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","phase":"started","detail":"tsc"}
+{"at":"2026-06-01T06:10:45.167Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"tsc exit=2"}
+{"at":"2026-06-01T06:11:58.248Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"."}
+{"at":"2026-06-01T06:11:58.258Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"30608 matches in 12 files"}
+{"at":"2026-06-01T06:12:00.651Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"export.*HealthRegistry|export.*HealthStatus"}
+{"at":"2026-06-01T06:12:00.683Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"3 matches in 79 files"}
+{"at":"2026-06-01T06:12:00.699Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"export.*Service"}
+{"at":"2026-06-01T06:12:00.701Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"4 matches in 2 files"}
+{"at":"2026-06-01T06:12:20.064Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"Effect\\.logWarning|Effect\\.logError"}
+{"at":"2026-06-01T06:12:20.065Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"7 matches in 1 files"}
+{"at":"2026-06-01T06:12:45.786Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"Cause\\.isCause"}
+{"at":"2026-06-01T06:12:46.047Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T06:12:46.077Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"Cause\\.isCause"}
+{"at":"2026-06-01T06:12:46.401Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T06:14:13.307Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"isCause"}
+{"at":"2026-06-01T06:14:13.637Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"10 matches in 114 files"}
+{"at":"2026-06-01T06:14:54.018Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"isCause"}
+{"at":"2026-06-01T06:14:54.020Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T06:15:11.415Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"logWarning.*\\{.*cause|logError.*\\{.*cause|logInfo.*\\{.*cause"}
+{"at":"2026-06-01T06:15:11.527Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T06:15:11.539Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":", cause\\b"}
+{"at":"2026-06-01T06:15:11.596Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"20 matches in 302 files"}
+{"at":"2026-06-01T06:16:08.949Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"MERGE|TODO|FIXME|HACK|BUG"}
+{"at":"2026-06-01T06:16:08.951Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:16:54.392Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"applyMigrations"}
+{"at":"2026-06-01T06:16:54.393Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T06:16:54.409Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"checkSQLFirewall|checkDuckDBSQLFirewall"}
+{"at":"2026-06-01T06:16:54.409Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T06:16:54.429Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"HealthRegistry|HealthStatus"}
+{"at":"2026-06-01T06:16:54.430Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T06:17:08.724Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"ShareNext|InstanceTrace|Reference"}
+{"at":"2026-06-01T06:17:08.726Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"9 matches in 1 files"}
+{"at":"2026-06-01T06:18:16.197Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"export.*pretty"}
+{"at":"2026-06-01T06:18:16.198Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T06:18:55.059Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"started","detail":"export.*isCause"}
+{"at":"2026-06-01T06:18:55.060Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}

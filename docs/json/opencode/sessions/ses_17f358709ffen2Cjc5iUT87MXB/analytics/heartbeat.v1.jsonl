@@ -1,0 +1,86 @@
+{"at":"2026-06-01T01:30:38.837Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"from.*[\"']@/plugin"}
+{"at":"2026-06-01T01:30:38.966Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"7 matches in 500 files"}
+{"at":"2026-06-01T01:31:59.777Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Plugin\\.layer|Plugin\\.defaultLayer|Plugin\\.Interface|Plugin\\.Service"}
+{"at":"2026-06-01T01:32:00.026Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"15 matches in 500 files"}
+{"at":"2026-06-01T01:32:01.305Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"import.*from.*@/plugin"}
+{"at":"2026-06-01T01:32:01.402Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"12 matches in 365 files"}
+{"at":"2026-06-01T01:34:52.002Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"InstanceState"}
+{"at":"2026-06-01T01:34:52.002Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"10 matches in 1 files"}
+{"at":"2026-06-01T01:34:52.751Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"InstanceState"}
+{"at":"2026-06-01T01:34:52.809Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"20 matches in 5 files"}
+{"at":"2026-06-01T01:34:53.601Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Plugin\\.layer|Plugin\\.defaultLayer|Plugin\\.Service"}
+{"at":"2026-06-01T01:34:53.720Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"20 matches in 335 files"}
+{"at":"2026-06-01T01:37:09.210Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Interface[\\s\\S]{0,200}Service"}
+{"at":"2026-06-01T01:37:09.321Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 0 files"}
+{"at":"2026-06-01T01:38:51.859Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"layer = Layer\\.effect|const layer|export const layer|export const defaultLayer"}
+{"at":"2026-06-01T01:38:51.860Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T01:41:11.967Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":".*"}
+{"at":"2026-06-01T01:41:11.969Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"100 matches in 1 files"}
+{"at":"2026-06-01T01:43:17.366Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"InstanceState\\.make|init:|Effect\\.gen\\(function"}
+{"at":"2026-06-01T01:43:17.369Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"7 matches in 1 files"}
+{"at":"2026-06-01T01:43:18.717Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"publishPluginError|yield\\*"}
+{"at":"2026-06-01T01:43:18.718Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"20 matches in 1 files"}
+{"at":"2026-06-01T01:44:45.518Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"const state = yield\\* InstanceState\\.make<State>"}
+{"at":"2026-06-01T01:44:45.519Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T01:46:48.338Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"InstanceState.make.State"}
+{"at":"2026-06-01T01:46:48.339Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T01:48:11.547Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"EffectBridge.make"}
+{"at":"2026-06-01T01:48:11.548Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T01:50:09.549Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Plugin\\s*:.*Layer\\.Layer|Layer\\.Layer.*Plugin\\."}
+{"at":"2026-06-01T01:50:09.740Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 500 files"}
+{"at":"2026-06-01T01:50:10.725Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Plugin\\.layer|Plugin\\.defaultLayer"}
+{"at":"2026-06-01T01:50:10.804Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"26 matches in 365 files"}
+{"at":"2026-06-01T01:50:50.573Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"type State =|interface State"}
+{"at":"2026-06-01T01:50:50.574Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T01:50:50.619Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"=> Effect\\.succeed|=> Promise\\.resolve|=> Effect\\.tryPromise|=> Effect\\.promise"}
+{"at":"2026-06-01T01:50:50.620Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T01:53:27.983Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"InstanceState\\.make<"}
+{"at":"2026-06-01T01:53:28.760Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"18 matches in 500 files"}
+{"at":"2026-06-01T01:53:29.079Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"new Map|HashMap"}
+{"at":"2026-06-01T01:53:29.089Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T01:54:59.225Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"yield\\* ?Effect\\."}
+{"at":"2026-06-01T01:54:59.225Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"15 matches in 1 files"}
+{"at":"2026-06-01T01:55:00.532Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"yield\\* ?[A-Z]"}
+{"at":"2026-06-01T01:55:00.533Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"29 matches in 1 files"}
+{"at":"2026-06-01T01:57:09.259Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"makeCapabilityRegistry"}
+{"at":"2026-06-01T01:57:09.260Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T01:57:10.813Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"registerHook|PermissionService|EffectBridge|makeCapabilityRegistry"}
+{"at":"2026-06-01T01:57:10.816Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:00:58.123Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.succeed\\(new Map|Effect\\.succeed\\(new|\\(ctx\\) =>"}
+{"at":"2026-06-01T02:00:58.128Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:00:59.819Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"=>\\s*\\(\\s*new Map|=>\\s*\\{\\s*return\\s*new Map"}
+{"at":"2026-06-01T02:00:59.821Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:05:20.830Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"type State = "}
+{"at":"2026-06-01T02:05:20.831Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:05:22.469Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"loadPluginHealthStore|savePluginHealthStore|readFile|readFile\\(|fs\\."}
+{"at":"2026-06-01T02:05:22.469Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"9 matches in 1 files"}
+{"at":"2026-06-01T02:07:26.957Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"^type State"}
+{"at":"2026-06-01T02:07:26.957Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:09:05.872Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"export \\* from.*plugin|export.*Plugin.*from.*plugin"}
+{"at":"2026-06-01T02:09:05.935Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 0 files"}
+{"at":"2026-06-01T02:09:07.013Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"export \\*"}
+{"at":"2026-06-01T02:09:07.016Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 0 files"}
+{"at":"2026-06-01T02:10:34.049Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"export"}
+{"at":"2026-06-01T02:10:34.051Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"7 matches in 1 files"}
+{"at":"2026-06-01T02:14:43.726Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Layer\\.Layer.*Plugin|Layer\\.Layer<.*Service,"}
+{"at":"2026-06-01T02:14:43.841Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 365 files"}
+{"at":"2026-06-01T02:14:44.853Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"plugin\\?.*Layer\\.Layer|plugin.*Layer\\.Layer"}
+{"at":"2026-06-01T02:14:44.948Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 365 files"}
+{"at":"2026-06-01T02:19:57.263Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.promise|Effect\\.tryPromise"}
+{"at":"2026-06-01T02:19:57.264Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"10 matches in 1 files"}
+{"at":"2026-06-01T02:24:15.497Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"loadPluginHealthStore|PLUGIN_HEALTH_FILE|pluginHealthStore"}
+{"at":"2026-06-01T02:24:15.499Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"15 matches in 1 files"}
+{"at":"2026-06-01T02:24:16.953Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\(.*Plugin\\.state|Effect\\.fn\\(.*state\\b"}
+{"at":"2026-06-01T02:24:16.953Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:27:04.100Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\(.*Plugin|function\\* \\(ctx\\)"}
+{"at":"2026-06-01T02:27:04.101Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T02:27:05.566Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Server.*trigger|internalPlugins\\(config|getLegacyPlugins|registerHook"}
+{"at":"2026-06-01T02:27:05.566Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:30:07.249Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\(\\\"Plugin\\.state\\\"\\)"}
+{"at":"2026-06-01T02:30:07.250Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:30:08.438Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"^\\s*\\},\\s*\\)$"}
+{"at":"2026-06-01T02:30:08.472Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:34:02.233Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_find","phase":"started","detail":"index.ts"}
+{"at":"2026-06-01T02:34:02.240Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_find","phase":"completed","detail":"index.ts"}
+{"at":"2026-06-01T02:34:02.284Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"return\\s*\\{"}
+{"at":"2026-06-01T02:34:02.285Z","session_id":"ses_17f358709ffen2Cjc5iUT87MXB","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}

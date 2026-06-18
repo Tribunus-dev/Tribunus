@@ -1,0 +1,920 @@
+// ── Typed Transition Predicate Engine ────────────────────────
+//
+// Checks PredicateSpecs against runtime state (event ledger,
+// file memory, claims, DuckDB views) and returns whether the
+// predicate is satisfied, with evidence.
+// ──────────────────────────────────────────────────────────────
+
+import { Effect } from "effect"
+import type { FileContext } from "../context/file-memory"
+import type { RuntimeEvent } from "../event/runtime-event"
+import { EventName } from "../event/event-names"
+
+// ── Core Types ───────────────────────────────────────────────
+
+export interface EvidenceRef {
+  readonly id: string
+  readonly type: "event" | "claim" | "file" | "state"
+  readonly detail?: string
+}
+
+export interface PredicateResult {
+  readonly satisfied: boolean
+  readonly evidence?: EvidenceRef
+  readonly reason?: string
+}
+
+export interface PredicateContext {
+  readonly events: readonly RuntimeEvent[]
+  readonly fileMemory: Map<string, FileContext>
+  readonly claims: readonly string[]
+  readonly sessionId: string
+  readonly retryBudgets: Readonly<Record<string, number>>
+  readonly duckDbRanked?: readonly string[]
+}
+
+export type PredicateSpec =
+  | { readonly kind: "event_exists"; readonly eventType: string; readonly after?: string }
+  | { readonly kind: "latest_validation_passed"; readonly afterLastEdit?: boolean }
+  | { readonly kind: "claims_acquired"; readonly paths: readonly string[] }
+  | { readonly kind: "has_claim_conflict" }
+  | { readonly kind: "permission_denied"; readonly tool: string }
+  | { readonly kind: "retry_budget_remaining"; readonly key: string; readonly limit: number }
+  | { readonly kind: "user_approval_granted"; readonly approvalType: string }
+  | { readonly kind: "context_sufficient" }
+  | { readonly kind: "scope_unsafe" }
+  | { readonly kind: "edit_applied" }
+  | { readonly kind: "new_validation_failure" }
+  | { readonly kind: "failures_existed_before_edit" }
+  | { readonly kind: "no_blocking_findings" }
+  | { readonly kind: "finding_confirmed" }
+  | { readonly kind: "plan_produced" }
+  | { readonly kind: "plan_approved" }
+  | { readonly kind: "plan_rejected" }
+  | { readonly kind: "scout_completed" }
+  | { readonly kind: "scope_synthesized" }
+  | { readonly kind: "finding_blocking" }
+  | { readonly kind: "redteam_completed" }
+  | { readonly kind: "all_children_complete"; readonly children?: readonly string[] }
+  | { readonly kind: "child_blocked" }
+  | { readonly kind: "repair_budget_exhausted" }
+  | { readonly kind: "all_gates_pass" }
+
+export type PredicateResolver = (
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+) => PredicateResult
+
+export interface TransitionSpec {
+  readonly from: string
+  readonly to: string
+  readonly predicate: PredicateSpec
+  readonly priority?: number
+}
+
+export interface AgentStateMachineSpec {
+  readonly initial: string
+  readonly states: readonly string[]
+  readonly transitions: readonly TransitionSpec[]
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+
+/** Return the event with the latest `ts` from a list. */
+function latestByTs(events: readonly RuntimeEvent[]): RuntimeEvent | undefined {
+  return [...events].sort((a, b) => b.ts.localeCompare(a.ts))[0]
+}
+
+/** True when the status indicates success. */
+function succeeded(s: RuntimeEvent["status"]): boolean {
+  return s === "succeeded"
+}
+
+/** True when the status indicates failure or denial. */
+function failed(s: RuntimeEvent["status"]): boolean {
+  return s === "failed" || s === "denied"
+}
+
+/** Safely read `payloadJson` as a record. */
+function payload(
+  e: RuntimeEvent,
+): Readonly<Record<string, unknown>> | undefined {
+  if (e.payloadJson === undefined || e.payloadJson === null) return undefined
+  if (typeof e.payloadJson !== "object") return undefined
+  return e.payloadJson as Readonly<Record<string, unknown>>
+}
+
+// ── Resolvers (one per kind) ─────────────────────────────────
+
+function resolveEventExists(
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const { eventType, after } = spec as PredicateSpec & {
+    kind: "event_exists"
+  }
+
+  let matching = ctx.events.filter(
+    (e: any) => (e.eventType ?? e.type) === eventType,
+  )
+
+  if (after !== undefined) {
+    const refEvent = ctx.events.find((e) => e.id === after)
+    if (!refEvent) {
+      return {
+        satisfied: false,
+        reason: `Reference event "${after}" not found in ledger`,
+      }
+    }
+    matching = matching.filter(
+      (e: any) => (e.ts ?? e.timestamp ?? "") > ((refEvent as any).ts ?? (refEvent as any).timestamp ?? ""),
+    )
+  }
+
+  if (matching.length === 0) {
+    return {
+      satisfied: false,
+      reason: `No "${eventType}" event found${after !== undefined ? ` after "${after}"` : ""}`,
+    }
+  }
+
+  return { satisfied: true, evidence: { id: matching.at(0)?.id ?? "ev-missing", type: "event" } }
+}
+
+function resolveLatestValidationPassed(
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const { afterLastEdit } = spec as PredicateSpec & {
+    kind: "latest_validation_passed"
+  }
+
+  const validations = [...ctx.events]
+    .filter((e) => e.eventType === EventName.ValidationCompleted)
+    .sort((a, b) => b.ts.localeCompare(a.ts))
+
+  const latest = validations[0]
+  if (!latest) {
+    return { satisfied: false, reason: "No validation.completed events found" }
+  }
+
+  const status = ((latest as any).status ?? (latest as any).payloadJson?.status) as string | undefined
+  const passed = status === "succeeded" || status === "pass"
+
+  if (afterLastEdit && passed) {
+    const editEvents = ctx.events.filter((e) => e.eventType === EventName.FileEdited || e.eventType === EventName.EditApplied)
+    const latestEdit = latestByTs(editEvents)
+    if (latestEdit && ((latest as any).ts ?? (latest as any).timestamp ?? "") <= ((latestEdit as any).ts ?? (latestEdit as any).timestamp ?? "")) {
+      return {
+        satisfied: false,
+        reason: "Latest validation predates the latest edit",
+        evidence: {
+          id: latest.id,
+          type: "event",
+          detail: `validation=${(latest as any).ts ?? (latest as any).timestamp}, edit=${(latestEdit as any).ts ?? (latestEdit as any).timestamp}`,
+        },
+      }
+    }
+  }
+
+  return {
+    satisfied: passed,
+    evidence: passed
+      ? { id: (latest as any).id ?? "ev-missing", type: "event", detail: `status=${status}` }
+      : undefined,
+    reason: passed ? undefined : `Latest validation status: "${status}"`,
+  }
+}
+
+function resolveClaimsAcquired(
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const { paths } = spec as PredicateSpec & { kind: "claims_acquired" }
+
+  if (paths.length === 0) {
+    const claimEvents = ctx.events.filter((e) => e.eventType === EventName.ClaimsAcquired)
+    if (claimEvents.length === 0 && ctx.claims.length === 0) {
+      return { satisfied: false, reason: "No claims.acquired evidence" }
+    }
+    return {
+      satisfied: true,
+      evidence: { id: claimEvents[0]?.id ?? ctx.sessionId, type: "event", detail: `${claimEvents.length} claims.acquired events, ${ctx.claims.length} claims` },
+    }
+  }
+
+  const missing = paths.filter((p) => !ctx.claims.includes(p))
+  if (missing.length > 0) {
+    return {
+      satisfied: false,
+      reason: `Claims not acquired: [${missing.join(", ")}]`,
+    }
+  }
+
+  return { satisfied: true }
+}
+
+function resolveHasClaimConflict(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const conflictEvents = ctx.events.filter(
+    (e) =>
+      e.eventType === EventName.FileConflict ||
+      e.eventType === EventName.ClaimConflict ||
+      (e.eventType === EventName.FileEdited && e.actor === "system"),
+  )
+
+  if (conflictEvents.length === 0) {
+    return { satisfied: false, reason: "No claim conflicts detected" }
+  }
+
+  return {
+    satisfied: true,
+    evidence: {
+      id: conflictEvents.at(0)?.id ?? "ev-missing",
+      type: "event",
+      detail: `${conflictEvents.length} conflict(s)`,
+    },
+  }
+}
+
+function resolvePermissionDenied(
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const { tool } = spec as PredicateSpec & { kind: "permission_denied" }
+
+  const toolEvents = ctx.events.filter(
+    (e: any) => (e.toolName ?? e.payloadJson?.tool) === tool,
+  )
+  const latest: any = latestByTs(toolEvents as any)
+
+  if (!latest) {
+    return { satisfied: false, reason: `No events for tool "${tool}"` }
+  }
+
+  const denied = (latest.status ?? latest.payloadJson?.status) === "denied"
+  return {
+    satisfied: denied,
+    evidence: denied
+      ? { id: latest.id, type: "event", detail: `tool=${tool}, status=denied` }
+      : undefined,
+    reason: denied
+      ? undefined
+      : `Latest "${tool}" event has status "${latest.status ?? "unknown"}"`,
+  }
+}
+
+function resolveRetryBudgetRemaining(
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const { key } = spec as PredicateSpec & {
+    kind: "retry_budget_remaining"
+  }
+
+  const remaining = ctx.retryBudgets[key] ?? 0
+  if (remaining <= 0) {
+    return {
+      satisfied: false,
+      reason: `Retry budget exhausted for "${key}"`,
+    }
+  }
+
+  return {
+    satisfied: true,
+    evidence: {
+      id: "retry-state",
+      type: "state",
+      detail: `${remaining} remaining for "${key}"`,
+    },
+  }
+}
+
+function resolveUserApprovalGranted(
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const { approvalType } = spec as PredicateSpec & {
+    kind: "user_approval_granted"
+  }
+
+  const approvals = ctx.events.filter(
+    (e) =>
+      (e.eventType === EventName.UserApproval && e.phase === approvalType) ||
+      e.eventType === `user.approval.${approvalType}`,
+  )
+
+  if (approvals.length === 0) {
+    return {
+      satisfied: false,
+      reason: `No user.approval event for "${approvalType}"`,
+    }
+  }
+
+  return {
+    satisfied: true,
+    evidence: {
+      id: approvals.at(0)?.id ?? "ev-missing",
+      type: "event",
+      detail: `approvalType=${approvalType}`,
+    },
+  }
+}
+
+function resolveContextSufficient(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  // Explicit context.sufficient event is authoritative — always check first
+  const contextEvents = ctx.events.filter(
+    (e: any) => (e.eventType ?? e.type) === "context.sufficient",
+  )
+  if (contextEvents.length > 0) {
+    return {
+      satisfied: true,
+      evidence: { id: contextEvents[0]?.id ?? "ev-missing", type: "event", detail: "context.sufficient event emitted" },
+    }
+  }
+
+  // Fallback: when running with simplified events (no fileMemory/claims/sessionId),
+  // return unsatisfied if no context is populated at all
+  const hasContext = ctx.fileMemory.size > 0 || ctx.claims.length > 0 || ctx.sessionId.length > 0
+  if (!hasContext) {
+    return { satisfied: false, reason: "No context.sufficient event and no context populated" }
+  }
+
+  const minEvents = 5
+  const hasEnoughEvents = ctx.events.length >= minEvents
+  const hasFileMemory = ctx.fileMemory.size > 0
+  const hasClaims = ctx.claims.length > 0
+  const hasSessionId = ctx.sessionId.length > 0
+
+  const issues: string[] = []
+  if (!hasEnoughEvents) issues.push(`only ${ctx.events.length}/${minEvents} events`)
+  if (!hasFileMemory) issues.push("file memory not populated")
+  if (!hasClaims) issues.push("no claims acquired")
+  if (!hasSessionId) issues.push("no session ID")
+
+  if (issues.length > 0) {
+    return { satisfied: false, reason: `Context insufficient: ${issues.join(", ")}` }
+  }
+
+  return {
+    satisfied: true,
+    evidence: {
+      id: ctx.sessionId,
+      type: "state",
+      detail: `${ctx.events.length} events, ${ctx.fileMemory.size} files, ${ctx.claims.length} claims`,
+    },
+  }
+}
+
+function resolveScopeUnsafe(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  // Backward-compat: simplified events carry ScopeUnsafe as an event type
+  const scopeUnsafeEvents = ctx.events.filter(
+    (e: any) => (e.eventType ?? e.type) === "scope.unsafe",
+  )
+  if (scopeUnsafeEvents.length > 0) {
+    return {
+      satisfied: true,
+      evidence: { id: scopeUnsafeEvents[0]?.id ?? "ev-missing", type: "event", detail: "scope.unsafe event emitted" },
+      reason: `Scope marked unsafe: ${scopeUnsafeEvents.length} event(s)`,
+    }
+  }
+
+  const denials = ctx.events.filter((e) => (e as any).status === "denied")
+  const protectedAccesses = ctx.events.filter(
+    (e: any) =>
+      (e.eventType ?? e.type) === "file.read" &&
+      e.filePath !== undefined &&
+      (e.filePath.includes("node_modules") ||
+        e.filePath.includes(".git/") ||
+        e.filePath.includes(".env")),
+  )
+
+  const totalIssues = denials.length + protectedAccesses.length
+  if (totalIssues === 0) {
+    return { satisfied: false, reason: "No scope safety issues detected" }
+  }
+
+  return {
+    satisfied: true,
+    evidence:
+      denials.length > 0
+        ? { id: denials.at(0)?.id ?? "ev-missing", type: "event", detail: `${denials.length} denial(s)` }
+        : { id: protectedAccesses.at(0)?.id ?? "ev-missing", type: "event", detail: "protected path access" },
+    reason: `${denials.length} denial(s), ${protectedAccesses.length} protected path access(es)`,
+  }
+}
+
+function resolveEditApplied(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const edits = ctx.events.filter(
+    (e) => e.eventType === EventName.FileEdited || e.eventType === EventName.EditApplied,
+  )
+  if (edits.length === 0) {
+    return { satisfied: false, reason: "No file.edited or edit.applied events found" }
+  }
+  return {
+    satisfied: true,
+    evidence: { id: edits.at(0)?.id ?? "ev-missing", type: "event", detail: `${edits.length} edit(s)` },
+  }
+}
+
+function resolveNewValidationFailure(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const validations = ctx.events.filter(
+    (e) => e.eventType === EventName.ValidationCompleted,
+  )
+  const edits = ctx.events.filter(
+    (e) => e.eventType === EventName.FileEdited || e.eventType === EventName.EditApplied,
+  )
+
+  const lastSuccess = [...validations]
+    .filter((e) => succeeded(e.status))
+    .sort((a, b) => b.ts.localeCompare(a.ts))[0]
+
+  const afterTs = lastSuccess?.ts ?? "0"
+  const latestEdit = latestByTs(edits)
+
+  if (!latestEdit) {
+    return {
+      satisfied: false,
+      reason: "No file.edited events to check against",
+    }
+  }
+
+  // A new failure means a validation failed *after* the latest edit
+  // and *after* the last successful validation.
+  const newFailure = validations.find(
+    (e) => failed(e.status) && e.ts > afterTs && e.ts > latestEdit.ts,
+  )
+
+  if (!newFailure) {
+    return {
+      satisfied: false,
+      reason: "No new validation failure after edits",
+    }
+  }
+
+  return {
+    satisfied: true,
+    evidence: {
+      id: newFailure.id,
+      type: "event",
+      detail: "validation failed after edit",
+    },
+  }
+}
+
+function resolveFailuresExistedBeforeEdit(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const edits = ctx.events.filter((e) => e.eventType === EventName.FileEdited)
+  const latestEdit = latestByTs(edits)
+
+  if (!latestEdit) {
+    return { satisfied: false, reason: "No file.edited events" }
+  }
+
+  const preEditFailure = ctx.events.find(
+    (e) =>
+      e.eventType === EventName.ValidationCompleted &&
+      failed(e.status) &&
+      e.ts < latestEdit.ts,
+  )
+
+  if (!preEditFailure) {
+    return {
+      satisfied: false,
+      reason: "No validation failures existed before the latest edit",
+    }
+  }
+
+  return {
+    satisfied: true,
+    evidence: {
+      id: preEditFailure.id,
+      type: "event",
+      detail: `failure before edit at ${latestEdit.ts}`,
+    },
+  }
+}
+
+// SM-010: resolveNoBlockingFindings is evidence-positive — it requires explicit
+// CampaignReviewCompleted AND RedteamCompleted events (not just absence of blocking
+// events). The CAMPAIGN_STATE_MACHINE flow ensures all_children_complete is
+// satisfied before this predicate runs, so per-lane redteam completeness is
+// guaranteed at the state-machine level.
+function resolveNoBlockingFindings(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  // Campaign-level: require positive integration review completion evidence
+  const reviewCompleted = ctx.events.filter(
+    (e) => e.eventType === EventName.CampaignReviewCompleted,
+  )
+  if (reviewCompleted.length === 0) {
+    return {
+      satisfied: false,
+      reason: "awaiting integration review completion",
+    }
+  }
+  const latestReview = reviewCompleted[reviewCompleted.length - 1]!
+  const unresolvedBlockingFindings = payload(latestReview)?.unresolvedBlockingFindings
+  if (unresolvedBlockingFindings !== 0) {
+    return {
+      satisfied: false,
+      reason: `Integration review has ${unresolvedBlockingFindings} unresolved blocking findings`,
+      evidence: { id: latestReview.id, type: "event" },
+    }
+  }
+
+  // Secondary: check RedteamCompleted events
+  const completed = ctx.events.filter(
+    (e) => e.eventType === EventName.RedteamCompleted,
+  )
+  if (completed.length === 0) {
+    return {
+      satisfied: false,
+      reason: "No redteam.completed event — cannot confirm absence of blocking findings",
+    }
+  }
+  const anyBlocking = completed.some((e) => {
+    const bf = payload(e)?.blockingFindings
+    return bf !== 0
+  })
+  if (anyBlocking) {
+    return {
+      satisfied: false,
+      evidence: { id: completed.at(0)?.id ?? "ev-missing", type: "event" },
+      reason: `One or more redteam.completed events have blocking findings`,
+    }
+  }
+  const blocking = ctx.events.filter(
+    (e) =>
+      e.eventType === EventName.RedteamFinding &&
+      payload(e)?.severity === "blocking",
+  )
+  if (blocking.length > 0) {
+    return {
+      satisfied: false,
+      evidence: { id: blocking.at(0)?.id ?? "ev-missing", type: "event" },
+      reason: `${blocking.length} blocking redteam finding(s)`,
+    }
+  }
+  return { satisfied: true }
+}
+
+function resolveFindingConfirmed(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const findings = ctx.events.filter(
+    (e) => e.eventType === EventName.RedteamFindingRecorded || e.eventType === EventName.RedteamFinding,
+  )
+  if (findings.length === 0) {
+    return { satisfied: false, reason: "No redteam finding events" }
+  }
+  return {
+    satisfied: true,
+    evidence: { id: findings.at(0)?.id ?? "ev-missing", type: "event", detail: `${findings.length} findings` },
+  }
+}
+
+function resolveFindingBlocking(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  // If there are RedteamCompleted events, use the latest one as the
+  // authoritative signal. A prior run's blocking findings should not
+  // re-trigger repair after a clean re-evaluation.
+  const completed = ctx.events
+    .filter((e) => e.eventType === EventName.RedteamCompleted)
+    .sort((a, b) => b.ts.localeCompare(a.ts))
+  const latest = completed[0]
+  if (latest) {
+    const blockingFindings = (latest.payloadJson as Record<string, number> | undefined)?.blockingFindings ?? 0
+    if (blockingFindings === 0) {
+      return { satisfied: false, reason: "Latest redteam run had no blocking findings" }
+    }
+    return {
+      satisfied: true,
+      evidence: { id: latest.id, type: "event" as const, detail: `${blockingFindings} blocking finding(s)` },
+    }
+  }
+
+  // No completion events yet — check individual finding events (first red-team run)
+  const blocking = ctx.events.filter(
+    (e) =>
+      e.eventType === EventName.FindingBlocking ||
+      (e.eventType === EventName.RedteamFindingRecorded && payload(e)?.severity === "blocking") ||
+      (e.eventType === EventName.RedteamFinding && payload(e)?.severity === "blocking"),
+  )
+  if (blocking.length === 0) {
+    return { satisfied: false, reason: "No blocking findings" }
+  }
+  return {
+    satisfied: true,
+    evidence: { id: blocking[0]!.id, type: "event" as const, detail: `${blocking.length} blocking finding(s)` },
+  }
+}
+
+function resolveRedteamCompleted(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const completed = ctx.events.filter((e) => e.eventType === EventName.RedteamCompleted)
+  if (completed.length === 0) return { satisfied: false }
+  const last = completed[completed.length - 1]!
+  const blockingFindings = (last.payloadJson as Record<string, number> | undefined)?.blockingFindings
+  return {
+    satisfied: blockingFindings === 0,
+    evidence: { id: last.id, type: "event" as const, detail: "redteam_completed" },
+  }
+}
+
+function resolvePlanProduced(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const planEvents = ctx.events.filter(
+    (e) =>
+      e.eventType === EventName.PlanProduced ||
+      e.eventType === EventName.PlanCreated ||
+      e.eventType === EventName.ArtifactPlan,
+  )
+  if (planEvents.length === 0) {
+    return { satisfied: false, reason: "No plan artifact events" }
+  }
+  return {
+    satisfied: true,
+    evidence: { id: planEvents.at(0)?.id ?? "ev-missing", type: "event" },
+  }
+}
+
+function resolvePlanApproved(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  // Find the latest plan.approved or plan.rejected event.
+  // A stale plan.rejected in history should not block a fresh approval.
+  const planEvents = ctx.events
+    .filter((e) => e.eventType === EventName.PlanApproved || e.eventType === EventName.PlanRejected)
+    .sort((a, b) => b.ts.localeCompare(a.ts))
+  const latest = planEvents[0]
+  if (!latest) {
+    return { satisfied: false, reason: "No plan.approved or plan.rejected event" }
+  }
+  if (latest.eventType !== EventName.PlanApproved) {
+    return { satisfied: false, reason: `Latest plan event is ${latest.eventType}, not ${EventName.PlanApproved}` }
+  }
+  return {
+    satisfied: true,
+    evidence: { id: latest.id ?? "ev-missing", type: "event", detail: "plan.approved (latest)" },
+  }
+}
+
+function resolvePlanRejected(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  // Check that the latest plan event is a rejection, not just any historical one.
+  // This prevents a stale rejection from re-triggering after a revised plan is approved.
+  const planEvents = ctx.events
+    .filter((e) => e.eventType === EventName.PlanApproved || e.eventType === EventName.PlanRejected)
+    .sort((a, b) => b.ts.localeCompare(a.ts))
+  const latest = planEvents[0]
+  if (!latest) {
+    return { satisfied: false, reason: "No plan.approved or plan.rejected event" }
+  }
+  if (latest.eventType !== EventName.PlanRejected) {
+    return { satisfied: false, reason: `Latest plan event is ${latest.eventType}, not ${EventName.PlanRejected}` }
+  }
+  return {
+    satisfied: true,
+    evidence: { id: latest.id ?? "ev-missing", type: "event", detail: "PlanRejected (latest)" },
+  }
+}
+
+function resolveAllChildrenComplete(
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const { children } = spec as PredicateSpec & {
+    kind: "all_children_complete"
+  }
+
+  if (children !== undefined && children.length > 0) {
+    const missingChildren = children.filter(
+      (childId) =>
+        !ctx.events.some(
+          (e) =>
+            (e.eventType === EventName.LaneCompleted ||
+              e.eventType === EventName.ChildCompleted) &&
+            (e.runId === childId || e.correlationId === childId),
+        ),
+    )
+    if (missingChildren.length > 0) {
+      return {
+        satisfied: false,
+        reason: `Children not complete: [${missingChildren.join(", ")}]`,
+      }
+    }
+    return {
+      satisfied: true,
+      evidence: {
+        id: "all-children",
+        type: "state",
+        detail: `${children.length} child(ren) complete`,
+      },
+    }
+  }
+
+  // Without an explicit list, check if any completion events exist at all.
+  const completeEvents = ctx.events.filter(
+    (e) => e.eventType === EventName.LaneCompleted || e.eventType === EventName.ChildCompleted,
+  )
+  if (completeEvents.length === 0) {
+    return { satisfied: false, reason: "No child completion events" }
+  }
+  return {
+    satisfied: true,
+    evidence: { id: completeEvents.at(0)?.id ?? "ev-missing", type: "event" },
+  }
+}
+
+function resolveChildBlocked(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const blocked = ctx.events.filter(
+    (e) => e.eventType === EventName.LaneBlocked || e.eventType === EventName.ChildBlocked,
+  )
+  if (blocked.length === 0) {
+    return {
+      satisfied: false,
+      reason: "No lane.blocked or child.blocked events",
+    }
+  }
+  return {
+    satisfied: true,
+    evidence: { id: blocked.at(0)?.id ?? "ev-missing", type: "event" },
+  }
+}
+
+function resolveScoutCompleted(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const scoutEvents = ctx.events.filter((e) => e.eventType === EventName.ScoutCompleted)
+  if (scoutEvents.length === 0) {
+    return { satisfied: false, reason: "No scout.completed events" }
+  }
+  return { satisfied: true, evidence: { id: scoutEvents.at(0)?.id ?? "ev-missing", type: "event" } }
+}
+
+function resolveScopeSynthesized(
+  _spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  const scopeEvents = ctx.events.filter((e) => e.eventType === EventName.ScopeSynthesized)
+  if (scopeEvents.length === 0) {
+    return { satisfied: false, reason: "No scope.synthesized events" }
+  }
+  return { satisfied: true, evidence: { id: scopeEvents.at(0)?.id ?? "ev-missing", type: "event" } }
+}
+
+// ── Resolver Map ─────────────────────────────────────────────
+
+export const predicateResolvers: Record<
+  PredicateSpec["kind"],
+  PredicateResolver
+> = {
+  event_exists: resolveEventExists,
+  latest_validation_passed: resolveLatestValidationPassed,
+  claims_acquired: resolveClaimsAcquired,
+  has_claim_conflict: resolveHasClaimConflict,
+  permission_denied: resolvePermissionDenied,
+  retry_budget_remaining: resolveRetryBudgetRemaining,
+  user_approval_granted: resolveUserApprovalGranted,
+  context_sufficient: resolveContextSufficient,
+  scope_unsafe: resolveScopeUnsafe,
+  edit_applied: resolveEditApplied,
+  new_validation_failure: resolveNewValidationFailure,
+  failures_existed_before_edit: resolveFailuresExistedBeforeEdit,
+  no_blocking_findings: resolveNoBlockingFindings,
+  finding_confirmed: resolveFindingConfirmed,
+  finding_blocking: resolveFindingBlocking,
+  redteam_completed: resolveRedteamCompleted,
+  plan_produced: resolvePlanProduced,
+  plan_approved: resolvePlanApproved,
+  plan_rejected: resolvePlanRejected,
+  scout_completed: resolveScoutCompleted,
+  scope_synthesized: resolveScopeSynthesized,
+  all_children_complete: resolveAllChildrenComplete,
+  child_blocked: resolveChildBlocked,
+  repair_budget_exhausted: (_spec, ctx) => {
+    const budget = ctx.retryBudgets["repair"] ?? 0
+    const exhausted = budget <= 0
+    return {
+      satisfied: exhausted,
+      reason: exhausted
+        ? "Repair budget exhausted"
+        : `${budget} repair cycles remaining`,
+    }
+  },
+  all_gates_pass: (_spec, ctx) => {
+    const hasAllPassed = ctx.events.some(
+      (e: any) => (e.eventType ?? e.type) === "gates.all_passed",
+    )
+    return {
+      satisfied: hasAllPassed,
+      reason: hasAllPassed ? undefined : "No gates.all_passed event found",
+    }
+  },
+}
+
+// ── Public API ───────────────────────────────────────────────
+
+/**
+ * Check a single predicate spec against runtime context.
+ * Dispatches to the correct resolver by `spec.kind`.
+ */
+export function checkPredicate(
+  spec: PredicateSpec,
+  ctx: PredicateContext,
+): PredicateResult {
+  return predicateResolvers[spec.kind](spec, ctx)
+}
+
+/**
+ * Given a state machine spec and a current state, evaluate all
+ * outgoing transitions in priority order. Returns the first
+ * transition whose predicate is satisfied, or `null` if none match.
+ */
+export function checkTransitions(
+  machineSpec: AgentStateMachineSpec,
+  currentState: string,
+  ctx: PredicateContext,
+): TransitionSpec | null {
+  const candidates = machineSpec.transitions
+    .filter((t) => t.from === currentState)
+    .sort((a, b) => (a.priority ?? 100) - (b.priority ?? 100))
+
+  for (const transition of candidates) {
+    if (checkPredicate(transition.predicate, ctx).satisfied) {
+      return transition
+    }
+  }
+
+  return null
+}
+
+/**
+ * Async variant that reads events from an Effect-based event store
+ * before checking predicates. Use this when the event store, not
+ * an in-memory list, is the source of truth.
+ *
+ * ```ts
+ * const result = yield* checkPredicateEffect(spec, ctx, EventStore.Service)
+ * ```
+ */
+export function checkPredicateEffect(
+  spec: PredicateSpec,
+  ctx: Omit<PredicateContext, "events">,
+  queryEvents: (
+    sessionId: string,
+  ) => Effect.Effect<readonly RuntimeEvent[]>,
+): Effect.Effect<PredicateResult> {
+  return Effect.map(queryEvents(ctx.sessionId), (events) =>
+    checkPredicate(spec, { ...ctx, events }),
+  )
+}
+
+/**
+ * Async variant of `checkTransitions` that reads events from an
+ * Effect-based event store.
+ */
+export function checkTransitionsEffect(
+  machineSpec: AgentStateMachineSpec,
+  currentState: string,
+  ctx: Omit<PredicateContext, "events">,
+  queryEvents: (
+    sessionId: string,
+  ) => Effect.Effect<readonly RuntimeEvent[]>,
+): Effect.Effect<TransitionSpec | null> {
+  return Effect.map(queryEvents(ctx.sessionId), (events) =>
+    checkTransitions(machineSpec, currentState, { ...ctx, events }),
+  )
+}

@@ -1,0 +1,102 @@
+--- a/packages/compute-native/src/executor.rs
++++ b/packages/compute-native/src/executor.rs
+@@ -181,6 +181,99 @@
+     }
+ 
+     mlx_rs::ops::quantized_matmul(x, w, s, b, true, group_size, 8)
++}
++
++// ── Projection attribution wrapper ────────────────────────────────────
++
++/// Wrapper around qmatmul that conditionally emits a projection attribution
++/// event when `TRIBUNUS_PROJECTION_ATTRIBUTION=1`.
++///
++/// When the env var is unset (the common case), this function degenerates
++/// to a direct call to `qmatmul` — zero overhead beyond an AtomicBool load.
++/// No eval, synchronization, or host readback occurs inside the timer.
++fn qmatmul_attributed(
++    x: &Array,
++    w: &Array,
++    s: &Array,
++    b: &Array,
++    _transpose: bool,
++    _group_size: i32,
++    _bits: i32,
++    ctx: &ProjectionContext,
++    family: ProjectionFamily,
++    invocation: usize,
++) -> MlxResult<Array> {
++    // One-time gate check: cache in a static AtomicBool so the fast path
++    // is a single relaxed load (no env var string allocation).
++    static GATE_INIT: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
++    static GATE_ENABLED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
++
++    if !GATE_INIT.load(std::sync::atomic::Ordering::Relaxed) {
++        let enabled = std::env::var("TRIBUNUS_PROJECTION_ATTRIBUTION")
++            .ok()
++            .as_deref()
++            == Some("1");
++        GATE_ENABLED.store(enabled, std::sync::atomic::Ordering::Relaxed);
++        GATE_INIT.store(true, std::sync::atomic::Ordering::Relaxed);
++    }
++
++    if !GATE_ENABLED.load(std::sync::atomic::Ordering::Relaxed) {
++        return qmatmul(x, w, s, b);
++    }
++
++    // ---- Instrumented path ----
++    let start = std::time::Instant::now();
++    let result = qmatmul(x, w, s, b)?;
++    let delta_ns = start.elapsed().as_nanos() as u64;
++
++    let input_shape = x.shape();
++    let w_shape = w.shape();
++
++    // Compute group_size from scales shape (same logic as qmatmul).
++    let gs = if s.shape().len() >= 1 {
++        (w.shape()[1] as i32 * 4) / s.shape()[s.shape().len() - 1]
++    } else {
++        64
++    };
++
++    let runtime_dtype_str = format!("{:?}", w.dtype());
++    let storage_dtype_str = dtype_to_storage(&w.dtype());
++
++    // Build weight_physical = weight_logical for now; the physical shape
++    // is identical because we operate on the canonical MLX representation.
++    let w_d0 = w_shape.first().copied().unwrap_or(0);
++    let w_d1 = w_shape.get(1).copied().unwrap_or(0);
++
++    let token_step_str = match ctx.token_step {
++        Some(ts) => format!("{}", ts),
++        None => String::new(),
++    };
++
++    eprintln!(
++        "[proj] run_id={} phase={} forward_pass={} token_step={} layer={} kind={} family={} invocation={} graph_build_ns={} input=[{},{}] weight_logical=[{},{}] weight_physical=[{},{}] storage_dtype={} runtime_dtype={} group_size={} bits={} transpose={}",
++        ctx.run_id,
++        ctx.phase.as_str(),
++        ctx.forward_pass_index,
++        token_step_str,
++        ctx.layer_index,
++        ctx.attention_kind.as_str(),
++        family.as_str(),
++        invocation,
++        delta_ns,
++        input_shape.first().copied().unwrap_or(0),
++        input_shape.get(1).copied().unwrap_or(0),
++        w_d0,
++        w_d1,
++        w_d0,
++        w_d1,
++        storage_dtype_str,
++        runtime_dtype_str,
++        gs,
++        8,   // bits — always 8 for our quantized matmul
++        true, // transpose — always true for qmatmul
++    );
++
++    Ok(result)
+ }
+ 
+ fn sliding_attention_layer(

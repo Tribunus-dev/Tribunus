@@ -1,0 +1,37 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0006",
+  "title": "Backend Execution Engine",
+  "status": "proposed",
+  "component_type": "backend_component",
+  "owner_subsystem": "backend",
+  "definition": "Backend execution engines such as MLX, Core ML, and Accelerate execute work but do not own durable authority truth.",
+  "invariants": [
+    "Backends may produce provisional outputs, receipts, timings, hashes, and failure classifications.",
+    "Backends may not own durable authority, canonical tensor truth, work finality, or phase completion."
+  ],
+  "allowed_states": [
+    "provisional",
+    "executing",
+    "committing",
+    "receipted"
+  ],
+  "forbidden_states": [
+    "durable_authority",
+    "canonical_truth",
+    "phase_finality"
+  ],
+  "required_receipts": [
+    "backend_execution_receipt"
+  ],
+  "required_validators": [
+    "backend_truth_owner_validator"
+  ],
+  "imported_by": [
+    "ADR-0021",
+    "ADR-0022"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

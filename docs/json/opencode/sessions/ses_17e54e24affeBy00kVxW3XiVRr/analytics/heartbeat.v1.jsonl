@@ -1,0 +1,27 @@
+{"at":"2026-06-01T05:32:38.666Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T05:33:09.209Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T05:37:46.379Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T05:38:22.297Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T05:39:14.088Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsc"}
+{"at":"2026-06-01T05:39:52.859Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsc exit=1"}
+{"at":"2026-06-01T05:40:48.797Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_batch","phase":"started","detail":"batch edit"}
+{"at":"2026-06-01T05:42:39.559Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:43:04.376Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"run exit=2"}
+{"at":"2026-06-01T06:01:28.560Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T06:01:28.776Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T06:10:45.200Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T06:11:22.392Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T06:13:42.851Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T06:14:13.163Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"run exit=2"}
+{"at":"2026-06-01T06:15:15.979Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T06:15:36.510Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"completed","detail":"tsgo exit=0"}
+{"at":"2026-06-01T06:15:52.973Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T06:15:53.070Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T06:15:58.164Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T06:16:03.198Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T06:17:11.543Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T06:17:36.086Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T06:18:27.640Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsc"}
+{"at":"2026-06-01T06:18:54.999Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsc exit=1"}
+{"at":"2026-06-01T06:22:09.247Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T06:22:38.140Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}

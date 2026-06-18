@@ -1,0 +1,47 @@
+--- a/packages/compute-research/src/compare/index.ts
++++ b/packages/compute-research/src/compare/index.ts
+@@ -177,15 +177,35 @@
+       : 0;
+ 
+   // 6. Bootstrap CI on the difference of means (treatment - baseline)
+-  const allValues = [...baselineValues, ...treatmentValues];
+-  const ci =
+-    allValues.length >= 2
+-      ? bootstrapCI(
+-          allValues,
+-          config.confidence ?? 0.95,
+-          config.nBootstrap ?? 10_000,
+-        )
+-      : { lower: 0, upper: 0 };
++  const isPaired =
++    config.paired ?? (baselineValues.length === treatmentValues.length);
++  const nBootstrap = config.nBootstrap ?? 10_000;
++  const confidenceLevel = config.confidence ?? 0.95;
++
++  let ci: { lower: number; upper: number };
++  if (baselineValues.length < 2 || treatmentValues.length < 2) {
++    ci = { lower: 0, upper: 0 };
++  } else if (isPaired) {
++    const diffs = baselineValues.map((b, i) => treatmentValues[i]! - b);
++    ci = bootstrapPairedCI(
++      diffs,
++      confidenceLevel,
++      nBootstrap,
++      config.randomSeed,
++    );
++  } else {
++    ci = bootstrapIndependentCI(
++      baselineValues,
++      treatmentValues,
++      confidenceLevel,
++      nBootstrap,
++      config.randomSeed,
++    );
++  }
++
++  const analysisMethod: "paired" | "independent" = isPaired
++    ? "paired"
++    : "independent";
+ 
+   // 7. Effect size
+   const effectSize =

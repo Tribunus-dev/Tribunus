@@ -1,0 +1,122 @@
+/* Import v2 design system colors and theme from the UI package */
+/* Using relative path to workspace sibling package */
+@import "../../../ui/src/v2/styles/colors.css";
+@import "../../../ui/src/v2/styles/theme.css";
+
+/* Apply v2 theme variables to the web package */
+:root {
+  /* Map v2 design tokens to Starlight variables for compatibility */
+  --sl-color-bg: var(--v2-background-bg-base);
+  --sl-color-gray-5: var(--v2-border-border-base);
+  --sl-color-text: var(--v2-text-text-base);
+  --sl-border-color: var(--v2-border-border-base);
+  --sl-color-hairline-shade: var(--v2-border-border-muted);
+  
+  /* Map v2 design tokens to custom web package variables */
+  --color-background: var(--v2-background-bg-base);
+  --color-background-weak: var(--v2-background-bg-layer-01);
+  --color-background-weak-hover: var(--v2-background-bg-layer-02);
+  --color-background-strong: var(--v2-background-bg-layer-03);
+  --color-background-strong-hover: var(--v2-background-bg-deep);
+  --color-background-interactive: var(--v2-background-bg-accent);
+  --color-background-interactive-weaker: var(--v2-overlay-simple-overlay-hover);
+
+  --color-text: var(--v2-text-text-base);
+  --color-text-weak: var(--v2-text-text-muted);
+  --color-text-weaker: var(--v2-text-text-faint);
+  --color-text-strong: var(--v2-background-bg-inverse);
+  --color-text-inverted: var(--v2-text-text-inverse);
+
+  --color-border: var(--v2-border-border-base);
+  --color-border-weak: var(--v2-border-border-muted);
+
+  --color-icon: var(--v2-icon-icon-base);
+
+  /* For the share component */
+  --sl-color-bg-surface: var(--v2-background-bg-layer-01);
+  --sl-color-divider: var(--v2-border-border-base);
+}
+
+/* Dark mode mapping */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sl-color-bg: var(--v2-background-bg-base);
+    --sl-color-gray-5: var(--v2-border-border-base);
+    --sl-color-text: var(--v2-text-text-base);
+    --sl-border-color: var(--v2-border-border-base);
+    --sl-color-hairline-shade: var(--v2-border-border-muted);
+    
+    --color-background: var(--v2-background-bg-base);
+    --color-background-weak: var(--v2-background-bg-layer-01);
+    --color-background-weak-hover: var(--v2-background-bg-layer-02);
+    --color-background-strong: var(--v2-background-bg-layer-03);
+    --color-background-strong-hover: var(--v2-background-bg-deep);
+    --color-background-interactive: var(--v2-background-bg-accent);
+    --color-background-interactive-weaker: var(--v2-overlay-simple-overlay-hover);
+
+    --color-text: var(--v2-text-text-base);
+    --color-text-weak: var(--v2-text-text-muted);
+    --color-text-weaker: var(--v2-text-text-faint);
+    --color-text-strong: var(--v2-background-bg-inverse);
+    --color-text-inverted: var(--v2-text-text-inverse);
+
+    --color-border: var(--v2-border-border-base);
+    --color-border-weak: var(--v2-border-border-muted);
+
+    --color-icon: var(--v2-icon-icon-base);
+
+    --sl-color-bg-surface: var(--v2-background-bg-layer-01);
+    --sl-color-divider: var(--v2-border-border-base);
+  }
+}
+
+/* Explicit dark mode via data attribute */
+[data-color-scheme="dark"] {
+  --sl-color-bg: var(--v2-background-bg-base);
+  --sl-color-gray-5: var(--v2-border-border-base);
+  --sl-color-text: var(--v2-text-text-base);
+  --sl-border-color: var(--v2-border-border-base);
+  --sl-color-hairline-shade: var(--v2-border-border-muted);
+  
+  --color-background: var(--v2-background-bg-base);
+  --color-background-weak: var(--v2-background-bg-layer-01);
+  --color-background-weak-hover: var(--v2-background-bg-layer-02);
+  --color-background-strong: var(--v2-background-bg-layer-03);
+  --color-background-strong-hover: var(--v2-background-bg-deep);
+  --color-background-interactive: var(--v2-background-bg-accent);
+  --color-background-interactive-weaker: var(--v2-overlay-simple-overlay-hover);
+
+  --color-text: var(--v2-text-text-base);
+  --color-text-weak: var(--v2-text-text-muted);
+  --color-text-weaker: var(--v2-text-text-faint);
+  --color-text-strong: var(--v2-background-bg-inverse);
+  --color-text-inverted: var(--v2-text-text-inverse);
+
+  --color-border: var(--v2-border-border-base);
+  --color-border-weak: var(--v2-border-border-muted);
+
+  --color-icon: var(--v2-icon-icon-base);
+
+  --sl-color-bg-surface: var(--v2-background-bg-layer-01);
+  --sl-color-divider: var(--v2-border-border-base);
+}
+
+/* Apply v2 font family */
+body {
+  font-family: var(--v2-font-family-sans), sans-serif;
+}
+
+/* Ensure v2 theme is properly applied */
+:root {
+  color-scheme: light;
+}
+
+[data-color-scheme="dark"] {
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-color-scheme="light"]) {
+    color-scheme: dark;
+  }
+}

@@ -1,0 +1,10 @@
+--- a/packages/stats/app/package.json
++++ b/packages/stats/app/package.json
+@@ -1,6 +1,6 @@
+ {
+   "$schema": "https://json.schemastore.org/package.json",
+-  "name": "@opencode-ai/stats-app",
++  "name": "@tribunus/stats-app",
+   "version": "1.15.12",
+   "private": true,
+   "type": "module",

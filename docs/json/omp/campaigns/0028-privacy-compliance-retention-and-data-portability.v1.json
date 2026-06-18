@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0028",
+  "type": "campaign",
+  "name": "Privacy, Compliance, Retention, and Data Portability",
+  "slug": "privacy-compliance-retention-and-data-portability",
+  "description": "Data classification, purpose and consent registry, local-only data boundaries, telemetry consent enforcement, content redaction, secret detection, encryption key lifecycle, retention rules, user data export, user data deletion, organization export, backup privacy, cross-border data controls, processor inventory, incident disclosure workflow, privacy threat modeling, and compliance evidence automation.",
+  "objective": "Implement privacy-by-design: consent registry, data classification, retention rules, export/deletion, and compliance automation.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "privacy",
+    "compliance",
+    "gdpr",
+    "data-portability"
+  ],
+  "maturity": "modeled",
+  "horizon": "strategic",
+  "created_at": "2026-06-07T04:36:07.886Z",
+  "updated_at": "2026-06-07T04:36:07.886Z"
+}

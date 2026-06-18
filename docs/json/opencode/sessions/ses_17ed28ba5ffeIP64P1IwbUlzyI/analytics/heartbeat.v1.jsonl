@@ -1,0 +1,64 @@
+{"at":"2026-06-01T03:18:17.543Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"project/bootstrap.ts"}
+{"at":"2026-06-01T03:18:31.190Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"project/bootstrap.ts"}
+{"at":"2026-06-01T03:18:31.273Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"project/instance-store.ts"}
+{"at":"2026-06-01T03:18:43.785Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"project/instance-store.ts"}
+{"at":"2026-06-01T03:18:43.837Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"server/event.ts"}
+{"at":"2026-06-01T03:18:55.793Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"server/event.ts"}
+{"at":"2026-06-01T03:18:55.848Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"event-names.ts"}
+{"at":"2026-06-01T03:19:07.477Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"event-names.ts"}
+{"at":"2026-06-01T03:19:07.524Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"handlers/global.ts"}
+{"at":"2026-06-01T03:19:19.272Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"handlers/global.ts"}
+{"at":"2026-06-01T03:19:19.314Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"groups/global.ts"}
+{"at":"2026-06-01T03:19:30.276Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"groups/global.ts"}
+{"at":"2026-06-01T03:19:30.325Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"server/HealthRegistry"}
+{"at":"2026-06-01T03:19:42.018Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"server/HealthRegistry"}
+{"at":"2026-06-01T03:19:42.069Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"server.ts"}
+{"at":"2026-06-01T03:19:54.548Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"server.ts"}
+{"at":"2026-06-01T03:21:45.751Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"**/bootstrap.ts"}
+{"at":"2026-06-01T03:21:45.840Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"**/bootstrap.ts"}
+{"at":"2026-06-01T03:21:46.556Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"**/instance*"}
+{"at":"2026-06-01T03:21:46.630Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"**/instance*"}
+{"at":"2026-06-01T03:21:47.287Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"**/event.ts"}
+{"at":"2026-06-01T03:21:47.341Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"**/event.ts"}
+{"at":"2026-06-01T03:21:48.084Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"**/global.ts"}
+{"at":"2026-06-01T03:21:48.167Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"**/global.ts"}
+{"at":"2026-06-01T03:22:00.288Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"**/HealthRegistry*"}
+{"at":"2026-06-01T03:22:00.358Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"**/HealthRegistry*"}
+{"at":"2026-06-01T03:22:00.381Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"**/health*"}
+{"at":"2026-06-01T03:22:00.395Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"**/health*"}
+{"at":"2026-06-01T03:22:48.477Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:22:48.530Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:25:10.951Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:25:10.956Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:25:11.803Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:25:11.816Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:25:12.474Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:25:12.476Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:25:13.224Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:25:13.225Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:30:50.019Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"degraded|instance\\.degraded|instance_healthy|instance\\.healthy"}
+{"at":"2026-06-01T03:30:50.231Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"2 matches in 500 files"}
+{"at":"2026-06-01T03:30:51.034Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"InstanceCreated|InstanceLoaded|InstanceFailed"}
+{"at":"2026-06-01T03:30:51.217Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:32:19.316Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"GlobalHealth|healthy.*Schema|health.*endpoint|health.*handler"}
+{"at":"2026-06-01T03:32:19.357Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"3 matches in 64 files"}
+{"at":"2026-06-01T03:32:20.282Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"global\\.health|health.*handler|/global/health"}
+{"at":"2026-06-01T03:32:20.444Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"3 matches in 500 files"}
+{"at":"2026-06-01T03:32:21.811Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"Scope\\.addFinalizer"}
+{"at":"2026-06-01T03:32:21.813Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"0 matches in 10 files"}
+{"at":"2026-06-01T03:33:38.455Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"health.*handler|get.*health|HealthRegistry"}
+{"at":"2026-06-01T03:33:38.477Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"3 matches in 63 files"}
+{"at":"2026-06-01T03:33:39.242Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"GlobalBus\\.emit"}
+{"at":"2026-06-01T03:33:39.401Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"15 matches in 500 files"}
+{"at":"2026-06-01T03:33:40.224Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"server\\.instance\\.disposed|server\\.instance\\.created|server\\.instance"}
+{"at":"2026-06-01T03:33:40.342Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"4 matches in 500 files"}
+{"at":"2026-06-01T03:37:40.204Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"**/test/**/instance*"}
+{"at":"2026-06-01T03:37:40.331Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"**/test/**/instance*"}
+{"at":"2026-06-01T03:37:41.221Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"InstanceStore|instance-store"}
+{"at":"2026-06-01T03:37:41.395Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"30 matches in 118 files"}
+{"at":"2026-06-01T03:37:42.540Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"GlobalBus\\.on|GlobalBus\\.off|GlobalBus\\.listenerCount"}
+{"at":"2026-06-01T03:37:42.641Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"4 matches in 500 files"}
+{"at":"2026-06-01T03:38:20.076Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"testInstanceStoreLayer"}
+{"at":"2026-06-01T03:38:20.331Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"11 matches in 500 files"}
+{"at":"2026-06-01T03:38:21.590Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"noopBootstrap|noop.*Bootstrap|InstanceBootstrap.*noop"}
+{"at":"2026-06-01T03:38:21.708Z","session_id":"ses_17ed28ba5ffeIP64P1IwbUlzyI","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"12 matches in 500 files"}

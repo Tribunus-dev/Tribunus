@@ -1,0 +1,20 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "add-reconciliation-integration-tests-0009-05",
+  "type": "task",
+  "title": "Add Reconciliation Integration Tests",
+  "description": "Add tests that create StorageReconciler with real adapters and verify invariants: valkey_ack_without_pglite_receipt_rejected, duckdb_projection_without_receipt_rejected, projection_never_authority.",
+  "laneId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "missionId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "status": "pending",
+  "priority": 95,
+  "estimatedEffort": "1 day",
+  "dependsOn": [],
+  "blocks": [],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": ["storage-kernel", "reconciliation", "tests", "0009"],
+  "created_at": "2026-06-14T19:00:00.000Z",
+  "updated_at": "2026-06-14T19:00:00.000Z"
+}

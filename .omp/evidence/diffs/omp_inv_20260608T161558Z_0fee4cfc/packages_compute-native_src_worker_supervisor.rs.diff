@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/worker_supervisor.rs
++++ b/packages/compute-native/src/worker_supervisor.rs
+@@ -1861,7 +1861,7 @@
+     use super::*;
+     use crate::engine_policy::qualification_policy;
+     use crate::worker_protocol::{HostCommand, MessageKind, V1_0, WorkerEvent};
+-    use std::io::{BufRead, BufReader, Read, Write};
++    use std::io::{BufRead, BufReader, Read};
+     use std::path::PathBuf;
+     use std::process::{Child, ChildStdout, Command, Stdio};
+     use std::time::{Duration, Instant};

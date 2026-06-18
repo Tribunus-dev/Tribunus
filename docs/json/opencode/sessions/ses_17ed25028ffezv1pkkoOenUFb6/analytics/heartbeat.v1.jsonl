@@ -1,0 +1,36 @@
+{"at":"2026-06-01T03:20:21.066Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"**/diagnostic/**"}
+{"at":"2026-06-01T03:20:21.161Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"**/diagnostic/**"}
+{"at":"2026-06-01T03:20:22.603Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*project/bootstrap|from.*\"\\.\\.\\/bootstrap|from.*\"\\.\\/bootstrap"}
+{"at":"2026-06-01T03:20:22.798Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"8 matches in 5 files"}
+{"at":"2026-06-01T03:20:23.841Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*storage/adapter|from.*\"\\.\\.\\/adapter|from.*\"\\.\\/adapter"}
+{"at":"2026-06-01T03:20:23.942Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"14 matches in 14 files"}
+{"at":"2026-06-01T03:20:25.154Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*config/config|from.*\"\\.\\.\\/config/config|from.*\"\\.\\/config"}
+{"at":"2026-06-01T03:20:25.271Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"39 matches in 39 files"}
+{"at":"2026-06-01T03:20:26.350Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*bus/global|from.*\"/bus/global|GlobalBus"}
+{"at":"2026-06-01T03:20:26.480Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"49 matches in 12 files"}
+{"at":"2026-06-01T03:23:45.967Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*from.*bus"}
+{"at":"2026-06-01T03:23:45.968Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T03:23:46.648Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*from.*bus"}
+{"at":"2026-06-01T03:23:46.649Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T03:23:47.497Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*from.*bus"}
+{"at":"2026-06-01T03:23:47.498Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:25:57.273Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*project/bootstrap|from.*\"\\.\\/bootstrap\"|from.*\\\"\\.\\./bootstrap\\\"|InstanceB"}
+{"at":"2026-06-01T03:25:57.473Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"18 matches in 7 files"}
+{"at":"2026-06-01T03:26:10.985Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"DatabaseAdapter|from.*storage/adapter"}
+{"at":"2026-06-01T03:26:11.165Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"51 matches in 12 files"}
+{"at":"2026-06-01T03:26:11.182Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"@/config/config\\\"|\\\"\\.\\./config/config\\\"|\\\"\\./config/config\\\""}
+{"at":"2026-06-01T03:26:11.296Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"36 matches in 36 files"}
+{"at":"2026-06-01T03:28:19.089Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"^import"}
+{"at":"2026-06-01T03:28:19.090Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 1 files"}
+{"at":"2026-06-01T03:28:19.839Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"^import"}
+{"at":"2026-06-01T03:28:19.840Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T03:28:20.641Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"ib-bootstrap-phases|ib-error-gaps"}
+{"at":"2026-06-01T03:28:20.840Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:28:21.338Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"forEach"}
+{"at":"2026-06-01T03:28:21.339Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:30:40.021Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"InstanceBootstrap|from.*bootstrap"}
+{"at":"2026-06-01T03:30:40.023Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:30:40.042Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"InstanceBootstrap|from.*bootstrap"}
+{"at":"2026-06-01T03:30:40.043Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:30:40.599Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"InstanceBootstrap|from.*bootstrap"}
+{"at":"2026-06-01T03:30:40.600Z","session_id":"ses_17ed25028ffezv1pkkoOenUFb6","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}

@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/engine.rs
++++ b/packages/compute-native/src/engine.rs
+@@ -281,7 +281,7 @@
+         // 5. Create a generation session for this run.
+         let eos = req.eos_token_id();
+         let max_tokens = if req.max_tokens == 0 { SAFE_ZERO_MAX_TOKENS } else { req.max_tokens };
+-        let mut session = GenerationSession::new(
++        let mut session = GenerationControlSession::new(
+             req.session_id().to_owned(),
+             eos,
+             max_tokens,

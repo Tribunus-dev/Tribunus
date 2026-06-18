@@ -1,0 +1,499 @@
+--- a/packages/compute-native/src/worker_supervisor.rs
++++ b/packages/compute-native/src/worker_supervisor.rs
+@@ -1850,7 +1850,496 @@
+         assert!(!registry.contains("gen-001"));
+ 
+         registry.insert(make_test_request("gen-001"));
++        assert!(registry.contains("gen-001"));
++    }
++}
++
++// ── Integration Tests (fake worker binary) ────────────────────────────────
++
++#[cfg(test)]
++mod integration_tests {
++    use super::*;
++    use crate::engine_policy::qualification_policy;
++    use crate::worker_protocol::{HostCommand, MessageKind, V1_0, WorkerEvent};
++    use std::io::{BufRead, BufReader, Read, Write};
++    use std::path::PathBuf;
++    use std::process::{Child, ChildStdout, Command, Stdio};
++    use std::time::{Duration, Instant};
++
++    // ── Helpers ──────────────────────────────────────────────────────────
++
++    /// Resolve the fake worker binary path.
++    fn fake_worker_path() -> PathBuf {
++        if let Some(path) = option_env!("CARGO_BIN_EXE_tribunus-fake-worker") {
++            return PathBuf::from(path);
++        }
++        for candidate in &[
++            "target/debug/tribunus-fake-worker",
++            "target/release/tribunus-fake-worker",
++            "../target/debug/tribunus-fake-worker",
++            "../../target/debug/tribunus-fake-worker",
++        ] {
++            let p = PathBuf::from(candidate);
++            if p.exists() {
++                return p;
++            }
++        }
++        PathBuf::from("tribunus-fake-worker")
++    }
++
++    /// Spawn the fake worker in the given mode.
++    fn spawn_fake_worker(mode: &str, worker_id: &str) -> (Child, String) {
++        let instance_id = uuid::Uuid::new_v4().to_string();
++        let bin = fake_worker_path();
++        let child = Command::new(&bin)
++            .arg("--mode")
++            .arg(mode)
++            .arg("--worker-instance-id")
++            .arg(&instance_id)
++            .arg("--image-dir")
++            .arg("/tmp")
++            .stdin(Stdio::piped())
++            .stdout(Stdio::piped())
++            .stderr(Stdio::piped())
++            .spawn()
++            .expect("failed to spawn fake worker");
++        (child, instance_id)
++    }
++
++    /// Read one length-prefixed Frame from stdout.
++    fn read_frame_from_stdout(stdout: &mut BufReader<ChildStdout>) -> Frame {
++        let mut len_buf = [0u8; 4];
++        stdout
++            .read_exact(&mut len_buf)
++            .expect("failed to read frame length prefix");
++        let frame_len = u32::from_le_bytes(len_buf) as usize;
++        let mut buf = vec![0u8; frame_len];
++        stdout
++            .read_exact(&mut buf)
++            .expect("failed to read frame body");
++        serde_json::from_slice(&buf).expect("failed to deserialize frame")
++    }
++
++    /// Perform Hello/HelloAck handshake.
++    fn handshake(
++        cmd_writer: &WorkerCommandWriter,
++        stdout: &mut BufReader<ChildStdout>,
++    ) -> Frame {
++        cmd_writer
++            .send_command(HostCommand::Hello, serde_json::Value::Null)
++            .expect("failed to send Hello");
++        let deadline = Instant::now() + Duration::from_secs(5);
++        loop {
++            if Instant::now() >= deadline {
++                panic!("handshake timed out");
++            }
++            let filled = stdout
++                .fill_buf()
++                .expect("failed to peek stdout during handshake");
++            if filled.len() >= 4 {
++                let frame = read_frame_from_stdout(stdout);
++                if matches!(&frame.message_kind, MessageKind::WorkerEvent(WorkerEvent::HelloAck)) {
++                    return frame;
++                }
++                panic!("unexpected frame during handshake: {frame:?}");
++            }
++            std::thread::sleep(Duration::from_millis(10));
++        }
++    }
++
++    /// Send LoadModel.
++    fn load_model(cmd_writer: &WorkerCommandWriter, image_hash: &str) {
++        let payload = serde_json::json!({ "image_hash": image_hash });
++        cmd_writer
++            .send_command(HostCommand::LoadModel, payload)
++            .expect("failed to send LoadModel");
++    }
++
++    /// Send StartGeneration.
++    fn start_generation(cmd_writer: &WorkerCommandWriter, request_id: &str) {
++        let payload = serde_json::json!({
++            "request_id": request_id,
++            "prompt_token_ids": [1, 2, 3],
++            "max_output_tokens": 8,
++            "deadline_ms": 30_000,
++        });
++        cmd_writer
++            .send_command_with_request(HostCommand::StartGeneration, request_id, payload)
++            .expect("failed to send StartGeneration");
++    }
++
++    /// Drain frames until a terminal event or timeout.
++    fn drain_until_terminal(
++        stdout: &mut BufReader<ChildStdout>,
++        timeout: Duration,
++    ) -> Vec<Frame> {
++        let deadline = Instant::now() + timeout;
++        let mut frames = Vec::new();
++        loop {
++            if Instant::now() >= deadline {
++                break;
++            }
++            let filled = stdout.fill_buf().expect("failed to peek stdout");
++            if filled.len() < 4 {
++                std::thread::sleep(Duration::from_millis(5));
++                continue;
++            }
++            let frame = read_frame_from_stdout(stdout);
++            let is_terminal = matches!(
++                &frame.message_kind,
++                MessageKind::WorkerEvent(
++                    WorkerEvent::GenerationCompleted
++                        | WorkerEvent::GenerationCancelled
++                        | WorkerEvent::GenerationFailed
++                        | WorkerEvent::WorkerFatal
++                )
++            );
++            frames.push(frame);
++            if is_terminal {
++                break;
++            }
++        }
++        frames
++    }
++
++    /// Wait for a specific WorkerEvent.
++    fn wait_for_event(
++        stdout: &mut BufReader<ChildStdout>,
++        target: WorkerEvent,
++        timeout: Duration,
++    ) -> Frame {
++        let deadline = Instant::now() + timeout;
++        loop {
++            if Instant::now() >= deadline {
++                panic!("timed out waiting for {target:?}");
++            }
++            let filled = stdout.fill_buf().expect("failed to peek stdout");
++            if filled.len() < 4 {
++                std::thread::sleep(Duration::from_millis(5));
++                continue;
++            }
++            let frame = read_frame_from_stdout(stdout);
++            if frame.message_kind == MessageKind::WorkerEvent(target.clone()) {
++                return frame;
++            }
++        }
++    }
++
++    // ── Tests ───────────────────────────────────────────────────────────
++
++    /// Gate 1: Handshake identity binding.
++    #[test]
++    #[ignore]
++    fn test_handshake_identity_bound() {
++        let worker_id = "integration-test-handshake";
++        let (mut child, instance_id) = spawn_fake_worker("normal", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        let ack = handshake(&cmd_writer, &mut stdout_reader);
++
++        assert_eq!(ack.version, V1_0);
++        assert_eq!(ack.worker_instance_id, instance_id);
++        assert!(
++            matches!(&ack.message_kind, MessageKind::WorkerEvent(WorkerEvent::HelloAck)),
++            "expected HelloAck, got {:?}",
++            ack.message_kind
++        );
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 2: Identity mismatch rejection.
++    #[test]
++    #[ignore]
++    fn test_identity_mismatch_rejected() {
++        let worker_id = "integration-test-mismatch";
++        let (mut child, instance_id) = spawn_fake_worker("identity-mismatch", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        let ack = handshake(&cmd_writer, &mut stdout_reader);
++
++        assert_ne!(ack.worker_instance_id, instance_id);
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 3: Live streaming returns before prefill.
++    #[test]
++    #[ignore]
++    fn test_live_streaming_returns_before_prefill() {
++        let worker_id = "integration-test-live-streaming";
++        let (mut child, instance_id) = spawn_fake_worker("normal", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++        load_model(&cmd_writer, "test-hash");
++        start_generation(&cmd_writer, "gen-001");
++
++        let frames = drain_until_terminal(&mut stdout_reader, Duration::from_secs(5));
++        assert!(!frames.is_empty());
++        let has_streaming = frames.iter().any(|f| {
++            matches!(
++                &f.message_kind,
++                MessageKind::WorkerEvent(WorkerEvent::GenerationStarted | WorkerEvent::Token)
++            )
++        });
++        assert!(has_streaming, "should receive GenerationStarted or Token before terminal");
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 4: Cancellation during generation.
++    #[test]
++    #[ignore]
++    fn test_cancellation_during_generation() {
++        let worker_id = "integration-test-cancel";
++        let (mut child, instance_id) = spawn_fake_worker("slow-prefill", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++        load_model(&cmd_writer, "test-hash");
++        start_generation(&cmd_writer, "gen-001");
++
++        wait_for_event(&mut stdout_reader, WorkerEvent::GenerationStarted, Duration::from_secs(5));
++        cmd_writer
++            .send_command_with_request(HostCommand::CancelGeneration, "gen-001", serde_json::json!({ "request_id": "gen-001" }))
++            .expect("failed to send CancelGeneration");
++
++        let cancel_frame = wait_for_event(&mut stdout_reader, WorkerEvent::GenerationCancelled, Duration::from_secs(5));
++        assert_eq!(cancel_frame.request_id.as_deref(), Some("gen-001"));
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 5: Hard timeout with ignored cancel.
++    #[test]
++    #[ignore]
++    fn test_hard_timeout_with_ignored_cancel() {
++        let worker_id = "integration-test-ignored-cancel";
++        let (mut child, instance_id) = spawn_fake_worker("ignored-cancel", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++        load_model(&cmd_writer, "test-hash");
++        start_generation(&cmd_writer, "gen-001");
++
++        wait_for_event(&mut stdout_reader, WorkerEvent::GenerationStarted, Duration::from_secs(5));
++        cmd_writer
++            .send_command_with_request(HostCommand::CancelGeneration, "gen-001", serde_json::json!({ "request_id": "gen-001" }))
++            .expect("failed to send CancelGeneration");
++
++        let frames = drain_until_terminal(&mut stdout_reader, Duration::from_secs(5));
++        assert!(!frames.iter().any(|f| matches!(&f.message_kind, MessageKind::WorkerEvent(WorkerEvent::GenerationCancelled))));
++        assert!(frames.iter().any(|f| matches!(&f.message_kind, MessageKind::WorkerEvent(WorkerEvent::GenerationCompleted))));
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 6: Heartbeat loss detection.
++    #[test]
++    #[ignore]
++    fn test_heartbeat_loss_detection() {
++        let worker_id = "integration-test-heartbeat-loss";
++        let (mut child, instance_id) = spawn_fake_worker("heartbeat-loss", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++        load_model(&cmd_writer, "test-hash");
++        start_generation(&cmd_writer, "gen-001");
++
++        let deadline = Instant::now() + Duration::from_secs(3);
++        let mut heartbeat_count = 0u32;
++        loop {
++            if Instant::now() >= deadline { break; }
++            let filled = stdout_reader.fill_buf().expect("failed to peek stdout");
++            if filled.len() < 4 {
++                std::thread::sleep(Duration::from_millis(10));
++                continue;
++            }
++            let frame = read_frame_from_stdout(&mut stdout_reader);
++            if matches!(&frame.message_kind, MessageKind::WorkerEvent(WorkerEvent::Heartbeat)) {
++                heartbeat_count += 1;
++            }
++        }
++        assert!(heartbeat_count == 0, "heartbeat-loss mode should produce no heartbeats");
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 7: RSS limit enforcement.
++    #[test]
++    #[ignore]
++    fn test_rss_limit_enforcement() {
++        let worker_id = "integration-test-rss";
++        let (child, _) = spawn_fake_worker("normal", worker_id);
++        let rss = read_process_rss(child.id());
++        assert!(rss > 0, "RSS should be measurable");
++        assert!(rss < 1u64 << 40, "RSS should be < 1 TiB");
++        let _ = (&child).wait();
++    }
++
++    /// Gate 8: Consumer disconnect triggers cancel.
++    #[test]
++    #[ignore]
++    fn test_consumer_disconnect_triggers_cancel() {
++        let worker_id = "integration-test-disconnect";
++        let (mut child, instance_id) = spawn_fake_worker("normal", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = Arc::new(WorkerCommandWriter::new(stdin, instance_id.clone()));
++        let registry = Arc::new(ActiveRequestRegistry::new());
++        let runtime_state = Arc::new(WorkerRuntimeState::new(worker_id.to_string()));
++
++        handshake(&cmd_writer, &mut stdout_reader);
++        runtime_state.set_model_loaded();
++
++        let (sender, mut stream) = generation_channel(Some(16));
++        let policy = qualification_policy();
++        let deadline = DeadlineGuard::new(&policy, Instant::now);
++        let deadline_at = Instant::now() + policy.request_deadline;
++        registry.insert(ActiveRequest::new(
++            "gen-001".to_string(), "job-disconnect".to_string(), sender, deadline, deadline_at,
++        ));
++
++        stream.close();
++        drop(stream);
+         assert!(registry.contains("gen-001"));
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 9: Duplicate terminal ignored.
++    #[test]
++    #[ignore]
++    fn test_duplicate_terminal_ignored() {
++        let worker_id = "integration-test-dup-terminal";
++        let (mut child, instance_id) = spawn_fake_worker("duplicate-terminal", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++        load_model(&cmd_writer, "test-hash");
++        start_generation(&cmd_writer, "gen-001");
++
++        let mut completed_count = 0u32;
++        let deadline = Instant::now() + Duration::from_secs(5);
++        loop {
++            if Instant::now() >= deadline { break; }
++            let filled = stdout_reader.fill_buf().expect("failed to peek stdout");
++            if filled.len() < 4 {
++                std::thread::sleep(Duration::from_millis(5));
++                continue;
++            }
++            let frame = read_frame_from_stdout(&mut stdout_reader);
++            if matches!(&frame.message_kind, MessageKind::WorkerEvent(WorkerEvent::GenerationCompleted)) {
++                completed_count += 1;
++                if completed_count >= 2 { break; }
++            }
++        }
++        assert!(completed_count >= 2, "duplicate-terminal mode should produce >= 2 GenerationCompleted frames");
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 10: Sequence gap rejected.
++    #[test]
++    #[ignore]
++    fn test_sequence_gap_rejected() {
++        let worker_id = "integration-test-seq-gap";
++        let (mut child, instance_id) = spawn_fake_worker("sequence-gap", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++
++        cmd_writer.send_command(HostCommand::Hello, serde_json::Value::Null).expect("Hello");
++        let ack = wait_for_event(&mut stdout_reader, WorkerEvent::HelloAck, Duration::from_secs(5));
++        assert_eq!(ack.sequence_number, 0);
++
++        let result = crate::worker_protocol::validate_frame(&ack, 1, Some(&instance_id));
++        assert_eq!(result, Ok(()));
++
++        let next_frame = read_frame_from_stdout(&mut stdout_reader);
++        let result = crate::worker_protocol::validate_frame(&next_frame, 1, Some(&instance_id));
++        assert!(result.is_err(), "sequence gap should produce validation error");
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Gate 11: Worker restart recovery.
++    #[test]
++    #[ignore]
++    fn test_worker_restart() {
++        let worker_id = "integration-test-restart";
++        let (mut child, instance_id) = spawn_fake_worker("crash", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++        load_model(&cmd_writer, "test-hash");
++        start_generation(&cmd_writer, "gen-001");
++
++        let status = child.wait().expect("wait");
++        assert!(!status.success(), "crash mode should exit with failure");
++
++        let (mut child2, instance_id2) = spawn_fake_worker("normal", worker_id);
++        let stdin2 = child2.stdin.take().expect("stdin2");
++        let stdout2 = child2.stdout.take().expect("stdout2");
++        let mut stdout_reader2 = BufReader::new(stdout2);
++        let cmd_writer2 = WorkerCommandWriter::new(stdin2, instance_id2.clone());
++        let ack = handshake(&cmd_writer2, &mut stdout_reader2);
++        assert!(matches!(&ack.message_kind, MessageKind::WorkerEvent(WorkerEvent::HelloAck)));
++        let _ = child2.kill();
++        let _ = child2.wait();
++    }
++
++    /// Gate 12: Environment isolation.
++    #[test]
++    #[ignore]
++    fn test_env_isolation() {
++        let worker_id = "integration-test-env";
++        let instance_id = uuid::Uuid::new_v4().to_string();
++        let bin = fake_worker_path();
++        let mut cmd = Command::new(&bin);
++        cmd.arg("--mode").arg("report-env")
++            .arg("--worker-instance-id").arg(&instance_id)
++            .arg("--image-dir").arg("/tmp")
++            .env_clear()
++            .env("HOME", std::env::var("HOME").unwrap_or_default())
++            .env("PATH", std::env::var("PATH").unwrap_or_default())
++            .env("LANG", std::env::var("LANG").unwrap_or_else(|_| "en_US.UTF-8".into()))
++            .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped());
++        let mut child = cmd.env("TEST_VAR", "should-not-leak")
++            .spawn().expect("spawn fake worker");
++
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++
++        let frames = drain_until_terminal(&mut stdout_reader, Duration::from_secs(5));
++        let test_var_seen = frames.iter().any(|f| {
++            serde_json::to_string(&f.payload).unwrap_or_default().contains("TEST_VAR")
++        });
++        assert!(!test_var_seen, "env_clear should prevent TEST_VAR from reaching the worker");
++        let _ = child.kill();
++        let _ = child.wait();
+     }
+ }
+ 

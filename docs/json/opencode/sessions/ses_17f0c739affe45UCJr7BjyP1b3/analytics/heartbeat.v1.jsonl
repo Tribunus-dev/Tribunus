@@ -1,0 +1,82 @@
+{"at":"2026-06-01T02:13:40.206Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/server/health"}
+{"at":"2026-06-01T02:13:40.335Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"6 matches in 6 files"}
+{"at":"2026-06-01T02:13:40.858Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/server/health"}
+{"at":"2026-06-01T02:13:40.932Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 365 files"}
+{"at":"2026-06-01T02:13:41.760Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/project/instance-store"}
+{"at":"2026-06-01T02:13:41.875Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"9 matches in 9 files"}
+{"at":"2026-06-01T02:13:42.447Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/project/instance-store"}
+{"at":"2026-06-01T02:13:42.523Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"13 matches in 12 files"}
+{"at":"2026-06-01T02:13:43.328Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/bus/global"}
+{"at":"2026-06-01T02:13:43.411Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"10 matches in 10 files"}
+{"at":"2026-06-01T02:13:43.980Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"global\\.health"}
+{"at":"2026-06-01T02:13:44.088Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:14:38.453Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/server/health"}
+{"at":"2026-06-01T02:14:38.615Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"6 matches in 500 files"}
+{"at":"2026-06-01T02:14:39.202Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/project/instance-store"}
+{"at":"2026-06-01T02:14:39.348Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"9 matches in 500 files"}
+{"at":"2026-06-01T02:14:39.956Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/bus/global"}
+{"at":"2026-06-01T02:14:40.038Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"10 matches in 500 files"}
+{"at":"2026-06-01T02:14:40.589Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Schema\\.Literal\\(true\\)"}
+{"at":"2026-06-01T02:14:40.706Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"5 matches in 500 files"}
+{"at":"2026-06-01T02:14:41.265Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Schema\\.Literal\\(true\\)"}
+{"at":"2026-06-01T02:14:41.334Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 45 files"}
+{"at":"2026-06-01T02:15:40.555Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_find","phase":"started","detail":"*bootstrap*"}
+{"at":"2026-06-01T02:15:40.562Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_find","phase":"completed","detail":"*bootstrap*"}
+{"at":"2026-06-01T02:15:41.146Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_find","phase":"started","detail":"*instance-layer*"}
+{"at":"2026-06-01T02:15:41.267Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_find","phase":"completed","detail":"*instance-layer*"}
+{"at":"2026-06-01T02:18:59.797Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_find","phase":"started","detail":"*.ts"}
+{"at":"2026-06-01T02:18:59.802Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_find","phase":"completed","detail":"*.ts"}
+{"at":"2026-06-01T02:19:00.645Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"health|HealthRegistry|HealthRegistry|health.*endpoint"}
+{"at":"2026-06-01T02:19:00.657Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"6 matches in 45 files"}
+{"at":"2026-06-01T02:19:01.418Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"GlobalHealth|global.*health"}
+{"at":"2026-06-01T02:19:01.426Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"15 matches in 45 files"}
+{"at":"2026-06-01T02:20:14.155Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"GlobalHealth"}
+{"at":"2026-06-01T02:20:14.157Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"9 matches in 1 files"}
+{"at":"2026-06-01T02:20:15.001Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"global/health"}
+{"at":"2026-06-01T02:20:15.002Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:21:32.931Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"server\\.instance\\.disposed|InstanceDisposed|instance_disposed"}
+{"at":"2026-06-01T02:21:33.097Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"10 matches in 500 files"}
+{"at":"2026-06-01T02:21:33.703Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"registerDisposer"}
+{"at":"2026-06-01T02:21:33.843Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"3 matches in 500 files"}
+{"at":"2026-06-01T02:21:34.419Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"WorkspaceContext\\.workspaceID"}
+{"at":"2026-06-01T02:21:34.501Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"4 matches in 500 files"}
+{"at":"2026-06-01T02:22:37.071Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"@/server/global-lifecycle"}
+{"at":"2026-06-01T02:22:37.193Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T02:22:37.724Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"@/server/event\""}
+{"at":"2026-06-01T02:22:37.981Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T02:23:17.199Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_find","phase":"started","detail":"*.ts"}
+{"at":"2026-06-01T02:23:17.205Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_find","phase":"completed","detail":"*.ts"}
+{"at":"2026-06-01T02:23:51.904Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"import.*GlobalPaths|from.*global"}
+{"at":"2026-06-01T02:23:51.910Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 25 files"}
+{"at":"2026-06-01T02:23:53.062Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"@/server/global-lifecycle|server/global-lifecycle|global-lifecycle"}
+{"at":"2026-06-01T02:23:53.412Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 500 files"}
+{"at":"2026-06-01T02:24:34.356Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"global.*health|health.*endpoint|GlobalHealth|httpapi.*health"}
+{"at":"2026-06-01T02:24:34.554Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"8 matches in 365 files"}
+{"at":"2026-06-01T02:25:58.516Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"health"}
+{"at":"2026-06-01T02:25:58.517Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:26:26.057Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/global/health\""}
+{"at":"2026-06-01T02:26:26.058Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:26:27.113Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"global\\.health|globalHealth"}
+{"at":"2026-06-01T02:26:27.122Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:26:53.792Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"HealthRegistry\\s*[.,]|\\.set\\(|HealthStatus\\b"}
+{"at":"2026-06-01T02:26:53.889Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"30 matches in 89 files"}
+{"at":"2026-06-01T02:26:54.640Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"@/effect/instance-registry"}
+{"at":"2026-06-01T02:26:54.781Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T02:27:23.365Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"HealthRegistry\\.Service|healthRegistry\\.set|healthRegistry\\b"}
+{"at":"2026-06-01T02:27:23.483Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:27:24.238Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"HealthRegistry|healthRegistry"}
+{"at":"2026-06-01T02:27:24.360Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 365 files"}
+{"at":"2026-06-01T02:28:20.150Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"HealthRegistry|healthRegistry|HealthStatus"}
+{"at":"2026-06-01T02:28:20.151Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T02:28:21.076Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"HealthRegistry|healthRegistry|HealthStatus"}
+{"at":"2026-06-01T02:28:21.077Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T02:28:22.029Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"HealthRegistry|healthRegistry|HealthStatus"}
+{"at":"2026-06-01T02:28:22.030Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T02:30:52.389Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"instance.*health|health.*instance"}
+{"at":"2026-06-01T02:30:52.512Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:30:52.979Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"import.*server/event"}
+{"at":"2026-06-01T02:30:53.073Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T02:32:52.918Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"/global/health"}
+{"at":"2026-06-01T02:32:52.919Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:32:54.052Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"@/project/project"}
+{"at":"2026-06-01T02:32:54.053Z","session_id":"ses_17f0c739affe45UCJr7BjyP1b3","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}

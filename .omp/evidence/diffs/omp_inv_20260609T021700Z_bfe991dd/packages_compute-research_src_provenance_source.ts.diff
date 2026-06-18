@@ -1,0 +1,17 @@
+--- a/packages/compute-research/src/provenance/source.ts
++++ b/packages/compute-research/src/provenance/source.ts
+@@ -163,13 +163,7 @@
+   const repo_url = await gitCmd(repoPath, "config", "--get", "remote.origin.url")
+   const commit_sha = await gitCmd(repoPath, "rev-parse", "HEAD")
+   const branch = await gitCmd(repoPath, "rev-parse", "--abbrev-ref", "HEAD")
+-  const timestampStr = await gitCmd(
+-    repoPath,
+-    "log",
+-    "-1",
+-    "--format=%ct",
+-  )
+-  const commit_timestamp = Number.parseInt(timestampStr, 10)
++  const commit_timestamp = await gitCmd(repoPath, "log", "-1", "--format=%cI")
+   const statusOutput = await gitCmd(repoPath, "status", "--porcelain")
+   const dirty = statusOutput.length > 0
+ 

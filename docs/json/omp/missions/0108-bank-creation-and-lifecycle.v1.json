@@ -1,0 +1,42 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0108-bank-creation-and-lifecycle",
+  "type": "mission",
+  "name": "Bank Creation and Lifecycle",
+  "slug": "bank-creation-and-lifecycle",
+  "description": "Create, open, close, archive, and delete memory banks with transactional guarantees. Each bank transitions through a defined lifecycle state machine.",
+  "purpose": "Ensure memory banks have a well-defined lifecycle with transactional integrity — preventing partial creation, orphaned banks, or data loss during transition operations.",
+  "campaignId": "0016",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Bank lifecycle states: pending, active, closed, archived, deleted",
+    "Create operation is atomic — bank exists or it does not",
+    "Open transitions from pending to active",
+    "Close transitions from active to closed; prevents writes",
+    "Archive transitions from closed to archived; data preserved but offline",
+    "Delete removes all bank data with cascading cleanup",
+    "Lifecycle transitions are recorded in a journal",
+    "Concurrent lifecycle operations are serialized per bank"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "depends_on": [
+    "0107-physical-bank-registry"
+  ],
+  "unlocks": [],
+  "authority_scope": "memory:banks:lifecycle",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "Revert bank to previous lifecycle state; clean up partial artifacts",
+  "recovery_strategy": "Replay lifecycle journal to rebuild current state",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:44:41.387Z",
+  "updated_at": "2026-06-07T05:50:52.785Z"
+}

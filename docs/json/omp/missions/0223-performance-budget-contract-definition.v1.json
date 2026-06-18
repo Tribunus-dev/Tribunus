@@ -1,0 +1,32 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0223-performance-budget-contract-definition",
+  "type": "mission",
+  "name": "Performance Budget Contract Definition",
+  "slug": "performance-budget-contract-definition",
+  "description": "Define the performance budget contract covering startup time, memory consumption, CPU utilization, battery impact, repository indexing throughput, coordination throughput, PGlite and DuckDB query latency, Valkey backpressure thresholds, UI responsiveness (frame budget, input latency), large workspace scenarios, multi-agent saturation, network-constrained scenarios, and low-end hardware qualification.",
+  "purpose": "Performance budgets are the contract between engineering teams and the product experience. Without explicit budgets, performance degrades incrementally with no objective trigger for intervention. This mission produces the published, enforceable budget contract that all subsequent performance work — measurement, regression gates, optimisation — references as the source of truth.",
+  "campaignId": "0026",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Published performance budget contract document covering all subsystems with threshold values and measurement methodology per metric",
+    "Budget contract includes startup time, memory, CPU, battery, indexing throughput, query latency, UI frame budget, and network-constrained scenario targets",
+    "Budget contract reviewed and signed off by engineering leads for each affected subsystem"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "performance",
+    "budget",
+    "benchmarks",
+    "capacity"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:51.710Z",
+  "updated_at": "2026-06-07T05:53:00.331Z"
+}

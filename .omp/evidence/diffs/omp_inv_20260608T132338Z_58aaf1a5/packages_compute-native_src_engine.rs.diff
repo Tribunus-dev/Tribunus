@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/engine.rs
++++ b/packages/compute-native/src/engine.rs
+@@ -221,7 +221,7 @@
+             .map_err(|e| napi::Error::from_reason(format!("failed to bind tensors: {}", e)))?;
+ 
+         let session_id = format!("session-{}", self.loaded_models.len());
+-        let session = GenerationSession::new(session_id, 1, 256);
++        let session = GenerationControlSession::new(session_id, 1, 256);
+ 
+         self.loaded_models.insert(image_hash, LoadedModel { 
+             runtime, 

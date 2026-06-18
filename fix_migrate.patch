@@ -1,0 +1,40 @@
+--- packages/runtime/src/control-plane/migrate.ts
++++ packages/runtime/src/control-plane/migrate.ts
+@@ -1,6 +1,8 @@
+ import { Effect, Layer, Context } from "effect"
+ import { DatabaseAdapter } from "@/storage/adapter"
+ import { DataMigrationTable } from "@/data-migration.pg.sql"
++import { provideInstanceEffect } from "@/project/instance-context"
++import { InstanceLayer } from "@/effect/instance-context"
+ import {
+   WorkspaceTable,
+   AgentStatusTable,
+@@ -311,8 +313,6 @@
+   )
+   console.log("")
+
+-  // TODO: Wire DatabaseAdapter layer and run migration
+-  console.log("Migration tool scaffolded. Wire DatabaseAdapter to run.")
+   console.log("Entity directories configured:")
+   for (const [type, dir] of Object.entries(ENTITY_DIRS)) {
+     const exists = fs.existsSync(dir)
+@@ -321,4 +321,17 @@
+       : 0
+     console.log(`  ${type}: ${dir} (${count} files) ${exists ? "" : "[MISSING]"}`)
+   }
++
++  console.log("\nStarting migration...")
++
++  const program = Effect.gen(function* () {
++    const adapter = yield* DatabaseAdapter.Service
++    const report = yield* migrateAll(adapter, dryRun)
++
++    console.log(`\nMigration completed in ${report.durationMs}ms`)
++    for (const [type, progress] of Object.entries(report.progress)) {
++      console.log(`  ${type}: ${progress.migrated} migrated, ${progress.skipped} skipped, ${progress.failed} failed`)
++    }
++  })
++
++  const runnable = program.pipe(provideInstanceEffect(process.cwd()), Effect.provide(InstanceLayer.layer))
++  Effect.runPromise(runnable).catch(console.error)
+ }

@@ -1,0 +1,24 @@
+--- a/packages/compute-native/src/compute_image.rs
++++ b/packages/compute-native/src/compute_image.rs
+@@ -2201,7 +2201,7 @@
+             .ok_or_else(|| napi::Error::from_reason("norm weight invalid"))?
+         };
+ 
+-        let token_arr = crate::executor::run_epilogue(
++        let epi = crate::executor::run_epilogue(
+             &hidden,
+             &fn_w,
+             &emb_w, &emb_s, &emb_b,
+@@ -2212,10 +2212,10 @@
+         )
+         .map_err(|e| napi::Error::from_reason(format!("epilogue: {:?}", e)))?;
+ 
+-        token_arr
++        epi.selected_token
+             .eval()
+             .map_err(|e| napi::Error::from_reason(format!("epilogue eval: {:?}", e)))?;
+-        let token_id = token_arr
++        let token_id = epi.selected_token
+             .try_as_slice::<u32>()
+             .map_err(|e| napi::Error::from_reason(format!("epilogue token: {:?}", e)))?
+             .first()

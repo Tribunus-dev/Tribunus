@@ -1,0 +1,28 @@
+$ astro build
+22:06:51 [@astrojs/cloudflare] Enabling sessions with Cloudflare KV with the "SESSION" KV binding.
+22:06:51 [@astrojs/cloudflare] If you see the error "Invalid binding `SESSION`" in your build output, you need to add the binding to your wrangler config file.
+22:06:51 [WARN] [toolbeam-docs-theme] A `<Head>` component override is already defined in your Starlight configuration.
+22:06:51 [WARN] [toolbeam-docs-theme] To use `toolbeam-docs-theme`, either remove this override or manually render the content from `toolbeam-docs-theme/overrides/Head.astro`.
+22:06:51 [WARN] [toolbeam-docs-theme] A `<Header>` component override is already defined in your Starlight configuration.
+22:06:51 [WARN] [toolbeam-docs-theme] To use `toolbeam-docs-theme`, either remove this override or manually render the content from `toolbeam-docs-theme/overrides/Header.astro`.
+22:06:51 [WARN] [toolbeam-docs-theme] A `<Footer>` component override is already defined in your Starlight configuration.
+22:06:51 [WARN] [toolbeam-docs-theme] To use `toolbeam-docs-theme`, either remove this override or manually render the content from `toolbeam-docs-theme/overrides/Footer.astro`.
+22:06:51 [content] Syncing content
+22:06:52 [content] Synced content
+22:06:52 [types] Generated 450ms
+22:06:52 [build] output: "server"
+22:06:52 [build] mode: "server"
+22:06:52 [build] directory: /Users/user/Developer/GitHub/Tribunus/packages/web/dist/
+22:06:52 [build] adapter: @astrojs/cloudflare
+22:06:52 [build] Collecting build info...
+22:06:52 [build] ✓ Completed in 567ms.
+22:06:52 [build] Building server entrypoints...
+22:06:52 [WARN] [vite] [plugin vite:resolve] Automatically externalized node built-in module "node:path" imported from "../../node_modules/.bun/@astrojs+starlight@0.34.3+4835693b1db83b0c/node_modules/@astrojs/starlight/utils/collection.ts". Consider adding it to environments.ssr.external if it is intended.
+22:06:52 [WARN] [vite] [plugin vite:resolve] Automatically externalized node built-in module "node:url" imported from "../../node_modules/.bun/@astrojs+starlight@0.34.3+4835693b1db83b0c/node_modules/@astrojs/starlight/utils/collection.ts". Consider adding it to environments.ssr.external if it is intended.
+22:07:10 [ERROR] [vite] ✗ Build failed in 18.36s
+Could not resolve "../../../assets/web/web-homepage-new-session.png" from "src/content/docs/nb/web.mdx"
+file: /Users/user/Developer/GitHub/Tribunus/packages/web/src/content/docs/nb/web.mdx
+  Stack trace:
+    at getRollupError (file:///Users/user/Developer/GitHub/Tribunus/node_modules/.bun/rollup@4.61.1/node_modules/rollup/dist/es/shared/parseAst.js:317:41)
+    at ModuleLoader.handleInvalidResolvedId (file:///Users/user/Developer/GitHub/Tribunus/node_modules/.bun/rollup@4.61.1/node_modules/rollup/dist/es/shared/node-entry.js:22119:24)
+error: script "build" exited with code 1

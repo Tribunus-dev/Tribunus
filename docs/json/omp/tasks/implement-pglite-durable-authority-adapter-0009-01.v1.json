@@ -1,0 +1,20 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "implement-pglite-durable-authority-adapter-0009-01",
+  "type": "task",
+  "title": "Implement PGlite Durable Authority Adapter",
+  "description": "Create PgDurableAuthorityAdapter implementing DurableAuthorityPort using tokio-postgres. Feature-gate behind storage-adapters.",
+  "laneId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "missionId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "status": "pending",
+  "priority": 95,
+  "estimatedEffort": "2 days",
+  "dependsOn": [],
+  "blocks": [],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": ["storage-kernel", "pglite", "adapter", "0009"],
+  "created_at": "2026-06-14T19:00:00.000Z",
+  "updated_at": "2026-06-14T19:00:00.000Z"
+}

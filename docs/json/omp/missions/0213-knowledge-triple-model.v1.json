@@ -1,0 +1,41 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0213-knowledge-triple-model",
+  "type": "mission",
+  "name": "Knowledge Triple Model",
+  "slug": "knowledge-triple-model",
+  "description": "Define the knowledge triple model: subject-predicate-object with provenance and confidence. Triples form the atomic unit of the memory knowledge graph.",
+  "purpose": "Establish a structured knowledge representation where all memories can be expressed as subject-predicate-object triples with verifiable provenance, enabling graph traversal and reasoning.",
+  "campaignId": "0016",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Knowledge triple schema: subject, predicate, object, confidence, provenance, timestamp",
+    "Subject and object are entity references (canonical or literal)",
+    "Predicate is a defined relation from a controlled vocabulary",
+    "Provenance includes source agent, source action, and source timestamp",
+    "Confidence is a float 0.0-1.0",
+    "Triples support namespacing for extension-specific predicates",
+    "Triple create, read, delete operations are supported"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "depends_on": [
+    "0212-memory-link-evolution"
+  ],
+  "unlocks": [],
+  "authority_scope": "memory:triples",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "Restore previous triple schema; migrate triples to previous format",
+  "recovery_strategy": "Rebuild triple index from canonical memory store",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:45:58.566Z",
+  "updated_at": "2026-06-07T05:51:07.332Z"
+}

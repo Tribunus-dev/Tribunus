@@ -1,0 +1,11 @@
+--- a/artifacts/identity/source-cutover/migration-waves.json
++++ b/artifacts/identity/source-cutover/migration-waves.json
+@@ -606,7 +606,7 @@
+       "@tribunus/stats-app",
+       "@opencode-ai/stats-server"
+     ],
+-    "@opencode-ai/stats-app": [],
++    "@tribunus/stats-app": [],
+     "@opencode-ai/stats-server": [],
+     "@opencode-ai/console-core": [
+       "@opencode-ai/console-app",

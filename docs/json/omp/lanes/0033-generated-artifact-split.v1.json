@@ -1,0 +1,34 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0033",
+  "type": "lane",
+  "name": "Generated artifact split",
+  "slug": "generated-artifact-split",
+  "description": "Separate bulk review artifacts from the normal code-review path while preserving canonical receipts and schemas as the source of truth.",
+  "scope": "compute-native-review-artifacts",
+  "missionId": "0237",
+  "status": "idle",
+  "isReadOnly": false,
+  "writePaths": [
+    "tribunus-gap-report-review-bundle.zip",
+    "packages/compute-native/code-review/coverage-lattice-gate-v1-review.json",
+    "packages/compute-native/code-review/backend-coverage-lattice-gate-v1.zip",
+    "packages/compute-native/code-review/README.md",
+    "local/tier1-defect-clusters.md"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "artifacts",
+    "review"
+  ],
+  "created_at": "2026-06-13T10:57:05.260Z",
+  "updated_at": "2026-06-13T10:57:05.260Z"
+}

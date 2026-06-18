@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0021",
+  "type": "campaign",
+  "name": "Workspace, Repository, and Artifact Model",
+  "slug": "workspace-repository-and-artifact-model",
+  "description": "Workspace identity, repository attachment and detachment, multi-repository projects, worktree and branch model, dirty-state doctrine, artifact registry, generated artifact ownership, external file change detection, repository capability discovery, large repository indexing, ignore and inclusion policies, project templates, archive and restore, workspace export, repository migration, and cross-workspace references.",
+  "objective": "Define the canonical workspace, repository, and artifact model \u2014 what is a workspace, what state belongs to it, and how artifacts flow across boundaries.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "workspace",
+    "repository",
+    "artifacts",
+    "filesystem"
+  ],
+  "maturity": "modeled",
+  "horizon": "planned",
+  "created_at": "2026-06-07T04:35:40.654Z",
+  "updated_at": "2026-06-07T04:35:40.654Z"
+}

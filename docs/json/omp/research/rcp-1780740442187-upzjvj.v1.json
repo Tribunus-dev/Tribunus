@@ -1,0 +1,302 @@
+{
+  "schema": "rig.relay.research-context-packet.v1",
+  "schema_version": "v1",
+  "id": "rcp-1780740442187-upzjvj",
+  "type": "research_context_packet",
+  "research_topic": "MCP Protocol 2026 State — Specification, Ecosystem, Security, and Governance",
+  "transcript_summary": "Deep research into MCP protocol state as of June 2026 to update ADR 0015 (MCP as Governed Capability Protocol). Research covers: MCP spec version 2025-11-25 with July 2026 RC, TS SDK v2 pre-alpha, MCP primitives (tools/resources/prompts/Tasks/SEP-1686 durable async execution), Streamable HTTP transport (deprecating old HTTP+SSE), OAuth 2.1 with PKCE authorization and action-level authorization, MCP gateway/proxy patterns with enterprise SSO, 10,000+ server ecosystem (97M+ monthly SDK downloads, 28% Fortune 500 adoption), Anthropic donation to AAIF/Linux Foundation (Dec 2025, 170+ members by April 2026), capability-based security models (UCAN, ZCAP, object-capability), and agent tool governance with EU AI Act and CoSAI threat taxonomy.",
+  "research_findings": [
+    {
+      "category": "protocol",
+      "title": "MCP Spec 2025-11-25 and July 2026 Release Candidate",
+      "finding": "Latest stable specification is 2025-11-25, which introduced authorization server discovery, icon metadata for tools, incremental scope consent, and experimental Task support. A 2026-07-28 specification release candidate is under development (tagged on GitHub), expected to ship alongside TypeScript SDK v2 stable in Q3 2026.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://modelcontextprotocol.io",
+          "title": "MCP Specification",
+          "relevance": "Official specification website",
+          "key_excerpts": [
+            "Latest spec version 2025-11-25"
+          ]
+        },
+        {
+          "url": "https://github.com/modelcontextprotocol",
+          "title": "MCP GitHub Organization",
+          "relevance": "Specification development and releases",
+          "key_excerpts": [
+            "2026-07-28 release candidate under development"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "MCP Specification",
+        "SDK v2",
+        "Release Timeline"
+      ]
+    },
+    {
+      "category": "protocol",
+      "title": "MCP Primitives — Tools, Resources, Prompts, and Tasks (SEP-1686)",
+      "finding": "Core primitives: Tools (functions AI models execute), Resources (context/data exposed to models), Prompts (templated messages and workflows). The MCP Tasks API (SEP-1686, formalized in 2025-11-25 spec) enables durable async execution — a 'call-now, fetch-later' pattern for operations exceeding network timeouts. Tasks API defines a standardized state machine (created → working → completed/failed/cancelled), polling endpoints (tasks/get, tasks/list, tasks/cancel, tasks/result), and capability negotiation via Initialize. Task-augmented requests degrade gracefully with non-Tasks servers via synchronous inline fallback.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://modelcontextprotocol.io",
+          "title": "MCP Specification — Primitives",
+          "relevance": "Official documentation of core primitives",
+          "key_excerpts": [
+            "Tools, Resources, Prompts are the three primitives",
+            "Tasks (SEP-1686) enables durable async execution"
+          ]
+        },
+        {
+          "url": "https://github.com/modelcontextprotocol/specification",
+          "title": "MCP Specification GitHub",
+          "relevance": "Tasks API specification details",
+          "key_excerpts": [
+            "State machine: created → working → completed/failed/cancelled",
+            "Polling endpoints for task lifecycle"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "SEP-1686",
+        "Tasks API",
+        "Durable Execution"
+      ]
+    },
+    {
+      "category": "protocol",
+      "title": "Streamable HTTP Transport — Single Endpoint, SSE Inside",
+      "finding": "Streamable HTTP is the standard remote HTTP transport as of 2025-03-26 spec; the old HTTP+SSE (two-endpoint) transport is deprecated/legacy from 2024-11-05. Streamable HTTP exposes a single endpoint (e.g., /mcp). Client POSTs JSON-RPC with Accept: application/json, text/event-stream. Server can return JSON or text/event-stream. SSE framing is still allowed inside Streamable HTTP — what's deprecated is the old two-endpoint model (GET /sse + POST /messages), not SSE itself. Headers: MCP-Protocol-Version, MCP-Session-Id for session management. stdio transport remains standard for local subprocess integrations. Atlassian Rovo deprecated legacy SSE endpoint in favor of Streamable HTTP, citing reliability and spec alignment.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://modelcontextprotocol.io/docs/specification/transports",
+          "title": "MCP Transport Specification",
+          "relevance": "Official transport documentation",
+          "key_excerpts": [
+            "Streamable HTTP is the standard remote transport",
+            "Legacy HTTP+SSE two-endpoint model deprecated"
+          ]
+        },
+        {
+          "url": "https://developer.atlassian.com",
+          "title": "Atlassian Rovo MCP migration",
+          "relevance": "Real-world migration from legacy SSE to Streamable HTTP",
+          "key_excerpts": [
+            "Deprecated /v1/sse in favor of /v1/mcp"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Streamable HTTP",
+        "SSE",
+        "stdio",
+        "Transport"
+      ]
+    },
+    {
+      "category": "protocol",
+      "title": "MCP OAuth 2.1 with PKCE — Authorization Standard",
+      "finding": "MCP specification mandates OAuth 2.1 with PKCE as the authorization standard (added June 2025). PKCE mandatory for all clients including confidential clients; S256 challenge required. Token scoping per-tool (e.g., mcp:tool:read_file:read). Resource indicators (RFC 8707) bind tokens to specific MCP servers. Servers must validate aud claim in access tokens. Metadata discovery mandated via OAuth 2.0 Authorization Server Metadata (RFC 8414) and Protected Resource Metadata (RFC 9728). Dynamic Client Registration (RFC 7591) strongly recommended. Short-lived access tokens (15-60 min) with refresh token rotation. Strict redirect URI validation (exact string match, no wildcards). OAuth 2.1 removes Implicit Grant and ROPC. Error handling requires specific HTTP status codes (401 unauthorized, 403 insufficient scopes) with WWW-Authenticate headers.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://modelcontextprotocol.io/docs/specification/authorization",
+          "title": "MCP Authorization Specification",
+          "relevance": "Official authorization documentation",
+          "key_excerpts": [
+            "OAuth 2.1 with PKCE is the standard",
+            "Per-tool scoping with mcp:tool: prefix"
+          ]
+        },
+        {
+          "url": "https://avatier.com",
+          "title": "Avatier MCP Auth Guide",
+          "relevance": "Detailed OAuth 2.1 implementation guidance",
+          "key_excerpts": [
+            "Short-lived tokens 15-60 min",
+            "Refresh token rotation required"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "OAuth 2.1",
+        "PKCE",
+        "Action-Level Authorization"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "MCP Gateway/Proxy Patterns — Enterprise Managed Auth and SSO",
+      "finding": "MCP gateways serve as critical control plane between AI agents and tools — centralizing authentication, audit trails, and real-time monitoring. Triple-gate architecture emerging: (1) AI Gateway validates natural language instructions, (2) MCP/Tool Gateway controls tool access with fine-grained authorization, (3) API Gateway protects backend services. Enterprise SSO integration via SAML 2.0, OpenID Connect (OIDC), supporting Okta, Microsoft Entra ID, Google Workspace. Gateways drive authorization decisions from JWT claims. Policy enforcement includes RBAC, Fine-Grained Authorization (FGA), and Attribute-Based Access Control (ABAC). Policy-as-Code managed in version control for auditability. Zero Trust principles applied — no entity trusted by default.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://obot.ai",
+          "title": "Obot MCP Gateway",
+          "relevance": "MCP gateway implementation with zero trust",
+          "key_excerpts": [
+            "Centralized authentication and audit trails",
+            "Zero Trust filtering applied before requests reach MCP servers"
+          ]
+        },
+        {
+          "url": "https://zuplo.com",
+          "title": "Zuplo MCP Gateway",
+          "relevance": "Enterprise SSO integration for MCP",
+          "key_excerpts": [
+            "SAML 2.0, OIDC integration",
+            "Policy-as-Code in version control"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Gateway",
+        "SSO",
+        "Policy Enforcement",
+        "RBAC",
+        "ABAC"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "MCP Ecosystem Scale — 10,000+ Servers, 97M+ Monthly Downloads",
+      "finding": "Over 10,000 active public MCP servers as of April/May 2026. Official registry records 9,652 latest server records as of May 24, 2026. 97+ million monthly SDK downloads by April 2026. GitHub: 15,926 repos with mcp-server topic. 28% of Fortune 500 companies have deployed MCP servers for production AI workflows. Major IDE support: Cursor IDE v0.43+, VS Code via .vscode/mcp.json, JetBrains MCP Server plugin built-in since 2025.2. Major AI providers added native MCP support: OpenAI, Google (Gemini), Microsoft in early 2026. Community-built servers for GitHub, Slack, PostgreSQL, Stripe, and thousands more.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://digitalapplied.com",
+          "title": "MCP Server Count Analysis",
+          "relevance": "Independent count of MCP servers",
+          "key_excerpts": [
+            "10,000+ active public MCP servers as of April 2026"
+          ]
+        },
+        {
+          "url": "https://note.com",
+          "title": "MCP Ecosystem Stats",
+          "relevance": "SDK download and adoption metrics",
+          "key_excerpts": [
+            "97+ million monthly SDK downloads",
+            "28% Fortune 500 adoption"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Ecosystem",
+        "MCP Registry",
+        "IDE Integration"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "MCP Donation to AAIF (Linux Foundation)",
+      "finding": "December 9, 2025: Anthropic donated MCP to the Agentic AI Foundation (AAIF), a directed fund under the Linux Foundation. Co-founded by Anthropic, Block, and OpenAI. Founding projects: Anthropic's MCP, Block's 'goose' agent framework, OpenAI's 'AGENTS.md' specification. Platinum-level support from Google, Microsoft, AWS, Cloudflare, Bloomberg. AAIF grew to 170+ member organizations by April 2026. The Linux Foundation provides neutral governance similar to its stewardship of Kubernetes and PyTorch. Linux Foundation also launched Tokenomics Foundation (June 3, 2026) for AI infrastructure economics.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://anthropic.com",
+          "title": "Anthropic Donation Announcement",
+          "relevance": "Official announcement of MCP donation",
+          "key_excerpts": [
+            "MCP donated to AAIF under Linux Foundation on December 9, 2025"
+          ]
+        },
+        {
+          "url": "https://linuxfoundation.org",
+          "title": "Linux Foundation AAIF Announcement",
+          "relevance": "Formation of Agentic AI Foundation",
+          "key_excerpts": [
+            "AAIF co-founded by Anthropic, Block, OpenAI",
+            "170+ member organizations by April 2026"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "AAIF",
+        "Linux Foundation",
+        "Governance"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Capability-Based Security Models — UCAN, ZCAP, Object-Capability",
+      "finding": "UCAN (User-Controlled Authorization Network): distributed, trustless, delegable authorization scheme. Publicly verifiable via late-bound certificate chains + DIDs. Supports caveats (policy restrictions). ZCAP-LD (Linked Data Capabilities): represents capabilities within the Object-Capability (OCap) model, serialized as IPLD objects. OCap model characteristics: unforgeability, transferability, least privilege, elimination of ambient authority (prevents privilege escalation). UCAN and ZCAP underpin agent security alignment: granular, unforgeable rights for agents to specific actions/resources — limiting harm even if compromised. CoSAI (Coalition for Secure AI) released January 2026 whitepaper identifying 12 core threat categories for MCP, including improper authentication and missing access control.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://github.com/ucan-wg",
+          "title": "UCAN Working Group",
+          "relevance": "Official UCAN specification and implementation",
+          "key_excerpts": [
+            "Distributed, trustless, delegable authorization",
+            "Supports caveats for policy restrictions"
+          ]
+        },
+        {
+          "url": "https://coalitionforsecureai.org",
+          "title": "CoSAI MCP Threat Whitepaper",
+          "relevance": "Security threat analysis for MCP",
+          "key_excerpts": [
+            "12 core threat categories including improper authentication and missing access control"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "UCAN",
+        "ZCAP",
+        "OCap",
+        "Capability Security"
+      ]
+    },
+    {
+      "category": "validation",
+      "title": "Agent Tool Governance — EU AI Act, NIST RMF, and Organizational Approaches",
+      "finding": "EU AI Act enforcement underway: high-risk AI system requirements effective August 2026. Colorado AI law sets duties for high-risk systems. ISO/IEC 42001 (AI management system standard) accelerating adoption. Agentic AI governance extends beyond model alignment to runtime action control and explicit oversight. Microsoft's Agent Governance Toolkit provides policy enforcement, identity management, and sandboxing. MASQ (Machine Action Security Quotient) framework governs agent permissions. Access control approaches: least privilege with scoped time-limited credentials, dynamic context-aware access, unique agent identity per agent. Risk classification: EU AI Act four-tier, NIST AI RMF (govern/map/measure/manage), OECD framework. New organizational roles: Chief AI Officer (CAIO), AI Governance Lead, AI Ethics Reviewer. Salt Security introduced Agentic Security Graph (May 2026) for cross-layer visibility.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://gurusup.com",
+          "title": "AI Governance Framework Overview",
+          "relevance": "Regulatory and governance frameworks for AI",
+          "key_excerpts": [
+            "EU AI Act high-risk requirements effective August 2026",
+            "New organizational roles emerging: CAIO, AI Governance Lead"
+          ]
+        },
+        {
+          "url": "https://nist.gov",
+          "title": "NIST AI Risk Management Framework",
+          "relevance": "Official NIST risk management guidelines",
+          "key_excerpts": [
+            "Govern/Map/Measure/Manage framework"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "EU AI Act",
+        "NIST AI RMF",
+        "Agent Governance",
+        "MASQ"
+      ]
+    }
+  ],
+  "implementation_specs": [],
+  "linked_entities": [
+    {
+      "entity_type": "adr",
+      "entity_id": "0015",
+      "relationship": "context"
+    },
+    {
+      "entity_type": "adr",
+      "entity_id": "0015",
+      "relationship": "decision"
+    }
+  ],
+  "session_id": "unknown",
+  "created_at": "2026-06-06T10:07:22.187Z"
+}

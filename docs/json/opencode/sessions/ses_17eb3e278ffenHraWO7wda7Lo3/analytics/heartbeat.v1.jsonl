@@ -1,0 +1,2 @@
+{"at":"2026-06-01T03:49:05.011Z","session_id":"ses_17eb3e278ffenHraWO7wda7Lo3","agent":"scalpel","tool":"smart_write","phase":"started","detail":"packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T03:49:05.012Z","session_id":"ses_17eb3e278ffenHraWO7wda7Lo3","agent":"scalpel","tool":"smart_write","phase":"completed","detail":"packages/opencode/src/project/instance-trace.ts"}

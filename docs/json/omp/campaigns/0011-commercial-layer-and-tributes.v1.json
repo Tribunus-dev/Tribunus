@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0011",
+  "type": "campaign",
+  "name": "Commercial Layer and Tributes",
+  "slug": "commercial-layer-and-tributes",
+  "description": "Membership tiers, one-time contributions, feature bounties, GitHub Sponsors integration, entitlement model, local license state, hosted-service boundaries, tribute ledger, contributor credit, bounty funding thresholds, refund/cancellation policy, and public roadmap funding visibility. Distinct from Dharma — tributes are economic/accounting units.",
+  "objective": "Implement the tribute economy: membership, bounties, contributions, entitlement, and funding visibility separate from trust scoring.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-06",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "commercial",
+    "tributes",
+    "funding"
+  ],
+  "maturity": "modeled",
+  "horizon": "strategic",
+  "created_at": "2026-06-06T17:52:10.541Z",
+  "updated_at": "2026-06-06T17:52:10.541Z"
+}

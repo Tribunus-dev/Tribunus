@@ -1,0 +1,35 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0235-documentation-system-and-release-notes-pipeline",
+  "type": "mission",
+  "name": "Documentation System and Release Notes Pipeline",
+  "slug": "documentation-system-and-release-notes-pipeline",
+  "description": "Design the product documentation system, SDK documentation, and automated release notes pipeline. Covers documentation site architecture (product docs, architecture docs, operator runbooks, security docs), SDK doc generation from TypeDoc, extension author guide structure, automated release notes generation from changelog entries, and versioned documentation hosting.",
+  "purpose": "Deliver comprehensive, versioned documentation for all audiences (users, operators, extension authors, SDK integrators) and an automated release notes pipeline that keeps users informed of every change.",
+  "campaignId": "0032",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Documentation site architecture defines content hierarchy, versioning strategy, search integration, and cross-reference linking between product docs, SDK docs, and operator runbooks",
+    "SDK documentation specification covers TypeDoc integration, API surface documentation, example generation, and changelog-driven doc updates",
+    "Extension author guide structure defines sections, patterns, and tutorials with reproducible examples",
+    "Release notes pipeline specification defines changelog format, automated aggregation per release, categorization (feat/fix/perf/breaking), and publication workflow",
+    "Versioned documentation hosting strategy defines URL scheme, redirect policy, and archive retention"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "documentation",
+    "release-notes",
+    "sdk-docs",
+    "pipeline",
+    "launch"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:48:03.080Z",
+  "updated_at": "2026-06-07T05:53:26.158Z"
+}

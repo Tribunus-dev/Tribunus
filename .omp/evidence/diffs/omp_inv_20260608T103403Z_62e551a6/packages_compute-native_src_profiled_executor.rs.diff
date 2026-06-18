@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/profiled_executor.rs
++++ b/packages/compute-native/src/profiled_executor.rs
+@@ -558,7 +558,7 @@
+         &plan.epilogue,
+         arch.rms_norm_eps as f32,
+         arch.tie_word_embeddings,
+-        sampler,
++        &SamplerConfig::default(),
+     )
+     .map_err(|e| napi::Error::from_reason(format!("epilogue: {:?}", e)))?;
+ 

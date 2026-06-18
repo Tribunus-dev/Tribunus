@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/runtime_event.v1",
+  "title": "Tribunus Runtime Event",
+  "description": "Schema for a single runtime event in OpenCode's event-driven execution model. Events capture actor actions, tool invocations, lifecycle transitions, and system diagnostics with normalized error codes and performance metadata.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the event"
+    },
+    "sessionId": {
+      "type": "string",
+      "description": "Session identifier"
+    },
+    "runId": {
+      "type": "string",
+      "description": "Run identifier"
+    },
+    "parentEventId": {
+      "type": ["string", "null"],
+      "description": "Parent event identifier, if any"
+    },
+    "correlationId": {
+      "type": ["string", "null"],
+      "description": "Correlation identifier for tracing"
+    },
+    "traceId": {
+      "type": ["string", "null"],
+      "description": "W3C Trace Context trace ID for distributed tracing across subsystems"
+    },
+    "spanId": {
+      "type": ["string", "null"],
+      "description": "W3C Trace Context span ID for this event within a trace"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["trace", "debug", "info", "warn", "error", "fatal"],
+      "description": "Event severity level"
+    },
+    "source": {
+      "type": "string",
+      "description": "Subsystem that emitted the event (e.g., coordination, session, tool, http, cockpit)"
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the event"
+    },
+    "actor": {
+      "type": "string",
+      "description": "Actor that generated the event (e.g., agent, user, system)"
+    },
+    "eventType": {
+      "type": "string",
+      "description": "Type of event (e.g., tool_call, file_edit, lifecycle, error)"
+    },
+    "phase": {
+      "type": ["string", "null"],
+      "description": "Phase of the session when the event occurred"
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of the event (e.g., started, completed, failed)"
+    },
+    "toolName": {
+      "type": ["string", "null"],
+      "description": "Name of the tool called, if applicable"
+    },
+    "filePath": {
+      "type": ["string", "null"],
+      "description": "Path to the file edited, if applicable"
+    },
+    "model": {
+      "type": ["string", "null"],
+      "description": "Model used for the event, if applicable"
+    },
+    "durationMs": {
+      "type": ["number", "null"],
+      "description": "Duration of the event in milliseconds, if applicable"
+    },
+    "tokenInput": {
+      "type": ["number", "null"],
+      "description": "Number of input tokens, if applicable"
+    },
+    "tokenOutput": {
+      "type": ["number", "null"],
+      "description": "Number of output tokens, if applicable"
+    },
+    "errorCode": {
+      "type": ["string", "null"],
+      "description": "Error code, if applicable"
+    },
+    "errorMessage": {
+      "type": ["string", "null"],
+      "description": "Error message, if applicable"
+    },
+    "recoverable": {
+      "type": ["boolean", "null"],
+      "description": "Whether the error is recoverable, if applicable"
+    },
+    "payloadJson": {
+      "type": "string",
+      "description": "Full original event properties as a free-form JSON value"
+    }
+  },
+  "required": ["id", "sessionId", "runId", "ts", "actor", "eventType"],
+  "additionalProperties": false
+}

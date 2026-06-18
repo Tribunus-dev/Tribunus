@@ -1,0 +1,24 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0022-runtime-lifecycle-model-state-machine-definition",
+  "type": "mission",
+  "name": "Runtime Lifecycle Model — State Machine Definition",
+  "slug": "runtime-lifecycle-model-state-machine-definition",
+  "description": "Define the unified state machine for app boot, workspace open, project attach, session start, agent execution, artifact production, terminal readiness, cockpit projection, suspend/resume, crash recovery, and session close. The nervous system of the Tribunus runtime.",
+  "purpose": "Define the complete runtime state machine with valid transitions, crash recovery semantics, and projection lifecycle.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 90,
+  "acceptanceCriteria": [
+    "State machine covers app boot → workspace → project → session → execution → close",
+    "Crash recovery semantics defined: what state survives, what is rebuilt",
+    "Projection lifecycle defined: when cockpit updates, what events trigger refresh",
+    "Suspend/resume contract specifies what is serialized and restored"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T17:53:04.565Z",
+  "updated_at": "2026-06-07T05:03:21.162Z"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0029",
+  "type": "campaign",
+  "name": "Reliability, Recovery, and Disaster Preparedness",
+  "slug": "reliability-recovery-and-disaster-preparedness",
+  "description": "Failure-domain inventory, backup contract, restore contract, point-in-time recovery, Valkey rebuild from PGlite, DuckDB reprojection, corrupt database recovery, interrupted migration recovery, filesystem corruption handling, lost device response, compromised credential recovery, regional or cell failure, federation partition recovery, recovery-time and recovery-point objectives, disaster simulation, and recovery evidence certification.",
+  "objective": "Define reliability contracts: backup, restore, PITR, corruption recovery, disaster simulation, and RTO/RPO certification.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "reliability",
+    "recovery",
+    "disaster",
+    "backup"
+  ],
+  "maturity": "modeled",
+  "horizon": "planned",
+  "created_at": "2026-06-07T04:36:06.976Z",
+  "updated_at": "2026-06-07T04:36:06.976Z"
+}

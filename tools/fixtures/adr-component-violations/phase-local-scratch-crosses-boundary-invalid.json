@@ -1,0 +1,18 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "9996",
+  "title": "Invalid Scratch Boundary Example",
+  "status": "proposed",
+  "date": "2026-06-14",
+  "last_modified": "2026-06-14T00:00:00Z",
+  "component_imports": [
+    "ACR-0004",
+    "ACR-0007"
+  ],
+  "decision": "Scratch memory crosses the phase boundary as durable truth in this example, and authority-visible scratch crosses the phase boundary in a way that is durable truth.",
+  "context": "",
+  "consequences": "",
+  "supersedes": [],
+  "superseded_by": []
+}

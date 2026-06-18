@@ -1,0 +1,544 @@
+{
+  "schema": "rig.relay.research-context-packet.v1",
+  "schema_version": "v1",
+  "id": "rcp-1780740438136-5teq0j",
+  "type": "research_context_packet",
+  "research_topic": "Browser sandbox technologies for ADR 0016 (Sandbox Cell) — WebContainer, OPFS, iframe sandbox, COOP/COEP, Yjs collaborative editing, xterm.js terminal, capability security",
+  "transcript_summary": "Research on browser sandbox technologies for ADR 0016 (Sandbox Cell). Covers WebContainer architecture (StackBlitz, WASM, ServiceWorker TCP, virtual filesystem, snapshot API), Origin Private File System (OPFS standards, performance vs IndexedDB, FROST timing attack), browser sandboxing mechanisms (iframe sandbox tokens, COOP/COEP, CSP, cross-origin isolation requirements for SharedArrayBuffer), collaborative editing with Yjs (CodeMirror 6 and Monaco bindings, y-websocket/Hocuspocus transport, awareness/cursors), browser terminal emulation via xterm.js, and capability-based security models (WASI, iframe sandbox allow-* tokens). Decision to combine iframe sandbox (compute) + WebContainer (Node.js execution) + OPFS (persistent storage) + postMessage (capability-gated I/O).",
+  "research_findings": [
+    {
+      "category": "architecture",
+      "title": "WebContainer (StackBlitz) — Architecture and State 2026",
+      "finding": "WebContainer is a browser-based runtime for Node.js, executing entirely inside a browser tab using WASM, ServiceWorker-based virtualized TCP networking, and a virtual filesystem. Boots in milliseconds. Supports npm/pnpm/yarn natively. Uses cross-origin isolation (COEP: require-corp or credentialless). Exposes mount() accepting FileSystemTree or binary snapshots from @webcontainer/snapshot (uses @msgpack/msgpack for serialization). export() can output json, binary, or zip formats. Supports spawn() for processes with terminal I/O via WritableStream/ReadableStream. Only one WebContainer instance can run concurrently per page. Self-hostable via StackBlitz Enterprise. Works in Chromium, Firefox, and Safari TP. Key limitations: single concurrent instance, requires cross-origin isolation headers, no native non-JS language runtimes (unless ported via WASI).",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://webcontainers.io/api",
+          "title": "WebContainer API Reference",
+          "relevance": "Primary API documentation with mount, export, spawn, FS API details",
+          "key_excerpts": [
+            "mount(tree: FileSystemTree | Uint8Array | ArrayBuffer, options?: Options): Promise<void>",
+            "export(path: string, options?: ExportOptions): Promise<Uint8Array | FileSystemTree>",
+            "coep?: 'require-corp' | 'credentialless' | 'none'"
+          ]
+        },
+        {
+          "url": "https://webcontainers.io/guides/introduction",
+          "title": "WebContainer Introduction",
+          "relevance": "Overview of key features, security model, and use cases",
+          "key_excerpts": [
+            "WebContainers are a browser-based runtime for executing Node.js applications and operating system commands, entirely inside your browser tab.",
+            "Unmatched security: everything is contained in a browser tab"
+          ]
+        },
+        {
+          "url": "https://blog.stackblitz.com/posts/introducing-webcontainers/",
+          "title": "Introducing WebContainers (2021, updated)",
+          "relevance": "Original announcement with technical architecture details",
+          "key_excerpts": [
+            "WebContainers include a virtualized TCP network stack that's mapped to your browser's ServiceWorker API",
+            "100% of code execution occurs in the browser security sandbox"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "WASM",
+        "ServiceWorker",
+        "Virtual filesystem",
+        "Cross-origin isolation",
+        "COEP"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Origin Private File System (OPFS) — Browser Virtual Filesystem",
+      "finding": "OPFS is a standard WHATWG Living Standard (updated March 2026). Provides a private, origin-scoped virtual filesystem on disk. 3-4x faster than IndexedDB. Supports synchronous read/write exclusively in Web Workers via FileSystemSyncAccessHandle. Accessed via navigator.storage.getDirectory(). Subject to browser storage quota. Cleared when user clears site data. No permission prompts needed for OPFS access. Chromium-based browsers support the full File System Access API (including user-visible file pickers); Firefox and Safari support only OPFS (no local-disk pickers). A 2026 vulnerability (FROST) demonstrated side-channel timing attacks through OPFS.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system",
+          "title": "MDN: Origin private file system",
+          "relevance": "Primary OPFS documentation with API details and code examples",
+          "key_excerpts": [
+            "OPFS offers low-level, byte-by-byte file access, which is private to the origin of the page",
+            "synchronous calls available (other File System API calls are asynchronous) that can be run inside web workers only",
+            "Subject to browser storage quota restrictions"
+          ]
+        },
+        {
+          "url": "https://web.dev/articles/origin-private-file-system",
+          "title": "The origin private file system (web.dev)",
+          "relevance": "Performance and usage guide for OPFS",
+          "key_excerpts": [
+            "Can be 3-4 times faster than IndexedDB for applications requiring high-performance file operations"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "File System Access API",
+        "Storage quota",
+        "Web Workers",
+        "Side-channel attacks"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Browser Sandboxing Mechanisms — iframe sandbox, COOP, COEP, CSP",
+      "finding": "Modern browsers use multi-process sandboxing with a broker process model. The iframe sandbox attribute provides fine-grained permission control via tokens (allow-scripts, allow-same-origin, allow-forms, allow-popups, allow-modals, allow-downloads, allow-top-navigation, allow-storage-access-by-user-activation, etc.). Cross-Origin Isolation requires both COOP: same-origin AND COEP: require-corp (or credentialless). COEP require-corp blocks cross-origin no-cors resources unless they set CORP: cross-origin. COEP credentialless allows embedding without CORP but strips credentials. COEP credentialless can be paired with iframe credentialless for ephemeral contexts. Cross-origin isolation is required for SharedArrayBuffer, unthrottled Performance.now(), and WebContainer. The allow attribute on iframes supports Permissions Policy for fine-grained feature control. CSP via the csp attribute on iframes adds another layer.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
+          "title": "MDN: iframe HTML element",
+          "relevance": "Complete iframe sandbox attribute reference",
+          "key_excerpts": [
+            "Controls the restrictions applied to the content embedded in the iframe",
+            "allow-downloads, allow-forms, allow-modals, allow-orientation-lock, allow-pointer-lock, allow-popups, allow-popups-to-escape-sandbox, allow-presentation, allow-same-origin, allow-scripts, allow-storage-access-by-user-activation, allow-top-navigation, allow-top-navigation-by-user-activation, allow-top-navigation-to-custom-protocols"
+          ]
+        },
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Embedder-Policy",
+          "title": "MDN: Cross-Origin-Embedder-Policy (COEP)",
+          "relevance": "COEP header documentation",
+          "key_excerpts": [
+            "require-corp: A document can only load resources from the same origin or resources that have Cross-Origin-Resource-Policy header",
+            "credentialless: loads cross-origin resources without explicit permission but strips credentials",
+            "Cross-origin isolation requires COOP: same-origin AND COEP: require-corp"
+          ]
+        },
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Opener-Policy",
+          "title": "MDN: Cross-Origin-Opener-Policy (COOP)",
+          "relevance": "COOP header documentation",
+          "key_excerpts": [
+            "COOP: same-origin isolates the browsing context from cross-origin documents"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Same-origin policy",
+        "Permissions Policy",
+        "CORS",
+        "CORP",
+        "Cross-origin isolation",
+        "SharedArrayBuffer"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "Collaborative Editing — Monaco, CodeMirror, Yjs Integration",
+      "finding": "Yjs is the leading CRDT library for browser-based collaborative editing in 2026. Two primary editor stacks: CodeMirror 6 + y-codemirror.next (lighter, more modular, better mobile behavior) and Monaco Editor + y-monaco (VS Code-like experience, heavier). Transport choices: y-websocket (simple client-server), Hocuspocus (production-grade with auth, persistence, multiplexing), Liveblocks (managed infrastructure), y-webrtc (P2P, prototypes). Key patterns: one Y.Text per file for multi-file editors, Y.UndoManager for collaboration-safe undo/redo, awareness for cursors/presence. Yjs separates editor binding from network provider cleanly. CodeMirror 6 recommended as default for most web apps unless VS Code features are required.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://docs.yjs.dev/ecosystem/editor-bindings",
+          "title": "Yjs Editor Bindings Documentation",
+          "relevance": "Official Yjs documentation for Monaco and CodeMirror bindings",
+          "key_excerpts": [
+            "Yjs supports editor bindings for Monaco and CodeMirror"
+          ]
+        },
+        {
+          "url": "https://github.com/yjs/y-codemirror.next",
+          "title": "y-codemirror.next GitHub Repository",
+          "relevance": "CodeMirror 6 binding for Yjs",
+          "key_excerpts": [
+            "Supports syncing CodeMirror 6 with Y.Text",
+            "Awareness/remote cursors",
+            "Shared undo/redo with per-client history"
+          ]
+        },
+        {
+          "url": "https://github.com/yjs/y-monaco",
+          "title": "y-monaco GitHub Repository",
+          "relevance": "Monaco binding for Yjs",
+          "key_excerpts": [
+            "MonacoBinding connects Y.Text to Monaco Editor",
+            "Supports awareness/cursors"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "CRDT",
+        "Y.Text",
+        "Y.UndoManager",
+        "Awareness",
+        "WebSocket",
+        "CodeMirror 6",
+        "Monaco"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Browser-Based Terminal Emulation — xterm.js Architecture",
+      "finding": "xterm.js is the dominant browser terminal emulator, used by VS Code, JupyterLab, Theia, Replit, and many others. Implements full VT220/xterm terminal emulator in JavaScript. Communicates via WebSocket/WebRTC to a backend process. Core package @xterm/xterm with addons: addon-fit, addon-search, addon-web-links, addon-webgl (GPU-accelerated rendering), addon-serialize, addon-image, addon-unicode-graphemes. Browser-native PTY alternatives: WebContainer provides pty-like I/O via WebContainerProcess.input (WritableStream) and .output (ReadableStream). Other approaches: node-pty via WebSocket bridge (VS Code), GoTTY/ttyd (Go-based PTY to WebSocket), v86 (x86 emulator in WASM running full Linux). No true browser-native PTY exists without a backend process or WASM runtime server.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://xtermjs.org/",
+          "title": "xterm.js Official Site",
+          "relevance": "Official xterm.js documentation and usage examples",
+          "key_excerpts": [
+            "Used in VS Code, JupyterLab, Eclipse Che, Azure Cloud Shell, Replit, Codecademy",
+            "npm install @xterm/xterm"
+          ]
+        },
+        {
+          "url": "https://github.com/xtermjs/xterm.js/tree/master/addons",
+          "title": "xterm.js Addons",
+          "relevance": "Available addons for xterm.js",
+          "key_excerpts": [
+            "addon-attach, addon-clipboard, addon-fit, addon-image, addon-ligatures, addon-progress, addon-search, addon-serialize, addon-unicode-graphemes, addon-unicode11, addon-web-fonts, addon-web-links, addon-webgl"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "PTY",
+        "WebSocket",
+        "VT220",
+        "WASI",
+        "node-pty",
+        "ServiceWorker"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Sandbox Security — Capability-Based Access and Permission Models",
+      "finding": "Capability-based access control is implemented in WASI (WebAssembly System Interface), where Wasm modules receive explicit keys (capabilities) for resources (file handles, network sockets, subprocess). WebAssembly provides memory-safe sandboxed execution. The sandbox attribute on iframes provides a capability-like model: each allow-* token is a capability grant. CSP provides declarative capability restrictions. Permission Policy (allow attribute) restricts feature access. The browser itself is increasingly the new endpoint with 25% enterprise dedicated browser adoption by 2026. Key principle: the sandbox should combine isolation (iframe sandbox + COEP) with explicit capability grants for resources the sandbox cell needs to function.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
+          "title": "MDN: iframe sandbox attribute tokens",
+          "relevance": "Defines fine-grained capability tokens for embedded content",
+          "key_excerpts": [
+            "When allow-same-origin is present, a same-origin parent document can still access and interact with the iframe's DOM even if allow-scripts is not set"
+          ]
+        },
+        {
+          "url": "https://webassembly.org/",
+          "title": "WebAssembly Official Site",
+          "relevance": "WASI capability-based security model",
+          "key_excerpts": [
+            "WebAssembly provides a memory-safe, sandboxed execution environment",
+            "WASI grants WebAssembly modules only explicitly assigned accesses"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "WASI",
+        "Capability-based security",
+        "Least privilege",
+        "Zero Trust"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "Snapshot and Patch Patterns for Virtual Filesystem Sandboxes",
+      "finding": "Three primary snapshot/merge patterns: (1) WebContainer native pattern: mount(FileSystemTree | Uint8Array snapshot) -> execute code -> export(format: json | binary | zip) for full filesystem export. Uses @webcontainer/snapshot with msgpack serialization. (2) Container layer pattern: layered filesystem snapshots (like Docker), where each layer is a diff. (3) Git-like diff/patch: compute patches between snapshots using standard diff algorithms, apply patches to merge sandbox changes back to origin. Export the sandbox filesystem, generate diff against original mounted tree, apply diff selectively. Exclude patterns (node_modules, build artifacts) important for efficient diffs.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://webcontainers.io/api",
+          "title": "WebContainer API Export and Mount",
+          "relevance": "Native snapshot/export API for virtual filesystem",
+          "key_excerpts": [
+            "export(path: string, options?: ExportOptions): Promise<Uint8Array | FileSystemTree>",
+            "ExportOptions: format?: 'json' | 'binary' | 'zip', includes?: string[], excludes?: string[]",
+            "mount(tree: FileSystemTree | Uint8Array | ArrayBuffer, options?: Options): Promise<void>"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "FileSystemTree",
+        "msgpack",
+        "Diff/patch",
+        "Container layers",
+        "ZIP export"
+      ]
+    },
+    {
+      "category": "comparison",
+      "title": "Comparison of Browser Execution Sandbox Approaches",
+      "finding": "Three tiers of browser sandbox execution: (1) WebContainer - full Node.js runtime, most capable, heaviest, requires COEP, single instance only. (2) iframe sandbox with service workers - lighter, multiple instances possible, limited to browser APIs, no Node.js runtime. (3) WebAssembly via WASI - language-agnostic, memory-safe, capability-based, no system calls without explicit grant. For a Sandbox Cell in ADR 0016: the iframe sandbox approach with postMessage communication is the most flexible for general-purpose compute cells. Combine iframe sandbox (allow-scripts, allow-same-origin for controlled access) + CSP + ServiceWorker for network isolation + postMessage for controlled capability delegation. For Node.js execution, WebContainer can be embedded. For multi-language execution, WASI-based Wasm modules in Workers are ideal.",
+      "confidence": "medium",
+      "sources": [
+        {
+          "url": "https://webcontainers.io/",
+          "title": "WebContainer API Docs",
+          "relevance": "WebContainer capabilities and limitations",
+          "key_excerpts": [
+            "Boots in milliseconds",
+            "Single instance concurrently"
+          ]
+        },
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
+          "title": "MDN: iframe sandbox",
+          "relevance": "Iframe sandboxing capabilities",
+          "key_excerpts": [
+            "Each embedded browsing context has its own document and allows URL navigations"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "WebContainer",
+        "iframe sandbox",
+        "WASI",
+        "ServiceWorker",
+        "postMessage"
+      ]
+    }
+  ],
+  "implementation_specs": [
+    {
+      "title": "Sandbox Cell Architecture for Tribunus",
+      "description": "Architecture for browser-based sandbox cells that can execute untrusted code (Node.js user code, AI agent actions, development tooling) inside isolated browser contexts and merge results back to the owner environment. Based on WebContainer for Node.js execution, iframe sandbox + postMessage for general compute, and OPFS for persistent storage within cells.",
+      "acceptance_criteria": [
+        "Cells execute in isolated browser contexts with no access to parent origin's DOM/storage",
+        "Code execution is capability-gated (explicit allow-* tokens per cell)",
+        "Filesystem state can be snapshotted (export) and restored (mount)",
+        "Diffs between sandbox and origin can be computed and selectively merged back",
+        "Multiple cells can coexist (unlike WebContainer's single-instance limit -- use iframe approach for general cells)",
+        "Cells communicate with parent via structured postMessage protocol",
+        "Collaborative editing sessions (Yjs) can be hosted inside or alongside cells"
+      ],
+      "implementation_patterns": [
+        {
+          "name": "WebContainer Node.js Sandbox",
+          "description": "Embed WebContainer for full Node.js runtime within a sandboxed iframe. Use boot({ coep: 'credentialless' }) for compatibility. Mount initial filesystem via FileSystemTree or binary snapshot. Execute via spawn(). Export modified filesystem via export().",
+          "code_example": "const wc = await WebContainer.boot({ coep: 'credentialless' });\nawait wc.mount(tree);\nconst process = await wc.spawn('node', ['script.js']);\nconst output = await new Response(process.output).text();\nconst snapshot = await wc.export('/', { format: 'binary', excludes: ['node_modules/**'] });",
+          "references": [
+            "https://webcontainers.io/api"
+          ]
+        },
+        {
+          "name": "iframe Sandbox Compute Cell",
+          "description": "Create compute cells using sandboxed iframes with controlled capability grants. Use postMessage for all I/O. Implement a cell protocol (request/response, error handling, streaming). Control capabilities via sandbox attribute tokens and Permissions Policy.",
+          "code_example": "<iframe sandbox='allow-scripts allow-same-origin' allow='camera 'none'; microphone 'none'' srcdoc='...' />\n// parent: iframe.contentWindow.postMessage({ type: 'exec', code }, '*');\n// child: window.addEventListener('message', e => { eval(e.data.code); parent.postMessage({ type: 'result', data }, '*'); })",
+          "references": [
+            "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe"
+          ]
+        },
+        {
+          "name": "Snapshots and Diffs for Sandbox Merge",
+          "description": "When a sandbox cell completes work, export its filesystem and compute a diff against the original mounted tree. Apply only the changed files back to the host, respecting exclusion patterns (node_modules, build output).",
+          "code_example": "export async function mergeSandbox(sandbox, originalTree) {\n  const snapshot = await sandbox.export('/', { format: 'json' });\n  const diff = computeFilesystemDiff(originalTree, snapshot);\n  for (const { path, content } of diff.added.concat(diff.modified)) {\n    await writeToHost(path, content);\n  }\n  for (const path of diff.deleted) {\n    await deleteFromHost(path);\n  }\n  return diff;\n}",
+          "references": [
+            "https://webcontainers.io/api",
+            "https://www.npmjs.com/package/@webcontainer/snapshot"
+          ]
+        },
+        {
+          "name": "Yjs Collaborative Session in Sandbox",
+          "description": "Host collaborative editing sessions using Yjs within sandbox cells. Each file is a Y.Text in a shared Y.Doc. Use y-websocket (or Hocuspocus) for transport. Awareness for cursors/presence. One Y.Text per file for multi-file editors.",
+          "code_example": "const ydoc = new Y.Doc();\nconst provider = new WebsocketProvider('wss://your-server', 'room-id', ydoc);\nconst ytext = ydoc.getText('code');\nconst files = ydoc.getMap('files');\nfunction getFile(path) {\n  let t = files.get(path);\n  if (!t) { t = new Y.Text(); files.set(path, t); }\n  return t;\n}",
+          "references": [
+            "https://docs.yjs.dev/ecosystem/editor-bindings",
+            "https://docs.yjs.dev/ecosystem/connection-provider/y-websocket"
+          ]
+        }
+      ],
+      "suggested_missions": [
+        {
+          "title": "Sandbox Cell Architecture",
+          "purpose": "Design and implement the core sandbox cell abstraction: isolated execution contexts for compute, with a capability-grant protocol and structured communication channel to the parent.",
+          "acceptance_criteria": [
+            "Cells are isolated from parent DOM/storage via iframe sandbox",
+            "Capabilities are explicitly granted per cell via allow-* tokens and postMessage gate",
+            "Cells can be spawned, communicated with, and torn down programmatically",
+            "Multiple general cells can coexist"
+          ],
+          "priority": 90,
+          "suggested_lanes": [
+            {
+              "title": "Cell Lifecycle Management",
+              "scope": "sandbox-cell-lifecycle",
+              "description": "Design and implement cell creation (spawn), communication (postMessage protocol), and teardown (resource cleanup, kill)",
+              "write_paths": [
+                "packages/sandbox/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Define Cell IFrame Protocol",
+                  "description": "Design the postMessage-based protocol for cell-parent communication: request/response types, error codes, streaming support, heartbeats.",
+                  "estimated_effort": "2 days",
+                  "priority": 100,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement Cell Manager",
+                  "description": "Implement CellManager class: create sandboxed iframes, manage capability grants, route messages, handle teardown and resource cleanup.",
+                  "estimated_effort": "3 days",
+                  "priority": 90,
+                  "depends_on": [
+                    "Define Cell IFrame Protocol"
+                  ]
+                },
+                {
+                  "title": "Capability Grant System",
+                  "description": "Implement capability token system: serialize sandbox attributes, Permissions Policy, and CSP into a structured capability object that maps to iframe restrictions.",
+                  "estimated_effort": "2 days",
+                  "priority": 80,
+                  "depends_on": [
+                    "Implement Cell Manager"
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Filesystem Snapshot and Merge",
+              "scope": "sandbox-fs-snapshot",
+              "description": "Implement snapshot/export of sandbox filesystem state, diff computation against original, selective merge-back to host, with exclusion patterns.",
+              "write_paths": [
+                "packages/sandbox/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Implement Filesystem Diff Engine",
+                  "description": "Build a diff engine that compares two virtual filesystem trees (FileSystemTree format) and produces add/modify/delete operations. Support exclusion patterns (glob).",
+                  "estimated_effort": "3 days",
+                  "priority": 80,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement Merge-Back Controller",
+                  "description": "Controller that orchestrates sandbox export -> diff -> selective apply to host filesystem. Support conflict detection and manual resolution UI.",
+                  "estimated_effort": "2 days",
+                  "priority": 70,
+                  "depends_on": [
+                    "Implement Filesystem Diff Engine"
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Collaborative Editing Integration",
+              "scope": "sandbox-collab-editing",
+              "description": "Integrate Yjs-based collaborative editing within sandbox cells. Support real-time multi-cursor presence and per-file collaboration.",
+              "write_paths": [
+                "packages/sandbox/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Integrate Yjs with CodeMirror 6",
+                  "description": "Wire up y-codemirror.next binding in sandbox cells. Support Y.Text per file, Y.UndoManager for collab-safe undo/redo, awareness for cursor presence.",
+                  "estimated_effort": "3 days",
+                  "priority": 70,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement Multi-File Collaboration Model",
+                  "description": "Design Y.Map<Y.Text> structure for multi-file editors. Implement file switching with lazy Y.Text creation and editor re-binding.",
+                  "estimated_effort": "2 days",
+                  "priority": 60,
+                  "depends_on": [
+                    "Integrate Yjs with CodeMirror 6"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "WebContainer Sandbox Integration",
+          "purpose": "Integrate WebContainer as an optional execution backend for Node.js workloads within sandbox cells, supporting filesystem mount/export, process execution, and terminal I/O.",
+          "acceptance_criteria": [
+            "WebContainer boots in sandboxed context with COEP credentialless",
+            "Filesystem can be mounted from structured tree or binary snapshot",
+            "Processes can be spawned with terminal I/O",
+            "Filesystem can be exported in json/binary/zip formats",
+            "Works in Chromium, Firefox, and Safari TP"
+          ],
+          "priority": 70,
+          "suggested_lanes": [
+            {
+              "title": "WebContainer Backend",
+              "scope": "webcontainer-integration",
+              "description": "Integrate WebContainer as a Node.js execution engine within the sandbox cell architecture",
+              "write_paths": [
+                "packages/sandbox-webcontainer/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Implement WebContainer Boot and Teardown",
+                  "description": "Wrap WebContainer.boot() lifecycle. Handle COEP configuration, singleton enforcement, resource cleanup on teardown.",
+                  "estimated_effort": "2 days",
+                  "priority": 90,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement Filesystem Mount/Export Bridge",
+                  "description": "Bridge between cell filesystem protocol and WebContainer mount/export. Support FileSystemTree, binary snapshots, and export filters.",
+                  "estimated_effort": "2 days",
+                  "priority": 80,
+                  "depends_on": [
+                    "Implement WebContainer Boot and Teardown"
+                  ]
+                },
+                {
+                  "title": "Implement Process Execution with Terminal I/O",
+                  "description": "Wrap WebContainer.spawn() with streaming I/O. Connect xterm.js to WebContainerProcess.input/output streams. Support process kill and resize.",
+                  "estimated_effort": "3 days",
+                  "priority": 70,
+                  "depends_on": [
+                    "Implement Filesystem Mount/Export Bridge"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Security Hardening and Auditing",
+          "purpose": "Audit and harden the sandbox cell architecture against known vulnerability classes: side-channel attacks, privilege escalation via postMessage, CSP bypass, capability creep.",
+          "acceptance_criteria": [
+            "Origin validation on all postMessage channels",
+            "CSP headers restrict cell capabilities to minimum required",
+            "Capability tokens are immutable once cell is created",
+            "Cross-origin isolation requirements are documented and enforced for SharedArrayBuffer usage",
+            "OPFS storage is scoped per cell origin"
+          ],
+          "priority": 50,
+          "suggested_lanes": [
+            {
+              "title": "Security Audit",
+              "scope": "sandbox-security-audit",
+              "description": "Security review and hardening of the sandbox cell architecture",
+              "write_paths": [
+                "packages/sandbox/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Audit postMessage Protocol for Origin Validation",
+                  "description": "Review all postMessage listeners for origin validation. Ensure message source verification prevents cross-origin injection.",
+                  "estimated_effort": "1 day",
+                  "priority": 90,
+                  "depends_on": [
+                    "Define Cell IFrame Protocol"
+                  ]
+                },
+                {
+                  "title": "Document Cross-Origin Isolation Requirements",
+                  "description": "Document COOP/COEP requirements for features requiring SharedArrayBuffer or unthrottled timers. Provide fallback paths for non-isolated contexts.",
+                  "estimated_effort": "1 day",
+                  "priority": 60,
+                  "depends_on": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "linked_entities": [
+    {
+      "entity_type": "adr",
+      "entity_id": "0016-sandbox-cell",
+      "relationship": "context"
+    }
+  ],
+  "session_id": "unknown",
+  "created_at": "2026-06-06T10:07:18.136Z"
+}

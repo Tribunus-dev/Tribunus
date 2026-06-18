@@ -1,0 +1,11 @@
+--- a/packages/compute-research/src/provenance/binary.ts
++++ b/packages/compute-research/src/provenance/binary.ts
+@@ -73,7 +73,7 @@
+  *
+  * Files that do not exist are silently skipped.
+  */
+-export async function captureBinaryProvenance(
++export async function collectBinaryProvenance(
+   computeNativeDir: string,
+   additional?: Record<string, string>,
+ ): Promise<BinaryProvenance> {

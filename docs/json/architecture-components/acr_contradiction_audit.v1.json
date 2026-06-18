@@ -1,0 +1,248 @@
+{
+  "schema_version": "tribunus.acr_contradiction_audit.v1",
+  "checked_at": "2026-06-14T11:06:34.972Z",
+  "component_index": "docs/json/architecture-components/acr_index.v1.json",
+  "adr_index": "docs/json/adrs/adr_index.v1.json",
+  "fixture_manifest": "tools/fixtures/adr-component-violations/fixture_manifest.v1.json",
+  "rules": [
+    "receipt_before_ack",
+    "backend_truth_ownership",
+    "iosurface_authority_leakage",
+    "phase_local_scratch_boundary",
+    "mlx_golden_path_authority",
+    "runtime_work_item_required",
+    "copy_ledger_unknown_copy"
+  ],
+  "live_board": {
+    "passed": true,
+    "violations": []
+  },
+  "fixtures": {
+    "passed": true,
+    "cases": [
+      {
+        "fixture_id": "receipt-before-ack-invalid",
+        "file": "tools/fixtures/adr-component-violations/receipt-before-ack-invalid.json",
+        "expected_pass": false,
+        "expected_violations": [
+          "receipt_before_ack"
+        ],
+        "actual_pass": false,
+        "actual_violations": [
+          "receipt_before_ack"
+        ],
+        "passed": true,
+        "violations": [
+          {
+            "rule_id": "receipt_before_ack",
+            "severity": "error",
+            "adr_id": "ADR-9991",
+            "component_id": "ACR-0002",
+            "path": "tools/fixtures/adr-component-violations/receipt-before-ack-invalid.json",
+            "field": "decision",
+            "matched_text": "receipt_before_ack",
+            "reason": "ADR imports Receipt-Before-Ack Ordering but allows coordination or execution phrasing that implies acknowledgement can precede durable receipt commit.",
+            "required_fix": "Require PGlite receipt commit before Valkey ack."
+          }
+        ]
+      },
+      {
+        "fixture_id": "backend-truth-owner-invalid",
+        "file": "tools/fixtures/adr-component-violations/backend-truth-owner-invalid.json",
+        "expected_pass": false,
+        "expected_violations": [
+          "backend_truth_ownership"
+        ],
+        "actual_pass": false,
+        "actual_violations": [
+          "backend_truth_ownership"
+        ],
+        "passed": true,
+        "violations": [
+          {
+            "rule_id": "backend_truth_ownership",
+            "severity": "error",
+            "adr_id": "ADR-9992",
+            "component_id": "ACR-0005",
+            "path": "tools/fixtures/adr-component-violations/backend-truth-owner-invalid.json",
+            "field": "decision",
+            "matched_text": "backend_truth_ownership",
+            "reason": "ADR imports the backend truth spine but attributes durable authority-like ownership to a backend or scheduler.",
+            "required_fix": "Limit backend language to provisional execution, not durable truth."
+          }
+        ]
+      },
+      {
+        "fixture_id": "iosurface-leakage-invalid",
+        "file": "tools/fixtures/adr-component-violations/iosurface-leakage-invalid.json",
+        "expected_pass": false,
+        "expected_violations": [
+          "iosurface_authority_leakage"
+        ],
+        "actual_pass": false,
+        "actual_violations": [
+          "iosurface_authority_leakage"
+        ],
+        "passed": true,
+        "violations": [
+          {
+            "rule_id": "iosurface_authority_leakage",
+            "severity": "error",
+            "adr_id": "ADR-9993",
+            "component_id": "ACR-0005",
+            "path": "tools/fixtures/adr-component-violations/iosurface-leakage-invalid.json",
+            "field": "decision",
+            "matched_text": "iosurface_authority_leakage",
+            "reason": "ADR imports IOSurface Runtime Island but describes authority-visible tensor truth outside IOSurface-backed IslandTensors.",
+            "required_fix": "Keep authority-visible tensor truth inside IOSurface-backed IslandTensors only."
+          }
+        ]
+      },
+      {
+        "fixture_id": "clean-valid",
+        "file": "tools/fixtures/adr-component-violations/clean-valid.json",
+        "expected_pass": true,
+        "expected_violations": [],
+        "actual_pass": true,
+        "actual_violations": [],
+        "passed": true,
+        "violations": []
+      },
+      {
+        "fixture_id": "backend-execution-engine-owns-truth-invalid",
+        "file": "tools/fixtures/adr-component-violations/backend-execution-engine-owns-truth-invalid.json",
+        "expected_pass": false,
+        "expected_violations": [
+          "backend_truth_ownership"
+        ],
+        "actual_pass": false,
+        "actual_violations": [
+          "backend_truth_ownership"
+        ],
+        "passed": true,
+        "violations": [
+          {
+            "rule_id": "backend_truth_ownership",
+            "severity": "error",
+            "adr_id": "ADR-9995",
+            "component_id": "ACR-0005",
+            "path": "tools/fixtures/adr-component-violations/backend-execution-engine-owns-truth-invalid.json",
+            "field": "decision",
+            "matched_text": "backend_truth_ownership",
+            "reason": "ADR imports the backend truth spine but attributes durable authority-like ownership to a backend or scheduler.",
+            "required_fix": "Limit backend language to provisional execution, not durable truth."
+          }
+        ]
+      },
+      {
+        "fixture_id": "phase-local-scratch-crosses-boundary-invalid",
+        "file": "tools/fixtures/adr-component-violations/phase-local-scratch-crosses-boundary-invalid.json",
+        "expected_pass": false,
+        "expected_violations": [
+          "phase_local_scratch_boundary"
+        ],
+        "actual_pass": false,
+        "actual_violations": [
+          "phase_local_scratch_boundary"
+        ],
+        "passed": true,
+        "violations": [
+          {
+            "rule_id": "phase_local_scratch_boundary",
+            "severity": "error",
+            "adr_id": "ADR-9996",
+            "component_id": "ACR-0007",
+            "path": "tools/fixtures/adr-component-violations/phase-local-scratch-crosses-boundary-invalid.json",
+            "field": "decision",
+            "matched_text": "phase_local_scratch_boundary",
+            "reason": "ADR imports IOSurface Runtime Island but describes authority-visible tensor truth outside IOSurface-backed IslandTensors.",
+            "required_fix": "Keep authority-visible tensor truth inside IOSurface-backed IslandTensors only."
+          }
+        ]
+      },
+      {
+        "fixture_id": "mlx-ambient-laziness-authority-invalid",
+        "file": "tools/fixtures/adr-component-violations/mlx-ambient-laziness-authority-invalid.json",
+        "expected_pass": false,
+        "expected_violations": [
+          "mlx_golden_path_authority"
+        ],
+        "actual_pass": false,
+        "actual_violations": [
+          "mlx_golden_path_authority"
+        ],
+        "passed": true,
+        "violations": [
+          {
+            "rule_id": "mlx_golden_path_authority",
+            "severity": "error",
+            "adr_id": "ADR-9997",
+            "component_id": "ACR-0008",
+            "path": "tools/fixtures/adr-component-violations/mlx-ambient-laziness-authority-invalid.json",
+            "field": "decision",
+            "matched_text": "mlx_golden_path_authority",
+            "reason": "ADR imports IOSurface Runtime Island but describes authority-visible tensor truth outside IOSurface-backed IslandTensors.",
+            "required_fix": "Keep authority-visible tensor truth inside IOSurface-backed IslandTensors only."
+          }
+        ]
+      },
+      {
+        "fixture_id": "copy-ledger-unknown-copy-authority-invalid",
+        "file": "tools/fixtures/adr-component-violations/copy-ledger-unknown-copy-authority-invalid.json",
+        "expected_pass": false,
+        "expected_violations": [
+          "copy_ledger_unknown_copy"
+        ],
+        "actual_pass": false,
+        "actual_violations": [
+          "copy_ledger_unknown_copy"
+        ],
+        "passed": true,
+        "violations": [
+          {
+            "rule_id": "copy_ledger_unknown_copy",
+            "severity": "error",
+            "adr_id": "ADR-9998",
+            "component_id": "ACR-0010",
+            "path": "tools/fixtures/adr-component-violations/copy-ledger-unknown-copy-authority-invalid.json",
+            "field": "decision",
+            "matched_text": "copy_ledger_unknown_copy",
+            "reason": "ADR imports IOSurface Runtime Island but describes authority-visible tensor truth outside IOSurface-backed IslandTensors.",
+            "required_fix": "Keep authority-visible tensor truth inside IOSurface-backed IslandTensors only."
+          }
+        ]
+      },
+      {
+        "fixture_id": "runtime-work-without-work-item-invalid",
+        "file": "tools/fixtures/adr-component-violations/runtime-work-without-work-item-invalid.json",
+        "expected_pass": false,
+        "expected_violations": [
+          "runtime_work_item_required"
+        ],
+        "actual_pass": false,
+        "actual_violations": [
+          "runtime_work_item_required"
+        ],
+        "passed": true,
+        "violations": [
+          {
+            "rule_id": "runtime_work_item_required",
+            "severity": "error",
+            "adr_id": "ADR-9999",
+            "component_id": "ACR-0009",
+            "path": "tools/fixtures/adr-component-violations/runtime-work-without-work-item-invalid.json",
+            "field": "decision",
+            "matched_text": "runtime_work_item_required",
+            "reason": "ADR imports IOSurface Runtime Island but describes authority-visible tensor truth outside IOSurface-backed IslandTensors.",
+            "required_fix": "Keep authority-visible tensor truth inside IOSurface-backed IslandTensors only."
+          }
+        ]
+      }
+    ]
+  },
+  "results": {
+    "passed": true,
+    "violations": [],
+    "warnings": []
+  }
+}

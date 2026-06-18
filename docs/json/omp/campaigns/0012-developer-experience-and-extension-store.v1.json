@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0012",
+  "type": "campaign",
+  "name": "Developer Experience and Extension Store",
+  "slug": "developer-experience-and-extension-store",
+  "description": "Productized extension lifecycle: scaffold, validate manifest, simulate authority, sandbox test, publish, review, install/update/revoke, store listing, compatibility matrix, capability receipts, and abuse reporting. Convergence point for VS Code extension, MCP tool, Electron extension, and Tribunus authority model.",
+  "objective": "Build the extension store: scaffold, validate, publish, review, install, and revoke extensions with capability-scoped authority.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-06",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "dx",
+    "extensions",
+    "store"
+  ],
+  "maturity": "modeled",
+  "horizon": "planned",
+  "created_at": "2026-06-06T17:52:20.312Z",
+  "updated_at": "2026-06-06T17:52:20.312Z"
+}

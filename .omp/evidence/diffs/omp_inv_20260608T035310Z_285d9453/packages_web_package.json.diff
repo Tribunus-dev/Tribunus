@@ -1,0 +1,9 @@
+--- a/packages/web/package.json
++++ b/packages/web/package.json
+@@ -1,5 +1,5 @@
+ {
+-  "name": "@opencode-ai/web",
++  "name": "@tribunus/web",
+   "type": "module",
+   "license": "AGPL-3.0-only",
+   "version": "1.15.12",

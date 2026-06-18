@@ -1,0 +1,7 @@
+{"at":"2026-06-01T02:20:22.756Z","tool":"smart_bun","action":"ran","command":"run","exit_code":0,"cwd":"root"}
+{"at":"2026-06-01T02:21:35.779Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":2,"cwd":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:22:04.096Z","tool":"smart_bun","action":"ran","command":"run","exit_code":0,"cwd":"root"}
+{"at":"2026-06-01T02:22:39.098Z","tool":"smart_bun","action":"ran","command":"run","exit_code":0,"cwd":"root"}
+{"at":"2026-06-01T02:23:22.085Z","tool":"smart_bun","action":"ran","command":"install","exit_code":1,"cwd":"/Users/user/Developer/GitHub/opencode-desktop-dev/packages/opencode"}
+{"at":"2026-06-01T02:23:55.102Z","tool":"smart_bun","action":"ran","command":"run","exit_code":0,"cwd":"root"}
+{"at":"2026-06-01T02:24:36.668Z","tool":"smart_bun","action":"ran","command":"run","exit_code":1,"cwd":"root"}

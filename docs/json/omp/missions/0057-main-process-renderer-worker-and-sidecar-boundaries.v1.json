@@ -1,0 +1,68 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0057-main-process-renderer-worker-and-sidecar-boundaries",
+  "type": "mission",
+  "name": "Main Process, Renderer, Worker, and Sidecar Boundaries",
+  "slug": "main-process-renderer-worker-and-sidecar-boundaries",
+  "description": "Define the contract between Electron main process, renderer, web workers, and native sidecars. IPC schema, lifecycle ownership, and error propagation.",
+  "purpose": "Process boundaries are enforced, not advisory.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "IPC schema is versioned and validated on every message",
+    "Main process owns all system resources and brokers access to renderers",
+    "Renderer crash does not leak resources or corrupt main process state",
+    "Web workers have defined input/output contracts and cancellation semantics",
+    "Native sidecars are lifecycle-managed: spawn, health-check, graceful shutdown, force-kill",
+    "Error propagation follows defined escalation path: worker → renderer → main → user",
+    "Process restart is scoped — a renderer restart does not restart the main process"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "electron",
+    "process-boundaries",
+    "ipc",
+    "sidecar",
+    "lifecycle"
+  ],
+  "depends_on": [
+    "0053-instance-bootstrap-and-dependency-assembly",
+    "0060-resource-ownership-and-deterministic-teardown"
+  ],
+  "unlocks": [
+    "0055-workspace-open-and-close-semantics",
+    "0058-background-runtime-supervision"
+  ],
+  "authority_scope": "process-boundaries",
+  "allowed_paths": [
+    "packages/desktop/src/**",
+    "packages/app/src/ipc/**"
+  ],
+  "required_evidence": [
+    "IPC schema version validation on every message test",
+    "Renderer crash isolation test (no resource leakage to main process)",
+    "Sidecar lifecycle test (spawn → health → shutdown → force-kill)",
+    "Error propagation test (worker → renderer → main → user)",
+    "Scoped restart test (renderer restart does not restart main)"
+  ],
+  "acceptance_gates": [
+    "IPC schema is versioned and validated",
+    "Renderer crash does not leak resources or corrupt main",
+    "Sidecars lifecycle-managed end-to-end",
+    "Error propagation follows defined escalation path",
+    "Restart is scoped per process"
+  ],
+  "rollback_strategy": "Process spawn failure rolls back via resource registry teardown of child processes",
+  "recovery_strategy": "Scoped restart of failed process; escalation to user if scoped restart fails",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "If a process cannot be restarted after max attempts, escalate to user with failure report",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.484Z",
+  "updated_at": "2026-06-07T05:45:36.995Z"
+}

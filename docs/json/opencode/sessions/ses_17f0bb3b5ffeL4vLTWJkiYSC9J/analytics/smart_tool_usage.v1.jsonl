@@ -1,0 +1,15 @@
+{"at":"2026-06-01T02:16:08.353Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_find","pattern":"turbo.json","path":""}
+{"at":"2026-06-01T02:16:24.509Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_find","pattern":"bunfig.toml","path":""}
+{"at":"2026-06-01T02:16:39.872Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_find","pattern":"typecheck.yml","path":""}
+{"at":"2026-06-01T02:22:48.667Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_find","pattern":"packages/*/package.json","path":""}
+{"at":"2026-06-01T02:22:49.004Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_grep","pattern":"@tsconfig/node22","path":""}
+{"at":"2026-06-01T02:26:00.259Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_find","pattern":"**/package.json","path":""}
+{"at":"2026-06-01T02:28:37.530Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_grep","pattern":"package\\.json","path":""}
+{"at":"2026-06-01T02:31:59.915Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_grep","pattern":"@tsconfig/node22","path":""}
+{"at":"2026-06-01T02:32:15.848Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_grep","pattern":"\\\"typecheck\\\"","path":""}
+{"at":"2026-06-01T02:34:34.961Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_find","pattern":"tsconfig.json","path":"packages"}
+{"at":"2026-06-01T02:40:07.258Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_grep","pattern":"@tsconfig/node22","path":"packages"}
+{"at":"2026-06-01T02:40:22.158Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_grep","pattern":"@tsconfig/node22","path":""}
+{"at":"2026-06-01T02:44:26.820Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_find","pattern":"*.yml","path":".github"}
+{"at":"2026-06-01T02:44:27.240Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_grep","pattern":"bunfig","path":""}
+{"at":"2026-06-01T02:44:38.194Z","session_id":"ses_17f0bb3b5ffeL4vLTWJkiYSC9J","agent":"surface-area-mapper","tool":"smart_grep","pattern":"bun typecheck|typecheck|turbo typecheck","path":""}

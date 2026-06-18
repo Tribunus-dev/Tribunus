@@ -1,0 +1,34 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0237-compute-kernel-phase-4-runtime-closure",
+  "type": "mission",
+  "name": "Compute Kernel — Phase 4: Runtime Closure",
+  "slug": "compute-kernel-phase-4-runtime-closure",
+  "description": "COMPUTE-RUNTIME-CLOSURE-0001: truth-closure pass over packages/compute-native and adjacent generated artifacts. Keep current runtime capability honest by separating implemented contract, intentional scaffold, generated evidence, and unqualified placeholder. The mission is organized into seven workstreams: exported module truth, receipt enum hardening, request identity repair, STATUS alignment, capability probes, generated artifact split, and receipt replay test.",
+  "purpose": "Make the current compute runtime impossible to misread by forcing its public module surface, receipt schemas, request identity, status ledger, capability reporting, generated artifacts, and lifecycle evidence into one coherent truth model without adding new execution features.",
+  "campaignId": "0005",
+  "status": "not_started",
+  "priority": 60,
+  "acceptanceCriteria": [
+    "Every exported compute-native surface is either implemented, test-only, removed, or explicitly marked scaffold without creating a second contract",
+    "Receipt schemas use stable serde-backed enums where the domain is already known, and request correlation uses stable identities instead of prompt-length-derived strings",
+    "STATUS.md matches the actual compute runtime qualification state and does not outrun the capability report",
+    "Capability reporting is probe-derived or explicitly unknown/unqualified rather than hardcoded placeholder state",
+    "Generated review artifacts are split so large review bundles do not dominate the normal code-review path",
+    "A lifecycle replay test proves ordered receipt folding and rejects duplicate, out-of-order, and missing-admission lifecycles",
+    "Existing CoreML lifecycle and minimal repro tests continue to pass after the closure pass"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "compute-native",
+    "runtime",
+    "truth-closure",
+    "orchestration"
+  ],
+  "created_at": "2026-06-13T10:56:46.430Z",
+  "updated_at": "2026-06-13T10:56:46.430Z"
+}

@@ -1,0 +1,20 @@
+--- a/packages/compute-native/src/profiled_executor.rs
++++ b/packages/compute-native/src/profiled_executor.rs
+@@ -595,9 +595,6 @@
+                 )
+             })?;
+             self.kv_caches[l].commit_step();
+-        }
+-
+-        // Validate all layers committed the expected number
+             let s = hidden.shape();
+             let shape_d0 = s.first().copied().unwrap_or(0);
+             let shape_d1 = s.get(1).copied().unwrap_or(0);
+@@ -613,6 +610,7 @@
+                 shape_d0, shape_d1,
+                 true,
+             );
++        }
+ 
+         for (l, _) in plan.layers.iter().enumerate() {
+             if self.kv_caches[l].committed_len != seq_len {

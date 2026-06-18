@@ -1,0 +1,3 @@
+{"at":"2026-06-01T03:50:37.767Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","command":"typecheck","elapsed_ms":25714,"exit_code":2}
+{"at":"2026-06-01T03:52:18.394Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","command":"tsgo","elapsed_ms":25556,"exit_code":2}
+{"at":"2026-06-01T03:54:20.216Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","command":"tsc","elapsed_ms":34555,"exit_code":1}

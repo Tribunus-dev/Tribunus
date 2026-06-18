@@ -1,0 +1,2 @@
+import{a6 as v,cz as d,cA as p,bs as l,cB as g,p as w}from"./index-i6m4DJbu.js";function z(t,n){const e=new ResizeObserver(t);return w(e.disconnect.bind(e)),{observe:s=>e.observe(s,n),unobserve:e.unobserve.bind(e)}}function R(t,n,e){const s=new WeakMap,{observe:f,unobserve:h}=z(o=>{for(const r of o){const{contentRect:a,target:c}=r,b=Math.round(a.width),u=Math.round(a.height),i=s.get(c);(!i||i.width!==b||i.height!==u)&&(n(a,c,r),s.set(c,{width:b,height:u}))}},e);v(o=>{const r=d(p(l(t)));return g(r,o,f,h),r},[])}export{R as c};
+//# sourceMappingURL=index-DnQsEcO_.js.map

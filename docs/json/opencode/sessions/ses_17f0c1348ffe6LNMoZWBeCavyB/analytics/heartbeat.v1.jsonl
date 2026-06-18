@@ -1,0 +1,22 @@
+{"at":"2026-06-01T02:20:37.734Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_find","phase":"started","detail":"tsconfig*.json"}
+{"at":"2026-06-01T02:20:40.507Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_find","phase":"completed","detail":"tsconfig*.json"}
+{"at":"2026-06-01T02:20:40.599Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_find","phase":"started","detail":"pnpm-workspace.yaml"}
+{"at":"2026-06-01T02:20:58.722Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_find","phase":"completed","detail":"pnpm-workspace.yaml"}
+{"at":"2026-06-01T02:27:18.916Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"\"typecheck\""}
+{"at":"2026-06-01T02:27:20.965Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"19 matches in 25 files"}
+{"at":"2026-06-01T02:34:17.629Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"@tsconfig/node22"}
+{"at":"2026-06-01T02:34:19.320Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"10 matches in 25 files"}
+{"at":"2026-06-01T02:34:20.802Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"@tsconfig/bun"}
+{"at":"2026-06-01T02:34:22.092Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"7 matches in 25 files"}
+{"at":"2026-06-01T02:34:22.107Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"@tsconfig/node22"}
+{"at":"2026-06-01T02:34:33.634Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"11 matches in 29 files"}
+{"at":"2026-06-01T02:36:52.911Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"@tsconfig/bun"}
+{"at":"2026-06-01T02:37:07.334Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"8 matches in 29 files"}
+{"at":"2026-06-01T02:40:03.776Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"\"tsgo\""}
+{"at":"2026-06-01T02:40:05.167Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"0 matches in 25 files"}
+{"at":"2026-06-01T02:42:45.885Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"@typescript/native-preview"}
+{"at":"2026-06-01T02:42:47.503Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"17 matches in 25 files"}
+{"at":"2026-06-01T02:42:47.544Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"\"tsgo\""}
+{"at":"2026-06-01T02:42:49.450Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"0 matches in 25 files"}
+{"at":"2026-06-01T02:45:35.961Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T02:45:38.315Z","session_id":"ses_17f0c1348ffe6LNMoZWBeCavyB","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"19 matches in 25 files"}

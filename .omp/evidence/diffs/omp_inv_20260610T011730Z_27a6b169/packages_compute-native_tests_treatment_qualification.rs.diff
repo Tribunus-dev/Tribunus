@@ -1,0 +1,22 @@
+--- a/packages/compute-native/tests/treatment_qualification.rs
++++ b/packages/compute-native/tests/treatment_qualification.rs
+@@ -3,8 +3,6 @@
+ //! These tests prove the treatment infrastructure works with small synthetic
+ //! data — no 12B model required.  Every tensor, plan, manifest, and sidecar
+ //! is constructed in-process from scratch.
+-
+-use std::sync::Arc;
+ 
+ use tribunus_compute_native::compute_image::CompiledImageReader;
+ use tribunus_compute_native::config::LayerPlan;
+@@ -15,8 +13,8 @@
+ use tribunus_evidence_schema::mission0007::AttentionKind;
+ use tribunus_evidence_schema::{
+     ArtifactRange, ConditioningArm, ConditioningFallbackPolicy, ExecutionConditioningPolicy,
+-    ExpectedSubstrate, KernelSignatureId, ModelReadiness, OperationFamily, ResidencyGroup,
+-    ResidencyGroupId, ResidencyPlanVersion, ResidencyPriority, ResourceId,
++    ExpectedSubstrate, ModelReadiness, ResidencyGroup, ResidencyGroupId, ResidencyPlanVersion,
++    ResidencyPriority, ResourceId,
+ };
+ 
+ // ── Shared helpers ─────────────────────────────────────────────────────────

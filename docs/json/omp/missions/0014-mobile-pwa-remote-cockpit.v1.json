@@ -1,0 +1,28 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0014",
+  "type": "mission",
+  "name": "Mobile PWA Remote Cockpit",
+  "slug": "mobile-pwa-remote-cockpit",
+  "description": "Build the PWA that serves as a remote cockpit for the desktop. Three-layer model: Projection Stream (cursored state deltas via WebSocket), Command Gateway (capability-scoped intents with replay protection), Notification Gateway (push alerts via Web Push API). QR code pairing flow. Works on iOS 16.4+ Home Screen and Android.",
+  "purpose": "Give users mobile visibility and control over their desktop agents without building native iOS/Android apps. Desktop stays the execution authority; PWA is a scoped observer and intent-sender.",
+  "campaignId": "0004",
+  "status": "completed",
+  "priority": 80,
+  "acceptanceCriteria": [
+    "QR code pairing flow from desktop to PWA",
+    "Projection Stream delivers cursored state deltas via WebSocket",
+    "Command Gateway sends capability-scoped intents with idempotency keys",
+    "Notification Gateway uses Web Push API for gate-waiting and agent-failed alerts",
+    "Phone caches last-known projections locally but discards on reconnect",
+    "Desktop offline mode shows cached projections and queued notifications",
+    "iOS 16.4+ Home Screen installation required for push notifications",
+    "Ionic confined to touch shell only — domain components are pure Lit"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:49:12.533Z",
+  "updated_at": "2026-06-06T11:48:49.004Z"
+}

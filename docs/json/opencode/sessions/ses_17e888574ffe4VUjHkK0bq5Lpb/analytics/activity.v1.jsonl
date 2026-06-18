@@ -1,0 +1,5 @@
+{"schema_version":"v2","action":"created","target":"packages/opencode/src/diagnostic/instance-failure-codes.ts","agent":"surgeon","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","recorded_at":"2026-06-01T06:16:03.298Z"}
+{"schema_version":"v2","action":"modified","target":"packages/opencode/src/project/bootstrap.ts","agent":"surgeon","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","recorded_at":"2026-06-01T06:16:04.188Z"}
+{"schema_version":"v2","action":"modified","target":"packages/opencode/src/storage/adapter.ts","agent":"surgeon","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","recorded_at":"2026-06-01T06:16:05.615Z"}
+{"schema_version":"v2","action":"modified","target":"packages/opencode/src/config/config.ts","agent":"surgeon","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","recorded_at":"2026-06-01T06:16:07.619Z"}
+{"schema_version":"v2","action":"modified","target":"packages/opencode/src/diagnostic/instance-failure-codes.ts","agent":"surgeon","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","recorded_at":"2026-06-01T06:29:05.594Z"}

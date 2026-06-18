@@ -1,0 +1,11 @@
+--- a/packages/compute-native/src/decode_attribution/graph_catalog.rs
++++ b/packages/compute-native/src/decode_attribution/graph_catalog.rs
+@@ -297,7 +297,7 @@
+     let b = op_reshape(builder, "x", &[1, ic, 1], "reshape_50");
+     let b = op_transpose(b, "reshape_50", &[0, 2, 1], "transpose_51");
+     let b = op_reshape(b, "transpose_51", &[1, ic], "reshape_52");
+-    b.const_f32("w", &w, &profile.weight_shape())
++    b.const_f32("w", &w, &profile.weight_shape_i64())
+         .matmul("reshape_52", "w_50")
+         .output("matmul_53")
+ }

@@ -1,0 +1,2 @@
+{"at":"2026-06-01T06:15:53.070Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","command":"test","cwd":"packages/opencode","elapsed_ms":97,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:16:03.198Z","session_id":"ses_17e54e24affeBy00kVxW3XiVRr","agent":"vitals","command":"test","cwd":"packages/opencode","elapsed_ms":5034,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}

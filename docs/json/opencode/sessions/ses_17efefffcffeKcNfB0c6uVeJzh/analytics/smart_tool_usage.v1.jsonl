@@ -1,0 +1,8 @@
+{"at":"2026-06-01T02:27:48.233Z","session_id":"ses_17efefffcffeKcNfB0c6uVeJzh","agent":"coupling-auditor","tool":"smart_find","pattern":"*trace*","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:27:48.771Z","session_id":"ses_17efefffcffeKcNfB0c6uVeJzh","agent":"coupling-auditor","tool":"smart_find","pattern":"*.jsonl","path":".rig"}
+{"at":"2026-06-01T02:28:13.966Z","session_id":"ses_17efefffcffeKcNfB0c6uVeJzh","agent":"coupling-auditor","tool":"smart_grep","pattern":"from.*instance-store|from.*instance-layer|from.*bootstrap","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:28:14.996Z","session_id":"ses_17efefffcffeKcNfB0c6uVeJzh","agent":"coupling-auditor","tool":"smart_grep","pattern":"InstanceBootstrap|InstanceStore|InstanceLayer","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:33:57.897Z","session_id":"ses_17efefffcffeKcNfB0c6uVeJzh","agent":"coupling-auditor","tool":"smart_grep","pattern":"instance-startup|startup-trace|startup\\.jsonl","path":"packages"}
+{"at":"2026-06-01T02:33:58.652Z","session_id":"ses_17efefffcffeKcNfB0c6uVeJzh","agent":"coupling-auditor","tool":"smart_grep","pattern":"tapErrorCause|initService","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:34:40.149Z","session_id":"ses_17efefffcffeKcNfB0c6uVeJzh","agent":"coupling-auditor","tool":"smart_grep","pattern":"Effect\\.tapErrorCause|catchCause","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:34:40.916Z","session_id":"ses_17efefffcffeKcNfB0c6uVeJzh","agent":"coupling-auditor","tool":"smart_grep","pattern":"appendFileSync|appendFile\\b|writeFile.*jsonl","path":"packages/opencode/src"}

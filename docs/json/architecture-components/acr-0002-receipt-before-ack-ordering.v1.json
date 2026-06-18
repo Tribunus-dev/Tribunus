@@ -1,0 +1,35 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0002",
+  "title": "Receipt-Before-Ack Ordering",
+  "status": "proposed",
+  "component_type": "boundary_contract",
+  "owner_subsystem": "PGlite",
+  "definition": "A coordination ack may occur only after the durable authority receipt for the corresponding work transition has been committed.",
+  "invariants": [
+    "No Valkey ack before PGlite receipt commit.",
+    "Ack is a reflection of durable state, not a substitute for it."
+  ],
+  "allowed_states": [
+    "receipt_pending",
+    "receipt_committed",
+    "acked"
+  ],
+  "forbidden_states": [
+    "acked_without_receipt",
+    "coordination_advance_without_durable_state"
+  ],
+  "required_receipts": [
+    "durable_authority_receipt"
+  ],
+  "required_validators": [
+    "ack_order_validator"
+  ],
+  "imported_by": [
+    "ADR-0021",
+    "ADR-0022"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

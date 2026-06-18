@@ -1,0 +1,17 @@
+--- a/packages/compute-native/src/executor.rs
++++ b/packages/compute-native/src/executor.rs
+@@ -393,12 +393,12 @@
+     let k = qmatmul_attributed(x, kw, ks, kb, true, 64, 8, ctx, ProjectionFamily::KProj, 1)?
+         .reshape(&[n_tokens, n_kv_heads as i32, head_dim as i32])?;
+ 
+-    // Plan-driven V semantics:
++    // Plan-driven V semantics: when attention_k_eq_v is true, K and V share
+     // weights so we alias K as V rather than computing a separate projection.
+     let v: Array = if plan.attention_k_eq_v {
+         k.clone()
+     } else {
+-        qmatmul(x, vw, vs, vb)?
++        qmatmul_attributed(x, vw, vs, vb, true, 64, 8, ctx, ProjectionFamily::VProj, 2)?
+             .reshape(&[n_tokens, n_kv_heads as i32, head_dim as i32])?
+     };
+ 

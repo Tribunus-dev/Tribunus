@@ -1,0 +1,11 @@
+[mcp_servers.tribunus]
+command = "bun"
+args = ["run", "packages/tribunus-mcp/src/index.ts"]
+cwd = "/Users/user/Developer/GitHub/Tribunus"
+startup_timeout_sec = 30
+tool_timeout_sec = 600
+
+[mcp_servers.tribunus.env]
+GITHUB_APP_ID = "3774417"
+GITHUB_APP_INSTALLATION_ID = "133860977"
+GITHUB_APP_PRIVATE_KEY_PATH = "/Users/user/Developer/GitHub/Tribunus/.omp/github-app-private-key.pem"

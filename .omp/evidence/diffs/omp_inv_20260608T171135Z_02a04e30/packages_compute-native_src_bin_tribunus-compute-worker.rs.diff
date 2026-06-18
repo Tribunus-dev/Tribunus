@@ -1,0 +1,26 @@
+--- a/packages/compute-native/src/bin/tribunus-compute-worker.rs
++++ b/packages/compute-native/src/bin/tribunus-compute-worker.rs
+@@ -375,18 +375,18 @@
+                             worker_id, e
+                         );
+                         writer.write_event(
+-                                WorkerEvent::WorkerFatal,
++                            WorkerEvent::WorkerFatal,
+                             None,
+-                                serde_json::to_value(WorkerFatalPayload {
+-                                    error_code: "policy-snapshot-invalid".into(),
++                            serde_json::to_value(WorkerFatalPayload {
++                                error_code: "policy-snapshot-invalid".into(),
+                                 message: format!("{}", e),
+                                 phase: "load".into(),
+                                 diagnostics: None,
+                             })
+                             .unwrap_or_default(),
+                         );
+-                            shutdown.store(true, Ordering::Relaxed);
+-                            break;
++                        shutdown.store(true, Ordering::Relaxed);
++                        break;
+                     }
+                 };
+ 

@@ -1,0 +1,60 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0063-runtime-truth-projection-into-the-cockpit",
+  "type": "mission",
+  "name": "Runtime Truth Projection into the Cockpit",
+  "slug": "runtime-truth-projection-into-the-cockpit",
+  "description": "The runtime state machine projects its current state, pending transitions, and health into the cockpit UI as an observable stream.",
+  "purpose": "The cockpit always reflects runtime reality.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Runtime state machine publishes a structured state snapshot on every transition",
+    "Cockpit subscribes to the state stream and renders current state in real-time",
+    "State includes: phase (boot/active/shutdown), health status per subsystem, pending transitions, error conditions",
+    "Stale state detection: if no update within heartbeat interval, cockpit shows \"stale\" indicator",
+    "State projection includes transition history (last N transitions with timestamps)",
+    "Cockpit can request a forced state refresh from the runtime"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "cockpit",
+    "state-projection",
+    "observability",
+    "runtime",
+    "stream"
+  ],
+  "depends_on": [
+    "0053-instance-bootstrap-and-dependency-assembly",
+    "0055-workspace-open-and-close-semantics",
+    "0057-main-process-renderer-worker-and-sidecar-boundaries"
+  ],
+  "unlocks": [],
+  "authority_scope": "observability",
+  "allowed_paths": [],
+  "required_evidence": [
+    "State machine publish test (structured snapshot on every transition)",
+    "Cockpit subscription and render test",
+    "Stale state detection test (heartbeat interval expiry)",
+    "Transition history test (last N transitions with timestamps)"
+  ],
+  "acceptance_gates": [
+    "State snapshot published on every transition",
+    "Cockpit shows real-time state with health per subsystem",
+    "Stale state indicator activates when heartbeat misses",
+    "Cockpit can force state refresh"
+  ],
+  "rollback_strategy": "No state mutation from projection — read-only stream, no rollback needed",
+  "recovery_strategy": "Reconnect subscription on cockpit restart; runtime always has latest state",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "State stream disruption escalates to user with connection diagnostic",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.498Z",
+  "updated_at": "2026-06-07T05:45:51.154Z"
+}

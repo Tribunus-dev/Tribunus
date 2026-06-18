@@ -1,0 +1,16 @@
+--- a/packages/compute-native/src/executor.rs
++++ b/packages/compute-native/src/executor.rs
+@@ -12,6 +12,13 @@
+ use mlx_rs::error::Result as MlxResult;
+ use mlx_rs::ops::indexing::IndexOp;
+ use mlx_rs::Array;
++
++// ── Helpers ────────────────────────────────────────────────────────────────
++
++/// Hidden scale for the prologue embedding: sqrt(hidden_size).
++pub fn prologue_hidden_scale(plan: &ProloguePlan) -> f32 {
++    (plan.embedding_shape[1] as f32).sqrt()
++}
+ 
+ // ── Prologue ───────────────────────────────────────────────────────────────
+ 

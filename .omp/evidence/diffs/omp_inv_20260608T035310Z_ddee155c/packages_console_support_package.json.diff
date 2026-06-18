@@ -1,0 +1,9 @@
+--- a/packages/console/support/package.json
++++ b/packages/console/support/package.json
+@@ -1,5 +1,5 @@
+ {
+-  "name": "@opencode-ai/console-support",
++  "name": "@tribunus/console-support",
+   "version": "1.15.12",
+   "type": "module",
+   "license": "MIT",

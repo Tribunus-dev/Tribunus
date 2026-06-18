@@ -1,0 +1,122 @@
+--- a/packages/compute-native/src/replay_projection.rs
++++ b/packages/compute-native/src/replay_projection.rs
+@@ -595,95 +595,38 @@
+         bias: &Array,
+         input_shape: &[i32],
+     ) -> (Option<f64>, Option<f64>, Option<f64>, Option<f64>, String) {
+-        // Read MLX output as f32
+-        let mlx_out = match mlx_output.try_as_slice::<f32>() {
+-            Ok(s) => s.to_vec(),
+-            Err(_) => return (None, None, None, None, "unavailable (dtype mismatch)".to_string()),
+-        };
+-
+-        // Read weight as raw u8 bytes (U32 packed → byte reinterpretation)
+-        // MLX weight shape: [N_out, K_in_packed] U32 → [N, K] u8 row-major
+-        // Oracle expects:   [K, N] u8 row-major — must transpose
+-        let weight_u8_nk = match weight.try_as_slice::<u32>() {
+-            Ok(s) => {
+-                let bytes_nk: &[u8] = unsafe {
+-                    std::slice::from_raw_parts(
+-                        s.as_ptr() as *const u8,
+-                        s.len() * 4,
+-                    )
+-                };
+-                // Transpose from [N, K] to [K, N]: oracle accesses weight[ki * N + ni]
+-                let ws = weight.shape();
+-                let n = if ws.len() >= 1 { ws[0] as usize } else { return (None, None, None, None, "unavailable (weight shape)".to_string()) };
+-                let k = bytes_nk.len() / n;
+-                let mut transposed = vec![0u8; k * n];
+-                for ni in 0..n {
+-                    for ki in 0..k {
+-                        transposed[ki * n + ni] = bytes_nk[ni * k + ki];
+-                    }
+-                }
+-                transposed
+-            }
+-            Err(_) => return (None, None, None, None, "unavailable (weight dtype mismatch)".to_string()),
++        // Oracle: dequantize the packed quantized weight into F32, transpose,
++        // then use a regular matmul. This is the canonical correctness reference:
++        // dequantize(weight[U32]) → wf[N,K]F32 → transpose → wf_t[K,N]F32
++        // → input[1,K] @ wf_t[K,N] = reference[1,N]
++        // The reference output must match quantized_matmul output.
++        let wf = match mlx_rs::ops::dequantize(weight, scale, bias, 64, 8) {
++            Ok(arr) => arr,
++            Err(_) => return (None, None, None, None, "unavailable (dequantize failed)".to_string()),
+         };
+-
+-        // Scales and biases may be Bfloat16 — try f32 first, then bf16→f32 conversion
+-        // Cast scales/biases to F32 via MLX (handles Bfloat16→F32 conversion)
+-        let scale_f32 = match scale.as_dtype(mlx_rs::Dtype::Float32) {
++        let wf_t = match mlx_rs::ops::transpose_all(&wf) {
+             Ok(arr) => arr,
+-            Err(_) => return (None, None, None, None, "unavailable (scale cast)".to_string()),
++            Err(_) => return (None, None, None, None, "unavailable (transpose failed)".to_string()),
+         };
+-        let scales: Vec<f32> = match scale_f32.try_as_slice::<f32>() {
+-            Ok(s) => s.to_vec(),
+-            Err(_) => return (None, None, None, None, "unavailable (scale read)".to_string()),
++        let oracle_input = mlx_rs::Array::full::<f32>(
++            &[input_shape[0], input_shape[1]],
++            &mlx_rs::Array::from_f32(0.5),
++        )
++        .expect("create oracle input");
++        let oracle_arr = match oracle_input.matmul(&wf_t) {
++            Ok(arr) => arr,
++            Err(_) => return (None, None, None, None, "unavailable (matmul failed)".to_string()),
+         };
++        oracle_arr.eval().expect("oracle eval");
+ 
+-        let bias_f32 = match bias.as_dtype(mlx_rs::Dtype::Float32) {
+-            Ok(arr) => arr,
+-            Err(_) => return (None, None, None, None, "unavailable (bias cast)".to_string()),
++        let mlx_out = match mlx_output.try_as_slice::<f32>() {
++            Ok(s) => s.to_vec(),
++            Err(_) => return (None, None, None, None, "unavailable (dtype mismatch)".to_string()),
+         };
+-        let biases: Vec<f32> = match bias_f32.try_as_slice::<f32>() {
++        let oracle_out = match oracle_arr.try_as_slice::<f32>() {
+             Ok(s) => s.to_vec(),
+-            Err(_) => return (None, None, None, None, "unavailable (bias read)".to_string()),
++            Err(_) => return (None, None, None, None, "unavailable (oracle dtype)".to_string()),
+         };
+-
+-        // Determine dimensions: with transpose=true, oracle weight is [K, N]
+-        // MLX weight shape is [N_packed_out, K_packed] e.g. [4096, 960]
+-        // Logical: N = output_dim, K = input_dim
+-        let ws = weight.shape();
+-        let k = if input_shape.len() > 1 { input_shape[1] as usize } else { 3840 };
+-        let n = if ws.len() >= 1 { ws[0] as usize } else { 0 };
+-
+-        let group_size = 64usize;
+-        let groups = k.div_ceil(group_size);
+-
+-        // Create deterministic input (all 0.5, same as harness)
+-        let x: Vec<f32> = vec![0.5f32; k];
+-
+-        // Call scalar oracle
+-        let oracle_result = crate::native_kernel::qmatvec_scalar(
+-            &x,
+-            &weight_u8_nk,
+-            &scales,
+-            &biases,
+-            k,
+-            n,
+-            group_size,
+-        );
+-
+-        // Compare element-wise
+-        let oracle_out = &oracle_result.output;
+-        // Debug: print first 8 values from both oracle and MLX
+-        {
+-            let n_print = usize::min(oracle_out.len().min(8), oracle_out.len());
+-            let mlx_preview: Vec<f32> = mlx_out.iter().take(n_print).copied().collect();
+-            let ora_preview: Vec<f32> = oracle_out.iter().take(n_print).copied().collect();
+-            eprintln!("ORACLE_DEBUG first={}: oracle={:?}, mlx={:?}", n_print, ora_preview, mlx_preview);
+-            eprintln!("ORACLE_DEBUG k={} n={} groups={} weight_bytes={} scale_len={} bias_len={}",
+-                k, n, groups, weight_u8_nk.len(), scales.len(), biases.len());
+-        }
+-
+-        // Compare element-wise
+ 
+         if oracle_out.len() != mlx_out.len() {
+             return (

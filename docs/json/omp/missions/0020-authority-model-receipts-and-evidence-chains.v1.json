@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0020-authority-model-receipts-and-evidence-chains",
+  "type": "mission",
+  "name": "Authority Model — Receipts and Evidence Chains",
+  "slug": "authority-model-receipts-and-evidence-chains",
+  "description": "Define the authority model: receipt schemas, evidence chain structure, capability ontology, approval gate taxonomy, durable ACK contract, identity-bound action semantics, and replayability guarantees. The doctrinal foundation for all authority subsystems.",
+  "purpose": "Define what must be proven before any subsystem can claim completion. Receipts, evidence chains, and authority binding semantics.",
+  "campaignId": "0009",
+  "status": "completed",
+  "priority": 95,
+  "acceptanceCriteria": [
+    "ADRs define receipt schema, evidence chain, and capability ontology",
+    "Authority binding contract specifies durable-before-ACK invariant",
+    "Receipt types cover all terminal work outcomes",
+    "Evidence chain supports replayability and cross-instance verification",
+    "Approval gate taxonomy is exhaustive"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T17:52:53.803Z",
+  "updated_at": "2026-06-07T05:01:39.489Z"
+}

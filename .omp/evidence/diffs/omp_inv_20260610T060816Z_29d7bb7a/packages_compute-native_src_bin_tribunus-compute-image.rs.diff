@@ -1,0 +1,15 @@
+--- a/packages/compute-native/src/bin/tribunus-compute-image.rs
++++ b/packages/compute-native/src/bin/tribunus-compute-image.rs
+@@ -17,9 +17,11 @@
+ use uuid::Uuid;
+ use mlx_rs::Array;
+ 
+-use tribunus_compute_native::profiled_executor::{LoadedProfiledModel, ProfiledInferenceSession};
++use tribunus_compute_native::profiled_executor::{LoadedProfiledModel, ProfiledInferenceSession, ConditioningLayerReceipt};
+ use tribunus_compute_native::kv_cache::KvCache;
+ use tribunus_compute_native::compute_image;
++use tribunus_compute_native::worker_memory;
++use tribunus_compute_native::session::InferenceSessionState;
+ 
+ // ═══════════════════════════════════════════════════════════════════════════
+ // Entry point

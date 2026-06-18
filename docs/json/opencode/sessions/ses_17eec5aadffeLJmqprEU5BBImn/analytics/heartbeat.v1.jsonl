@@ -1,0 +1,16 @@
+{"at":"2026-06-01T02:47:23.195Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"server\\.instance\\.|ServerInstance"}
+{"at":"2026-06-01T02:47:23.495Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"6 matches in 500 files"}
+{"at":"2026-06-01T02:47:56.308Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Effect\\.exit"}
+{"at":"2026-06-01T02:47:56.313Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"3 matches in 10 files"}
+{"at":"2026-06-01T02:50:04.590Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"catchCause"}
+{"at":"2026-06-01T02:50:04.598Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 10 files"}
+{"at":"2026-06-01T02:50:05.107Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"fromDirectory"}
+{"at":"2026-06-01T02:50:05.109Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"7 matches in 10 files"}
+{"at":"2026-06-01T02:50:57.938Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"export.*tapError|Effect\\.tapError"}
+{"at":"2026-06-01T02:50:57.947Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 10 files"}
+{"at":"2026-06-01T02:51:33.545Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"/global/health|global\\.health|fetch.*health"}
+{"at":"2026-06-01T02:51:33.668Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"3 matches in 500 files"}
+{"at":"2026-06-01T02:52:10.519Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"const fromDirectory = Effect\\.fn"}
+{"at":"2026-06-01T02:52:10.530Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:53:19.228Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"const fromDirectory"}
+{"at":"2026-06-01T02:53:19.230Z","session_id":"ses_17eec5aadffeLJmqprEU5BBImn","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}

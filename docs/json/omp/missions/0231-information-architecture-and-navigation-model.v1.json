@@ -1,0 +1,35 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0231-information-architecture-and-navigation-model",
+  "type": "mission",
+  "name": "Information Architecture and Navigation Model",
+  "slug": "information-architecture-and-navigation-model",
+  "description": "Design the cockpit information architecture, navigation model, and progressive disclosure strategy. This mission covers the structural organization of the Tribunus cockpit: hierarchy of views, command palette integration, keyboard navigation, agent activity panels, authority/approval UX, and progressive disclosure of complexity for new users.",
+  "purpose": "Define the information architecture that organizes the cockpit's views, commands, and agent interactions into a coherent navigation model. Progressive disclosure ensures novices aren't overwhelmed while power users retain rapid access to deep functionality.",
+  "campaignId": "0030",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "IA diagram documents the cockpit view hierarchy, nested navigation paths, and cross-view relationships",
+    "Navigation specification defines command palette, keyboard shortcuts, breadcrumb trail, and persistent navigation chrome",
+    "Progressive disclosure strategy describes tiered feature revelations for novice/intermediate/expert users",
+    "Agent activity visualization and authority approval UX flows are documented in the navigation model",
+    "Recovery UX and failure state patterns are mapped within the navigation structure"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "ux",
+    "information-architecture",
+    "navigation",
+    "design",
+    "cockpit"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:48:03.072Z",
+  "updated_at": "2026-06-07T05:53:14.605Z"
+}

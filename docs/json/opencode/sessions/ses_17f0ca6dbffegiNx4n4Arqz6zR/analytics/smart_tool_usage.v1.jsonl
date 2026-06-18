@@ -1,0 +1,3 @@
+{"at":"2026-06-01T02:14:42.841Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","pattern":"import.*from.*server/health","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:14:43.408Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","pattern":"BusEvent\\.define","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:14:44.147Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","pattern":"HealthRegistry","path":"packages/opencode/src"}

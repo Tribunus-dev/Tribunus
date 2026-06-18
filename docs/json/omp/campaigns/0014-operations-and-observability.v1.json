@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0014",
+  "type": "campaign",
+  "name": "Operations and Observability",
+  "slug": "operations-and-observability",
+  "description": "Telemetry, monitoring, alerting, health checks, crash diagnostics, performance profiles, usage analytics, cost tracking, SLO/SLI definitions, incident response, runbooks, backup/restore, and operational dashboards. The operational nervous system for both self-hosted and managed deployments.",
+  "objective": "Instrument all subsystems with telemetry, define SLOs, implement health checks, crash diagnostics, and operational dashboards.",
+  "status": "in_progress",
+  "projectId": null,
+  "startDate": "2026-06-06",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "operations",
+    "observability",
+    "telemetry"
+  ],
+  "maturity": "scaffolded",
+  "horizon": "committed",
+  "created_at": "2026-06-06T17:52:26.288Z",
+  "updated_at": "2026-06-06T17:52:26.288Z"
+}

@@ -1,0 +1,10 @@
+--- a/packages/compute-native/src/decode_attribution/coreml_minimal_repro.rs
++++ b/packages/compute-native/src/decode_attribution/coreml_minimal_repro.rs
+@@ -938,7 +938,6 @@
+         shape_n: 2,
+         input_names: &["x"],
+         output_names: &["matmul_1"],
+-        output_shapes: &[&[1, 1]],
+         output_shapes: &[&[1, 2]],
+         dtype: mil_spec::DataType::Float32,
+         op_list: &["const", "matmul"],

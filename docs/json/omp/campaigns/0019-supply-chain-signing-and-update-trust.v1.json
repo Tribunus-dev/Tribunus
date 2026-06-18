@@ -1,0 +1,27 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0019",
+  "type": "campaign",
+  "name": "Supply Chain, Signing, and Update Trust",
+  "slug": "supply-chain-signing-and-update-trust",
+  "description": "Dependency inventory, lockfile integrity policy, SBOM generation, build provenance attestations (Sigstore), artifact signing, publisher identity verification, transparency log integration (Rekor), release key and role separation (TUF), update metadata repository, dependency vulnerability intake, malicious package quarantine, reproducibility verification, third-party binary inventory, native dependency audit, CI runner trust policy, secretless release automation, compromise/revocation drill, and user-visible verification receipts.",
+  "objective": "Implement TUF-style update trust, Sigstore artifact signing, SBOM generation, and supply chain integrity from dependency to distribution.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "supply-chain",
+    "signing",
+    "tuf",
+    "sigstore",
+    "sbom"
+  ],
+  "maturity": "modeled",
+  "horizon": "planned",
+  "created_at": "2026-06-07T04:35:42.231Z",
+  "updated_at": "2026-06-07T04:35:42.231Z"
+}

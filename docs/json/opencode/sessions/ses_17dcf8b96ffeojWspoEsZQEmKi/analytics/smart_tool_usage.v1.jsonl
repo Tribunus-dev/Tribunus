@@ -1,0 +1,6 @@
+{"at":"2026-06-01T07:58:29.835Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","command":"typecheck","elapsed_ms":21470,"exit_code":2}
+{"at":"2026-06-01T07:58:42.742Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_find","pattern":"instance-health.ts","path":"packages/opencode"}
+{"at":"2026-06-01T07:58:43.144Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_find","pattern":"instance-store.ts","path":"packages/opencode"}
+{"at":"2026-06-01T07:59:05.013Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","command":"tsgo","elapsed_ms":21160,"exit_code":2}
+{"at":"2026-06-01T07:59:51.762Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","command":"tsgo","elapsed_ms":18601,"exit_code":0}
+{"at":"2026-06-01T08:00:20.227Z","session_id":"ses_17dcf8b96ffeojWspoEsZQEmKi","agent":"trial","tool":"smart_bun","command":"tsgo","elapsed_ms":20391,"exit_code":0}

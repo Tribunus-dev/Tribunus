@@ -1,0 +1,33 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0225-enterprise-tenant-and-sso-architecture",
+  "type": "mission",
+  "name": "Enterprise Tenant and SSO Architecture",
+  "slug": "enterprise-tenant-and-sso-architecture",
+  "description": "Design the enterprise tenant model, SSO federation (SAML/OIDC), and SCIM provisioning architecture. Define tenant isolation boundaries, identity provider abstraction layer, federation trust model, user/group provisioning via SCIM, and the mapping between IdP identities and local principals. Produce architecture document with identity flow diagrams covering login, IdP-initiated SSO, just-in-time provisioning, and deprovisioning.",
+  "purpose": "Enterprise customers require multi-tenant isolation with single sign-on through their corporate identity provider and automated user provisioning/deprovisioning via SCIM. A clean tenant model and SSO architecture is the foundation for all enterprise governance features.",
+  "campaignId": "0027",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Architecture document defines tenant model with isolation boundaries, multi-tenant data separation, and tenant lifecycle",
+    "Identity flow diagrams cover SP-initiated SSO, IdP-initiated SSO, JIT provisioning, group sync, and deprovisioning",
+    "SCIM provisioning schema defined with attribute mapping between IdP and local principal model"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "enterprise",
+    "sso",
+    "scim",
+    "tenant",
+    "identity-federation"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:55.563Z",
+  "updated_at": "2026-06-07T05:53:00.332Z"
+}

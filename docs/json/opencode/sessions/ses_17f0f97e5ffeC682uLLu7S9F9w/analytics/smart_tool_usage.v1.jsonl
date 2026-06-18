@@ -1,0 +1,11 @@
+{"at":"2026-06-01T02:13:15.398Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","pattern":"pipeline","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:13:16.076Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","pattern":"catchAll","path":"packages/opencode/src/mcp"}
+{"at":"2026-06-01T02:14:41.451Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","pattern":"**/pipeline.ts","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:14:42.030Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","pattern":"catchAll","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:19:49.492Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","pattern":"**/pipeline*","path":"packages/opencode"}
+{"at":"2026-06-01T02:23:39.785Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","pattern":"**/pipeline.ts","path":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:23:55.004Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","pattern":"catchAll","path":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:26:53.660Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","pattern":"annotateLogs","path":"/Users/user/Developer/GitHub/opencode-desktop-dev"}
+{"at":"2026-06-01T02:33:46.460Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_sd","file":"packages/opencode/src/mcp/auth.ts"}
+{"at":"2026-06-01T02:35:45.684Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_sd","file":"packages/opencode/src/mcp/auth.ts"}
+{"at":"2026-06-01T02:38:44.815Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_sd","file":"packages/opencode/src/mcp/oauth-callback.ts"}

@@ -1,0 +1,194 @@
+--- a/packages/compute-native/src/compute_image.rs
++++ b/packages/compute-native/src/compute_image.rs
+@@ -2380,7 +2380,191 @@
+                 &[64, 2],
+                 13.75,
+             ),
++        ];
++
++        tensors.sort_by(|left, right| left.0.cmp(&right.0));
++        serialize_to_file(tensors, &None, &source_dir.join("model.safetensors"))
++            .expect("write safetensors");
++    }
++
++    /// Build a synthetic model with N layers driven by `layer_types`
++    /// ("sliding_attention" or "full_attention"). Full-attention layers
++    /// omit v_proj (K-equals-V).
++    fn write_two_layer_fixture_model(source_dir: &Path, layer_types: &[&str]) {
++        let num_layers = layer_types.len();
++        let config = serde_json::json!({
++            "model_type": "tiny_gemma_like",
++            "text_config": {
++                "hidden_size": 64,
++                "intermediate_size": 128,
++                "num_attention_heads": 4,
++                "num_key_value_heads": 1,
++                "head_dim": 16,
++                "global_head_dim": 16,
++                "num_global_key_value_heads": 1,
++                "num_hidden_layers": num_layers,
++                "vocab_size": 64,
++                "sliding_window": 8,
++                "max_position_embeddings": 16,
++                "rms_norm_eps": 0.000001,
++                "tie_word_embeddings": true,
++                "attention_k_eq_v": true,
++                "final_logit_softcapping": null,
++                "hidden_size_per_layer_input": 0,
++                "layer_types": layer_types,
++                "rope_parameters": {
++                    "sliding_attention": {
++                        "rope_theta": 10000.0,
++                        "rope_type": "default"
++                    },
++                    "full_attention": {
++                        "rope_theta": 1000000.0,
++                        "rope_type": "proportional"
++                    }
++                },
++                "model_type": "tiny_gemma_like"
++            },
++            "quantization": {
++                "group_size": 64,
++                "bits": 8,
++                "mode": "affine"
++            }
++        });
++
++        fs::write(
++            source_dir.join("config.json"),
++            serde_json::to_string_pretty(&config).expect("config json"),
++        )
++        .expect("write config");
++
++        let root = "language_model.model";
++        let mut tensors = vec![
++            u32_tensor(&format!("{}.embed_tokens.weight", root), &[64, 16], 1),
++            f32_tensor(&format!("{}.embed_tokens.scales", root), &[64, 1], 0.5),
++            f32_tensor(&format!("{}.embed_tokens.biases", root), &[64, 1], 1.5),
++            f32_tensor(&format!("{}.norm.weight", root), &[64], 2.0),
+         ];
++
++        for (i, lt) in layer_types.iter().enumerate() {
++            let layer = i as u32;
++            let is_full = *lt == "full_attention";
++
++            // Norms
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.input_layernorm.weight", root, layer),
++                &[64], 3.0 + layer as f32 * 10.0,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.post_attention_layernorm.weight", root, layer),
++                &[64], 4.0 + layer as f32 * 10.0,
++            ));
++
++            // Q/K norms
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.self_attn.q_norm.weight", root, layer),
++                &[16], 5.0 + layer as f32 * 10.0,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.self_attn.k_norm.weight", root, layer),
++                &[16], 6.0 + layer as f32 * 10.0,
++            ));
++
++            // Q projection
++            tensors.push(u32_tensor(
++                &format!("{}.layers.{}.self_attn.q_proj.weight", root, layer),
++                &[64, 16], 7 + layer * 100,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.self_attn.q_proj.scales", root, layer),
++                &[64, 1], 7.5 + layer as f32 * 10.0,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.self_attn.q_proj.biases", root, layer),
++                &[64, 1], 7.75 + layer as f32 * 10.0,
++            ));
++
++            // K projection
++            tensors.push(u32_tensor(
++                &format!("{}.layers.{}.self_attn.k_proj.weight", root, layer),
++                &[16, 16], 8 + layer * 100,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.self_attn.k_proj.scales", root, layer),
++                &[16, 1], 8.5 + layer as f32 * 10.0,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.self_attn.k_proj.biases", root, layer),
++                &[16, 1], 8.75 + layer as f32 * 10.0,
++            ));
++
++            // V projection: only for sliding attention layers
++            if !is_full {
++                tensors.push(u32_tensor(
++                    &format!("{}.layers.{}.self_attn.v_proj.weight", root, layer),
++                    &[16, 16], 9 + layer * 100,
++                ));
++                tensors.push(f32_tensor(
++                    &format!("{}.layers.{}.self_attn.v_proj.scales", root, layer),
++                    &[16, 1], 9.5 + layer as f32 * 10.0,
++                ));
++                tensors.push(f32_tensor(
++                    &format!("{}.layers.{}.self_attn.v_proj.biases", root, layer),
++                    &[16, 1], 9.75 + layer as f32 * 10.0,
++                ));
++            }
++
++            // O projection
++            tensors.push(u32_tensor(
++                &format!("{}.layers.{}.self_attn.o_proj.weight", root, layer),
++                &[64, 16], 10 + layer * 100,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.self_attn.o_proj.scales", root, layer),
++                &[64, 1], 10.5 + layer as f32 * 10.0,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.self_attn.o_proj.biases", root, layer),
++                &[64, 1], 10.75 + layer as f32 * 10.0,
++            ));
++
++            // MLP gate/up/down
++            tensors.push(u32_tensor(
++                &format!("{}.layers.{}.mlp.gate_proj.weight", root, layer),
++                &[128, 16], 11 + layer * 100,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.mlp.gate_proj.scales", root, layer),
++                &[128, 1], 11.5 + layer as f32 * 10.0,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.mlp.gate_proj.biases", root, layer),
++                &[128, 1], 11.75 + layer as f32 * 10.0,
++            ));
++            tensors.push(u32_tensor(
++                &format!("{}.layers.{}.mlp.up_proj.weight", root, layer),
++                &[128, 16], 12 + layer * 100,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.mlp.up_proj.scales", root, layer),
++                &[128, 1], 12.5 + layer as f32 * 10.0,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.mlp.up_proj.biases", root, layer),
++                &[128, 1], 12.75 + layer as f32 * 10.0,
++            ));
++            tensors.push(u32_tensor(
++                &format!("{}.layers.{}.mlp.down_proj.weight", root, layer),
++                &[64, 32], 13 + layer * 100,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.mlp.down_proj.scales", root, layer),
++                &[64, 2], 13.5 + layer as f32 * 10.0,
++            ));
++            tensors.push(f32_tensor(
++                &format!("{}.layers.{}.mlp.down_proj.biases", root, layer),
++                &[64, 2], 13.75 + layer as f32 * 10.0,
++            ));
++        }
+ 
+         tensors.sort_by(|left, right| left.0.cmp(&right.0));
+         serialize_to_file(tensors, &None, &source_dir.join("model.safetensors"))

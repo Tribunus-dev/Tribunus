@@ -1,0 +1,128 @@
+{
+  "$schema": "https://tribunus.dev/schemas/migration-inventory.v1",
+  "$id": "https://tribunus.dev/schemas/control-plane-sqlite-inventory",
+  "title": "Control Plane SQLite/PGlite Inventory",
+  "description": "Complete inventory of all persistent storage used by the Tribunus control plane. Maps tables to callers and identifies which storage backends are authoritative vs. transitional.",
+  "generated_at": "2026-06-07T06:00:00.000Z",
+  "summary": {
+    "total_pglite_tables": 29,
+    "pglite_tables_already_authoritative": 29,
+    "filesystem_entities_to_migrate": ["campaigns", "missions", "lanes", "tasks", "checkpoints", "research_packets", "memory_links"],
+    "filesystem_entity_count": "32 campaigns, 236 missions, 27 lanes, 0 tasks, 0 checkpoints, 9 research packets"
+  },
+  "pglite_tables": {
+    "account": [
+      {"table": "account", "source": "account/account.pg.sql.ts", "callers": ["account"], "description": "Account identity and provider info"},
+      {"table": "account_state", "source": "account/account.pg.sql.ts", "callers": ["account"], "description": "Active account tracking"},
+      {"table": "control_account", "source": "account/account.pg.sql.ts", "callers": ["account"], "description": "Legacy control account"}
+    ],
+    "capability": [
+      {"table": "capability_authority_receipt", "source": "capability/receipts.pg.sql.ts", "callers": ["capability/receipts.ts", "tool/tool.ts", "share/share-next.ts"], "description": "Authority receipt records for capability checks"},
+      {"indices": ["capability_authority_receipt_session_idx", "capability_authority_receipt_cap_idx", "capability_authority_receipt_ts_idx"]}
+    ],
+    "control_plane": [
+      {"table": "workspace", "source": "control-plane/workspace.pg.sql.ts", "callers": ["control-plane/workspace.ts"], "description": "Workspace identity and state tracking"}
+    ],
+    "coordination": [
+      {"table": "coordination_work_item", "source": "coordination/work-queue.pg.sql.ts", "callers": ["coordination/durable-store.ts", "coordination/work-queue.ts", "coordination/recovery.ts", "coordination/observability.ts"], "description": "Durable work item lifecycle state"},
+      {"indices": ["coordination_work_item_status_idx", "coordination_work_item_stream_idx", "coordination_work_item_created_idx"]},
+      {"table": "coordination_work_attempt", "source": "coordination/work-queue.pg.sql.ts", "callers": ["coordination/durable-store.ts"], "description": "Per-attempt audit records"},
+      {"indices": ["coordination_work_attempt_work_idx", "coordination_work_attempt_status_idx"]},
+      {"table": "coordination_dead_letter", "source": "coordination/work-queue.pg.sql.ts", "callers": ["coordination/durable-store.ts", "coordination/work-queue.ts"], "description": "Terminal dead-letter records"},
+      {"indices": ["coordination_dead_letter_work_idx"]},
+      {"table": "coordination_recovery_receipt", "source": "coordination/work-queue.pg.sql.ts", "callers": ["coordination/durable-store.ts", "coordination/recovery.ts", "coordination/observability.ts"], "description": "Recovery audit receipts"},
+      {"indices": ["coordination_recovery_receipt_work_idx", "coordination_recovery_receipt_action_idx", "coordination_recovery_receipt_at_idx", "coordination_recovery_receipt_stream_idx"]},
+      {"table": "coordination_scheduled_work", "source": "coordination/work-queue.pg.sql.ts", "callers": ["coordination/durable-store.ts", "coordination/scheduler.ts"], "description": "Scheduled retry work items"},
+      {"indices": ["coordination_scheduled_work_due_idx", "coordination_scheduled_work_work_idx"]},
+      {"table": "coordination_stream_state", "source": "coordination/work-queue.pg.sql.ts", "callers": ["coordination/durable-store.ts"], "description": "Valkey stream state tracking"},
+      {"indices": ["coordination_stream_state_stream_idx"]},
+      {"table": "coordination_quarantine", "source": "coordination/work-queue.pg.sql.ts", "callers": ["coordination/durable-store.ts"], "description": "Quarantined unknown stream entries"},
+      {"table": "coordination_recovery", "source": "coordination/recovery.pg.sql.ts", "callers": ["coordination/recovery.ts"], "description": "Coordination recovery state"}
+    ],
+    "event": [
+      {"table": "runtime_events", "source": "event/event.pg.sql.ts", "callers": ["event"], "description": "Runtime event log"}
+    ],
+    "session": [
+      {"table": "session", "source": "session/session.pg.sql.ts", "callers": ["session/session.ts", "acp-next/service.ts", "acp/agent.ts"], "description": "Session identity, state, and metadata"},
+      {"table": "message", "source": "session/session.pg.sql.ts", "callers": ["session"], "description": "LLM message records"},
+      {"table": "part", "source": "session/session.pg.sql.ts", "callers": ["session"], "description": "Message content parts"},
+      {"table": "todo", "source": "session/session.pg.sql.ts", "callers": ["session/todo.ts", "tool/todo.ts"], "description": "Session todo items"},
+      {"table": "session_message", "source": "session/session.pg.sql.ts", "callers": ["session"], "description": "Session-message join"},
+      {"table": "permission", "source": "session/session.pg.sql.ts", "callers": ["permission"], "description": "Project-level permissions"}
+    ],
+    "project": [
+      {"table": "project", "source": "project/project.pg.sql.ts", "callers": ["project"], "description": "Project identity and VCS info"}
+    ],
+    "share": [
+      {"table": "session_share", "source": "share/share.pg.sql.ts", "callers": ["share/share-next.ts"], "description": "Session share URLs"}
+    ],
+    "sync": [
+      {"table": "event_sequence", "source": "sync/event.pg.sql.ts", "callers": ["sync"], "description": "Event sequence tracking for sync"},
+      {"table": "event", "source": "sync/event.pg.sql.ts", "callers": ["sync"], "description": "Sync event store"}
+    ],
+    "tool": [
+      {"table": "coordination_claim", "source": "tool/coordination.pg.sql.ts", "callers": ["tool/coordination.ts"], "description": "Tool coordination claim records"},
+      {"table": "coordination_reservation", "source": "tool/coordination.pg.sql.ts", "callers": ["tool/coordination.ts"], "description": "Tool path reservation records"},
+      {"table": "coordination_fan_out", "source": "tool/coordination.pg.sql.ts", "callers": ["tool/coordination.ts"], "description": "Tool fan-out tracking"}
+    ],
+    "data_migration": [
+      {"table": "data_migration", "source": "data-migration.pg.sql.ts", "callers": ["data-migration"], "description": "Migration tracking (completed migrations)"}
+    ]
+  },
+  "filesystem_entities_targeted_for_pglite_migration": {
+    "campaigns": {
+      "path": "docs/json/omp/campaigns/",
+      "count": 32,
+      "format": "JSON",
+      "schema": "rig.relay.campaign.v1",
+      "current_readers": ["task_board tool", "new_campaign tool", "start_campaign tool", "end_campaign tool", "roadmap tools"],
+      "current_writers": ["new_campaign tool", "start_campaign tool", "end_campaign tool"]
+    },
+    "missions": {
+      "path": "docs/json/omp/missions/",
+      "count": 236,
+      "format": "JSON",
+      "schema": "rig.relay.mission.v1",
+      "current_readers": ["task_board tool", "new_mission tool", "start_mission tool", "end_mission tool"],
+      "current_writers": ["new_mission tool", "start_mission tool", "end_mission tool"]
+    },
+    "lanes": {
+      "path": "docs/json/omp/lanes/",
+      "count": 27,
+      "format": "JSON",
+      "schema": "rig.relay.lane.v1",
+      "current_readers": ["task_board tool", "new_lane tool", "start_lane tool", "end_lane tool"],
+      "current_writers": ["new_lane tool", "start_lane tool", "end_lane tool"]
+    },
+    "tasks": {
+      "path": "docs/json/omp/tasks/",
+      "count": 0,
+      "format": "JSON",
+      "schema": "rig.relay.task.v1",
+      "current_readers": ["task_board tool", "new_task tool", "start_task tool", "end_task tool"],
+      "current_writers": ["new_task tool", "start_task tool", "end_task tool"]
+    },
+    "checkpoints": {
+      "path": "docs/json/omp/checkpoints/",
+      "format": "JSON",
+      "current_readers": ["checkpoint tools"],
+      "current_writers": ["checkpoint tools"]
+    },
+    "research_packets": {
+      "path": "docs/json/omp/research/",
+      "count": 9,
+      "format": "JSON",
+      "current_readers": ["generate_research_context_packets tool"],
+      "current_writers": ["generate_research_context_packets tool"]
+    }
+  },
+  "migration_priority": [
+    {"entity": "campaigns", "priority": 1, "reason": "Highest-level entity, needed by all other entities for foreign key integrity"},
+    {"entity": "missions", "priority": 2, "reason": "Second-level entity, references campaigns"},
+    {"entity": "lanes", "priority": 3, "reason": "References missions"},
+    {"entity": "tasks", "priority": 4, "reason": "References lanes and missions"},
+    {"entity": "checkpoints", "priority": 5, "reason": "References all entity types"},
+    {"entity": "research_packets", "priority": 6, "reason": "Independent entity with memory links"},
+    {"entity": "memory_links", "priority": 7, "reason": "Cross-entity linking"}
+  ]
+}

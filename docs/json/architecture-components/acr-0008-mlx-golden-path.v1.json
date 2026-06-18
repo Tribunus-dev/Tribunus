@@ -1,0 +1,35 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0008",
+  "title": "MLX Golden Path",
+  "status": "proposed",
+  "component_type": "runtime_component",
+  "owner_subsystem": "MLX",
+  "definition": "Every authority-eligible MLX phase must execute from a declared golden path with explicit boundaries and receipts.",
+  "invariants": [
+    "Declared inputs, outputs, temporaries, operation sequence, eval boundary, synchronization rule, copy policy, and fallback condition must exist before execution begins.",
+    "Ambient MLX laziness is not authority."
+  ],
+  "allowed_states": [
+    "declared",
+    "executing",
+    "evaluated",
+    "committed"
+  ],
+  "forbidden_states": [
+    "ambient_lazy",
+    "unmodeled_graph"
+  ],
+  "required_receipts": [
+    "mlx_lowering_receipt"
+  ],
+  "required_validators": [
+    "mlx_golden_path_validator"
+  ],
+  "imported_by": [
+    "ADR-0021"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

@@ -1,0 +1,22 @@
+{"at":"2026-06-01T01:42:31.103Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from [\"']\\.\\.?/mcp/auth[\"']|from [\"']@opencode-ai/sdk/mcp/auth[\"']|from [\"']\\./a"}
+{"at":"2026-06-01T01:42:31.274Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"5 matches in 500 files"}
+{"at":"2026-06-01T01:42:31.923Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"McpAuth"}
+{"at":"2026-06-01T01:42:32.026Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"23 matches in 500 files"}
+{"at":"2026-06-01T01:43:57.155Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from [\"']\\.\\.?/mcp/auth[\"']|McpAuth|mcp/auth"}
+{"at":"2026-06-01T01:43:57.272Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"15 matches in 365 files"}
+{"at":"2026-06-01T01:43:58.386Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"decodeAuthData|logError|Effect\\.orDie"}
+{"at":"2026-06-01T01:43:58.387Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"7 matches in 1 files"}
+{"at":"2026-06-01T01:44:00.138Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from [\"']@opencode-ai/sdk/mcp/auth|from [\"']@opencode-ai/core/mcp/auth|from [\"']"}
+{"at":"2026-06-01T01:44:00.307Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T01:45:35.006Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from [\"']@opencode-ai/sdk"}
+{"at":"2026-06-01T01:45:35.008Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T01:45:35.984Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"McpAuth|mcp/auth"}
+{"at":"2026-06-01T01:45:35.998Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 17 files"}
+{"at":"2026-06-01T01:46:46.394Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"decodeAuthData\\b"}
+{"at":"2026-06-01T01:46:46.564Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T01:46:48.155Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"decodeAuthData\\b"}
+{"at":"2026-06-01T01:46:48.291Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 365 files"}
+{"at":"2026-06-01T01:48:17.258Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"McpAuthRemove|McpAuthStart|McpAuthCallback|McpAuthAuthenticate"}
+{"at":"2026-06-01T01:48:17.259Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 1 files"}
+{"at":"2026-06-01T01:48:18.272Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from [\"']\\.\\.?/mcp/auth[\"']|from [\"']@/mcp/auth[\"']"}
+{"at":"2026-06-01T01:48:18.297Z","session_id":"ses_17f289318ffefIttADvBfs7PWu","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 47 files"}

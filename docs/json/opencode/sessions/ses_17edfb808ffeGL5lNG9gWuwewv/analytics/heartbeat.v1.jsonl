@@ -1,0 +1,68 @@
+{"at":"2026-06-01T03:01:06.429Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"EventName"}
+{"at":"2026-06-01T03:01:20.405Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 0 files"}
+{"at":"2026-06-01T03:01:21.037Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Effect\\.ignore"}
+{"at":"2026-06-01T03:01:21.040Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"10 matches in 4 files"}
+{"at":"2026-06-01T03:01:49.594Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_find","phase":"started","detail":"**/event-names.*"}
+{"at":"2026-06-01T03:02:01.505Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_find","phase":"completed","detail":"**/event-names.*"}
+{"at":"2026-06-01T03:02:21.229Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"EventName"}
+{"at":"2026-06-01T03:02:21.439Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 0 files"}
+{"at":"2026-06-01T03:02:21.988Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"function create\\b"}
+{"at":"2026-06-01T03:02:21.989Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 4 files"}
+{"at":"2026-06-01T03:02:22.863Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"const create"}
+{"at":"2026-06-01T03:02:22.864Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"2 matches in 4 files"}
+{"at":"2026-06-01T03:02:59.223Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_find","phase":"started","detail":"**/event-names*"}
+{"at":"2026-06-01T03:02:59.301Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_find","phase":"completed","detail":"**/event-names*"}
+{"at":"2026-06-01T03:03:00.223Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"classifyErrorCode"}
+{"at":"2026-06-01T03:03:00.382Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:03:26.121Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"export.*EventName|EventName = |enum EventName"}
+{"at":"2026-06-01T03:03:26.506Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"4 matches in 500 files"}
+{"at":"2026-06-01T03:03:27.893Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"ServerInstanceDisposed|InstanceDisposed"}
+{"at":"2026-06-01T03:03:28.039Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"6 matches in 500 files"}
+{"at":"2026-06-01T03:04:06.598Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"MCP\\.create"}
+{"at":"2026-06-01T03:04:06.599Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:04:07.724Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"const create|function create"}
+{"at":"2026-06-01T03:04:07.726Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:04:13.278Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":".*"}
+{"at":"2026-06-01T03:04:13.279Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"200 matches in 1 files"}
+{"at":"2026-06-01T03:05:10.640Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\(\\\"MCP\\.create\\\"\\)"}
+{"at":"2026-06-01T03:05:10.641Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:05:39.919Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\(.MCP\\.create.\\)"}
+{"at":"2026-06-01T03:05:39.921Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:06:06.013Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"MCP\\.create"}
+{"at":"2026-06-01T03:06:06.015Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:07:04.389Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"client\\.connect|client\\??\\.connect|mcpClient"}
+{"at":"2026-06-01T03:07:04.390Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"12 matches in 1 files"}
+{"at":"2026-06-01T03:07:05.661Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"catch\\("}
+{"at":"2026-06-01T03:07:05.661Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T03:07:46.038Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Effect\\.catch\\("}
+{"at":"2026-06-01T03:07:46.039Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T03:08:17.706Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"connect"}
+{"at":"2026-06-01T03:08:17.709Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"38 matches in 1 files"}
+{"at":"2026-06-01T03:08:46.176Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"function\\* \\(key: string, mcp:"}
+{"at":"2026-06-01T03:08:46.176Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:09:08.592Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\(\\\"MCP\\.create\\\"\\)"}
+{"at":"2026-06-01T03:09:08.593Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:09:36.928Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"s\\.clients\\[key\\]|s\\.status\\[key\\]|s\\.pending\\[key\\]"}
+{"at":"2026-06-01T03:09:36.930Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T03:10:01.285Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"publish\\(|\\.publish"}
+{"at":"2026-06-01T03:10:01.286Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T03:10:28.808Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"TuiEvent\\.ToastShow"}
+{"at":"2026-06-01T03:10:28.809Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:10:56.441Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Effect\\.catchAll"}
+{"at":"2026-06-01T03:10:56.441Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T03:10:57.558Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Effect\\.ignore"}
+{"at":"2026-06-01T03:10:57.559Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"10 matches in 1 files"}
+{"at":"2026-06-01T03:11:24.879Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"transport connection failed"}
+{"at":"2026-06-01T03:11:24.880Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:11:26.197Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"ToastInfo\\.log"}
+{"at":"2026-06-01T03:11:26.197Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T03:11:47.102Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"publishPluginError|bridge\\.fork"}
+{"at":"2026-06-01T03:11:47.103Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T03:12:19.897Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Session\\.Event\\.Error|SessionError"}
+{"at":"2026-06-01T03:12:20.058Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"5 matches in 211 files"}
+{"at":"2026-06-01T03:12:21.402Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"function\\* \\(\\)|Effect\\.fn\\("}
+{"at":"2026-06-01T03:12:21.403Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"10 matches in 1 files"}
+{"at":"2026-06-01T03:12:49.102Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"const init = Effect\\.fn\\(\\\"Plugin\\.init\\\"\\)"}
+{"at":"2026-06-01T03:12:49.103Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:13:12.007Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"Plugin\\.init"}
+{"at":"2026-06-01T03:13:12.008Z","session_id":"ses_17edfb808ffeGL5lNG9gWuwewv","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}

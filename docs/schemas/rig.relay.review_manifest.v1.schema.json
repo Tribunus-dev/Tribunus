@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/review_manifest.v1",
+  "title": "Review Manifest",
+  "description": "Schema for review manifests that capture the subject, artifacts, weight rubric, comparison data, and verdict of a review cycle.",
+  "type": "object",
+  "$defs": {
+    "subject": {
+      "type": "object",
+      "description": "The artifact or slice under review",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of the subject"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the subject"
+        }
+      },
+      "required": ["type", "id"]
+    },
+    "artifact": {
+      "type": "object",
+      "description": "An artifact attached to the review",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of the artifact"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the artifact"
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable title of the artifact"
+        }
+      },
+      "required": ["type", "id"]
+    },
+    "weightCategory": {
+      "type": "object",
+      "description": "A weight category for scoring",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the category"
+        },
+        "weight": {
+          "type": "number",
+          "description": "Weight value"
+        }
+      },
+      "required": ["name", "weight"]
+    },
+    "verdict": {
+      "type": "object",
+      "description": "The verdict of the review",
+      "properties": {
+        "passed": {
+          "type": "boolean",
+          "description": "Whether the review passed"
+        },
+        "score": {
+          "type": "number",
+          "description": "Overall score"
+        },
+        "feedback": {
+          "type": "string",
+          "description": "Human-readable feedback"
+        }
+      },
+      "required": ["passed", "score"]
+    }
+  },
+  "properties": {
+    "manifestVersion": {
+      "type": "string",
+      "description": "Version of the manifest schema"
+    },
+    "reviewId": {
+      "type": "string",
+      "description": "Unique identifier for this review"
+    },
+    "campaignId": {
+      "type": "string",
+      "description": "Campaign this review belongs to"
+    },
+    "laneId": {
+      "type": "string",
+      "description": "Lane this review belongs to"
+    },
+    "subject": {
+      "$ref": "#/$defs/subject",
+      "description": "The artifact or slice under review"
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "Supporting artifacts attached to this review",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "weight": {
+      "type": "object",
+      "description": "Weight rubric for scoring the review",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/weightCategory"
+          }
+        },
+        "totalWeight": {
+          "type": "number",
+          "description": "Total weight of all categories"
+        }
+      },
+      "required": ["categories", "totalWeight"]
+    },
+    "comparison": {
+      "type": "object",
+      "description": "Comparison data for the review"
+    },
+    "verdict": {
+      "$ref": "#/$defs/verdict"
+    }
+  },
+  "required": ["manifestVersion", "reviewId", "subject", "verdict"]
+}

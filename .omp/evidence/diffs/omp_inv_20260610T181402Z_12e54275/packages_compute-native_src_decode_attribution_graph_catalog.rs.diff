@@ -1,0 +1,13 @@
+--- a/packages/compute-native/src/decode_attribution/graph_catalog.rs
++++ b/packages/compute-native/src/decode_attribution/graph_catalog.rs
+@@ -267,8 +267,8 @@
+     let w = seeded_f32(30, (profile.weight_rows * profile.weight_cols) as usize);
+     let extra = seeded_f32(31, profile.input_cols as usize);
+     builder
+-        .const_f32("w", &w, &profile.weight_shape())
+-        .const_f32("extra", &extra, &[1, profile.input_cols])
++        .const_f32("w", &w, &profile.weight_shape_i64())
++        .const_f32("extra", &extra, &[1, profile.input_cols as i64])
+         .matmul("x", "w_30")
+         .add("x", "extra_31")
+         .output("matmul_30")

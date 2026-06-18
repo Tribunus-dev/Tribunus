@@ -1,0 +1,29 @@
+--- packages/runtime/src/coordination/valkey-fabric.ts
++++ packages/runtime/src/coordination/valkey-fabric.ts
+@@ -2,6 +2,15 @@
+ import type { CoordinationFabric, AgentHeartbeat, LeaseRequest, LeaseResult, CoordinationEvent, CoordinationJob, BackpressureState } from "./fabric"
+ import { ValkeyStreams } from "./stream-primitives"
++import { ValkeyRedis } from "./valkey-redis"
++import { Layer, Effect } from "effect"
+
+ export async function createValkeyFabric(url: string): Promise<CoordinationFabric> {
+   const redis = new Redis(url, { lazyConnect: false, maxRetriesPerRequest: 3 })
+
+   await redis.ping()
+
+   const subscribers = new Map<string, Set<(event: CoordinationEvent) => void>>()
+@@ -124,3 +133,13 @@
+       await redis.quit()
+     },
+   }
+ }
++
++export function createValkeyLayer(url: string) {
++  return Layer.scoped(
++    ValkeyRedis,
++    Effect.acquireRelease(
++      Effect.sync(() => new Redis(url, { lazyConnect: false, maxRetriesPerRequest: 3 })),
++      (client) => Effect.promise(() => client.quit())
++    ).pipe(Effect.map((client) => ValkeyRedis.of({ client })))
++  )
++}

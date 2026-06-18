@@ -1,0 +1,40 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0168-recall-ranking-and-provenance",
+  "type": "mission",
+  "name": "Recall Ranking and Provenance",
+  "slug": "recall-ranking-and-provenance",
+  "description": "Recall returns ranked results with provenance: source, timestamp, confidence, and relationship to query. Ranking is based on relevance, recency, confidence, and source authority.",
+  "purpose": "Provide high-quality, explainable recall results by ranking memories with provenance metadata — enabling users and systems to trust and verify the results they receive.",
+  "campaignId": "0016",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Recall results include ranking score",
+    "Provenance data: source agent, timestamp, confidence, query relevance",
+    "Ranking factors: relevance, recency, confidence, source authority",
+    "Ranking weights are configurable",
+    "Recall supports pagination with stable ordering",
+    "Provenance is verifiable — source can be traced to original remember operation"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "depends_on": [
+    "0094-shared-memoryruntime-service"
+  ],
+  "unlocks": [],
+  "authority_scope": "memory:recall",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "Restore default ranking weights; rebuild provenance index",
+  "recovery_strategy": "Rebuild ranking index from stored memory metadata",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:45:19.686Z",
+  "updated_at": "2026-06-07T05:51:07.330Z"
+}

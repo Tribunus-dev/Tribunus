@@ -1,0 +1,16 @@
+--- packages/runtime/src/coordination/valkey-redis.ts
++++ packages/runtime/src/coordination/valkey-redis.ts
+@@ -1,8 +1,7 @@
+ import { Context } from "effect"
+ import type { Redis } from "ioredis"
+
+-export class ValkeyRedis extends Context.Tag("ValkeyRedis")<
+-  ValkeyRedis,
+-  {
+-    readonly client: Redis
+-  }
+->() {}
++export interface ValkeyRedis {
++  readonly client: Redis
++}
++export const ValkeyRedis = Context.GenericTag<ValkeyRedis>("@tribunus/ValkeyRedis")

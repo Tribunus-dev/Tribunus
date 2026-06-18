@@ -1,0 +1,132 @@
+{
+  "schema_version": "tribunus.compute_core_suite_hygiene.v1",
+  "package": "tribunus-compute-core",
+  "repro_command": "cargo test --lib",
+  "contract_gates": [
+    "cargo test -p tribunus-compute-core --lib runtime_contract --no-run",
+    "cargo test -p tribunus-compute-core --lib runtime_contract -- --nocapture --test-threads=1",
+    "cargo test -p tribunus-compute-core --test coverage_lattice_authority"
+  ],
+  "failures": [
+    {
+      "test_name": "attention::tests::full_attn_l5",
+      "module": "attention",
+      "failure_class": "missing_artifact_dependency",
+      "artifact_dependency": "expected model or fixture file missing on disk",
+      "deterministic_repro_command": "cargo test --lib attention::tests::full_attn_l5 -- --nocapture",
+      "first_bad_assertion": "called Result::unwrap() on an Err value: No such file or directory",
+      "suspected_owner": "attention fixtures / model artifact loading",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "attention::tests::sliding_attn_l0",
+      "module": "attention",
+      "failure_class": "missing_artifact_dependency",
+      "artifact_dependency": "expected model or fixture file missing on disk",
+      "deterministic_repro_command": "cargo test --lib attention::tests::sliding_attn_l0 -- --nocapture",
+      "first_bad_assertion": "called Result::unwrap() on an Err value: No such file or directory",
+      "suspected_owner": "attention fixtures / model artifact loading",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "primitives::tests::test_rms_norm_real",
+      "module": "primitives",
+      "failure_class": "missing_artifact_dependency",
+      "artifact_dependency": "expected real fixture or blob missing on disk",
+      "deterministic_repro_command": "cargo test --lib primitives::tests::test_rms_norm_real -- --nocapture",
+      "first_bad_assertion": "called Result::unwrap() on an Err value: No such file or directory",
+      "suspected_owner": "primitives real-fixture coverage",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "projection_tests::tests::all_real_projection_parity",
+      "module": "projection_tests",
+      "failure_class": "missing_artifact_dependency",
+      "artifact_dependency": "expected projection shard file missing on disk",
+      "deterministic_repro_command": "cargo test --lib projection_tests::tests::all_real_projection_parity -- --nocapture",
+      "first_bad_assertion": "read shard: No such file or directory",
+      "suspected_owner": "projection parity shard fixtures",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "decode_attribution::lattice_validation::tests::validator_accepts_complete_synthetic_lattice",
+      "module": "decode_attribution::lattice_validation",
+      "failure_class": "unexpected_validation_rejection",
+      "artifact_dependency": "validator acceptance path",
+      "deterministic_repro_command": "cargo test --lib decode_attribution::lattice_validation::tests::validator_accepts_complete_synthetic_lattice -- --nocapture",
+      "first_bad_assertion": "assertion failed: receipt.passed",
+      "suspected_owner": "lattice validation rule coverage",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "decode_attribution::lattice_validation::tests::validator_accepts_realistic_writer_like_lattice",
+      "module": "decode_attribution::lattice_validation",
+      "failure_class": "unexpected_validation_rejection",
+      "artifact_dependency": "validator acceptance path",
+      "deterministic_repro_command": "cargo test --lib decode_attribution::lattice_validation::tests::validator_accepts_realistic_writer_like_lattice -- --nocapture",
+      "first_bad_assertion": "assertion failed: receipt.passed",
+      "suspected_owner": "lattice validation rule coverage",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "decode_attribution::lattice_validation::tests::validator_excludes_skipped_rows_from_aggregates",
+      "module": "decode_attribution::lattice_validation",
+      "failure_class": "aggregate_count_mismatch",
+      "artifact_dependency": "aggregate exclusion handling",
+      "deterministic_repro_command": "cargo test --lib decode_attribution::lattice_validation::tests::validator_excludes_skipped_rows_from_aggregates -- --nocapture",
+      "first_bad_assertion": "assertion left == right failed: left 0 right 13",
+      "suspected_owner": "lattice aggregation logic",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "decode_attribution::lattice_validation::tests::validator_excludes_identity_from_latency_aggregates",
+      "module": "decode_attribution::lattice_validation",
+      "failure_class": "unexpected_validation_rejection",
+      "artifact_dependency": "latency aggregate validation",
+      "deterministic_repro_command": "cargo test --lib decode_attribution::lattice_validation::tests::validator_excludes_identity_from_latency_aggregates -- --nocapture",
+      "first_bad_assertion": "assertion failed: receipt.passed",
+      "suspected_owner": "lattice validation rule coverage",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "decode_attribution::lattice_validation::tests::validator_rejects_duplicate_cell",
+      "module": "decode_attribution::lattice_validation",
+      "failure_class": "aggregate_count_mismatch",
+      "artifact_dependency": "duplicate cell detection",
+      "deterministic_repro_command": "cargo test --lib decode_attribution::lattice_validation::tests::validator_rejects_duplicate_cell -- --nocapture",
+      "first_bad_assertion": "assertion left == right failed: left 0 right 1",
+      "suspected_owner": "lattice validation rule coverage",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "decode_attribution::lattice_validation::tests::validator_rejects_missing_expected_cell",
+      "module": "decode_attribution::lattice_validation",
+      "failure_class": "aggregate_count_mismatch",
+      "artifact_dependency": "missing cell detection",
+      "deterministic_repro_command": "cargo test --lib decode_attribution::lattice_validation::tests::validator_rejects_missing_expected_cell -- --nocapture",
+      "first_bad_assertion": "assertion left == right failed: left 96 right 1",
+      "suspected_owner": "lattice validation rule coverage",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "decode_attribution::lattice_validation::tests::validator_rejects_mixed_commit_sha",
+      "module": "decode_attribution::lattice_validation",
+      "failure_class": "incorrect_rule_id_mapping",
+      "artifact_dependency": "mixed commit SHA rule",
+      "deterministic_repro_command": "cargo test --lib decode_attribution::lattice_validation::tests::validator_rejects_mixed_commit_sha -- --nocapture",
+      "first_bad_assertion": "assertion left == right failed: left pass_without_tolerance_match right mixed_commit_sha",
+      "suspected_owner": "lattice validation rule mapping",
+      "blocks_runtime_contract": false
+    },
+    {
+      "test_name": "decode_attribution::lattice_validation::tests::validator_rejects_numerical_divergence_without_backend_output",
+      "module": "decode_attribution::lattice_validation",
+      "failure_class": "incorrect_rule_id_mapping",
+      "artifact_dependency": "numerical divergence rule",
+      "deterministic_repro_command": "cargo test --lib decode_attribution::lattice_validation::tests::validator_rejects_numerical_divergence_without_backend_output -- --nocapture",
+      "first_bad_assertion": "assertion left == right failed: left phase_failure_mismatch right numerical_divergence_without_backend_output",
+      "suspected_owner": "lattice validation rule mapping",
+      "blocks_runtime_contract": false
+    }
+  ]
+}

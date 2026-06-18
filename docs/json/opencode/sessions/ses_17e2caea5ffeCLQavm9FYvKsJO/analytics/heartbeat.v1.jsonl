@@ -1,0 +1,19 @@
+{"at":"2026-06-01T06:18:23.409Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T06:18:24.745Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/test/project/instance-trace.test.ts"}
+{"at":"2026-06-01T06:19:36.673Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T06:20:03.121Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T06:20:03.168Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T06:20:08.916Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T06:20:52.517Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T06:21:18.664Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T06:21:18.698Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T06:21:20.673Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T06:21:33.712Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T06:21:35.670Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T06:24:32.982Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/test/project/instance-trace.test.ts"}
+{"at":"2026-06-01T06:25:46.769Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T06:25:48.485Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T06:26:59.259Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"isDie"}
+{"at":"2026-06-01T06:26:59.260Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T06:27:00.118Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"isDie"}
+{"at":"2026-06-01T06:27:00.119Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}

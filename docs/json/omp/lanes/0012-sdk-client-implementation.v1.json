@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0012",
+  "type": "lane",
+  "name": "SDK Client Implementation",
+  "slug": "sdk-client-implementation",
+  "description": "Implement @tribunus/client wrapping the internal TribunusRuntimeClient. Build HTTP, WebSocket, and RPC transports. Implement semantic operations: create project, open session, enqueue work, subscribe to receipts, request capability. All operations idempotent with receipts.",
+  "scope": "sdk-client",
+  "missionId": "0009",
+  "status": "completed",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/sdk/js/src/"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": "2026-06-06T11:26:49.281Z",
+  "leaseExpiresAt": "2026-06-06T11:33:31.400Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:50:20.981Z",
+  "updated_at": "2026-06-06T11:33:31.400Z"
+}

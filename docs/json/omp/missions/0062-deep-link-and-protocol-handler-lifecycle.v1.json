@@ -1,0 +1,66 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0062-deep-link-and-protocol-handler-lifecycle",
+  "type": "mission",
+  "name": "Deep Link and Protocol Handler Lifecycle",
+  "slug": "deep-link-and-protocol-handler-lifecycle",
+  "description": "Handle tribunus:// protocol links: open workspace, join session, approve action, view artifact. Security review per handler.",
+  "purpose": "Deep links are powerful and safe.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Each deep link action is a registered handler with explicit parameter schema and capability requirements",
+    "Handlers validate all parameters before acting; malformed links are rejected with user-visible error",
+    "Handlers that mutate state require user confirmation before execution",
+    "Every handler invocation is logged with source, parameters, and outcome",
+    "Deep link registration on OS is verified at startup",
+    "Handlers are scoped — a workspace handler cannot invoke session-administrative actions"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "deep-links",
+    "protocol-handler",
+    "security",
+    "lifecycle",
+    "tribunus://"
+  ],
+  "depends_on": [
+    "0053-instance-bootstrap-and-dependency-assembly",
+    "0061-app-shell-navigation-and-window-lifecycle"
+  ],
+  "unlocks": [],
+  "authority_scope": "deep-links",
+  "allowed_paths": [
+    "packages/app/src/deeplinks/**",
+    "packages/desktop/src/protocol-handlers/**"
+  ],
+  "required_evidence": [
+    "Handler registration with parameter schema and capability requirements test",
+    "Parameter validation and rejection of malformed links test",
+    "User confirmation gate for state-mutating handlers test",
+    "Invocation logging test (source, parameters, outcome)",
+    "OS registration verification test",
+    "Handler scope enforcement test (workspace handler cannot call session-administrative action)"
+  ],
+  "acceptance_gates": [
+    "Each handler has explicit parameter schema and capability requirements",
+    "Malformed links rejected with user-visible error",
+    "State-mutating handlers require user confirmation",
+    "Every invocation logged with source, parameters, outcome",
+    "OS registration verified at startup",
+    "Handlers scoped by capability"
+  ],
+  "rollback_strategy": "Deep link handlers validate before acting — no rollback needed for rejected links. Mutating handlers are wrapped in an action that can be cancelled",
+  "recovery_strategy": "If a deep link handler crashes mid-execution, the action is recorded as failed and the user can retry",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "Deep link handler failure escalates to user with the original link and error details",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.497Z",
+  "updated_at": "2026-06-07T05:45:51.154Z"
+}

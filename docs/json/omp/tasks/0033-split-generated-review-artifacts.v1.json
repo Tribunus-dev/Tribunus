@@ -1,0 +1,29 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "0033",
+  "type": "task",
+  "name": "Split generated review artifacts",
+  "slug": "split-generated-review-artifacts",
+  "description": "Separate bulk review bundles from the default code-review path while preserving canonical receipts and schemas as the source of truth.",
+  "laneId": "0033",
+  "missionId": "0237",
+  "status": "pending",
+  "priority": 55,
+  "estimatedEffort": "1 day",
+  "actualEffort": null,
+  "dependsOn": [],
+  "blocks": [],
+  "assignedTo": "Main",
+  "startedAt": null,
+  "completedAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "artifacts",
+    "review"
+  ],
+  "created_at": "2026-06-13T10:57:20.393Z",
+  "updated_at": "2026-06-13T10:57:20.393Z"
+}

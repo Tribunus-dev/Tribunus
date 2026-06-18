@@ -1,0 +1,10 @@
+{"at":"2026-06-01T02:41:54.226Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_find","phase":"started","detail":"*.json"}
+{"at":"2026-06-01T02:41:54.232Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_find","phase":"completed","detail":"*.json"}
+{"at":"2026-06-01T02:43:51.984Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","phase":"started","detail":"ServerInstance|server.instance"}
+{"at":"2026-06-01T02:43:51.985Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:43:53.428Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","phase":"started","detail":"ServerInstance|server\\.instance\\."}
+{"at":"2026-06-01T02:43:53.433Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","phase":"completed","detail":"2 matches in 9 files"}
+{"at":"2026-06-01T02:44:40.965Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","phase":"started","detail":"ServerConnected|ServerHeartbeat|GlobalDisposed"}
+{"at":"2026-06-01T02:44:40.966Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:51:19.327Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","phase":"started","detail":"ib-sidecar-boundary"}
+{"at":"2026-06-01T02:51:19.360Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","phase":"completed","detail":"0 matches in 71 files"}

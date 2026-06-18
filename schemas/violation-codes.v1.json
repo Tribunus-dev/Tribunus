@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/violation-codes/v1.json",
+  "title": "GoldenPathViolation",
+  "description": "Structured violation codes produced by the executor when an illegal operation is detected. Each code maps to a specific invariant violation. References golden-machine.v1.json#/definitions/violation_code for the canonical enum.",
+  "type": "object",
+  "required": ["code", "message", "severity", "category"],
+  "properties": {
+    "code": {
+      "$ref": "golden-machine.v1.json#/definitions/violation_code",
+      "description": "Violation code from the golden machine's violation taxonomy."
+    },
+    "message": { "type": "string" },
+    "severity": { "type": "string", "enum": ["error", "fault"] },
+    "category": {
+      "type": "string",
+      "enum": ["integrity", "memory", "backend", "scheduling", "plan", "audit", "degraded"]
+    }
+  }
+}

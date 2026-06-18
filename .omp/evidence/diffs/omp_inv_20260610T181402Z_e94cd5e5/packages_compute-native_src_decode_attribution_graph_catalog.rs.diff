@@ -1,0 +1,13 @@
+--- a/packages/compute-native/src/decode_attribution/graph_catalog.rs
++++ b/packages/compute-native/src/decode_attribution/graph_catalog.rs
+@@ -254,8 +254,8 @@
+     let wa = seeded_f32(20, (profile.weight_rows * profile.weight_cols) as usize);
+     let wb = seeded_f32(21, (profile.weight_rows * profile.weight_cols) as usize);
+     builder
+-        .const_f32("wa", &wa, &profile.weight_shape())
+-        .const_f32("wb", &wb, &profile.weight_shape())
++        .const_f32("wa", &wa, &profile.weight_shape_i64())
++        .const_f32("wb", &wb, &profile.weight_shape_i64())
+         .matmul("x", "wa_20")
+         .matmul("x", "wb_21")
+         .add("matmul_20", "matmul_21")

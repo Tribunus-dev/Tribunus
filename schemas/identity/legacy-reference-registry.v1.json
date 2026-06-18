@@ -1,0 +1,467 @@
+<<<<<<< HEAD
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tribunus.io/identity/legacy-reference-registry.v1.json",
+  "title": "Legacy Reference Registry",
+  "description": "Registry of legacy OpenCode references retained for compatibility, migration, or historical purposes during the Tribunus identity cutover.",
+  "version": "1.0.0",
+  "generatedAt": "2026-06-16T20:00:00.000Z",
+  "entries": [
+    {
+      "path": "*",
+      "pattern": "opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "all",
+      "reason": "Upstream OpenCode attribution required for MIT-licensed contributions retained in source headers and documentation.",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "@opencode-ai",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "all",
+      "reason": "npm/GitHub package scope for upstream OpenCode packages that have not yet been published under @tribunus scope.",
+      "permanent": true,
+      "replacementIdentity": "@tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "opencode.ai",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "all",
+      "reason": "Canonical domain for upstream OpenCode project referenced in package metadata and documentation.",
+      "permanent": true,
+      "replacementIdentity": "tribunus.dev"
+    },
+    {
+      "path": "*",
+      "pattern": ".opencode",
+      "classification": "LEGACY_READ_COMPATIBILITY",
+      "subsystem": "all",
+      "reason": "Dotfile and directory references to .opencode/ that must remain readable during the cutover window for agent-config compatibility.",
+      "permanent": false,
+      "removalGate": "before public alpha",
+      "replacementIdentity": ".tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "github.com/sst/opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "all",
+      "reason": "Upstream SST OpenCode repository URL referenced in CI workflows, documentation, and metadata files.",
+      "permanent": true,
+      "replacementIdentity": "Tribunus-dev/Tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "github.com/anomalyco/opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "all",
+      "reason": "Upstream Anomalyco OpenCode repository URL referenced in CI workflows, documentation, and metadata files.",
+      "permanent": true,
+      "replacementIdentity": "Tribunus-dev/Tribunus"
+    },
+    {
+      "path": "packages/opencode/**",
+      "pattern": "opencode",
+      "classification": "LEGACY_DATA_MIGRATION",
+      "subsystem": "package-registry",
+      "reason": "Package directory and sources retained during the packages/opencode to packages/tribunus migration. All internal references updated; directory name preserved for import compatibility.",
+      "permanent": false,
+      "removalGate": "after migration reader ships for 2 releases",
+      "replacementIdentity": "packages/* (tribunus-prefixed)"
+    },
+    {
+      "path": "packages/opencode/**",
+      "pattern": "@opencode-ai",
+      "classification": "LEGACY_DATA_MIGRATION",
+      "subsystem": "package-registry",
+      "reason": "Package scope references inside packages/opencode/ sources. Migration to @tribunus scope in progress.",
+      "permanent": false,
+      "removalGate": "after migration reader ships for 2 releases",
+      "replacementIdentity": "@tribunus"
+    },
+    {
+      "path": "packages/runtime/**",
+      "pattern": "opencode",
+      "classification": "LEGACY_READ_COMPATIBILITY",
+      "subsystem": "runtime",
+      "reason": "Runtime references to OpenCode agent configuration files (.opencode/agent/css.md) for backward-compatible agent config reading.",
+      "permanent": false,
+      "removalGate": "before public alpha",
+      "replacementIdentity": ".tribunus"
+    },
+    {
+      "path": "packages/runtime/**",
+      "pattern": "@opencode-ai",
+      "classification": "LEGACY_READ_COMPATIBILITY",
+      "subsystem": "runtime",
+      "reason": "Runtime references to upstream @opencode-ai packages that have not yet been migrated to @tribunus scope.",
+      "permanent": false,
+      "removalGate": "before public alpha",
+      "replacementIdentity": "@tribunus"
+    },
+    {
+      "path": "packages/desktop/**",
+      "pattern": "opencode",
+      "classification": "LEGACY_READ_COMPATIBILITY",
+      "subsystem": "desktop",
+      "reason": "Desktop application references to OpenCode display strings and executable names retained for backward compatibility during cutover.",
+      "permanent": false,
+      "removalGate": "before public alpha",
+      "replacementIdentity": "Tribunus"
+    },
+    {
+      "path": "packages/app/**",
+      "pattern": "opencode",
+      "classification": "REMOVE_BEFORE_ALPHA",
+      "subsystem": "app-shell",
+      "reason": "User-facing web app shell references to OpenCode branding that must be removed before public alpha launch.",
+      "permanent": false,
+      "removalGate": "before public alpha",
+      "replacementIdentity": "Tribunus"
+    },
+    {
+      "path": "packages/app/**",
+      "pattern": "@opencode-ai",
+      "classification": "REMOVE_BEFORE_ALPHA",
+      "subsystem": "app-shell",
+      "reason": "User-facing web app package references to @opencode-ai scope that must be migrated to @tribunus before public alpha.",
+      "permanent": false,
+      "removalGate": "before public alpha",
+      "replacementIdentity": "@tribunus"
+    },
+    {
+      "path": "packages/llm/**",
+      "pattern": "opencode",
+      "classification": "COMPATIBILITY_TEST_REFERENCE",
+      "subsystem": "llm",
+      "reason": "LLM integration tests that assert against expected OpenCode output strings for regression coverage.",
+      "permanent": false,
+      "removalGate": "after migration reader ships for 2 releases",
+      "replacementIdentity": "Tribunus"
+    },
+    {
+      "path": "config/**",
+      "pattern": "opencode",
+      "classification": "LEGACY_DATA_MIGRATION",
+      "subsystem": "configuration",
+      "reason": "Configuration files that reference OpenCode paths and env vars. Updated as part of migration plan.",
+      "permanent": false,
+      "removalGate": "before public alpha",
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "scripts/**",
+      "pattern": "opencode",
+      "classification": "HISTORICAL_FIXTURE",
+      "subsystem": "tooling",
+      "reason": "Build and migration scripts that contain OpenCode references as fixture data for testing the cutover tools.",
+      "permanent": false,
+      "removalGate": "after migration reader ships for 2 releases",
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "schemas/**",
+      "pattern": "opencode",
+      "classification": "LEGACY_READ_COMPATIBILITY",
+      "subsystem": "schemas",
+      "reason": "Schema files that reference OpenCode identity values for backward-compatible validation of unprocessed data.",
+      "permanent": false,
+      "removalGate": "before public alpha",
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": ".github/**",
+      "pattern": "opencode",
+      "classification": "COMPATIBILITY_TEST_REFERENCE",
+      "subsystem": "ci-cd",
+      "reason": "CI/CD workflow files that reference OpenCode repository paths for checkout and artifact upload steps.",
+      "permanent": false,
+      "removalGate": "after migration reader ships for 2 releases",
+      "replacementIdentity": "Tribunus-dev/Tribunus"
+    },
+    {
+      "path": ".github/**",
+      "pattern": "@opencode-ai",
+      "classification": "COMPATIBILITY_TEST_REFERENCE",
+      "subsystem": "ci-cd",
+      "reason": "CI/CD workflow files that install or reference @opencode-ai packages during build and test steps.",
+      "permanent": false,
+      "removalGate": "after migration reader ships for 2 releases",
+      "replacementIdentity": "@tribunus"
+    },
+    {
+      "path": "sdks/**",
+      "pattern": "opencode",
+      "classification": "COMPATIBILITY_TEST_REFERENCE",
+      "subsystem": "sdk",
+      "reason": "SDK integration tests and samples that reference OpenCode for verification of backward-compatible SDK behavior.",
+      "permanent": false,
+      "removalGate": "after migration reader ships for 2 releases",
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "tools/**",
+      "pattern": "github.com/sst/opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "tooling",
+      "reason": "Validation tools that reference upstream SST OpenCode repository for comparison and compatibility checks.",
+      "permanent": true,
+      "replacementIdentity": "Tribunus-dev/Tribunus"
+    },
+    {
+      "path": "tools/**",
+      "pattern": "github.com/anomalyco/opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "tooling",
+      "reason": "Validation tools that reference upstream Anomalyco OpenCode repository for comparison and compatibility checks.",
+      "permanent": true,
+      "replacementIdentity": "Tribunus-dev/Tribunus"
+    },
+    {
+      "path": "docs/**",
+      "pattern": "opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "documentation",
+      "reason": "Documentation files that reference OpenCode for historical context and upstream attribution.",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "docs/**",
+      "pattern": "@opencode-ai",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "documentation",
+      "reason": "Documentation files that reference @opencode-ai scope for historical context and upstream attribution.",
+      "permanent": true,
+      "replacementIdentity": "@tribunus"
+    }
+  ]
+}
+||||||| 85d0094c6
+=======
+{
+  "version": "v1",
+  "generatedAt": "2026-06-15T22:55:13.338Z",
+  "entries": [
+    {
+      "path": "*",
+      "pattern": "opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": ".opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "OPENCODE",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "@opencode-ai",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "OpenCode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "github.com/sst/opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "opencode.ai",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "github.com/anomalyco/opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "docs/compatibility/opencode-migration.md",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "docs/schemas/opencode.debug_packet.v1.schema.json",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "docs/schemas/opencode.runtime_event.v1.schema.json",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "Opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "nix/opencode.nix",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": ".OPENCODE",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/console/app/.opencode/agent/css.md",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/core/src/plugin/provider/opencode.ts",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/core/src/util/opencode-process.ts",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/core/test/plugin/provider-opencode.test.ts",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/extensions/zed/icons/opencode.svg",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/runtime/bin/opencode",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/runtime/src/compat/opencode-legacy.test.ts",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/runtime/src/compat/opencode-legacy.ts",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/runtime/src/skill/prompt/customize-opencode.md",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    },
+    {
+      "path": "*",
+      "pattern": "packages/ui/src/theme/themes/opencode.json",
+      "classification": "UPSTREAM_ATTRIBUTION_PERMANENT",
+      "subsystem": "identity-boundary",
+      "reason": "Existing OpenCode compatibility surface retained during Tribunus migration",
+      "permanent": true,
+      "replacementIdentity": "tribunus"
+    }
+  ]
+}
+>>>>>>> origin/fix/byte-identical-verification-12534577549058504997

@@ -1,0 +1,14 @@
+{"at":"2026-06-01T04:29:33.113Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"started","detail":"Cause\\.isDie|isDie|Cause\\.isFail|Cause\\.isInterrupt"}
+{"at":"2026-06-01T04:29:33.278Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T04:30:22.481Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"started","detail":"export.*Cause\\.isDie|export.*Cause\\.isFail|function isDie|function isFail"}
+{"at":"2026-06-01T04:31:17.543Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"started","detail":"isDie"}
+{"at":"2026-06-01T04:32:20.573Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_find","phase":"started","detail":"effect"}
+{"at":"2026-06-01T04:32:20.950Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_find","phase":"completed","detail":"effect"}
+{"at":"2026-06-01T04:33:37.734Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_find","phase":"started","detail":"node_modules"}
+{"at":"2026-06-01T04:33:37.840Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_find","phase":"completed","detail":"node_modules"}
+{"at":"2026-06-01T04:34:25.868Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"started","detail":"Cause\\.(isDie|isFail|isInterrupt|isEmpty|pretty|contains)"}
+{"at":"2026-06-01T04:34:26.051Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"completed","detail":"10 matches in 442 files"}
+{"at":"2026-06-01T04:35:19.871Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"started","detail":"isFailReason|isDieReason|Cause\\.contains"}
+{"at":"2026-06-01T04:35:20.112Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T04:36:46.441Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"started","detail":"latestEntry"}
+{"at":"2026-06-01T04:36:46.761Z","session_id":"ses_17e937d12ffeBSjwrf31WusXAc","agent":"claim-adversary","tool":"smart_grep","phase":"completed","detail":"9 matches in 500 files"}

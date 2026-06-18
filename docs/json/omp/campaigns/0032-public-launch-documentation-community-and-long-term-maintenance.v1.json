@@ -1,0 +1,27 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0032",
+  "type": "campaign",
+  "name": "Public Launch, Documentation, Community, and Long-Term Maintenance",
+  "slug": "public-launch-documentation-community-and-long-term-maintenance",
+  "description": "Product documentation system, architecture documentation site, SDK documentation, extension author guide, operator runbooks, security documentation, release notes pipeline, public roadmap projection, contribution and funding workflow, feature bounty public UX, support intake, bug triage, vulnerability disclosure program, community governance, translation workflow, deprecation communication, long-term support policy, public beta, general availability gate, and post-launch reliability review.",
+  "objective": "Ship: documentation, community governance, vulnerability disclosure, public beta, GA gate, LTS policy, and post-launch review.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "launch",
+    "documentation",
+    "community",
+    "lts",
+    "beta"
+  ],
+  "maturity": "modeled",
+  "horizon": "strategic",
+  "created_at": "2026-06-07T04:36:06.669Z",
+  "updated_at": "2026-06-07T04:36:06.669Z"
+}

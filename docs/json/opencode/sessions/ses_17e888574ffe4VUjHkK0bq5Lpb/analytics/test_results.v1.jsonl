@@ -1,0 +1,7 @@
+{"at":"2026-06-01T06:06:01.596Z","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","agent":"surgeon","command":"test","cwd":"packages/opencode","elapsed_ms":1784,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:06:22.362Z","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","agent":"surgeon","command":"test","cwd":"packages/opencode","elapsed_ms":25,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:09:23.666Z","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","agent":"surgeon","command":"test","cwd":"packages/opencode","elapsed_ms":2181,"pass":0,"fail":92,"total":92,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:09:23.667Z","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","agent":"surgeon","cwd":"packages/opencode","elapsed_ms":2181,"pass":0,"fail":92,"total":92}
+{"at":"2026-06-01T06:11:45.588Z","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","agent":"surgeon","command":"test","cwd":"packages/opencode","elapsed_ms":30,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:12:07.725Z","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","agent":"surgeon","command":"test","cwd":"packages/opencode","elapsed_ms":2118,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:12:32.028Z","session_id":"ses_17e888574ffe4VUjHkK0bq5Lpb","agent":"surgeon","command":"test","cwd":"packages/opencode","elapsed_ms":1929,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}

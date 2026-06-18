@@ -1,0 +1,3 @@
+{"at":"2026-06-01T03:50:55.448Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","command":"test","cwd":"packages/opencode","elapsed_ms":4899,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T03:51:06.496Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","command":"test","cwd":"packages/opencode","elapsed_ms":10772,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T03:51:32.002Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","command":"test","cwd":"packages/opencode","elapsed_ms":112,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}

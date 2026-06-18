@@ -1,0 +1,43 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0098-navigation-and-window-creation-policy",
+  "type": "mission",
+  "name": "Navigation and Window Creation Policy",
+  "slug": "navigation-and-window-creation-policy",
+  "description": "Restrict renderer navigation to only sanctioned URLs via will-navigate and did-navigate event handlers. Block window.open and new-window creation unless explicitly allowed by policy. All navigation denials produce security event receipts.",
+  "purpose": "Prevent renderer-driven navigation attacks and unwanted window creation by enforcing a strict allowlist of navigation targets and window creation policies.",
+  "campaignId": "0018",
+  "status": "completed",
+  "priority": 80,
+  "acceptanceCriteria": [
+    "will-navigation handler enforces a URL allowlist on all BrowserWindows",
+    "did-navigate and did-navigate-in-page handlers validate final URL compliance",
+    "window.open and new-window events are blocked unless on an explicit allowlist",
+    "Navigation denials produce security event receipts",
+    "Policy is configurable per-BrowserWindow if needed"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "missions0018"
+  ],
+  "tags": [
+    "security",
+    "electron",
+    "navigation-policy"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:44:20.022Z",
+  "updated_at": "2026-06-07T05:48:42.643Z"
+}

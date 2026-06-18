@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/verification_record.v1",
+  "title": "Verification Record",
+  "description": "Schema for reviewer verification records that capture the inspection, falsification attempts, and admission decision for a published candidate.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "description": "Version of this schema"
+    },
+    "subjectSha": {
+      "type": "string",
+      "description": "SHA of the subject commit under review"
+    },
+    "builderPublicationDigest": {
+      "type": "string",
+      "description": "Digest of the builder's publication record"
+    },
+    "prepublicationReviewDigest": {
+      "type": "string",
+      "description": "Digest of the prepublication review"
+    },
+    "policyApplied": {
+      "type": "string",
+      "description": "Policy applied during verification"
+    },
+    "consumerPurposeVerified": {
+      "type": "boolean",
+      "description": "Whether consumer purpose was verified"
+    },
+    "filesInspected": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of files inspected"
+    },
+    "productionPathsExercised": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Production paths exercised during verification"
+    },
+    "falsifiersAttempted": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "Falsifiers attempted during verification"
+    },
+    "falsifiersSucceeded": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "Falsifiers that succeeded"
+    },
+    "falsifiersDefeated": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "Falsifiers that were defeated"
+    },
+    "untestedClaims": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Claims that were not tested"
+    },
+    "verifiedBoundary": {
+      "type": "string",
+      "description": "Boundary that was verified"
+    },
+    "downgradedClaims": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Claims that were downgraded"
+    },
+    "consumerAdmissionDecision": {
+      "type": "string",
+      "description": "Decision on consumer admission"
+    },
+    "reviewerIssuedStatus": {
+      "type": "string",
+      "description": "Status issued by reviewer"
+    },
+    "freezeDecision": {
+      "type": "string",
+      "description": "Decision to freeze"
+    }
+  },
+  "required": ["schemaVersion", "subjectSha", "reviewerIssuedStatus"]
+}

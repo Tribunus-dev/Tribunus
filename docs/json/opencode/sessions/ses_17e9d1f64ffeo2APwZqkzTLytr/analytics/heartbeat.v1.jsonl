@@ -1,0 +1,111 @@
+{"at":"2026-06-01T04:27:54.898Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_find","phase":"started","detail":"*.test.ts"}
+{"at":"2026-06-01T04:27:54.900Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_find","phase":"completed","detail":"*.test.ts"}
+{"at":"2026-06-01T04:28:39.485Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"RuntimeFlags\\.layer\\(\""}
+{"at":"2026-06-01T04:28:39.757Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T04:30:02.037Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"RuntimeFlags"}
+{"at":"2026-06-01T04:30:02.140Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"20 matches in 75 files"}
+{"at":"2026-06-01T04:31:49.097Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"InstanceTrace\\.layer"}
+{"at":"2026-06-01T04:31:49.298Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 294 files"}
+{"at":"2026-06-01T04:32:29.795Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"Effect\\.runPromise"}
+{"at":"2026-06-01T04:32:29.860Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"5 matches in 40 files"}
+{"at":"2026-06-01T04:33:43.539Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"import.*InstanceTrace"}
+{"at":"2026-06-01T04:33:43.668Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 365 files"}
+{"at":"2026-06-01T04:34:26.066Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"InstanceTrace"}
+{"at":"2026-06-01T04:34:26.156Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"10 matches in 301 files"}
+{"at":"2026-06-01T04:35:18.933Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"import.*from.*\\\"@/project\""}
+{"at":"2026-06-01T04:35:19.050Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 365 files"}
+{"at":"2026-06-01T04:35:24.297Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"@/project"}
+{"at":"2026-06-01T04:35:24.406Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"5 matches in 273 files"}
+{"at":"2026-06-01T04:35:48.625Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_find","phase":"started","detail":"*.ts"}
+{"at":"2026-06-01T04:35:48.627Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_find","phase":"completed","detail":"*.ts"}
+{"at":"2026-06-01T04:49:04.389Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"instance-trace-smoke"}
+{"at":"2026-06-01T04:49:04.623Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T04:49:34.105Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"\"scripts\""}
+{"at":"2026-06-01T04:49:34.106Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T04:59:29.104Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T04:59:29.105Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:00:01.992Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:00:02.552Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:00:21.761Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"catchAllCause"}
+{"at":"2026-06-01T05:00:21.893Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T05:01:03.976Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"catchAllCause"}
+{"at":"2026-06-01T05:01:04.092Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"5 matches in 102 files"}
+{"at":"2026-06-01T05:01:20.125Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:01:22.260Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T05:01:36.782Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:01:38.675Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T05:14:44.698Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"\\\"catchAllCause\\\""}
+{"at":"2026-06-01T05:14:44.862Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 412 files"}
+{"at":"2026-06-01T05:14:59.001Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"catchAll"}
+{"at":"2026-06-01T05:14:59.005Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"14 matches in 1 files"}
+{"at":"2026-06-01T05:15:17.357Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"catchAllCause:"}
+{"at":"2026-06-01T05:15:17.363Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T05:15:31.978Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"catchAllDefect:"}
+{"at":"2026-06-01T05:15:31.984Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T05:15:44.482Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"export.*catchAll|.*catchAll.*export\""}
+{"at":"2026-06-01T05:15:44.943Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 409 files"}
+{"at":"2026-06-01T05:15:58.539Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"catchAll"}
+{"at":"2026-06-01T05:15:58.608Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"10 matches in 11 files"}
+{"at":"2026-06-01T05:16:10.477Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"catchAllCause\""}
+{"at":"2026-06-01T05:16:10.486Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T05:16:21.197Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_find","phase":"started","detail":"index.*"}
+{"at":"2026-06-01T05:16:21.237Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_find","phase":"completed","detail":"index.*"}
+{"at":"2026-06-01T05:16:32.408Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"catchAll"}
+{"at":"2026-06-01T05:16:32.425Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"0 matches in 32 files"}
+{"at":"2026-06-01T05:16:44.546Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"\"main\"|\"module\"|\"exports\""}
+{"at":"2026-06-01T05:16:44.547Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T05:16:59.490Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:16:59.539Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T05:17:09.480Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T05:17:09.707Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T05:17:30.295Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/_check-effect-api.ts"}
+{"at":"2026-06-01T05:17:45.291Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:17:46.372Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T05:18:07.757Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"started","detail":"\"version\""}
+{"at":"2026-06-01T05:18:07.758Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T05:18:55.331Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T05:18:55.362Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T05:19:11.843Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T05:19:11.891Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T05:19:25.712Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/test/project/instance-trace.test.ts"}
+{"at":"2026-06-01T05:20:57.697Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:20:57.730Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:21:18.068Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:21:19.874Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T05:21:36.660Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T05:21:36.692Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T05:29:37.974Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:29:38.567Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:30:57.921Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_write","phase":"started","detail":"packages/opencode/scripts/_run-destructive.ts"}
+{"at":"2026-06-01T05:30:57.922Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_write","phase":"completed","detail":"packages/opencode/scripts/_run-destructive.ts"}
+{"at":"2026-06-01T05:31:20.279Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:31:20.372Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:31:40.252Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:31:40.252Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"failed","detail":"text not found"}
+{"at":"2026-06-01T05:32:12.101Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_batch","phase":"started","detail":"batch edit"}
+{"at":"2026-06-01T05:32:12.129Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_batch","phase":"completed","detail":"1 edits across 1 files"}
+{"at":"2026-06-01T05:32:25.119Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:32:25.624Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:33:09.410Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:33:09.445Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:33:35.391Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:33:35.417Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:37:12.544Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:37:12.567Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:38:22.515Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:38:22.545Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:39:53.489Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:39:54.128Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T05:41:35.858Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"started","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:41:35.883Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_edit","phase":"completed","detail":"packages/opencode/scripts/instance-trace-destructive.ts"}
+{"at":"2026-06-01T05:59:54.758Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T05:59:55.378Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T06:04:38.331Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T06:04:41.827Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T06:05:24.245Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T06:05:26.861Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"completed","detail":"test exit=0"}
+{"at":"2026-06-01T06:05:34.993Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T06:05:35.020Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T06:06:07.632Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T06:06:07.834Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_bun","phase":"completed","detail":"typecheck exit=0"}
+{"at":"2026-06-01T06:10:25.512Z","session_id":"ses_17e9d1f64ffeo2APwZqkzTLytr","agent":"dependency-saboteur","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/scripts/_run-destructive.ts"}

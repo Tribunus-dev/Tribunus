@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0016",
+  "type": "lane",
+  "name": "Dharma Overlay and Trust Lanes",
+  "slug": "dharma-overlay-and-trust-lanes",
+  "description": "Implement the event-derived dharma scoring system: multi-dimensional (Publisher, Reviewer, Compute, Collaboration, Moderation, Security), decay mechanisms, risk-weighted scoring, and slashable offenses. Implement Low Trust and High Trust lanes with appropriate friction/visibility/quotas.",
+  "scope": "dharma-overlay",
+  "missionId": "0011",
+  "status": "completed",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/core/src/dharma/",
+    "packages/opencode/src/dharma/"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": "2026-06-06T11:38:58.170Z",
+  "leaseExpiresAt": "2026-06-06T11:41:41.657Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:50:33.361Z",
+  "updated_at": "2026-06-06T11:41:41.657Z"
+}

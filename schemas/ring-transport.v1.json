@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/ring-transport/v1.json",
+  "title": "RingTransport",
+  "description": "In-process bounded ring buffer transport for the golden executor. Command rings carry BackendCommand from executor to worker; completion rings carry BackendCompletion back; audit rings carry AuditEvent for hash-chained logging. This is not Valkey — Valkey orchestrates outer lifecycle at control-plane level.",
+  "type": "object",
+  "required": ["kind", "capacity", "mode", "entries"],
+  "properties": {
+    "kind": { "type": "string", "enum": ["command", "completion", "audit"] },
+    "capacity": { "type": "integer", "minimum": 1 },
+    "mode": { "type": "string", "enum": ["strict_linear", "declared_concurrent"] },
+    "entries": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "golden-machine.v1.json#/definitions/backend_command" },
+          { "$ref": "golden-machine.v1.json#/definitions/backend_completion" },
+          { "$ref": "golden-machine.v1.json#/definitions/audit_event" }
+        ]
+      }
+    },
+    "producer": {
+      "type": "object",
+      "required": ["role"],
+      "properties": {
+        "role": { "type": "string", "enum": ["executor", "backend_worker"] }
+      }
+    },
+    "consumer": {
+      "type": "object",
+      "required": ["role"],
+      "properties": {
+        "role": { "type": "string", "enum": ["executor", "backend_worker"] }
+      }
+    },
+    "backpressure_policy": {
+      "type": "string",
+      "enum": ["block", "drop", "yield"],
+      "description": "What happens when the ring is full. 'block' stalls the producer; 'drop' discards the command; 'yield' returns an error."
+    }
+  }
+}

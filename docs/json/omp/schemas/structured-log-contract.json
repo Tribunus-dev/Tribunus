@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/structured-log-contract.v1",
+  "title": "Tribunus Structured Log Contract",
+  "description": "All production logs must be structured JSON with trace correlation. No raw console.log or printf-debugging in production paths.",
+  "type": "object",
+  "required": ["timestamp", "level", "service", "message"],
+  "properties": {
+    "timestamp": { "type": "string", "format": "date-time", "description": "ISO 8601 timestamp with milliseconds" },
+    "level": { "type": "string", "enum": ["trace", "debug", "info", "warn", "error", "fatal"], "description": "Log severity level" },
+    "service": { "type": "string", "description": "Subsystem name (coordination, session, tool, provider, http, cockpit, desktop)" },
+    "message": { "type": "string", "description": "Human-readable log message" },
+    "trace_id": { "type": "string", "description": "W3C Trace Context trace ID for correlation" },
+    "span_id": { "type": "string", "description": "W3C Trace Context span ID" },
+    "session_id": { "type": "string", "description": "Session identifier" },
+    "work_id": { "type": "string", "description": "Work item ID (coordination subsystem)" },
+    "error": {
+      "type": "object",
+      "description": "Error details (level >= error)",
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "stack": { "type": "string", "description": "Stack trace (development only)" },
+        "classification": { "type": "string", "enum": ["introduced_regression", "pre_existing_failure", "infrastructure_failure", "flaky_test", "resource_exhaustion", "invalid_test_assumption"] }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Inline metrics (e.g., duration, token counts)",
+      "properties": {
+        "duration_ms": { "type": "number" },
+        "tokens_in": { "type": "number" },
+        "tokens_out": { "type": "number" }
+      }
+    }
+  },
+  "enforcement": {
+    "production": "All log output MUST use structured JSON format. No console.log, printf, or raw string logging.",
+    "development": "Structured JSON encouraged but not enforced. Debug output may use console.log for ergonomics.",
+    "linting": "Linter rules detect raw console.log in production paths and fail CI.",
+    "redaction": "Log entries MUST NOT contain: file contents, user secrets, PII, session tokens, or raw API keys. Redaction is applied at the log emitter."
+  },
+  "levels": {
+    "trace": "Extremely detailed debugging. Disabled in production by default.",
+    "debug": "Developer-relevant information. Disabled in production by default.",
+    "info": "Normal operational events. Default production level.",
+    "warn": "Potential issues that do not block operation.",
+    "error": "Operation failures that require attention.",
+    "fatal": "System-crashing errors that halt the process."
+  }
+}

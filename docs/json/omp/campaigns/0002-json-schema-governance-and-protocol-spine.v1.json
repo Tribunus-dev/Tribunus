@@ -1,0 +1,21 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0002",
+  "type": "campaign",
+  "name": "JSON Schema Governance and Protocol Spine",
+  "slug": "json-schema-governance-and-protocol-spine",
+  "description": "Establish centralized schema governance with standardized conventions, shared definitions, automated validation, and TypeScript type generation. Established by ADR 0020. This campaign should not close until the control-plane entities, roadmap records, authority receipts, runtime events, extension manifests, migrations, and compatibility rules all use the registry rather than local or duplicated validators.",
+  "objective": "All schemas conform to JSON Schema 2020-12. Central registry maintained. CI validates and generates TypeScript types. Protocol spine extracted as @tribunus/protocol package.",
+  "status": "in_progress",
+  "projectId": null,
+  "startDate": "2026-06-06",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "maturity": "bootstrap_complete",
+  "horizon": "committed",
+  "created_at": "2026-06-06T08:47:13.228Z",
+  "updated_at": "2026-06-06T09:11:40.458Z"
+}

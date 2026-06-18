@@ -1,0 +1,27 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0008",
+  "type": "mission",
+  "name": "@tribunus/protocol — Protocol Spine Package",
+  "slug": "tribunusprotocol-protocol-spine-package",
+  "description": "Extract the canonical protocol package containing all schemas, enums, and contracts: event envelopes, receipt schemas, lifecycle enums, capability descriptors, work state transitions, federation object types, and compatibility codecs. This is the PREREQUISITE for SDK and plugin work.",
+  "purpose": "All Tribunus components — app runtime, SDK, plugins, mobile PWA, federation — speak the same language through one shared protocol package.",
+  "campaignId": "0002",
+  "status": "completed",
+  "priority": 100,
+  "acceptanceCriteria": [
+    "Event envelope schemas for federation, plugin, and lifecycle events",
+    "Receipt schemas for governance, capability, dharma, and audit",
+    "Lifecycle enums for project state, session state, work item state, gate state",
+    "Capability descriptors with permission classes, scope definitions, risk levels",
+    "Work state transition validators for all entity state machines",
+    "Federation object types with envelope formats and signing schemes",
+    "Compatibility codecs for versioning, migration paths, deprecation policies"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:48:22.961Z",
+  "updated_at": "2026-06-06T11:26:18.848Z"
+}

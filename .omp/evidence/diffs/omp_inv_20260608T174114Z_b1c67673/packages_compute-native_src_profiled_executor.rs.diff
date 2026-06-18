@@ -1,0 +1,10 @@
+--- a/packages/compute-native/src/profiled_executor.rs
++++ b/packages/compute-native/src/profiled_executor.rs
+@@ -6,7 +6,6 @@
+ //! Per-generation state lives in ProfiledInferenceSession (owns KV caches,
+ //! cancellation flag, token buffer, and timeline).
+ 
+-use crate::compute_image::{CompiledImageReader, TensorEntry};
+ use crate::compute_image::{CompiledImageReader, CopyClassification, TensorEntry};
+ use crate::engine_error::{EngineError, EngineErrorCode};
+ use crate::kv_cache::KvCache;

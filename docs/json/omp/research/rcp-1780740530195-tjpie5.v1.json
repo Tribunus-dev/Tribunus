@@ -1,0 +1,790 @@
+{
+  "schema": "rig.relay.research-context-packet.v1",
+  "schema_version": "v1",
+  "id": "rcp-1780740530195-tjpie5",
+  "type": "research_context_packet",
+  "research_topic": "Valkey/Redis coordination patterns for ADR 0004 (Valkey as Coordination Kernel)",
+  "transcript_summary": "Deep research session investigating Valkey/Redis coordination patterns to validate and expand ADR 0004 (Valkey as Coordination Kernel). The session covered 8 topics: streams (O(1) insert, radix tree), consumer groups (at-least-once delivery, PEL, XCLAIM/XAUTOCLAIM), sorted sets for due-time wheel scheduling, TTL leases with SET NX EX and DELIFEQ, pub/sub vs streams tradeoffs, Valkey vs Redis comparison, Netflix Conductor and Temporal production patterns, and Lua scripting/Functions for atomicity. The goal was to validate the ADR's architectural decisions with primary sources and production evidence, and identify any gaps or risks in the coordination kernel design.",
+  "research_findings": [
+    {
+      "category": "architecture",
+      "title": "Valkey Streams as Radix-Tree Append-Only Logs",
+      "finding": "Streams are implemented as radix trees providing O(1) insert with XADD and O(log N) seek + O(M) range read with XRANGE/XREADGROUP. Each entry gets a monotonic `<millisecondsTime>-<sequenceNumber>` ID that is clock-jump-safe. XADD supports inline trimming (MAXLEN, MINID). This validates ADR 0004's decision to use streams as the primary work-queue primitive — the performance characteristics align with coordination kernel requirements.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/streams-intro/",
+          "title": "Valkey Streams Introduction",
+          "relevance": "Primary Valkey documentation on stream data structure internals",
+          "key_excerpts": [
+            "Streams are append-only logs implemented as radix trees",
+            "O(1) insert via XADD",
+            "Monotonic entry IDs safe across clock jumps"
+          ]
+        },
+        {
+          "url": "https://valkey.io/commands/xadd/",
+          "title": "XADD Command",
+          "relevance": "Official documentation for XADD with trimming semantics",
+          "key_excerpts": [
+            "XADD creates entry with auto-generated ID",
+            "MAXLEN ~ count for bounded memory trimming"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "radix tree",
+        "append-only log",
+        "stream consumer groups"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Consumer Groups: At-Least-Once Delivery with PEL and Failure Recovery",
+      "finding": "XREADGROUP delivers each message to exactly one consumer in a group. The Pending Entries List (PEL) tracks unacknowledged messages per consumer. XACK removes from PEL after successful processing. For failure recovery, XAUTOCLAIM (Valkey 7.0+) scans PEL and claims messages idle past a threshold, replacing the manual XCLAIM+XPENDING loop pattern. This gives at-least-once delivery semantics. ADR 0004's reliance on consumer groups for work distribution is validated — but PEL monitoring is critical as it grows unbounded under backpressure.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/streams-consumer-groups/",
+          "title": "Valkey Streams Consumer Groups",
+          "relevance": "Primary documentation on consumer group mechanics",
+          "key_excerpts": [
+            "Each message delivered to exactly one consumer",
+            "PEL tracks unacknowledged messages",
+            "XACK confirms completion"
+          ]
+        },
+        {
+          "url": "https://valkey.io/commands/xautoclaim/",
+          "title": "XAUTOCLAIM Command",
+          "relevance": "Official documentation for automated failure recovery in consumer groups",
+          "key_excerpts": [
+            "XAUTOCLAIM scans PEL and claims messages",
+            "Replaces manual XCLAIM + XPENDING loops",
+            "Returns cursor for iterative scanning"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "PEL",
+        "XCLAIM",
+        "XAUTOCLAIM",
+        "consumer group",
+        "at-least-once delivery"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Sorted Sets as Due-Time Wheel with Atomic Lua Poll-and-Dequeue",
+      "finding": "Sorted sets are dual-ported (skip list + hash table) with O(log N) inserts and O(log N + M) range reads. The due-time wheel pattern uses score = Unix timestamp and ZRANGEBYSCORE to poll for due tasks. A Lua script can atomically poll and dequeue: ZRANGEBYSCORE to find due tasks, then ZREMRANGEBYSCORE to remove them. This validates ADR 0004's timing wheel design — but watch for score collisions at same millisecond (lexicographic fallback), lack of native retry/DLQ (must be layered), and no cron expression support.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/sorted-sets/",
+          "title": "Valkey Sorted Sets",
+          "relevance": "Primary Valkey documentation on sorted set data structure",
+          "key_excerpts": [
+            "Dual-ported: skip list + hash table",
+            "O(log N) operations",
+            "ZRANGEBYSCORE for range queries"
+          ]
+        },
+        {
+          "url": "https://valkey.io/commands/zrangebyscore/",
+          "title": "ZRANGEBYSCORE Command",
+          "relevance": "Official documentation for score-based range retrieval",
+          "key_excerpts": [
+            "ZRANGEBYSCORE key min max",
+            "With LIMIT offset count for pagination"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "due-time wheel",
+        "priority scheduling",
+        "sorted set",
+        "Lua scripting"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "TTL Leases: SET NX EX Atomicity and DELIFEQ Simplification",
+      "finding": "SET key value NX EX seconds atomically creates a key only if it doesn't exist, with a TTL. The old SETNX+EXPIRE pattern is obsolete — SET NX EX is the correct approach. For safe release, a Lua script compares the stored value before deleting (GET + conditional DEL). Valkey 9.0 introduces DELIFEQ which eliminates the Lua script overhead for this pattern. Heartbeat renewal should run at 1/3 of TTL interval. ADR 0004's lease model using SET NX EX is validated — and the recommendation to target Valkey 9.0+ for DELIFEQ is supported.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/commands/set/",
+          "title": "SET Command",
+          "relevance": "Official documentation for SET command with NX and EX/PX options",
+          "key_excerpts": [
+            "SET key value NX EX seconds — atomic conditional set with TTL",
+            "Returns OK on success, nil if key exists"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/distlock/",
+          "title": "Valkey Distributed Locks",
+          "relevance": "Official Valkey documentation on distributed locking patterns",
+          "key_excerpts": [
+            "SET NX EX is the recommended pattern",
+            "Use unique random values for lock ownership",
+            "Release via Lua script that verifies value before deleting"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "TTL",
+        "lease",
+        "SET NX EX",
+        "DELIFEQ",
+        "heartbeat"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "No Strong Consistency Across Failover: Coordination Primitives Lose State",
+      "finding": "Valkey is primarily async-replicated — failover can lose recent writes. This means all coordination primitives (leases, stream positions, scheduled tasks) can be lost on a failure. ADR 0004 correctly identifies this and designs around it with the PGlite rebuild protocol. The recovery mantra — 'anything you cannot reconstruct after a Valkey wipe does not belong only in Valkey' — is architecturally sound and consistent with Valkey's documented consistency model.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html",
+          "title": "How to do distributed locking (Martin Kleppmann)",
+          "relevance": "Foundational critique of Redis/Valkey distributed locking assumptions",
+          "key_excerpts": [
+            "Redlock assumes bounded clock drift",
+            "Fencing tokens needed for distributed locking safety",
+            "Process pauses can cause lock expiry while client thinks it holds lock"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/distlock/",
+          "title": "Valkey Distributed Locks",
+          "relevance": "Official Valkey documentation acknowledging distributed locking limitations",
+          "key_excerpts": [
+            "Redlock requires clock synchronization between nodes",
+            "Single-instance locking sufficient for many use cases"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "consistency",
+        "failover",
+        "async replication",
+        "rebuild protocol",
+        "PGlite"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "Netflix Conductor: Production-Proven Stream/WQ Coordination",
+      "finding": "Netflix Conductor uses Redis (and now Valkey-compatible) as its primary coordination kernel for workflow/task metadata, task queues, and execution history. The storage layer is pluggable (Cassandra, MySQL, PostgreSQL alternatives), but Redis/Valkey is the default. Worker-task queue architecture mirrors ADR 0004: stateless workers poll for tasks, execute, update status. This validates the pattern — a production system used at Netflix scale runs on the same architectural model Tribunus proposes.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://conductor.netflix.com/",
+          "title": "Netflix Conductor",
+          "relevance": "Primary documentation on Netflix's workflow orchestration engine",
+          "key_excerpts": [
+            "Redis as primary data store for workflow/task metadata",
+            "Pluggable storage layer",
+            "Worker-task queue architecture"
+          ]
+        },
+        {
+          "url": "https://netflixtechblog.com/",
+          "title": "Netflix Tech Blog",
+          "relevance": "Netflix engineering blog posts on Conductor architecture",
+          "key_excerpts": [
+            "Horizontal scaling, web UI monitoring",
+            "Built-in retries/timeouts",
+            "JSON-based DSL workflow definition"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Netflix Conductor",
+        "workflow orchestration",
+        "task queue",
+        "worker pattern"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "Temporal: Comparison Point — Different Architecture for Different Needs",
+      "finding": "Temporal uses append-only event history in Cassandra/PostgreSQL as its durable core — NOT Redis. Redis is used as a complement for caching activity results and cross-workflow coordination locks. Temporal provides exactly-once guarantees via replay and supports Saga patterns natively. This is a different tradeoff from Conductor/Tribunus: Temporal trades Redis simplicity for stronger durability guarantees. The key insight for ADR 0004: Tribunus's PGlite + Valkey split mirrors Temporal's Cassandra + Redis split — one durable store for memory, one fast store for coordination.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://temporal.io/",
+          "title": "Temporal Workflow",
+          "relevance": "Primary Temporal documentation and architecture",
+          "key_excerpts": [
+            "Durable execution with exactly-once guarantees via replay",
+            "Append-only event history in Cassandra/PostgreSQL",
+            "Redis used for caching and coordination, not durability"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Temporal",
+        "durable execution",
+        "exactly-once",
+        "event history",
+        "Saga pattern"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Valkey 9.0+: Hash Field Expiration and DELIFEQ Enable Simplification",
+      "finding": "Valkey 9.0 (October 2025) introduces hash field expiration (per-field TTL for HSET) and multiple databases in cluster mode — both directly relevant to ADR 0004. DELIFEQ simplifies safe lease release. SIMD optimizations (BITCOUNT/HLL 200% faster) and 1B+ req/s throughput are beyond current needs but future-proof. The 2026 roadmap includes Raft/lease-based consensus (exploratory), semantic caching, SSD tiering, and database consolidation. ADR 0004 should be updated to reference these features and consider targeting Valkey 9.0+ as a minimum.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/release-notes/v9-0/",
+          "title": "Valkey 9.0 Release Notes",
+          "relevance": "Official Valkey 9.0 release documentation with feature list",
+          "key_excerpts": [
+            "Multiple databases in cluster mode",
+            "Hash field expiration (per-field TTL)",
+            "Atomic slot migration (zero-downtime rebalancing)",
+            "1B+ req/s scale"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/release-notes/v8-0/",
+          "title": "Valkey 8.0 Release Notes",
+          "relevance": "Official Valkey 8.0 release documentation",
+          "key_excerpts": [
+            "1.2M req/s on AWS r7g (3x improvement)",
+            "Multi-threaded I/O",
+            "70% latency reduction"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Valkey 9.0",
+        "hash field expiration",
+        "DELIFEQ",
+        "cluster mode",
+        "SIMD"
+      ]
+    },
+    {
+      "category": "comparison",
+      "title": "Valkey vs Redis: Licensing, Governance, and Diverging Feature Sets",
+      "finding": "Valkey (BSD 3-Clause, Linux Foundation) is the clear choice for open-source projects over Redis (AGPLv3 + RSALv2 + SSPLv1 tri-license). Valkey 8.0 delivers 1.2M req/s (3x Redis 7.2) with 70% latency reduction. Fully compatible with Redis 7.2 wire protocol. >1M container pulls/week as of early 2026. AWS and Google Cloud offer managed Valkey. The Linux Foundation governance with contributors from AWS, Google, Oracle, Ericsson, Alibaba, and Tencent provides long-term stability. ADR 0004's Valkey choice is validated — and the divergence from Redis means Tribunus should commit to Valkey-specific features (DELIFEQ, hash field expiration, cluster-mode multi-db) rather than maintaining Redis compatibility.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://www.linuxfoundation.org/press/valkey-linux-foundation",
+          "title": "Valkey Joins Linux Foundation",
+          "relevance": "Linux Foundation press release on Valkey governance",
+          "key_excerpts": [
+            "Valkey under Linux Foundation governance",
+            "Contributors from AWS, Google, Oracle, Ericsson"
+          ]
+        },
+        {
+          "url": "https://percona.com/blog/valkey-vs-redis-2025",
+          "title": "Valkey vs Redis 2025 Comparison",
+          "relevance": "Percona blog with detailed comparison and benchmarks",
+          "key_excerpts": [
+            "Valkey 8.0: 1.2M req/s, 70% latency reduction",
+            "Fully compatible with Redis 7.2 wire protocol"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Valkey vs Redis",
+        "BSD-3 license",
+        "Linux Foundation",
+        "divergence"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "Lua Script Runtime Limits and BUSY State Risk",
+      "finding": "Lua scripts execute atomically and block other commands during execution. The lua-time-limit defaults to 5000ms. Scripts exceeding this limit are killed (with potential data inconsistency) unless SCRIPT KILL is issued. Valkey 9.0 improved Lua scripting security but the fundamental risk remains: long-running scripts block the entire coordination kernel. ADR 0004 must ensure all Lua scripts are sub-millisecond for coordination operations (lease check-and-release, poll-and-dequeue) — heavier logic must be in the worker, not the Lua script.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/lua-scripting/",
+          "title": "Valkey Lua Scripting",
+          "relevance": "Official Valkey documentation on Lua scripting",
+          "key_excerpts": [
+            "Lua scripts block other commands during execution",
+            "lua-time-limit default 5000ms",
+            "scripts exceeding limit killed with potential inconsistency"
+          ]
+        },
+        {
+          "url": "https://valkey.io/commands/eval/",
+          "title": "EVAL Command",
+          "relevance": "Official EVAL command documentation",
+          "key_excerpts": [
+            "EVAL script key_count keys args — load and execute",
+            "Script cache lost on restart — EVALSHA returns NOSCRIPT error"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Lua scripting",
+        "atomicity",
+        "blocking",
+        "BUSY state",
+        "lua-time-limit"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "Stream PEL Growth Under High Backpressure",
+      "finding": "Valkey does not enforce a maximum PEL entry limit — the PEL can grow unbounded under sustained backpressure, causing memory pressure and slower XCLAIM scans. The mitigation is MAXLEN trimming on the stream and monitoring PEL size in production. ADR 0004 should document this risk and recommend operational monitoring for PEL size with automatic alerting.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/streams-intro/",
+          "title": "Valkey Streams Introduction",
+          "relevance": "Valkey stream documentation mentioning pending entries and trimming",
+          "key_excerpts": [
+            "MAXLEN ~ count for bounded memory trimming",
+            "PEL can grow unbounded — set appropriate XCLAIM timeouts"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/streams-consumer-groups/",
+          "title": "Valkey Streams Consumer Groups",
+          "relevance": "Consumer group documentation on PEL management",
+          "key_excerpts": [
+            "PEL size grows with unacknowledged messages",
+            "Monitor and set XCLAIM/XAUTOCLAIM timeouts"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "PEL growth",
+        "backpressure",
+        "memory pressure",
+        "MAXLEN",
+        "monitoring"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Pub/Sub vs Streams: Ephemeral vs Durable Communication",
+      "finding": "Valkey Pub/Sub provides fire-and-forget at-most-once delivery with sub-millisecond latency via push protocol. No persistence means messages are lost if a subscriber is offline. Streams provide at-least-once delivery, persistence, consumer groups, and replay capability. ADR 0004's rule — 'if the event matters after a restart, it is not pub/sub material' — is correct. The recommended combined pattern (streams for durable ingestion, pub/sub for instant push notifications) aligns with production best practices.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/pubsub/",
+          "title": "Valkey Pub/Sub",
+          "relevance": "Primary Valkey documentation on pub/sub",
+          "key_excerpts": [
+            "At-most-once delivery",
+            "No persistence, no message history",
+            "Sub-millisecond latency"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/streams-intro/",
+          "title": "Valkey Streams Introduction",
+          "relevance": "Primary Valkey documentation on streams vs pub/sub",
+          "key_excerpts": [
+            "At-least-once delivery with XACK",
+            "Durable, ordered, replayable event log",
+            "Consumer groups for load-balanced processing"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "pub/sub",
+        "streams",
+        "at-most-once",
+        "at-least-once",
+        "fan-out"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "Lua Scripting and Valkey Functions: Atomicity Guarantees",
+      "finding": "Lua (EVAL/EVALSHA) provides full atomic conditional logic but scripts are not persisted across restarts — clients must handle NOSCRIPT errors. Valkey Functions (7.0+) are first-class database artifacts that survive restarts and failovers, making them more production-grade for critical coordination logic. Key patterns for ADR 0004: atomic lock release (GET+conditional DEL), atomic lock renewal (GET+conditional PEXPIRE), atomic poll-and-dequeue (ZRANGEBYSCORE+ZREMRANGEBYSCORE), and atomic counter with TTL. MULTI/EXEC with WATCH is simpler but lacks Lua's conditional power.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/commands/eval/",
+          "title": "EVAL Command",
+          "relevance": "Official EVAL/EVALSHA documentation",
+          "key_excerpts": [
+            "Lua scripts execute atomically",
+            "Script cache not persisted across restarts",
+            "EVALSHA may return NOSCRIPT error"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/lua-scripting/",
+          "title": "Valkey Lua Scripting",
+          "relevance": "Official Lua scripting documentation including Functions",
+          "key_excerpts": [
+            "Valkey Functions persist and replicate across restarts",
+            "FCALL for Functions vs EVAL for ephemeral scripts"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Lua scripting",
+        "Valkey Functions",
+        "EVAL",
+        "EVALSHA",
+        "FCALL"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "Redlock Complexity Not Warranted for Single-Region Coordination",
+      "finding": "Redlock requires 5 independent Valkey primaries, sequential SET NX on each, and majority quorum. Martin Kleppmann's critique identifies fundamental issues: assumed bounded clock drift, lack of fencing tokens (monotonic counter for resource servers), and GC pause vulnerability. For ADR 0004's single-region Tribunus use case, single-instance locking with unique tokens is sufficient — Redlock's complexity is unwarranted. The recommendation is to use single-instance SET NX EX with Lua check-and-release, and only consider Redlock if multi-datacenter operation becomes necessary.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/distlock/",
+          "title": "Valkey Distributed Locks",
+          "relevance": "Official Valkey documentation presenting Redlock algorithm",
+          "key_excerpts": [
+            "N=5 Valkey primaries for Redlock",
+            "Single-instance locking sufficient for many use cases",
+            "Use unique random values for lock ownership"
+          ]
+        },
+        {
+          "url": "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html",
+          "title": "How to do distributed locking (Martin Kleppmann)",
+          "relevance": "Foundational critique by Kleppmann on Redlock limitations",
+          "key_excerpts": [
+            "Redlock assumes bounded clock drift — violated in practice",
+            "No fencing tokens in Redlock",
+            "Process pauses can cause lock expiry while client thinks it holds lock"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Redlock",
+        "distributed locking",
+        "fencing tokens",
+        "clock drift",
+        "Kleppmann"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Combined Primitive Architecture: Streams + Sorted Sets + TTL + Lua",
+      "finding": "Production coordination kernels combine multiple Valkey primitives: streams for work queues (durable, ordered, consumer groups), sorted sets for scheduling (due-time wheel, priority queues), TTL keys for leases (leader election, heartbeats, work claims), and Lua scripts for atomic compound operations (poll-and-dequeue, check-and-release). ADR 0004's architecture uses all four primitives correctly. The key insight: all Valkey coordination primitives lose state on async-replicated failover — the PGlite rebuild protocol is not optional but fundamental to the architecture. Single-instance locking with fencing tokens is sufficient for Tribunus.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://valkey.io/topics/streams-intro/",
+          "title": "Valkey Streams Introduction",
+          "relevance": "Stream documentation for work queue primitive",
+          "key_excerpts": [
+            "Consumer groups for load-balanced processing",
+            "At-least-once delivery"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/sorted-sets/",
+          "title": "Valkey Sorted Sets",
+          "relevance": "Sorted set documentation for scheduling primitive",
+          "key_excerpts": [
+            "O(log N) operations",
+            "Due-time wheel via ZRANGEBYSCORE"
+          ]
+        },
+        {
+          "url": "https://valkey.io/topics/distlock/",
+          "title": "Valkey Distributed Locks",
+          "relevance": "Distributed lock documentation for lease primitive",
+          "key_excerpts": [
+            "Single-instance locks sufficient for most cases",
+            "Fencing tokens recommended"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "combined primitives",
+        "streams",
+        "sorted sets",
+        "TTL",
+        "Lua scripting"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Valkey 2026 Roadmap: Raft Consensus, SSD Tiering, Hybrid Search",
+      "finding": "Valkey's 2026 roadmap includes stronger consistency via Raft/lease-based consensus (exploratory), semantic caching plus hybrid search (vector + full-text) for RAG, compression plus SSD tiering, and 'database consolidation' — reducing the number of specialized stores. If Raft consensus is implemented, it could eventually provide the strong consistency that ADR 0004 currently compensates for with the PGlite rebuild protocol. This doesn't change the ADR today but is worth tracking for future simplification.",
+      "confidence": "medium",
+      "sources": [
+        {
+          "url": "https://tfir.io/valkey-roadmap-2026",
+          "title": "Valkey 2026 Roadmap",
+          "relevance": "Roadmap analysis article aggregating Valkey community plans",
+          "key_excerpts": [
+            "Stronger consistency: Raft/lease-based consensus (exploratory)",
+            "Semantic caching + hybrid search for RAG",
+            "Compression + SSD tiering",
+            "Database consolidation"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "Raft consensus",
+        "SSD tiering",
+        "hybrid search",
+        "roadmap",
+        "strong consistency"
+      ]
+    }
+  ],
+  "implementation_specs": [
+    {
+      "title": "Valkey Coordination Kernel Implementation",
+      "description": "Implementation specifications for the Valkey coordination kernel as defined in ADR 0004. Covers stream-based work queues, sorted set scheduling, TTL leases, Lua scripting for atomic operations, Valkey Functions for persisted coordination logic, PEL monitoring, rebuild protocol, and operational configuration.",
+      "acceptance_criteria": [
+        "Stream consumer groups deliver each message to exactly one worker",
+        "XAUTOCLAIM recovers stuck messages after configurable idle timeout",
+        "Sorted set due-time wheel dispatches tasks within 1-second accuracy",
+        "TTL leases with SET NX EX provide deadlock-free mutual exclusion",
+        "Lua scripts execute all compound coordination operations atomically",
+        "DELIFEQ (Valkey 9.0+) used for safe lease release where available",
+        "PEL monitoring alerts on pending message accumulation beyond threshold",
+        "Rebuild protocol restores Valkey state from PGlite within 1 second",
+        "AOF persistence configured with appendfsync everysec for local desktop",
+        "Pub/Sub used only for ephemeral signals not requiring durability"
+      ],
+      "implementation_patterns": [
+        {
+          "name": "Stream Consumer Group Work Queue",
+          "description": "XGROUP CREATE for group creation, XREADGROUP for consumer read, XACK for acknowledgment, XAUTOCLAIM for failure recovery. Each stream represents a work queue (missions, packet submissions, gates, PRs).",
+          "code_example": "XGROUP CREATE missions:review review-workers $\nXREADGROUP GROUP review-workers worker-1 COUNT 1 STREAMS missions:review >\nXAUTOCLAIM missions:review review-workers worker-2 30000 0-\nXACK missions:review review-workers 1728394859293-0",
+          "references": [
+            "https://valkey.io/topics/streams-consumer-groups/"
+          ]
+        },
+        {
+          "name": "Sorted Set Due-Time Wheel",
+          "description": "ZADD with Unix timestamp score for scheduled tasks. Lua script for atomic poll-and-dequeue: ZRANGEBYSCORE to find due tasks, ZREMRANGEBYSCORE to remove, return results.",
+          "code_example": "ZADD schedule:missions 1728394859 mission:abc-123\nlocal tasks = server.call('ZRANGEBYSCORE', KEYS[1], '-inf', ARGV[1])\nif #tasks > 0 then\n  server.call('ZREMRANGEBYSCORE', KEYS[1], '-inf', ARGV[1])\nend\nreturn tasks",
+          "references": [
+            "https://valkey.io/topics/sorted-sets/",
+            "https://valkey.io/commands/zrangebyscore/"
+          ]
+        },
+        {
+          "name": "TTL Lease with SET NX EX",
+          "description": "Atomic lease acquisition with SET NX EX, Lua check-and-release for safe release, heartbeat renewal at 1/3 TTL interval. Fencing tokens for distributed safety.",
+          "code_example": "SET lease:task-123 worker-uuid-456 NX EX 30\nif server.call('GET', KEYS[1]) == ARGV[1] then\n  return server.call('DEL', KEYS[1])\nelse\n  return 0\nend",
+          "references": [
+            "https://valkey.io/commands/set/",
+            "https://valkey.io/topics/distlock/"
+          ]
+        },
+        {
+          "name": "Valkey Functions for Persisted Coordination Logic",
+          "description": "Prefer Valkey Functions (7.0+) over raw EVAL for critical atomic operations that must survive restarts. FUNCTION LOAD to define, FCALL to execute.",
+          "code_example": "FUNCTION LOAD '#!lua name=lease\nlocal v = redis.call('GET', KEYS[1])\nif v == ARGV[1] then return redis.call('DELIFEQ', KEYS[1], ARGV[1])\nelse return 0 end'\nFCALL lease 1 lease:task-123 worker-uuid-456",
+          "references": [
+            "https://valkey.io/topics/lua-scripting/"
+          ]
+        }
+      ],
+      "suggested_campaign": {
+        "title": "Valkey Coordination Kernel Implementation",
+        "objective": "Implement and operationalize Valkey as the coordination kernel per ADR 0004, covering stream work queues, sorted set scheduling, TTL leases, and rebuild protocol"
+      },
+      "suggested_missions": [
+        {
+          "title": "Valkey Stream Consumer Groups for Agent Work Queues",
+          "purpose": "Implement Valkey stream-based work queues with consumer groups for mission dispatch, packet review, gate checks, and PR generation",
+          "acceptance_criteria": [
+            "Streams created with XGROUP for each work queue type",
+            "Workers consume via XREADGROUP with at-least-once delivery",
+            "XAUTOCLAIM recovers stuck messages within configurable timeout",
+            "MAXLEN trimming bounds memory usage",
+            "PEL monitoring alerts on backpressure"
+          ],
+          "priority": 90,
+          "suggested_lanes": [
+            {
+              "title": "Stream Queue Setup and Consumer Groups",
+              "scope": "valkey-streams",
+              "description": "Implement stream creation, consumer group setup, worker consumption with XREADGROUP, and XACK completion flow",
+              "write_paths": [
+                "src/valkey/streams/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Implement stream creation with consumer groups",
+                  "description": "Create streams with XGROUP CREATE for each work queue: missions:review, packets:review, gates:check, prs:generate. Define consumer group names per queue type.",
+                  "estimated_effort": "2 days",
+                  "priority": 90,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement worker consumption with XREADGROUP",
+                  "description": "Implement worker-side stream consumption using XREADGROUP with BLOCK option. Support COUNT for batch size control. Handle empty stream and reconnection.",
+                  "estimated_effort": "3 days",
+                  "priority": 85,
+                  "depends_on": [
+                    "Implement stream creation with consumer groups"
+                  ]
+                },
+                {
+                  "title": "Implement failure recovery with XAUTOCLAIM",
+                  "description": "Implement XAUTOCLAIM for automatic recovery of messages stuck in PEL beyond idle timeout. Handle cursor-based iteration for large PELs.",
+                  "estimated_effort": "2 days",
+                  "priority": 80,
+                  "depends_on": [
+                    "Implement worker consumption with XREADGROUP"
+                  ]
+                },
+                {
+                  "title": "Implement PEL monitoring and alerting",
+                  "description": "Monitor XPENDING for all consumer groups. Alert when pending message count exceeds threshold. Track per-consumer PEL sizes.",
+                  "estimated_effort": "1 day",
+                  "priority": 70,
+                  "depends_on": [
+                    "Implement worker consumption with XREADGROUP"
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Sorted Set Scheduler and Timing Wheel",
+              "scope": "valkey-sorted-sets",
+              "description": "Implement sorted set based due-time wheel for scheduled task dispatch and priority queue for community support",
+              "write_paths": [
+                "src/valkey/scheduler/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Implement due-time wheel with ZADD and ZRANGEBYSCORE",
+                  "description": "Implement Lua script for atomic poll-and-dequeue: ZRANGEBYSCORE to find due tasks, ZREMRANGEBYSCORE to remove, return results. Support rescheduling via ZADD.",
+                  "estimated_effort": "3 days",
+                  "priority": 85,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement priority queue with scoring",
+                  "description": "Implement priority queue using ZADD with composite scores. Support ZINCRBY for priority adjustments. Define scoring formula from ADR 0004.",
+                  "estimated_effort": "2 days",
+                  "priority": 75,
+                  "depends_on": []
+                }
+              ]
+            },
+            {
+              "title": "TTL Lease and Heartbeat Implementation",
+              "scope": "valkey-leases",
+              "description": "Implement distributed leases with SET NX EX, Lua safe release, DELIFEQ for Valkey 9.0+, and heartbeat renewal",
+              "write_paths": [
+                "src/valkey/leases/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Implement lease acquisition with SET NX EX",
+                  "description": "Implement atomic lease acquisition using SET key value NX EX seconds. Return unique worker token for ownership verification.",
+                  "estimated_effort": "1 day",
+                  "priority": 90,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement safe lease release with Lua/DELIFEQ",
+                  "description": "Implement lease release: check stored value equals worker token before deleting. Use DELIFEQ on Valkey 9.0+, fall back to Lua script on earlier versions.",
+                  "estimated_effort": "1 day",
+                  "priority": 85,
+                  "depends_on": [
+                    "Implement lease acquisition with SET NX EX"
+                  ]
+                },
+                {
+                  "title": "Implement heartbeat renewal mechanism",
+                  "description": "Implement TTL renewal at 1/3 of lease interval. Handle renewal failure gracefully: report stale lease, trigger recovery protocol.",
+                  "estimated_effort": "1 day",
+                  "priority": 80,
+                  "depends_on": [
+                    "Implement lease acquisition with SET NX EX"
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Valkey Rebuild and Recovery Protocol",
+              "scope": "valkey-rebuild",
+              "description": "Implement the PGlite-to-Valkey rebuild protocol that restores coordination state on cold start or after Valkey data loss",
+              "write_paths": [
+                "src/valkey/rebuild/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Implement rebuild state enumeration from PGlite",
+                  "description": "Scan PGlite for open missions, unclosed leases, pending gates, scheduled obligations, and unfinished packet work. Return structured state for Valkey projection.",
+                  "estimated_effort": "3 days",
+                  "priority": 90,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement Valkey state projection from PGlite",
+                  "description": "Project enumerated state into Valkey: stream entries for pending work, sorted set entries for scheduled obligations, TTL keys for leases and heartbeats.",
+                  "estimated_effort": "2 days",
+                  "priority": 85,
+                  "depends_on": [
+                    "Implement rebuild state enumeration from PGlite"
+                  ]
+                },
+                {
+                  "title": "Implement cold-start rebuild trigger",
+                  "description": "Run rebuild protocol on every cold start (Valkey process not running). Display recovery banner. Ensure idempotency.",
+                  "estimated_effort": "1 day",
+                  "priority": 80,
+                  "depends_on": [
+                    "Implement Valkey state projection from PGlite"
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Operational Configuration and Monitoring",
+              "scope": "valkey-operations",
+              "description": "Configure Valkey persistence (AOF), monitor stream/sorted set/lease health, set up alerts for backpressure and PEL growth",
+              "write_paths": [
+                "config/",
+                "src/valkey/monitoring/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Configure AOF persistence for desktop operation",
+                  "description": "Set appendonly yes with appendfsync everysec. Document strict evidence mode (appendfsync always) for enterprise compliance.",
+                  "estimated_effort": "1 day",
+                  "priority": 70,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement Valkey health monitoring",
+                  "description": "Monitor stream PEL sizes, sorted set cardinalities, lease contention rates, and Lua script execution times.",
+                  "estimated_effort": "2 days",
+                  "priority": 65,
+                  "depends_on": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "linked_entities": [
+    {
+      "entity_type": "adr",
+      "entity_id": "0004",
+      "relationship": "decision"
+    }
+  ],
+  "session_id": "unknown",
+  "created_at": "2026-06-06T10:08:50.195Z"
+}

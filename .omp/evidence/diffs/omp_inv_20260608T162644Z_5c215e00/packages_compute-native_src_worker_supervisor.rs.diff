@@ -1,0 +1,112 @@
+--- a/packages/compute-native/src/worker_supervisor.rs
++++ b/packages/compute-native/src/worker_supervisor.rs
+@@ -2339,8 +2339,109 @@
+             serde_json::to_string(&f.payload).unwrap_or_default().contains("TEST_VAR")
+         });
+         assert!(!test_var_seen, "env_clear should prevent TEST_VAR from reaching the worker");
++        let _ = child.kill();
++        let _ = child.wait();
++    }
++
++    /// Sequential generation: start a generation, drain to terminal,
++    /// then start a second generation and drain again.
++    #[test]
++    #[ignore]
++    fn test_sequential_generations() {
++        let worker_id = "integration-test-sequential-gen";
++        let (mut child, instance_id) = spawn_fake_worker("normal", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++        load_model(&cmd_writer, "test-hash");
++
++        // First generation
++        start_generation(&cmd_writer, "gen-001");
++        let gen1_frames = drain_until_terminal(&mut stdout_reader, Duration::from_secs(5));
++        let gen1_completed = gen1_frames.iter().any(|f| {
++            matches!(
++                &f.message_kind,
++                MessageKind::WorkerEvent(WorkerEvent::GenerationCompleted)
++            )
++        });
++        assert!(gen1_completed, "first generation should complete");
++
++        // Second generation
++        start_generation(&cmd_writer, "gen-002");
++        let gen2_frames = drain_until_terminal(&mut stdout_reader, Duration::from_secs(5));
++        let gen2_completed = gen2_frames.iter().any(|f| {
++            matches!(
++                &f.message_kind,
++                MessageKind::WorkerEvent(WorkerEvent::GenerationCompleted)
++            )
++        });
++        assert!(gen2_completed, "second generation should complete");
++
++        // Assert second generation's tokens are correct (42, 43, 44 in normal mode).
++        let gen2_tokens: Vec<&Frame> = gen2_frames
++            .iter()
++            .filter(|f| matches!(&f.message_kind, MessageKind::WorkerEvent(WorkerEvent::Token)))
++            .collect();
++        assert!(!gen2_tokens.is_empty(), "second generation should produce tokens");
++        if let Some(tok) = gen2_tokens.first() {
++            let tok_id = tok.payload.get("token_id").and_then(|v| v.as_u64());
++            assert_eq!(tok_id, Some(42), "first token of second generation should be 42");
++        }
++
++        // Assert no model-busy error across both generations.
++        let all_frames: Vec<&Frame> = gen1_frames.iter().chain(gen2_frames.iter()).collect();
++        let has_model_busy = all_frames.iter().any(|f| {
++            let msg = serde_json::to_string(&f.payload).unwrap_or_default();
++            msg.contains("busy")
++        });
++        assert!(!has_model_busy, "should not see model-busy error");
++
+         let _ = child.kill();
+         let _ = child.wait();
++    }
++
++    /// Graceful shutdown: follow protocol to completion, send Shutdown,
++    /// verify the process exits with code 0 (not killed).
++    #[test]
++    #[ignore]
++    fn test_graceful_shutdown_no_sigkill() {
++        let worker_id = "integration-test-graceful-shutdown";
++        let (mut child, instance_id) = spawn_fake_worker("normal", worker_id);
++        let stdin = child.stdin.take().expect("stdin");
++        let stdout = child.stdout.take().expect("stdout");
++        let mut stdout_reader = BufReader::new(stdout);
++        let cmd_writer = WorkerCommandWriter::new(stdin, instance_id.clone());
++        handshake(&cmd_writer, &mut stdout_reader);
++        load_model(&cmd_writer, "test-hash");
++        start_generation(&cmd_writer, "gen-001");
++
++        // Drain until terminal — worker sends GenerationCompleted.
++        let frames = drain_until_terminal(&mut stdout_reader, Duration::from_secs(5));
++        assert!(
++            frames.iter().any(|f| {
++                matches!(
++                    &f.message_kind,
++                    MessageKind::WorkerEvent(WorkerEvent::GenerationCompleted)
++                )
++            }),
++            "generation should complete before shutdown"
++        );
++
++        // Tell worker to unload.
++        cmd_writer.send_command(HostCommand::UnloadModel, serde_json::json!({})).expect("UnloadModel");
++        let _unloaded = wait_for_event(&mut stdout_reader, WorkerEvent::ModelUnloaded, Duration::from_secs(5));
++
++        // Send graceful Shutdown and wait for exit.
++        cmd_writer
++            .send_command(HostCommand::Shutdown, serde_json::Value::Null)
++            .expect("failed to send Shutdown");
++
++        let status = child
++            .wait()
++            .expect("worker process should exit cleanly");
++        assert!(status.success(), "worker exit code should be 0 (not killed)");
+     }
+ }
+ 

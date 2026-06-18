@@ -1,0 +1,36 @@
+{"at":"2026-06-01T03:50:50.548Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T03:50:55.448Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T03:50:55.723Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T03:51:06.496Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T03:51:31.890Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T03:51:32.002Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T03:55:35.856Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T03:56:02.525Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T03:57:31.968Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T03:57:37.627Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T03:58:05.850Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T03:58:42.079Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:00:18.507Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:00:18.843Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:00:56.640Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:00:58.747Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T04:01:18.160Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:01:20.104Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:01:56.177Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:02:32.687Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:03:49.825Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:03:51.922Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:05:23.383Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:05:23.425Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:05:51.397Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:05:51.428Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:07:06.719Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:07:08.582Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T04:07:25.615Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:07:27.374Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:07:27.462Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:08:02.725Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}
+{"at":"2026-06-01T04:09:41.611Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:09:41.832Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T04:09:51.678Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T04:09:51.714Z","session_id":"ses_17eb273caffeFKKT323f20YhZY","agent":"stress-test","tool":"smart_bun","phase":"failed","detail":"run exit=1"}

@@ -1,0 +1,8 @@
+--- a/packages/compute-native/src/replay_projection.rs
++++ b/packages/compute-native/src/replay_projection.rs
+@@ -573,4 +573,5 @@
+ 
+         results
+     }
++}
+ 

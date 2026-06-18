@@ -1,0 +1,13 @@
+{"at":"2026-06-01T05:33:09.209Z","tool":"smart_bun","action":"ran","command":"typecheck","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T05:38:22.298Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T05:39:52.860Z","tool":"smart_bun","action":"ran","command":"tsc","exit_code":1,"cwd":"packages/opencode"}
+{"at":"2026-06-01T05:43:04.377Z","tool":"smart_bun","action":"ran","command":"run","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:01:28.777Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:11:22.393Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:14:13.164Z","tool":"smart_bun","action":"ran","command":"run","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:15:36.511Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":0,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:15:53.071Z","tool":"smart_bun","action":"ran","command":"test","exit_code":1,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:16:03.198Z","tool":"smart_bun","action":"ran","command":"test","exit_code":0,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:17:36.087Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:18:55.034Z","tool":"smart_bun","action":"ran","command":"tsc","exit_code":1,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:22:38.140Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":2,"cwd":"packages/opencode"}

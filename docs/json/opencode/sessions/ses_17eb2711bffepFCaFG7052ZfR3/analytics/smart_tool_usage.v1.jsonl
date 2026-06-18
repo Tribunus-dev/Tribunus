@@ -1,0 +1,21 @@
+{"at":"2026-06-01T03:51:06.779Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"GlobalBus\\.emit","path":""}
+{"at":"2026-06-01T03:51:06.951Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"catchCause","path":""}
+{"at":"2026-06-01T03:51:07.160Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"classifyError","path":""}
+{"at":"2026-06-01T03:51:48.105Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_find","pattern":"**/instance-failure-codes*","path":""}
+{"at":"2026-06-01T03:51:48.407Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_find","pattern":"**/config.ts","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:53:35.831Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_find","pattern":"**/*.ts","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:53:36.635Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_find","pattern":"packages/*/","path":""}
+{"at":"2026-06-01T03:54:42.436Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_find","pattern":"*","path":""}
+{"at":"2026-06-01T03:55:35.431Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_find","pattern":"**/ib-error-gaps*","path":""}
+{"at":"2026-06-01T03:56:13.036Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_find","pattern":"**/ib-error*","path":""}
+{"at":"2026-06-01T03:56:44.506Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"ib-error-gaps","path":""}
+{"at":"2026-06-01T03:56:45.028Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"ib.error.gaps","path":""}
+{"at":"2026-06-01T03:59:06.344Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_find","pattern":"*","path":".build/rig-relay/plans"}
+{"at":"2026-06-01T03:59:07.900Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"FIX 1|FIX 2|FIX 3|REVISION ROUND 3|ib-error-gaps.*plan","path":".build/rig-relay"}
+{"at":"2026-06-01T04:00:33.023Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"\\.catch\\(","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T04:00:34.059Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"\\.catch\\(","path":"packages/opencode/src/storage/adapter.ts"}
+{"at":"2026-06-01T04:01:45.576Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"catch\\(\\(\\) => \\{?\\s*\\},?\\s*\\)","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T04:01:46.911Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"\\.pipe\\(Effect\\.catch\\(\\(\\)","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T04:01:48.015Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"\\.catch\\(\\(err\\) =>","path":"packages/opencode/src/storage/adapter.ts"}
+{"at":"2026-06-01T04:02:38.900Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"\\.catch\\(\\(\\) => \\{\\},?\\)","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T04:02:39.944Z","session_id":"ses_17eb2711bffepFCaFG7052ZfR3","agent":"risk-enumerator","tool":"smart_grep","pattern":"applyMigrations\\(client\\)\\.catch","path":"packages/opencode/src/storage/adapter.ts"}

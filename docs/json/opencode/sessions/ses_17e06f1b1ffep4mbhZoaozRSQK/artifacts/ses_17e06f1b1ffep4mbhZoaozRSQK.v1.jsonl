@@ -1,0 +1,5 @@
+{"at":"2026-06-01T06:57:47.885Z","tool":"smart_write","action":"created","file":"packages/opencode/src/project/instance-health.ts","reason":"EDIT 1: Create new instance-health.ts for two-level health model"}
+{"at":"2026-06-01T06:58:17.681Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/event/event-names.ts","reason":"EDIT 2: Add new instance lifecycle event names","occurrences":1}
+{"at":"2026-06-01T06:58:44.126Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/server/event.ts","reason":"EDIT 3: Add instance lifecycle events to server Event object","occurrences":1}
+{"at":"2026-06-01T06:59:01.344Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/project/bootstrap-service.ts","reason":"EDIT 4: Add BootstrapResult type and update Interface to return it","occurrences":1}
+{"at":"2026-06-01T06:59:57.107Z","tool":"smart_edit","action":"edited","file":"packages/opencode/src/project/bootstrap.ts","reason":"EDIT 5a: Add Ref to imports for failuresRef in bootstrap.ts","occurrences":1}

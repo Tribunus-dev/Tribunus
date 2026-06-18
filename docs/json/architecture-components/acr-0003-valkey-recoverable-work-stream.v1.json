@@ -1,0 +1,38 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0003",
+  "title": "Valkey Recoverable Work Stream",
+  "status": "proposed",
+  "component_type": "orchestration_component",
+  "owner_subsystem": "Valkey",
+  "definition": "Valkey Streams and consumer groups provide recoverable work admission, visibility, pending work, claim, and reclaim semantics.",
+  "invariants": [
+    "Pending work must be reclaimable.",
+    "Work visibility must be recoverable across worker failure."
+  ],
+  "allowed_states": [
+    "queued",
+    "claimed",
+    "pending",
+    "reclaimed"
+  ],
+  "forbidden_states": [
+    "durable_truth",
+    "final_authority"
+  ],
+  "required_receipts": [
+    "stream_entry",
+    "claim_receipt",
+    "reclaim_receipt"
+  ],
+  "required_validators": [
+    "valkey_stream_validator"
+  ],
+  "imported_by": [
+    "ADR-0021",
+    "ADR-0022"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

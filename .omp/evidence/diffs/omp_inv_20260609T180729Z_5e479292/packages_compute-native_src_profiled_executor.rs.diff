@@ -1,0 +1,19 @@
+--- a/packages/compute-native/src/profiled_executor.rs
++++ b/packages/compute-native/src/profiled_executor.rs
+@@ -672,6 +672,16 @@
+                 return Err(EngineError::new(EngineErrorCode::Cancelled, "cancelled during prefill"));
+             }
+ 
++            let proj_ctx = projection_identity::ProjectionContext {
++                run_id: "d1".into(),
++                phase: projection_identity::Phase::Prefill,
++                forward_pass_index: 1,
++                token_step: None,
++                layer_index: l,
++                attention_kind: if layer_plan.attention_kind == "sliding_attention"
++                    { projection_identity::AttentionKind::Sliding }
++                    else { projection_identity::AttentionKind::Full },
++            };
+             let rss_before = worker_memory::sample_process_rss_self();
+             let handles_before = crate::bridge::handle_count();
+             let active_before = crate::compute_image::mlx_active_memory_bytes();

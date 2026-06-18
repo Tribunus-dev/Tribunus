@@ -1,0 +1,40 @@
+{"at":"2026-06-01T03:40:42.471Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"serviceOption"}
+{"at":"2026-06-01T03:40:42.731Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"12 matches in 10 files"}
+{"at":"2026-06-01T03:41:20.878Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"Context\\.empty"}
+{"at":"2026-06-01T03:41:21.045Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T03:41:21.070Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"Cause\\.isDie"}
+{"at":"2026-06-01T03:41:21.196Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:41:54.221Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"Context\\.empty"}
+{"at":"2026-06-01T03:41:54.222Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:41:55.122Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"serviceOption.*InstanceTrace|InstanceTrace.*serviceOption"}
+{"at":"2026-06-01T03:41:55.293Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:43:52.790Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"serviceOption"}
+{"at":"2026-06-01T03:43:52.791Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:43:53.470Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"Layer\\.succeedContext\\(Context\\.empty"}
+{"at":"2026-06-01T03:43:53.656Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:45:58.874Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_batch","phase":"started","detail":"batch edit"}
+{"at":"2026-06-01T03:45:58.874Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_batch","phase":"failed","detail":"validation failed: 1/2"}
+{"at":"2026-06-01T03:46:20.793Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/effect/runtime-flags.ts"}
+{"at":"2026-06-01T03:53:42.061Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_find","phase":"started","detail":"package.json"}
+{"at":"2026-06-01T03:53:42.115Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_find","phase":"completed","detail":"package.json"}
+{"at":"2026-06-01T03:54:21.269Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T03:55:01.071Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/instance-trace.ts"}
+{"at":"2026-06-01T03:57:59.395Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/instance-layer.ts"}
+{"at":"2026-06-01T03:59:13.314Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/bootstrap.ts"}
+{"at":"2026-06-01T03:59:39.485Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/bootstrap.ts"}
+{"at":"2026-06-01T04:00:02.692Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T04:00:36.757Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T04:01:16.148Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T04:01:48.453Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T04:02:43.682Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T04:03:10.460Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T04:04:03.259Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T04:04:28.153Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T04:05:36.381Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T04:05:38.570Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T04:06:40.966Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"test"}
+{"at":"2026-06-01T04:06:51.964Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"test exit=1"}
+{"at":"2026-06-01T04:08:02.982Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T04:08:03.201Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_bun","phase":"completed","detail":"tsgo exit=0"}
+{"at":"2026-06-01T04:09:13.992Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_git","phase":"started","detail":"status"}
+{"at":"2026-06-01T04:09:14.435Z","session_id":"ses_17ebeda55ffe1evEJO3wGf3dI9","agent":"surgeon","tool":"smart_git","phase":"completed","detail":"status exit=0"}
