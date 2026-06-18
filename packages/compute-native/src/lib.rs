@@ -14,6 +14,7 @@ pub mod arena_pool;
 mod bridge;
 pub mod capability;
 pub mod compute_image;
+pub mod kv;
 pub mod compute_lane;
 pub mod compute_service;
 pub mod compile_pipeline;
@@ -85,6 +86,7 @@ pub mod worker_protocol;
 pub mod worker_supervisor;
 pub mod cli;
 pub mod treatment;
+pub mod speculation;
 #[cfg(target_os = "linux")]
 pub mod vulkan;
 

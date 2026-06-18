@@ -1,3 +1,5 @@
+pub mod capability;
+pub mod realizer;
 //! Backend abstraction layer — generic TensorBackend trait and MlxBackend adapter.
 //!
 //! The trait exposes model-level operations (matmul, rms_norm, RoPE, etc.)
