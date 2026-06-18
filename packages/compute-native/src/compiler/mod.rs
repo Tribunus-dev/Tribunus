@@ -15,6 +15,7 @@ pub mod pass;
 pub mod lowering;
 pub mod ane;
 pub mod pipeline_spec;
+pub mod pipeline_sparse;
 
 #[cfg(test)]
 mod pipeline_tests;
@@ -83,3 +84,5 @@ pub trait BackendLowering {
     ) -> Result<(Self::Artifact, LoweringReceipt), String>;
 }
 pub mod pipeline_arena;
+pub mod pipeline_candidates;
+pub mod pipeline_shape;
