@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config"
 import starlight from "@astrojs/starlight"
-import solidJs from "@astrojs/solid-js"
+
 import theme from "toolbeam-docs-theme"
 import config from "./config.mjs"
 import { rehypeHeadingIds } from "@astrojs/markdown-remark"
@@ -27,13 +27,9 @@ export default defineConfig({
     rehypePlugins: [rehypeHeadingIds, [rehypeAutolinkHeadings, { behavior: "wrap" }]],
   },
   build: {},
-  vite: {
-    resolve: {
-      conditions: ["browser", "module", "import", "production"],
-    },
-  },
+
   integrations: [
-    solidJs(),
+
     starlight({
       title: "Tribunus",
       defaultLocale: "root",
