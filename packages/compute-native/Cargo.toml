@@ -83,3 +83,5 @@ openblas-sys = { version = "0.10", optional = true }
 level-zero-sys = { git = "https://github.com/oneapi-src/level-zero-sys.git", optional = true }
 openvino-sys = { git = "https://github.com/intel/openvino-rs.git", optional = true }
 paged-attention = { version = "0.1", optional = true }
+[dev-dependencies]
+hf-hub = { version = "0.3.2", features = ["tokio"] }
