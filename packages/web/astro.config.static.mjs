@@ -28,8 +28,8 @@ export default defineConfig({
   },
   build: {},
   vite: {
-    build: {
-      target: "esnext",
+    resolve: {
+      conditions: ["browser", "module", "import", "production"],
     },
   },
   integrations: [
