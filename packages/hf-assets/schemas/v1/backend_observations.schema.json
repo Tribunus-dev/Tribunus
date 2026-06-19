@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://huggingface.co/datasets/Tribunus-dev/compute-kernel-evidence/schemas/v1/backend_observations.schema.json",
+  "title": "Backend Observations",
+  "description": "Per-backend execution metrics collected during a single run. A run may produce multiple backend observation rows when multiple backends are tested sequentially. Keyed on (run_id, backend).",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Foreign key into the runs table. Combined with backend to form the composite key."
+    },
+    "backend": {
+      "type": "string",
+      "description": "Inference backend identifier.",
+      "enum": ["mlx", "coreml", "accelerate", "bnns"]
+    },
+    "tokens_per_second": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Median generation throughput for this backend in tokens per second."
+    },
+    "ttft_ms": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Median time-to-first-token in milliseconds for this backend."
+    },
+    "peak_memory_mb": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Peak memory usage during generation in megabytes for this backend."
+    },
+    "warmup_tokens": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of warmup tokens used before measurement began."
+    },
+    "temperature": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Sampling temperature used during generation."
+    },
+    "decoding_strategy": {
+      "type": "string",
+      "description": "Decoding strategy for token selection.",
+      "enum": ["greedy", "top_k", "top_p", "beam_search"]
+    },
+    "measurement_clock": {
+      "type": "string",
+      "description": "Clock source used for timing measurements.",
+      "examples": ["mach_continuous_time", "clock_gettime(CLOCK_MONOTONIC)"]
+    },
+    "num_repetitions": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of independent repetitions used for this backend."
+    },
+    "aggregation_method": {
+      "type": "string",
+      "description": "Statistical method used to aggregate multiple repetitions.",
+      "enum": ["median", "mean", "geometric_mean"]
+    }
+  },
+  "required": [
+    "run_id",
+    "backend",
+    "tokens_per_second",
+    "warmup_tokens",
+    "temperature",
+    "decoding_strategy",
+    "measurement_clock",
+    "num_repetitions",
+    "aggregation_method"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://huggingface.co/datasets/Tribunus-dev/compute-kernel-evidence/schemas/v1/compiler_manifests.schema.json",
+  "title": "Compiler Manifests",
+  "description": "Diagnostics and metadata from the compilation step that produced the executable backend artifact. Joined to runs on run_id.",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Foreign key into the runs table. Each run has at most one compiler manifest row."
+    },
+    "compiler": {
+      "type": "string",
+      "description": "Compiler or converter tool used to produce the backend artifact.",
+      "examples": ["mlx", "coremltools", "bnb", "torch-mlu"]
+    },
+    "compiler_version": {
+      "type": "string",
+      "description": "Version string of the compiler tool.",
+      "examples": ["0.22.0", "8.1", "2.4.0"]
+    },
+    "compilation_time_ms": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Wall-clock time spent during compilation in milliseconds."
+    },
+    "optimization_flags": {
+      "type": "array",
+      "description": "List of optimization flags or compiler options passed during compilation.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "deployment_target": {
+      "type": "string",
+      "description": "Minimum deployment target (OS version) required by the compiled artifact.",
+      "examples": ["15.0", "14.4"]
+    },
+    "compile_status": {
+      "type": "string",
+      "description": "Outcome of the compilation process.",
+      "enum": ["success", "partial", "failed"]
+    },
+    "diagnostics": {
+      "type": "object",
+      "description": "Free-form JSON containing compiler warnings, errors, heuristics, and optimization decisions. Schema not yet normalized across compiler versions.",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "run_id",
+    "compiler",
+    "compiler_version",
+    "compile_status"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://huggingface.co/datasets/Tribunus-dev/compute-kernel-evidence/schemas/v1/hardware_profiles.schema.json",
+  "title": "Hardware Profiles",
+  "description": "Describes the physical hardware on which a benchmark run was executed. Joined to runs on hardware_id.",
+  "type": "object",
+  "properties": {
+    "hardware_id": {
+      "type": "string",
+      "description": "Unique identifier for this hardware configuration. Primary key.",
+      "examples": ["hw-m2-max-30c-gpu-64gb"]
+    },
+    "soc_name": {
+      "type": "string",
+      "description": "Apple Silicon system-on-chip name.",
+      "examples": ["Apple M2 Max", "Apple M3 Pro", "Apple M1", "Apple M4"]
+    },
+    "cpu_core_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of CPU performance + efficiency cores."
+    },
+    "gpu_core_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of GPU cores."
+    },
+    "ne_engine_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of Neural Engine (ANE) cores or units."
+    },
+    "ram_gb": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Unified memory in gigabytes."
+    },
+    "os_version": {
+      "type": "string",
+      "description": "Operating system version string (e.g. 'macOS 15.4', 'Darwin 25.4.0')."
+    },
+    "thermal_mode": {
+      "type": "string",
+      "description": "Thermal state during benchmark execution.",
+      "enum": ["nominal", "light", "moderate", "heavy", "critical"]
+    },
+    "sysctl_flags": {
+      "type": "object",
+      "description": "Key sysctl flags or hardware feature flags captured at runtime.",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean"]
+      }
+    }
+  },
+  "required": [
+    "hardware_id",
+    "soc_name",
+    "cpu_core_count",
+    "gpu_core_count",
+    "ram_gb",
+    "os_version"
+  ]
+}

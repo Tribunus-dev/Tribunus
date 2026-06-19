@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://huggingface.co/datasets/Tribunus-dev/compute-kernel-evidence/schemas/v1/artifacts.schema.json",
+  "title": "Artifacts",
+  "description": "References to compiled model artifacts on disk or in object storage. Multiple artifacts may belong to a single run (e.g., a Core ML model and its companion metadata). Joined to runs on run_id.",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Foreign key into the runs table identifying the originating benchmark run."
+    },
+    "artifact_path": {
+      "type": "string",
+      "description": "File system or object store path to the artifact.",
+      "examples": ["/data/artifacts/mlx/mistral-7b-q4.mlx", "s3://tribunus-artifacts/runs/a1b2c3d4/model.mlmodelc"]
+    },
+    "artifact_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 digest of the artifact file content."
+    },
+    "artifact_size_bytes": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "description": "Size of the artifact file in bytes."
+    },
+    "format": {
+      "type": "string",
+      "description": "Artifact file format/extension identifier.",
+      "examples": ["mlmodelc", "mlpackage", "mlx", "pt", "gguf"]
+    },
+    "compression": {
+      "type": "string",
+      "description": "Compression method applied to the artifact, if any.",
+      "enum": ["none", "gzip", "zstd", "lzfse"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp of artifact creation."
+    }
+  },
+  "required": [
+    "run_id",
+    "artifact_path",
+    "artifact_sha256",
+    "artifact_size_bytes",
+    "format",
+    "created_at"
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://huggingface.co/datasets/Tribunus-dev/compute-kernel-evidence/schemas/v1/runs.schema.json",
+  "title": "Runs",
+  "description": "Central orchestration table for Tribunus compute evidence. Each row corresponds to one benchmark execution — a single model, quantization, backend, and hardware combination producing a set of timing and memory observations.",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique identifier for this run. Primary key referenced by all other tables."
+    },
+    "model_id": {
+      "type": "string",
+      "description": "Hugging Face model identifier, e.g. 'mistralai/Mistral-7B-v0.1'.",
+      "examples": ["mistralai/Mistral-7B-v0.1", "meta-llama/Llama-3.2-3B"]
+    },
+    "quantization": {
+      "type": "string",
+      "description": "Quantization scheme applied to the model weights.",
+      "enum": ["mlx-q4_0", "mlx-q8_0", "fp16", "fp32"]
+    },
+    "backend": {
+      "type": "string",
+      "description": "Inference backend used for execution.",
+      "enum": ["mlx", "coreml", "accelerate", "bnns"]
+    },
+    "hardware_id": {
+      "type": "string",
+      "description": "Foreign key into the hardware_profiles table identifying the physical machine.",
+      "examples": ["hw-m2-max-30c-gpu-64gb"]
+    },
+    "num_tokens": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of output tokens generated during this run."
+    },
+    "tokens_per_second": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Median generation throughput in tokens per second."
+    },
+    "ttft_ms": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Median time-to-first-token in milliseconds."
+    },
+    "peak_memory_mb": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Peak memory usage during generation in megabytes."
+    },
+    "test_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp of benchmark execution."
+    },
+    "tribunus_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$",
+      "description": "Full Git SHA of the Tribunus compute kernel at time of execution."
+    },
+    "repo_dirty": {
+      "type": "boolean",
+      "description": "True if the Git working tree had uncommitted changes at execution time."
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of this table schema at time of insertion."
+    },
+    "dataset_release": {
+      "type": "string",
+      "description": "Release tag of the published corpus snapshot (e.g. '2026-06')."
+    },
+    "artifact_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 digest of the primary output artifact."
+    }
+  },
+  "required": [
+    "run_id",
+    "model_id",
+    "quantization",
+    "backend",
+    "hardware_id",
+    "num_tokens",
+    "tokens_per_second",
+    "test_date",
+    "tribunus_commit",
+    "schema_version",
+    "dataset_release"
+  ]
+}
