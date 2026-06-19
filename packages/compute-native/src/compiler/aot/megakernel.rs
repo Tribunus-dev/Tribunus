@@ -23,9 +23,23 @@ impl Megakernel {
         Self {
             name: format!("layer_{}_fused_attn_mlp", layer_idx),
             operations: vec![
-                "attention".to_string(),
+                "attention_cooperative".to_string(),
+                "subgroup_online_softmax".to_string(),
                 "matmul".to_string(),
-                "swiglu".to_string(),
+                "sparse_ffn_swiglu".to_string(),
+            ],
+        }
+    }
+
+    /// Megakernel 3: Sampling (dropped when temp = 0)
+    pub fn fuse_sampling(layer_idx: usize) -> Self {
+        Self {
+            name: format!("layer_{}_fused_sampling", layer_idx),
+            operations: vec![
+                "temperature_scaling".to_string(),
+                "top_p".to_string(),
+                "top_k".to_string(),
+                "categorical_sample".to_string(),
             ],
         }
     }

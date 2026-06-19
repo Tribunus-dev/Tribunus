@@ -40,7 +40,7 @@ impl AotCompiler {
         Self { profile }
     }
 
-    pub fn compile_model(&self, num_layers: usize) -> TribunusExecutable {
+    pub fn compile_model(&self, num_layers: usize, temperature: f32) -> TribunusExecutable {
         let mut kernels = HashMap::new();
         let mut dispatch_table = Vec::new();
         let mut sync_barriers = Vec::new();
@@ -67,6 +67,19 @@ impl AotCompiler {
                 block_size: [256, 1, 1],
                 layer_idx: i,
             });
+
+            // Drop sampling code paths at temp=0 for ~10% less branch divergence
+            if temperature > 0.0 {
+                let kernel3_name = format!("layer_{}_fused_sampling", i);
+                kernels.insert(kernel3_name.clone(), vec![0x03, 0x02, 0x23, 0x07]);
+
+                dispatch_table.push(DispatchEntry {
+                    kernel_name: kernel3_name,
+                    grid_size: [1, 1, 1],
+                    block_size: [256, 1, 1],
+                    layer_idx: i,
+                });
+            }
 
             if i > 0 {
                 sync_barriers.push(SyncBarrier {

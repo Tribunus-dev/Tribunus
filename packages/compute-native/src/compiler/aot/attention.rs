@@ -6,6 +6,7 @@ pub enum AttentionType {
     Kv1Sparse,
     Streaming,
     SlidingWindow,
+    CooperativeGroups,
 }
 
 pub struct AttentionRegistry {
