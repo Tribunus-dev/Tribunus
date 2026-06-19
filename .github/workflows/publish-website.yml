@@ -28,6 +28,7 @@ jobs:
           cd packages/web
           bunx astro build --config astro.config.static.mjs
         env:
+          NODE_ENV: production
           SST_STAGE: production
 
       - name: Deploy to gh-pages
