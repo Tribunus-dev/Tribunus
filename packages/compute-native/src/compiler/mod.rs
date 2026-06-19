@@ -86,3 +86,4 @@ pub trait BackendLowering {
 pub mod pipeline_arena;
 pub mod pipeline_candidates;
 pub mod pipeline_shape;
+pub mod pipeline_fusion;
