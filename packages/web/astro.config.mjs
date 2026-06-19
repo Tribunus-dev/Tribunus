@@ -276,6 +276,32 @@ export default defineConfig({
         },
 
         {
+          label: "Compute",
+          translations: {
+            en: "Compute",
+          },
+          items: [
+            "compute/overview",
+            "compute/architecture",
+            "compute/backends",
+            "compute/compile",
+            "compute/deploy",
+          ],
+        },
+
+        {
+          label: "MLX",
+          translations: {
+            en: "MLX",
+          },
+          items: [
+            "compute/mlx-overview",
+            "compute/mlx-rs",
+            "compute/mlx-c",
+          ],
+        },
+
+        {
           label: "Develop",
           translations: {
             en: "Develop",
