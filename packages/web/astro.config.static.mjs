@@ -26,6 +26,9 @@ export default defineConfig({
   markdown: {
     rehypePlugins: [rehypeHeadingIds, [rehypeAutolinkHeadings, { behavior: "wrap" }]],
   },
+  image: {
+    service: { entrypoint: "astro/assets/services/noop" },
+  },
   build: {},
 
   integrations: [
