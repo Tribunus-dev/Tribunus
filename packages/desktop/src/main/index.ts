@@ -348,15 +348,19 @@ const main = Effect.gen(function* () {
 
   yield* Effect.promise(() => app.whenReady())
 
+  if (process.platform === 'linux') {
+    try {
+      process.env.GTK_USE_PORTAL = '1'
+      if (!process.env.XDG_CURRENT_DESKTOP) {
+        process.env.XDG_CURRENT_DESKTOP = 'KDE'
+      }
+    } catch {
+      Object.assign(process.env, { GTK_USE_PORTAL: '1', XDG_CURRENT_DESKTOP: process.env.XDG_CURRENT_DESKTOP || 'KDE' })
+    }
+  }
+
   if (detectWayland()) {
     app.commandLine.appendSwitch('ozone-platform-hint', 'auto')
-    if (process.env?.WAYLAND_DISPLAY !== undefined) {
-      try {
-        process.env.GTK_USE_PORTAL = '1'
-      } catch {
-        Object.assign(process.env, { GTK_USE_PORTAL: '1' })
-      }
-    }
   }
 
   if (detectWSL2()) {

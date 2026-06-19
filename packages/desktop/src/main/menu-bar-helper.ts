@@ -80,9 +80,9 @@ export function createLinuxTray(mainWindow: BrowserWindow): Tray | null {
   if (process.platform !== 'linux') return null
 
   try {
-    const iconPath = app.isPackaged 
-      ? join(process.resourcesPath, 'icon.png') 
-      : join(__dirname, '../../resources/icon.png')
+    const iconPath = app.isPackaged
+      ? join(process.resourcesPath, "icons", "dock.png")
+      : join(app.getAppPath(), "resources", "icons", "dock.png")
     const icon = nativeImage.createFromPath(iconPath)
     const tray = new Tray(icon.resize({ width: 22, height: 22 }))
 

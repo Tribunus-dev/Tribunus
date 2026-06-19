@@ -14,12 +14,12 @@
     "./desktop": "./src/desktop.ts",
     "./tool": "./src/tool.ts",
     "./schemas/*": "./src/*.schema.json",
-    "./tui": "./src/tui.ts"
+    "./tui": "./src/tui.ts",
     "./installer": "./src/installer.ts",
     "./registry": "./src/registry.ts",
     "./sdk/manifest": "./src/sdk/manifest.ts",
     "./sdk/permissions": "./src/sdk/permissions.ts",
-    "./sdk/mod": "./src/sdk/mod.ts",
+    "./sdk/mod": "./src/sdk/mod.ts"
   },
   "files": [
     "dist"

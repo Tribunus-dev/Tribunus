@@ -83,7 +83,10 @@ const getBase = (): Configuration => ({
   linux: {
     icon: "assets/icons/tribunus-app-icon.png",
     category: "Development",
-    target: ["AppImage", "deb", "rpm"],
+    target: ["AppImage", "deb"],
+  },
+  appImage: {
+    systemIntegration: "doNotAsk",
   },
 })
 

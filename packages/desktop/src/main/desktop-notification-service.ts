@@ -1,4 +1,5 @@
 import { Notification, BrowserWindow } from "electron"
+import { execFile } from "node:child_process"
 import { registerIpcHandler } from "./ipc-registration"
 import { IPC } from "./ipc-channels"
 import { withIpcResult } from "./ipc-contract"
@@ -88,27 +89,35 @@ export function notify(input: DesktopNotificationInput): boolean {
     case "sidecar_failed": if (!prefs.sidecarFailed) return false; break
   }
 
-  const notification = new Notification({
-    title: input.title,
-    body: input.body,
-    silent: false,
-  })
-
-  notification.on("click", () => {
-    const win = BrowserWindow.getAllWindows()[0]
-    if (win) {
-      win.focus()
-      if (input.actionRef) {
-        win.webContents.send("tribunus:push:notification-action", {
-          actionRef: input.actionRef,
-          kind: input.kind,
-          project: input.project,
-        })
+  if (process.platform === "linux") {
+    execFile("notify-send", [input.title, input.body], (error) => {
+      if (error) {
+        console.error("notify-send failed:", error)
       }
-    }
-  })
+    })
+  } else {
+    const notification = new Notification({
+      title: input.title,
+      body: input.body,
+      silent: false,
+    })
 
-  notification.show()
+    notification.on("click", () => {
+      const win = BrowserWindow.getAllWindows()[0]
+      if (win) {
+        win.focus()
+        if (input.actionRef) {
+          win.webContents.send("tribunus:push:notification-action", {
+            actionRef: input.actionRef,
+            kind: input.kind,
+            project: input.project,
+          })
+        }
+      }
+    })
+
+    notification.show()
+  }
   lastPermission = "granted"
   return true
 }
