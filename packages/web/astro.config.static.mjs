@@ -27,6 +27,11 @@ export default defineConfig({
     rehypePlugins: [rehypeHeadingIds, [rehypeAutolinkHeadings, { behavior: "wrap" }]],
   },
   build: {},
+  vite: {
+    esbuild: {
+      target: "esnext",
+    },
+  },
   integrations: [
     solidJs(),
     starlight({
