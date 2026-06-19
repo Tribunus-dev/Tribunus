@@ -1,0 +1,71 @@
+---
+title: Compilation
+description: The ComputeImage compilation pipeline — assessment, placement, and golden-path generation
+sidebar:
+  order: 4
+---
+
+## ComputeImage Compilation Pipeline
+
+The compilation pipeline transforms a model into a machine-specific compute image: an executable golden path with known shapes, backend placement, and memory layout.
+
+### Assessment Phase
+
+Before compilation, the system runs an assessment pass that records real backend behavior on the current machine:
+
+- Measures latency per operation family, shape class, sequence length, and dtype
+- Benchmarks candidate custom Metal kernels across workgroup sizes
+- Validates numerical correctness against reference implementations
+- Identifies which backend actually wins for each compute region
+
+Assessment runs during compute-image compilation, never at inference time. This eliminates the performance uncertainty of dynamic backend selection.
+
+### Placement Manifest
+
+The compiler emits a placement manifest specifying:
+
+| Element | Description |
+|---|---|
+| Phase schedule | Ordered compute phases with entry/exit conditions |
+| Backend assignment | Which backend lane executes each phase |
+| Memory layout | Page ranges, arena rings, scratch buffers per phase |
+| Dtype binding | Input/output dtype for each phase |
+| Fallback policy | Legal fallback backends per phase, ordered by preference |
+| Receipt spec | Which receipts each phase must emit |
+
+### Custom Metal Kernel Generation
+
+During compilation, the compiler:
+
+1. Identifies operations amenable to custom Metal kernel acceleration
+2. Generates candidate kernel variants with different workgroup sizes and tile strategies
+3. Benchmarks each candidate on the target device
+4. Validates numerical correctness
+5. Freezes winning variants into the compute image
+
+At runtime, the system never compiles or selects kernels — it uses only already-qualified, frozen kernels from the compute image.
+
+### Golden Path
+
+The golden path is the expected execution trace through the compute image:
+
+- **Known shapes:** all tensor dimensions are known at compile time for the target model
+- **Known placement:** each phase has an assigned backend lane
+- **Known memory:** page layout, arena allocation, and scratch buffers are pre-planned
+- **Known latency:** each phase has a budget; exceeded budgets trigger fallback
+
+The runtime is closer to "lease page, submit known backend region, fence, advance state" than "run dynamic tensor program."
+
+### Receipt Integration
+
+The compilation phase also configures per-phase receipt requirements:
+
+- Which backend executed each region
+- Native symbols called
+- Bytes copied across backend boundaries
+- Arena allocation success/failure
+- Core ML / ANE prediction status
+- Fallback events
+- Scheduler, backend, fence, and copy stage timing
+
+Receipts allow the runtime to distinguish "golden path executed" from "correct output happened through fallback."

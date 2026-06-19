@@ -1,0 +1,32 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0224-capacity-recommendation-engine-design",
+  "type": "mission",
+  "name": "Capacity Recommendation Engine Design",
+  "slug": "capacity-recommendation-engine-design",
+  "description": "Design the capacity recommendation engine that analyzes usage patterns — storage growth, memory pressure, compute demand, concurrency trends, network throughput — and recommends provisioning adjustments. Cover data sources, aggregation window, recommendation model, alert thresholds, and the data schema for both input telemetry and output recommendations.",
+  "purpose": "As the platform scales, manual capacity planning becomes a bottleneck. A recommendation engine that correlates usage telemetry with budget thresholds lets operators provision proactively rather than reactively. The design must specify the data schema before any ingestion pipeline or dashboard can be built, making this the dependency gate for all downstream capacity automation.",
+  "campaignId": "0026",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Design document covering data sources, aggregation windows, recommendation models, and alert thresholds for capacity management",
+    "Published data schema for input telemetry (storage, compute, concurrency, network) and output recommendations (provisioning actions, urgency, confidence score)",
+    "Design reviewed by infrastructure engineering team with documented agreement on data collection approach and recommendation cadence"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "capacity",
+    "recommendation",
+    "telemetry",
+    "provisioning"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:51.712Z",
+  "updated_at": "2026-06-07T05:53:00.332Z"
+}

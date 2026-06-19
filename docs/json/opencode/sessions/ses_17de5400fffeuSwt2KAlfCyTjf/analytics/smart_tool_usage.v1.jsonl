@@ -1,0 +1,2 @@
+{"at":"2026-06-01T07:36:01.099Z","session_id":"ses_17de5400fffeuSwt2KAlfCyTjf","agent":"surgeon","tool":"smart_bun","command":"typecheck","elapsed_ms":24505,"exit_code":2}
+{"at":"2026-06-01T07:38:29.618Z","session_id":"ses_17de5400fffeuSwt2KAlfCyTjf","agent":"surgeon","tool":"smart_bun","command":"tsgo","elapsed_ms":26281,"exit_code":2}

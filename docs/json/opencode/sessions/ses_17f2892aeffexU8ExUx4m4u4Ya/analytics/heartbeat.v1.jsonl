@@ -1,0 +1,4 @@
+{"at":"2026-06-01T01:44:47.239Z","session_id":"ses_17f2892aeffexU8ExUx4m4u4Ya","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"decodeAuthData"}
+{"at":"2026-06-01T01:44:47.241Z","session_id":"ses_17f2892aeffexU8ExUx4m4u4Ya","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"3 matches in 4 files"}
+{"at":"2026-06-01T01:44:48.203Z","session_id":"ses_17f2892aeffexU8ExUx4m4u4Ya","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"annotateLogs"}
+{"at":"2026-06-01T01:44:48.315Z","session_id":"ses_17f2892aeffexU8ExUx4m4u4Ya","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"19 matches in 11 files"}

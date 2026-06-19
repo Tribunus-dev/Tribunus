@@ -1,0 +1,30 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "0039",
+  "title": "Tribunus Datacenter — Evidence-Driven Inference Control Plane for Multi-Engine, Multi-Vendor, Multi-Scale Serving",
+  "status": "proposed",
+  "date": "2026-06-18",
+  "last_modified": "2026-06-18T23:00:00.000Z",
+  "authors": ["system"],
+  "component_imports": [
+    "ACR-0001",
+    "ACR-0002",
+    "ACR-0003",
+    "ACR-0004",
+    "ACR-0005",
+    "ADR-0034",
+    "ADR-0037",
+    "ADR-0038"
+  ],
+  "component_extensions": [],
+  "component_overrides": [],
+  "component_definitions": [],
+  "component_conflicts": [],
+  "tags": ["compute", "datacenter", "control-plane", "dynamo", "vllm", "sglang", "tensorrt-llm", "federated", "dharma", "evidence", "multi-scale"],
+  "context": "Tribunus Local (ADRs 0034-0038) proves evidence-driven phase realization on a single device. The inference serving landscape has three scales sharing the same underlying problem: routing inference work across heterogeneous resources while minimizing recomputation, respecting latency, preserving state, and accounting for contribution. The datacenter space is crowded at the serving-engine layer (vLLM, SGLang, TensorRT-LLM, Dynamo). Tribunus should not become another vLLM. It should become the evidence layer above them.",
+  "decision": "## Decision\n\nDefine Tribunus Datacenter as an evidence-driven inference control plane with three layers:\n\n### Three-Layer Architecture\n\n**Bottom — Backend Runtime Realizers:** Existing serving engines (vLLM, SGLang, TensorRT-LLM, Dynamo), kernel compilers (Triton, CUTLASS, rocBLAS), and future runtimes integrated as realizers. The BackendRuntimeRealizer trait extends BackendRealizer (ADR 0037) with serving-specific capabilities: continuous batching, PagedAttention, prefix caching, request migration.\n\n**Middle — Evidence Contract:** PhaseIR + BackendRealizer evidence system extended with fleet telemetry: p50/p95/p99 latency, TTFT, inter-token latency, cache hit rate, KV transfer time, HBM utilization, GPU occupancy, queue depth, preemption, failed replay, power draw, cost per million tokens.\n\n**Top — SLO/Cost Scheduler:** Routes requests based on model, phase, hardware pool, KV locality, latency target, and cost function (dollars, watt-hours, or Dharma tribute).\n\n### Dynamo Audit Summary\n\nDynamo (NVIDIA AI-Dynamo, Apache 2.0) is the primary design pattern source. 11 subsystems analyzed:\n\n- **Copy concept:** Disaggregated prefill/decode, KV-aware routing, Planner (FPM autoscaler), AIConfigurator, fault tolerance/request migration, Rust/Python split\n- **Adapt interface:** KV Block Manager (multi-tier offload), Grove (replace NVLink topology with generic), ModelExpress (wrap as external runtime), NIXL (replace with transport abstraction for Dharma)\n- **Do not copy:** NVIDIA-specific assumptions (TensorRT-LLM deps, CUDA Graphs hardcoding, NVLink-only)\n\n### Serving Ecosystem Gaps\n\nUniversal gaps across vLLM, SGLang, TensorRT-LLM, KVServe, FlashInfer-Bench, TraCT:\n- No evidence-driven engine selection\n- No compile-time memory pre-declaration\n- No numerical oracle across backends\n- No per-token receipt infrastructure\n- No heterogeneous compute surface targeting\n- No KV cache format standard across engines\n\n### Implementation Phases\n\n1. **Assessment Infrastructure** (3-4 weeks): Fleet telemetry + per-token receipts + cost tracking\n2. **Compute Image for Datacenter** (2-3 weeks): Per-hardware-pool evidence manifests\n3. **Dynamo Integration** (2-3 weeks): BackendRuntimeRealizer wrapping Dynamo as execution substrate\n4. **Cross-Engine KV** (3-4 weeks): KV format standard + KV-aware routing across engines\n5. **Kernel Assessment Loop** (ongoing): FlashInfer-Bench pattern for compile-bench-select-cycle\n\n### Dharma: Federated Mutual-Aid Inference\n\nDharma extends the same architecture to semi-trusted peer networks with a trust plane:\n- Classification: public, session-local, private, derived, non-transferable data tiers\n- Coordination: Valkey/PGlite state machine extended with peer reputation, tribute accounting\n- Transport abstraction: local/LAN/QUIC/WebRTC/relay — resolves \"transfer KV artifact\" to appropriate channel\n\nImplementation targets: federated prefill assistance → prefix-cache sharing for shared docs → speculative assistance (remote drafts, local verification)\n\n### Key Differentiator\n\nTribunus separates semantic portability from executable portability. PhaseIR gives one meaning. BackendRuntimeRealizers produce many possible realizations. The evidence harness decides what is correct, fast, stable, and replayable on this device, at this scale, under this trust model.",
+  "consequences": "**Positive:** Avoids competing head-on with vLLM/SGLang/Dynamo. Sits above them as the selection/admission layer. Same architecture scales from MacBook to Galaxy cluster to mutual-aid network.\n\n**Negative:** Requires engine-specific BackendRuntimeRealizer per integrated system. Cross-engine KV standard requires coordination across open-source projects.\n\n**Effort:** 12-16 weeks full. Phase 1-3 (Fleet-capable): 7-9 weeks. Phase 4-5 +5-7 weeks. Dharma trust plane: additional 6-8 weeks.\n\n**Risk:** NVIDIA Dynamo moving aggressively into control-plane space. Differentiate on multi-vendor support and evidence-driven selection, not just orchestration.",
+  "supersedes": [],
+  "superseded_by": []
+}

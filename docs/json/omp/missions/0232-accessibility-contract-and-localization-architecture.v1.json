@@ -1,0 +1,36 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0232-accessibility-contract-and-localization-architecture",
+  "type": "mission",
+  "name": "Accessibility Contract and Localization Architecture",
+  "slug": "accessibility-contract-and-localization-architecture",
+  "description": "Define the WCAG 2.2 AA accessibility contract and the localization/i18n architecture for Tribunus. Covers screen reader semantics, keyboard-first operation, reduced motion and contrast requirements, focus management, color contrast ratios, touch target sizes, and the locale system for translations, pluralization, RTL layout, and date/number formatting.",
+  "purpose": "Establish a binding accessibility contract that enforces WCAG 2.2 AA compliance across all cockpit surfaces, and a localization architecture that supports multilingual deployments with minimal per-locale overhead.",
+  "campaignId": "0030",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "WCAG 2.2 AA accessibility contract defines success criteria per component (navigation, editor, agent panels, dialogs, notifications)",
+    "Keyboard-first operation specification includes focus order, skip links, keyboard shortcuts, and focus indicators",
+    "Screen reader semantics specification covers ARIA roles, live regions, announcements, and alternative text patterns",
+    "Reduced motion and high contrast modes are specified with implementation guidance",
+    "Localization architecture document defines locale resolution, translation file format, pluralization rules, date/number formatting, and RTL layout strategy"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "accessibility",
+    "wcag",
+    "localization",
+    "i18n",
+    "design",
+    "a11y"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:48:03.074Z",
+  "updated_at": "2026-06-07T05:53:14.606Z"
+}

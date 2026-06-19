@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0001",
+  "type": "mission",
+  "name": "PGlite Durable Intelligence Layer",
+  "slug": "pglite-durable-intelligence-layer",
+  "description": "Set up PGlite as the sole durable truth store for the Codex, dharma ledger, packet provenance, and vector embeddings. Configure pgvector HNSW indexing, pg_textsearch BM25, and live query reactivity.",
+  "purpose": "Establish PGlite as the canonical evidence authority — everything durable lives here. Nothing in Valkey or DuckDB is authoritative without a corresponding PGlite record.",
+  "campaignId": "0001",
+  "status": "completed",
+  "priority": 95,
+  "acceptanceCriteria": [
+    "PGlite stores all diagnostic packets as JSONB with full schema validation",
+    "pgvector HNSW indexes serve symptom-signature similarity search",
+    "pg_textsearch BM25 indexes serve full-text codex queries",
+    "Live queries drive reactive cockpit UI updates",
+    "Every dharma point, packet confirmation, and status transition is an ACID transaction",
+    "Evidence ring materialized as a view over the PGlite transaction log"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:48:00.807Z",
+  "updated_at": "2026-06-06T11:55:55.059Z"
+}

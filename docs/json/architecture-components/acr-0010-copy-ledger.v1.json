@@ -1,0 +1,35 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0010",
+  "title": "Copy Ledger",
+  "status": "proposed",
+  "component_type": "receipt_contract",
+  "owner_subsystem": "copy_accounting",
+  "definition": "Copies are allowed only when classified and receipted; unknown copies are never authority-eligible.",
+  "invariants": [
+    "Copies are allowed only when classified and receipted.",
+    "Unknown copies are not authority-eligible.",
+    "Unreceipted copies are violations."
+  ],
+  "allowed_states": [
+    "classified",
+    "receipted",
+    "audited"
+  ],
+  "forbidden_states": [
+    "unknown_copy",
+    "unreceipted_copy"
+  ],
+  "required_receipts": [
+    "copy_classification_receipt"
+  ],
+  "required_validators": [
+    "copy_ledger_validator"
+  ],
+  "imported_by": [
+    "ADR-0021"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

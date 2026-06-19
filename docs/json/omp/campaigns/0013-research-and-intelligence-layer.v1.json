@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0013",
+  "type": "campaign",
+  "name": "Research and Intelligence Layer",
+  "slug": "research-and-intelligence-layer",
+  "description": "Knowledge ingestion, source packets, citations/evidence, durable memory promotion, bank isolation, recall evaluation, session close consolidation, research queue, contradiction detection, and user/project-specific knowledge routing. Prevents memory and research artifacts from being treated as incidental metadata.",
+  "objective": "Build the research layer: knowledge ingestion, evidence citations, memory promotion, contradiction detection, and project-scoped routing.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-06",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "research",
+    "memory",
+    "knowledge"
+  ],
+  "maturity": "modeled",
+  "horizon": "planned",
+  "created_at": "2026-06-06T17:52:20.313Z",
+  "updated_at": "2026-06-06T17:52:20.313Z"
+}

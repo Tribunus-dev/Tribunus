@@ -1,0 +1,39 @@
+{"at":"2026-06-01T05:37:11.210Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"Cause\\.pretty","path":"packages/opencode"}
+{"at":"2026-06-01T05:37:11.888Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"import.*classifyError","path":"packages/opencode/src"}
+{"at":"2026-06-01T05:37:12.609Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"self-export|export \\* as .* from \"\\./\"","path":"packages/opencode/src/diagnostic"}
+{"at":"2026-06-01T05:37:13.476Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"logWarning|logError|annotateLogs","path":"packages/opencode/src/project/bootstrap.ts"}
+{"at":"2026-06-01T05:38:29.214Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"export \\* as InstanceFailureCodes","path":"packages/opencode/src/diagnostic"}
+{"at":"2026-06-01T05:38:29.975Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"\\.","path":"packages/opencode/src/diagnostic"}
+{"at":"2026-06-01T05:40:02.916Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"export \\* as \\w+ from \"\\.\"","path":"packages/opencode/src"}
+{"at":"2026-06-01T05:41:15.867Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"classifyError","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T05:41:16.342Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"classifyError","path":"packages/opencode/src/storage/adapter.ts"}
+{"at":"2026-06-01T05:41:17.188Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"classifyError|InstanceFailureCodes","path":"packages/opencode/src/diagnostic/instance-failure-codes.ts"}
+{"at":"2026-06-01T05:43:22.475Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"Log\\.warn","path":"packages/opencode"}
+{"at":"2026-06-01T05:43:23.317Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"Effect\\.logWarning","path":"packages/opencode"}
+{"at":"2026-06-01T05:59:46.923Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"log\\.warn","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T05:59:47.771Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"logWarning","path":"packages/opencode/src/project/bootstrap.ts"}
+{"at":"2026-06-01T06:01:57.259Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"^const log |^export const log |Log\\.create|Log\\.logger","path":"packages/opencode/src/config/config.ts"}
+{"at":"2026-06-01T06:04:33.222Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"@opencode-ai/core/util/log","path":"packages/opencode/src"}
+{"at":"2026-06-01T06:05:22.824Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"\"#db\"|'#db'","path":"packages/opencode/src"}
+{"at":"2026-06-01T06:06:08.798Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"Effect\\.logWarning.*cause","path":"packages/opencode/src"}
+{"at":"2026-06-01T06:06:09.475Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"Effect\\.log","path":"packages/opencode/src"}
+{"at":"2026-06-01T06:07:07.220Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","command":"typecheck","elapsed_ms":40389,"exit_code":2}
+{"at":"2026-06-01T06:10:01.011Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","command":"tsgo","elapsed_ms":29942,"exit_code":2}
+{"at":"2026-06-01T06:10:45.168Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_bun","command":"tsc","elapsed_ms":12473,"exit_code":2}
+{"at":"2026-06-01T06:11:58.258Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":".","path":"packages/opencode/src/effect"}
+{"at":"2026-06-01T06:12:00.683Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"export.*HealthRegistry|export.*HealthStatus","path":"packages/opencode/src/server"}
+{"at":"2026-06-01T06:12:00.701Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"export.*Service","path":"packages/opencode/src/reference"}
+{"at":"2026-06-01T06:12:20.065Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"Effect\\.logWarning|Effect\\.logError","path":"packages/opencode/src/plugin/index.ts"}
+{"at":"2026-06-01T06:12:46.047Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"Cause\\.isCause","path":"packages/opencode/src"}
+{"at":"2026-06-01T06:12:46.401Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"Cause\\.isCause","path":"packages/opencode"}
+{"at":"2026-06-01T06:14:13.637Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"isCause","path":"packages/opencode/node_modules/effect"}
+{"at":"2026-06-01T06:14:54.020Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"isCause","path":"packages/opencode/node_modules/effect/src/Cause.ts"}
+{"at":"2026-06-01T06:15:11.527Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"logWarning.*\\{.*cause|logError.*\\{.*cause|logInfo.*\\{.*cause","path":"packages/opencode/src"}
+{"at":"2026-06-01T06:15:11.596Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":", cause\\b","path":"packages/opencode/src"}
+{"at":"2026-06-01T06:16:08.950Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"MERGE|TODO|FIXME|HACK|BUG","path":"packages/opencode/src/diagnostic/instance-failure-codes.ts"}
+{"at":"2026-06-01T06:16:54.393Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"applyMigrations","path":"packages/opencode/src/storage/adapter.ts"}
+{"at":"2026-06-01T06:16:54.409Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"checkSQLFirewall|checkDuckDBSQLFirewall","path":"packages/opencode/src/storage/adapter.ts"}
+{"at":"2026-06-01T06:16:54.430Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"HealthRegistry|HealthStatus","path":"packages/opencode/src/storage/adapter.ts"}
+{"at":"2026-06-01T06:17:08.726Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"ShareNext|InstanceTrace|Reference","path":"packages/opencode/src/project/bootstrap.ts"}
+{"at":"2026-06-01T06:18:16.198Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"export.*pretty","path":"packages/opencode/node_modules/effect/src/Cause.ts"}
+{"at":"2026-06-01T06:18:55.060Z","session_id":"ses_17e54b88dffeD9d9l2A67ivwJ3","agent":"monitor","tool":"smart_grep","pattern":"export.*isCause","path":"packages/opencode/node_modules/effect/src/Cause.ts"}

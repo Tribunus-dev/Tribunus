@@ -1,0 +1,29 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "type": "mission",
+  "name": "Storage Kernel Adapter Wiring",
+  "slug": "storage-kernel-adapter-wiring-0009",
+  "description": "Wire real storage adapters behind the storage kernel ports while preserving in-memory tests as reference. Implementation order: PGlite/PostgreSQL first (durable truth), then Valkey (coordination visibility), then DuckDB (projection). Do not expand reconciliation logic — attach adapters that obey the same contract as the mock.",
+  "purpose": "Attach PGlite/PostgreSQL, Valkey, and DuckDB adapters to DurableAuthorityPort, CoordinationPort, and ProjectionPort respectively. Prove real adapters obey the same contract as the mock implementation.",
+  "campaignId": "0009",
+  "status": "not_started",
+  "priority": 95,
+  "acceptanceCriteria": [
+    "pglite_durable_authority_adapter_exists=true",
+    "valkey_coordination_adapter_exists=true",
+    "duckdb_projection_adapter_exists=true",
+    "in_memory_reference_tests_still_green=true",
+    "pglite_receipt_commit_roundtrip_green=true",
+    "valkey_ack_without_pglite_receipt_rejected=true",
+    "duckdb_projection_without_receipt_rejected=true",
+    "reconciliation_report_generated_from_real_adapters=true",
+    "projection_never_authority=true"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": ["storage-kernel", "adapters", "0009"],
+  "created_at": "2026-06-14T19:00:00.000Z",
+  "updated_at": "2026-06-14T19:00:00.000Z"
+}

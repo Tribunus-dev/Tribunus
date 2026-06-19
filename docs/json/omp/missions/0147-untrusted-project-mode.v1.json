@@ -1,0 +1,44 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0147-untrusted-project-mode",
+  "type": "mission",
+  "name": "Untrusted Project Mode",
+  "slug": "untrusted-project-mode",
+  "description": "When opening a project from an untrusted source (downloaded, external drive, unknown origin), the application enters restricted mode: no network, no filesystem writes outside project, no process spawn, limited extension capabilities.",
+  "purpose": "Protect the system from malicious projects by automatically restricting capabilities when opening untrusted content, preventing network access, filesystem writes, and process execution.",
+  "campaignId": "0018",
+  "status": "completed",
+  "priority": 75,
+  "acceptanceCriteria": [
+    "Untrusted source detection is implemented (download flag, extended attributes, user designation)",
+    "Untrusted mode restricts: no network egress, no filesystem writes outside project dir, no process spawn",
+    "Extensions run with reduced capabilities in untrusted mode",
+    "User is clearly notified that project is in restricted mode",
+    "User can explicitly trust a project to lift restrictions",
+    "Restricted mode violations produce security event receipts"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "missions0018"
+  ],
+  "tags": [
+    "security",
+    "untrusted-mode",
+    "sandbox"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:44:55.757Z",
+  "updated_at": "2026-06-07T05:51:44.633Z"
+}

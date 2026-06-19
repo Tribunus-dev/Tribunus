@@ -1,0 +1,34 @@
+name: Linux Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        features: ["linux", "linux-vulkan", "linux-intel", "linux-cpu"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo bash scripts/install-linux-deps.sh
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Build compute-native
+      run: |
+        cd packages/compute-native
+        cargo build --features ${{ matrix.features }}
+
+    - name: Test compute-native (CPU only)
+      run: |
+        cd packages/compute-native
+        cargo test --features ${{ matrix.features }} --lib linux::device

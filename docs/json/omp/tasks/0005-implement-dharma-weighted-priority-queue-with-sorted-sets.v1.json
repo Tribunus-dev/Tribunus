@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "0005",
+  "type": "task",
+  "name": "Implement dharma-weighted priority queue with sorted sets",
+  "slug": "implement-dharma-weighted-priority-queue-with-sorted-sets",
+  "description": "Implement community support queue using Valkey sorted sets. Score = BaseUrgency × DharmaScore × MatchRelevance × RecencyOfContribution. ZRANGEBYSCORE for dequeuing, ZINCRBY for dharma adjustments. Implement due-time wheel for timed obligations with score = Unix timestamp. This task covers sorted-set mechanics — it does not claim end-to-end work queue correctness, which requires the durable-first scheduler promotion task.",
+  "laneId": "0004",
+  "missionId": "0002",
+  "status": "completed",
+  "priority": 90,
+  "estimatedEffort": "3 days",
+  "actualEffort": null,
+  "dependsOn": [
+    "Bind completeAndAck/failTerminalAndAck/failRetryableAndAck/deadLetterAndAck to PGlite lifecycle writes"
+  ],
+  "blocks": [],
+  "assignedTo": "system",
+  "startedAt": "2026-06-06T09:13:01.166Z",
+  "completedAt": "2026-06-06T11:36:37.636Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:51:50.774Z",
+  "updated_at": "2026-06-06T11:36:37.636Z"
+}

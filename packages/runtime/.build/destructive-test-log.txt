@@ -1,0 +1,26 @@
+✅ PASS: TEST 1.1: layer builds without crash when kill switch active
+✅ PASS: TEST 1.2: writePhase is no-op with kill switch (no throw)
+✅ PASS: TEST 1.3: writeFailure is no-op with kill switch (no throw)
+✅ PASS: TEST 1.4: no trace file created at all with kill switch
+✅ PASS: TEST 2.1: layer builds successfully in fresh dir
+✅ PASS: TEST 2.2: auto-write succeeded — instance.booting entry present
+✅ PASS: TEST 2.3: layer builds in deeply nested fresh dir
+✅ PASS: TEST 2.4: trace file created in deeply nested fresh dir
+✅ PASS: TEST 3.1: writePhase to read-only dir does not throw (catchAll works)
+✅ PASS: TEST 3.2: writeFailure to read-only dir does not throw (catchAll works)
+✅ PASS: TEST 3.3: latestEntry returns undefined gracefully when dir is read-only (no throw)
+✅ PASS: TEST 3b.1: layer builds without crash when dir is read-only (initial write fails gracefully)
+✅ PASS: TEST 4.1: layer builds without crash when trace path is a directory
+✅ PASS: TEST 4.2: writePhase does not throw when trace path is a directory
+✅ PASS: TEST 4.3: writeFailure does not throw when trace path is a directory
+✅ PASS: TEST 4b.1: writePhase to read-only file does not throw
+✅ PASS: TEST 5.1: writePhase with unicode message in unicode path does not throw
+✅ PASS: TEST 5.2: unicode message round-trips correctly through JSONL
+✅ PASS: TEST 5.3: layer builds in directory with spaces in path
+✅ PASS: TEST 5.4: trace file created in directory with spaces
+✅ PASS: TEST 6.1: 5 concurrent writePhase calls complete without crash
+✅ PASS: TEST 6.2: all 5 concurrent entries present (5 found)
+✅ PASS: TEST 6.3: total line count correct (6 = 1 booting + 5 concurrent)
+✅ PASS: TEST 6.4: all 5 concurrent entries have distinct messages
+
+✅ SUCCESS: catchCause prevented all crashes in all destructive scenarios.

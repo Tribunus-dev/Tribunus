@@ -1,0 +1,26 @@
+{"at":"2026-06-01T02:05:20.443Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"export (const|type|interface) (RuntimeEvent|Binder|TerminalStatus|LaneState)"}
+{"at":"2026-06-01T02:05:20.466Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"19 matches in 19 files"}
+{"at":"2026-06-01T02:05:26.869Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"TODO\\(F4\\)"}
+{"at":"2026-06-01T02:05:26.870Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"10 matches in 1 files"}
+{"at":"2026-06-01T02:07:26.051Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":".*"}
+{"at":"2026-06-01T02:07:26.051Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"30 matches in 1 files"}
+{"at":"2026-06-01T02:10:20.226Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"RuntimeEvent"}
+{"at":"2026-06-01T02:10:20.228Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"12 matches in 1 files"}
+{"at":"2026-06-01T02:10:21.309Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"^export (const|type) (LaneState|TerminalStatus|RuntimeEvent|Binder)"}
+{"at":"2026-06-01T02:10:21.309Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T02:10:22.252Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"^export (type|interface) (LaneState|TerminalStatus|Binder)"}
+{"at":"2026-06-01T02:10:22.253Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:12:12.189Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"^export interface Binder"}
+{"at":"2026-06-01T02:12:12.190Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:15:16.268Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"^export interface RuntimeEvent \\{"}
+{"at":"2026-06-01T02:15:16.269Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:15:17.153Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"^export const LaneState = Schema"}
+{"at":"2026-06-01T02:15:17.155Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:15:17.980Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"^export const TerminalStatus = Schema"}
+{"at":"2026-06-01T02:15:17.981Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:15:18.881Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"^export const RuntimeEvent = Schema"}
+{"at":"2026-06-01T02:15:18.882Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:15:19.712Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"^export const Binder = Schema"}
+{"at":"2026-06-01T02:15:19.715Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:30:11.472Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*.test.ts"}
+{"at":"2026-06-01T02:30:11.474Z","session_id":"ses_17f1a7f25ffemlC2j3fJLuCgWJ","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*.test.ts"}

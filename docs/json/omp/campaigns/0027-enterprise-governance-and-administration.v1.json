@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0027",
+  "type": "campaign",
+  "name": "Enterprise Governance and Administration",
+  "slug": "enterprise-governance-and-administration",
+  "description": "Enterprise tenant model, central policy administration, SSO and identity federation, SCIM provisioning, organization-wide extension policy, model provider allowlist, data residency controls, audit export, retention and legal hold, administrative device controls, network proxy and private endpoint support, policy bundles, managed updates, enterprise support diagnostics, delegated administration, compliance evidence packs, and air-gapped deployment research.",
+  "objective": "Build enterprise governance: tenants, SSO, SCIM, policy administration, data residency, compliance evidence, and air-gapped deployment.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "enterprise",
+    "governance",
+    "sso",
+    "compliance"
+  ],
+  "maturity": "modeled",
+  "horizon": "strategic",
+  "created_at": "2026-06-07T04:36:06.328Z",
+  "updated_at": "2026-06-07T04:36:06.328Z"
+}

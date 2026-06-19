@@ -1,0 +1,35 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0233-integration-permission-model-and-connector-architecture",
+  "type": "mission",
+  "name": "Integration Permission Model and Connector Architecture",
+  "slug": "integration-permission-model-and-connector-architecture",
+  "description": "Design the integration permission model governing what third-party connectors can access (repositories, issues, secrets, files, network) and the connector health monitoring architecture. Covers permission scopes, consent flows, revocation, audit logging, connector lifecycle (register/enable/disable/remove), heartbeat check, rate limit tracking, and degraded-mode fallbacks.",
+  "purpose": "Provide a secure, auditable permission model for every integration connector, and a health monitoring framework that detects connector degradation before it affects users.",
+  "campaignId": "0031",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Permission model specification defines scopes (repo-read, repo-write, issue-read, issue-write, secrets, network), consent UX, and scope revocation",
+    "Connector lifecycle specification covers register, enable, disable, remove and their state transitions",
+    "Health monitoring architecture defines heartbeat check, rate limit tracking, error rate thresholds, and degraded-mode fallback",
+    "Audit logging schema captures permission grants, revocations, connector health transitions, and access attempts",
+    "Connector interface specification defines the abstract connector abstraction with required methods and lifecycle hooks"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "integrations",
+    "permissions",
+    "connectors",
+    "security",
+    "monitoring"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:48:03.075Z",
+  "updated_at": "2026-06-07T05:53:26.156Z"
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0221-test-taxonomy-and-coverage-baseline",
+  "type": "mission",
+  "name": "Test Taxonomy and Coverage Baseline",
+  "slug": "test-taxonomy-and-coverage-baseline",
+  "description": "Define the test taxonomy classifying tests by scope (unit, integration, contract, e2e), technique (property-based, state-machine, fuzzing, chaos), and target (desktop, PWA, compute, protocol, storage). Establish current coverage baseline across all packages using instrumentation or static analysis and publish a report identifying gaps.",
+  "purpose": "Before quality engineering can improve test coverage or enforce release gates, the project needs a shared vocabulary for what kinds of tests exist and a measured baseline of current coverage. Without taxonomy, teams use inconsistent terminology; without baseline, there is no way to measure improvement or detect regression in test coverage over time.",
+  "campaignId": "0025",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Published test taxonomy document with classification dimensions (scope, technique, target) and examples from the codebase",
+    "Coverage baseline report for all first-party packages showing line coverage, branch coverage, and test count per taxonomy category",
+    "Gap analysis identifying package-category combinations with zero coverage and prioritized remediation recommendations"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "testing",
+    "taxonomy",
+    "coverage",
+    "quality-engineering"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:51.709Z",
+  "updated_at": "2026-06-07T05:51:21.528Z"
+}

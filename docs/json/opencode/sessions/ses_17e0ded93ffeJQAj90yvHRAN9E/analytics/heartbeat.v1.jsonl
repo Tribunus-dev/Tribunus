@@ -1,0 +1,114 @@
+{"at":"2026-06-01T06:49:54.849Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"savePluginHealthStore"}
+{"at":"2026-06-01T06:49:55.074Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"4 matches in 500 files"}
+{"at":"2026-06-01T06:49:55.646Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"publishPluginError"}
+{"at":"2026-06-01T06:49:55.752Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"5 matches in 500 files"}
+{"at":"2026-06-01T06:49:56.088Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"McpErrorCode"}
+{"at":"2026-06-01T06:49:56.202Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T06:49:56.892Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\.create\\("}
+{"at":"2026-06-01T06:49:56.983Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T06:49:57.494Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Plugin\\.init\\("}
+{"at":"2026-06-01T06:49:57.589Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T06:49:58.238Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.catchAll"}
+{"at":"2026-06-01T06:49:58.239Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:50:13.676Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\."}
+{"at":"2026-06-01T06:50:14.009Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"57 matches in 10 files"}
+{"at":"2026-06-01T06:50:14.390Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Plugin\\."}
+{"at":"2026-06-01T06:50:14.489Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"42 matches in 12 files"}
+{"at":"2026-06-01T06:50:15.161Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.catchAll"}
+{"at":"2026-06-01T06:50:15.165Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:50:15.859Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.tryPromise"}
+{"at":"2026-06-01T06:50:15.859Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"7 matches in 1 files"}
+{"at":"2026-06-01T06:50:16.531Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.ignore"}
+{"at":"2026-06-01T06:50:16.532Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T06:50:53.489Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"import.*MCP|from.*mcp"}
+{"at":"2026-06-01T06:50:53.593Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"28 matches in 13 files"}
+{"at":"2026-06-01T06:50:54.389Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"import.*Plugin|from.*plugin"}
+{"at":"2026-06-01T06:50:54.487Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"66 matches in 29 files"}
+{"at":"2026-06-01T06:51:17.520Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.withSpan"}
+{"at":"2026-06-01T06:51:17.520Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:51:18.137Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.withSpan"}
+{"at":"2026-06-01T06:51:18.138Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:51:37.192Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"^\\s*(const|export const|function)\\s+create"}
+{"at":"2026-06-01T06:51:37.194Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T06:51:38.217Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"\"MCP\\.create\"|\\\"MCP\\.create\\\"|MCP\\.create"}
+{"at":"2026-06-01T06:51:38.217Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T06:51:39.095Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"^\\s*(const|function)\\s+init"}
+{"at":"2026-06-01T06:51:39.096Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T06:51:39.974Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"\"Plugin\\.init\"|\\\"Plugin\\.init\\\"|Plugin\\.init\\b"}
+{"at":"2026-06-01T06:51:39.976Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:51:40.863Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"\\.init\\("}
+{"at":"2026-06-01T06:51:40.864Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:51:57.173Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"McpErrorCode"}
+{"at":"2026-06-01T06:51:57.352Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T06:51:58.323Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"\\bcreate\\b.*MCP|plugin.*\\.init|\\.init.*plugin"}
+{"at":"2026-06-01T06:51:58.452Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"3 matches in 2 files"}
+{"at":"2026-06-01T06:52:15.474Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"create|init"}
+{"at":"2026-06-01T06:52:15.475Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T06:52:18.015Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\.create\\(|\\.create\\b"}
+{"at":"2026-06-01T06:52:18.016Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T06:52:35.609Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"createAndStore|\\\"MCP\\.createAndStore\\\""}
+{"at":"2026-06-01T06:52:35.610Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T06:52:37.020Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"plugin\\.init"}
+{"at":"2026-06-01T06:52:37.199Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T06:52:37.763Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\.createAndStore|createAndStore"}
+{"at":"2026-06-01T06:52:37.876Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"5 matches in 500 files"}
+{"at":"2026-06-01T06:52:56.578Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"interface.*MCP|class MCP|MCP\\.Service|Service.*MCP"}
+{"at":"2026-06-01T06:52:56.579Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:52:57.562Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"plugin|mcp"}
+{"at":"2026-06-01T06:52:57.682Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1306 matches in 91 files"}
+{"at":"2026-06-01T06:52:58.373Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_find","phase":"started","detail":"*plugin*.test*"}
+{"at":"2026-06-01T06:52:58.517Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_find","phase":"completed","detail":"*plugin*.test*"}
+{"at":"2026-06-01T06:52:58.989Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_find","phase":"started","detail":"*mcp*.test*"}
+{"at":"2026-06-01T06:52:59.137Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_find","phase":"completed","detail":"*mcp*.test*"}
+{"at":"2026-06-01T06:52:59.665Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_find","phase":"started","detail":"*bootstrap*.test*"}
+{"at":"2026-06-01T06:52:59.782Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_find","phase":"completed","detail":"*bootstrap*.test*"}
+{"at":"2026-06-01T06:53:14.972Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"classifyError|classifyErrorCode"}
+{"at":"2026-06-01T06:53:15.121Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"13 matches in 500 files"}
+{"at":"2026-06-01T06:53:15.760Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.withSpan"}
+{"at":"2026-06-01T06:53:15.860Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"11 matches in 7 files"}
+{"at":"2026-06-01T06:53:16.695Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"lifecycle\\.test"}
+{"at":"2026-06-01T06:53:16.696Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:53:52.028Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"\\.create\\(|\\.init\\(|\\.trigger\\(|\\.remove\\(|\\.connect\\(|\\.list\\("}
+{"at":"2026-06-01T06:53:52.030Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:53:53.215Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"\\.create\\(|\\.init\\(|\\.trigger\\(|\\.remove\\(|\\.connect\\(|\\.list\\("}
+{"at":"2026-06-01T06:53:53.215Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:54:04.685Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"export interface Interface \\{"}
+{"at":"2026-06-01T06:54:04.686Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:54:05.466Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"export interface Interface \\{"}
+{"at":"2026-06-01T06:54:05.469Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:54:06.542Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\.Service"}
+{"at":"2026-06-01T06:54:06.542Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:54:07.646Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\.Service|Plugin\\.Service"}
+{"at":"2026-06-01T06:54:07.647Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T06:54:18.396Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"^export interface Interface"}
+{"at":"2026-06-01T06:54:18.398Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:54:19.280Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"^export interface Interface"}
+{"at":"2026-06-01T06:54:19.281Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:54:42.904Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\(\\\"Plugin\\.init\\\"\\)"}
+{"at":"2026-06-01T06:54:42.905Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:54:43.805Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Service\\.of\\("}
+{"at":"2026-06-01T06:54:43.805Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:54:44.687Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"getCrashStatus"}
+{"at":"2026-06-01T06:54:44.866Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"4 matches in 500 files"}
+{"at":"2026-06-01T06:54:45.633Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\."}
+{"at":"2026-06-01T06:54:45.634Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"23 matches in 1 files"}
+{"at":"2026-06-01T06:54:58.240Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"return Service\\.of\\(\\{"}
+{"at":"2026-06-01T06:54:58.241Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T06:54:59.271Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\.Service\\.use|Plugin\\.Service\\.use"}
+{"at":"2026-06-01T06:54:59.461Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T06:55:14.571Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Service\\.use"}
+{"at":"2026-06-01T06:55:14.926Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"20 matches in 11 files"}
+{"at":"2026-06-01T06:55:45.253Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"MCP\\.Status|MCP\\.create|MCP\\.remove|MCP\\.connect"}
+{"at":"2026-06-01T06:55:45.276Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"4 matches in 64 files"}
+{"at":"2026-06-01T06:55:55.763Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"Plugin\\.layer|Plugin\\.defaultLayer"}
+{"at":"2026-06-01T06:55:55.978Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"8 matches in 8 files"}
+{"at":"2026-06-01T06:55:56.516Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"savePluginHealthStore|loadPluginHealthStore|pluginHealthStore"}
+{"at":"2026-06-01T06:55:56.643Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"0 matches in 368 files"}
+{"at":"2026-06-01T06:55:57.457Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"classifyError|classifyErrorCode"}
+{"at":"2026-06-01T06:55:57.539Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"134 matches in 2 files"}
+{"at":"2026-06-01T06:56:14.048Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"CONNECTION_FAILED|TOOL_LIST_FAILED|AUTH_FAILED|AUTH_EXPIRED|STDIO_SPAWN_FAILED|T"}
+{"at":"2026-06-01T06:56:14.286Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T06:56:15.279Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"McpErrorCode|McpFailedError|NotFoundError.*MCP"}
+{"at":"2026-06-01T06:56:15.385Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"10 matches in 2 files"}
+{"at":"2026-06-01T06:56:21.597Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"started","detail":"McpFailedError|NotFoundError"}
+{"at":"2026-06-01T06:56:21.598Z","session_id":"ses_17e0ded93ffeJQAj90yvHRAN9E","agent":"impact-assessor","tool":"smart_grep","phase":"completed","detail":"12 matches in 1 files"}

@@ -1,0 +1,17 @@
+{"at":"2026-06-01T01:50:50.522Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_find","pattern":"tsconfig.json","path":""}
+{"at":"2026-06-01T01:51:05.825Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_find","pattern":"bunfig.toml","path":""}
+{"at":"2026-06-01T01:51:21.030Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_find","pattern":"package.json","path":""}
+{"at":"2026-06-01T01:51:35.400Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_find","pattern":"astro.config.*","path":""}
+{"at":"2026-06-01T01:55:26.728Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"\"22\\.0\\.2\"","path":""}
+{"at":"2026-06-01T01:55:28.507Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"@tsconfig/node22","path":""}
+{"at":"2026-06-01T01:55:46.421Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"\"typecheck\"","path":""}
+{"at":"2026-06-01T01:59:35.602Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"@tsconfig/bun","path":""}
+{"at":"2026-06-01T01:59:48.464Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"@tsconfig/bun/tsconfig","path":""}
+{"at":"2026-06-01T02:01:37.523Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"\"@tsconfig/(bun|node22)\"","path":""}
+{"at":"2026-06-01T02:14:28.289Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_find","pattern":"typecheck*","path":".github/workflows"}
+{"at":"2026-06-01T02:26:20.200Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_find","pattern":"*.ts","path":"packages/console/resource"}
+{"at":"2026-06-01T02:26:21.003Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_find","pattern":"*.ts","path":"packages/function/src"}
+{"at":"2026-06-01T02:26:21.808Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_find","pattern":"*.ts","path":"packages/script/src"}
+{"at":"2026-06-01T02:28:54.729Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"@ts-ignore|@ts-expect-error","path":"packages/console/resource"}
+{"at":"2026-06-01T02:28:55.452Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"@ts-ignore|@ts-expect-error","path":"packages/function"}
+{"at":"2026-06-01T02:28:56.339Z","session_id":"ses_17f2307c3ffeZRzOwKOgaivEL3","agent":"critic","tool":"smart_grep","pattern":"@ts-ignore|@ts-expect-error","path":"packages/script"}

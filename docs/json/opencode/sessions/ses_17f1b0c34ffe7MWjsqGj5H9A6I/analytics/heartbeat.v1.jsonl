@@ -1,0 +1,56 @@
+{"at":"2026-06-01T02:03:08.246Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"RuntimeEvent"}
+{"at":"2026-06-01T02:03:08.248Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 5 files"}
+{"at":"2026-06-01T02:03:09.122Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*RuntimeEvent"}
+{"at":"2026-06-01T02:03:09.275Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"16 matches in 500 files"}
+{"at":"2026-06-01T02:03:10.152Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"Campaign\\.RuntimeEvent"}
+{"at":"2026-06-01T02:03:10.251Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:03:11.005Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"SMRuntimeEvent"}
+{"at":"2026-06-01T02:03:11.091Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"27 matches in 500 files"}
+{"at":"2026-06-01T02:04:32.799Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*LaneState"}
+{"at":"2026-06-01T02:04:32.946Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"7 matches in 500 files"}
+{"at":"2026-06-01T02:04:33.746Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*TerminalStatus"}
+{"at":"2026-06-01T02:04:33.842Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:04:34.897Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"Campaign\\.LaneState|Campaign\\.TerminalStatus|Campaign\\.Binder"}
+{"at":"2026-06-01T02:04:35.040Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:04:36.470Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\/binder|from.*\\/types|from.*\\/integrator|from.*\\/campaign"}
+{"at":"2026-06-01T02:04:36.577Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"42 matches in 38 files"}
+{"at":"2026-06-01T02:06:12.687Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"RuntimeEvent"}
+{"at":"2026-06-01T02:06:12.688Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:06:13.464Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"TerminalStatus"}
+{"at":"2026-06-01T02:06:13.729Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"9 matches in 500 files"}
+{"at":"2026-06-01T02:06:14.879Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"\\.\\/state-machine\\\"|from.*\\\"\\.\\.\\/campaign\\\"|from.*\\\"\\@\\/campaign\\\""}
+{"at":"2026-06-01T02:06:14.972Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"6 matches in 5 files"}
+{"at":"2026-06-01T02:06:15.766Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"push-gate"}
+{"at":"2026-06-01T02:06:15.886Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:11:27.820Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"\\@\\/campaign\\\""}
+{"at":"2026-06-01T02:11:27.990Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:11:28.851Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"\\.\\.\\/campaign\\\"|from.*\\\"\\.\\./campaign/"}
+{"at":"2026-06-01T02:11:28.996Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:11:29.453Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*Campaign"}
+{"at":"2026-06-01T02:11:29.481Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 25 files"}
+{"at":"2026-06-01T02:11:30.211Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*Campaign|import.*campaign"}
+{"at":"2026-06-01T02:11:30.245Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 79 files"}
+{"at":"2026-06-01T02:13:14.499Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*campaign"}
+{"at":"2026-06-01T02:13:14.689Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"8 matches in 500 files"}
+{"at":"2026-06-01T02:14:40.113Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"\\.\\/state-machine\\\"|from.*\\\"\\..\\/state-machine\\\"|from.*\\\"\\.\\.\\/campaign\\"}
+{"at":"2026-06-01T02:14:40.187Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"6 matches in 500 files"}
+{"at":"2026-06-01T02:14:41.094Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"\\.\\/binder\\\"|from.*\\\"\\.\\/types\\\"|from.*\\\"\\.\\/integrator\\\""}
+{"at":"2026-06-01T02:14:41.118Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"9 matches in 19 files"}
+{"at":"2026-06-01T02:14:42.075Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"LaneState|TerminalStatus|Binder"}
+{"at":"2026-06-01T02:14:42.076Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"72 matches in 1 files"}
+{"at":"2026-06-01T02:19:50.309Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"test.*campaign|spec.*campaign|campaign.*test|campaign.*spec"}
+{"at":"2026-06-01T02:19:50.311Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:19:50.880Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*.test.ts"}
+{"at":"2026-06-01T02:19:50.882Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*.test.ts"}
+{"at":"2026-06-01T02:19:51.913Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*\\\"\\..\\/campaign"}
+{"at":"2026-06-01T02:19:52.010Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:23:55.121Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"Binder"}
+{"at":"2026-06-01T02:23:55.130Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 25 files"}
+{"at":"2026-06-01T02:23:55.156Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"Binder"}
+{"at":"2026-06-01T02:23:55.187Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 79 files"}
+{"at":"2026-06-01T02:29:14.901Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"export type LaneState"}
+{"at":"2026-06-01T02:29:14.909Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"5 matches in 19 files"}
+{"at":"2026-06-01T02:29:15.768Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"export type TerminalStatus"}
+{"at":"2026-06-01T02:29:15.773Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"2 matches in 19 files"}
+{"at":"2026-06-01T02:29:16.774Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"export interface Binder|export type Binder"}
+{"at":"2026-06-01T02:29:16.779Z","session_id":"ses_17f1b0c34ffe7MWjsqGj5H9A6I","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"4 matches in 19 files"}

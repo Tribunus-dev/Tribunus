@@ -1,0 +1,444 @@
+import { createRequire } from "node:module"
+import { resolve, join, dirname } from "node:path"
+import { rmSync, readFileSync } from "node:fs"
+import { pathToFileURL, fileURLToPath } from "node:url"
+import { mkdir, open, unlink, writeFile, readFile } from "node:fs/promises"
+import type { FileHandle } from "node:fs/promises"
+import { homedir } from "node:os"
+import * as crypto from "node:crypto"
+
+function sha256Hex(data: string): string {
+  return crypto.createHash("sha256").update(data).digest("hex")
+}
+
+// ── Paths ───────────────────────────────────────────────────────────────────
+
+function bootstrapStoreDir(): string {
+  return resolve(process.cwd(), "packages", "tribunus-mcp", "state", "pglite")
+}
+
+export function getStoreDir(): string {
+  if (process.env.TRIBUNUS_STORE_DIR) return resolve(process.env.TRIBUNUS_STORE_DIR)
+  return bootstrapStoreDir()
+}
+
+function lockFilePath(dir: string): string {
+  return join(dir, ".owner.lock")
+}
+
+const OMP_STORE_DIR = resolve(process.cwd(), ".omp", "state", "pglite")
+
+function isRecoverablePGliteError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error)
+  return /PGlite failed to initialize properly|postmaster\.pid|\.s\.PGSQL|database is locked/i.test(message)
+}
+
+// ── Types ───────────────────────────────────────────────────────────────────
+
+export interface PgliteQueryResult {
+  rows: Array<Record<string, unknown>>
+}
+
+export interface PgliteDb {
+  query(sql: string, params?: unknown[]): Promise<PgliteQueryResult>
+  exec(sql: string): Promise<void>
+  close(): Promise<void>
+}
+
+interface Migration {
+  version: number
+  name: string
+  sql: string
+}
+
+// ── Migrations ──────────────────────────────────────────────────────────────
+
+const MIGRATIONS: Migration[] = [
+  {
+    version: 1,
+    name: "base_schema",
+    sql: `
+      CREATE TABLE IF NOT EXISTS schema_version (version INTEGER PRIMARY KEY, applied_at TIMESTAMP DEFAULT NOW(), checksum TEXT);
+
+      CREATE TABLE IF NOT EXISTS store_migrations (
+        id TEXT PRIMARY KEY,
+        source_path TEXT NOT NULL,
+        dest_path TEXT NOT NULL,
+        source_schema_version INTEGER,
+        dest_schema_version INTEGER,
+        started_at TIMESTAMP DEFAULT NOW(),
+        completed_at TIMESTAMP,
+        status TEXT NOT NULL DEFAULT 'running',
+        tables_copied INTEGER DEFAULT 0,
+        rows_copied INTEGER DEFAULT 0,
+        validation_result TEXT,
+        source_digest TEXT,
+        error TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS secrets (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS sessions (
+        session_id TEXT PRIMARY KEY,
+        status TEXT NOT NULL DEFAULT 'active',
+        owner_pid INTEGER,
+        heartbeat_at TIMESTAMP DEFAULT NOW(),
+        lease_expires_at TIMESTAMP,
+        started_at TIMESTAMP DEFAULT NOW(),
+        ended_at TIMESTAMP,
+        metadata TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS invocations (
+        invocation_id TEXT PRIMARY KEY,
+        session_id TEXT,
+        tool TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'running',
+        started_at TIMESTAMP DEFAULT NOW(),
+        ended_at TIMESTAMP,
+        duration_ms INTEGER,
+        exit_code INTEGER,
+        errors TEXT,
+        receipt TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS path_locks (
+        path TEXT PRIMARY KEY,
+        session_id TEXT NOT NULL,
+        owner_pid INTEGER,
+        acquired_at TIMESTAMP DEFAULT NOW(),
+        expires_at TIMESTAMP,
+        lock_type TEXT NOT NULL DEFAULT 'write'
+      );
+
+      CREATE TABLE IF NOT EXISTS artifacts (
+        artifact_id TEXT PRIMARY KEY,
+        invocation_id TEXT,
+        path TEXT NOT NULL,
+        digest TEXT,
+        size_bytes INTEGER,
+        created_at TIMESTAMP DEFAULT NOW(),
+        metadata TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS mnemopi_memory (
+        id TEXT PRIMARY KEY,
+        content TEXT NOT NULL,
+        source TEXT DEFAULT '',
+        timestamp TEXT NOT NULL,
+        session_id TEXT DEFAULT '',
+        importance REAL DEFAULT 0.5,
+        memory_type TEXT DEFAULT 'unknown',
+        scope TEXT DEFAULT 'session',
+        metadata_json TEXT,
+        synced_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS mnemopi_push_log (
+        id TEXT PRIMARY KEY,
+        pushed_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_sessions_status ON sessions(status);
+      CREATE INDEX IF NOT EXISTS idx_sessions_heartbeat ON sessions(heartbeat_at);
+      CREATE INDEX IF NOT EXISTS idx_invocations_session ON invocations(session_id);
+      CREATE INDEX IF NOT EXISTS idx_invocations_tool ON invocations(tool);
+      CREATE INDEX IF NOT EXISTS idx_invocations_status ON invocations(status);
+      CREATE INDEX IF NOT EXISTS idx_invocations_started ON invocations(started_at);
+      CREATE INDEX IF NOT EXISTS idx_artifacts_invocation ON artifacts(invocation_id);
+      CREATE INDEX IF NOT EXISTS idx_path_locks_session ON path_locks(session_id);
+      CREATE INDEX IF NOT EXISTS idx_path_locks_expires ON path_locks(expires_at);
+    `,
+  },
+  {
+    version: 2,
+    name: "artifact_authority",
+    sql: readFileSync(
+      resolve(fileURLToPath(new URL("..", import.meta.url)), "services", "store", "migrations", "0003_artifact_authority.sql"),
+      "utf-8",
+    ),
+  },
+]
+
+const CURRENT_SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version
+
+// ── Singleton State ─────────────────────────────────────────────────────────
+
+let _storeDir: string | null = null
+let _db: PgliteDb | null = null
+let _lockHandle: FileHandle | null = null
+
+// ── Locking ─────────────────────────────────────────────────────────────────
+
+async function acquireLock(dir: string): Promise<void> {
+  const lockPath = lockFilePath(dir)
+  const pid = String(process.pid)
+  try {
+    const handle = await open(lockPath, "wx", 0o644)
+    await handle.writeFile(pid + "\n")
+    _lockHandle = handle
+  } catch {
+    let existingPid = ""
+    try { existingPid = (await readFile(lockPath, "utf-8")).trim() } catch {}
+    const isAlive = existingPid
+      ? (() => { try { process.kill(Number(existingPid), 0); return true } catch { return false } })()
+      : false
+    if (isAlive) {
+      throw new Error(
+        `Store at ${dir} is locked by process ${existingPid}. ` +
+        `Only one MCP server may open the PGlite store. ` +
+        `If the previous process crashed, delete ${lockPath}.`,
+      )
+    }
+    await unlink(lockPath).catch(() => {})
+    const handle = await open(lockPath, "wx", 0o644)
+    await handle.writeFile(pid + "\n")
+    _lockHandle = handle
+  }
+}
+
+async function releaseLock(): Promise<void> {
+  if (_lockHandle) {
+    const lockPath = lockFilePath(getStoreDir())
+    await _lockHandle.close().catch(() => {})
+    await unlink(lockPath).catch(() => {})
+    _lockHandle = null
+  }
+}
+
+// ── PGlite Loader ───────────────────────────────────────────────────────────
+
+async function loadPGlite(): Promise<{ PGlite: new (dir: string) => PgliteDb }> {
+  try {
+    const require = createRequire(import.meta.url)
+    const searchRoots = [
+      resolve(process.cwd(), "node_modules"),
+      resolve(process.cwd(), "node_modules/.bun/node_modules"),
+      resolve(process.cwd(), "node_modules/.bun"),
+      resolve(dirname(getStoreDir()), "node_modules"),
+    ]
+
+    try {
+      const resolved = require.resolve("@electric-sql/pglite")
+      return await import(pathToFileURL(resolved).href) as { PGlite: new (dir: string) => PgliteDb }
+    } catch {}
+
+    for (const searchRoot of searchRoots) {
+      try {
+        const resolved = require.resolve("@electric-sql/pglite", { paths: [searchRoot] })
+        return await import(pathToFileURL(resolved).href) as { PGlite: new (dir: string) => PgliteDb }
+      } catch {}
+    }
+
+    return await Function('return import("@electric-sql/pglite")')() as { PGlite: new (dir: string) => PgliteDb }
+  } catch {
+    throw new Error("PGlite unavailable. Install @electric-sql/pglite: bun add @electric-sql/pglite")
+  }
+}
+
+// ── Schema Management ───────────────────────────────────────────────────────
+
+async function applyMigrations(db: PgliteDb): Promise<void> {
+  await db.exec(
+    "CREATE TABLE IF NOT EXISTS schema_version (version INTEGER PRIMARY KEY, applied_at TIMESTAMP DEFAULT NOW(), checksum TEXT)",
+  )
+
+  const current = await db.query("SELECT MAX(version) as v FROM schema_version")
+  const currentVersion = (current.rows[0]?.v as number) || 0
+
+  for (const migration of MIGRATIONS) {
+    if (migration.version <= currentVersion) continue
+    const checksum = sha256Hex(migration.sql)
+    await db.exec(migration.sql)
+    await db.query(
+      "INSERT INTO schema_version (version, applied_at, checksum) VALUES ($1, NOW(), $2)",
+      [migration.version, checksum],
+    )
+  }
+}
+
+async function assertRequiredTables(db: PgliteDb): Promise<void> {
+  const requiredTables = [
+    "artifacts_v2",
+    "artifact_manifests",
+    "artifact_relationships",
+    "artifact_verifications",
+    "artifact_events",
+  ]
+
+  const result = await db.query(
+    `SELECT table_name
+     FROM information_schema.tables
+     WHERE table_schema = 'public' AND table_name = ANY($1::text[])`,
+    [requiredTables],
+  )
+  const present = new Set(result.rows.map((row) => row.table_name))
+  const missing = requiredTables.filter((table) => !present.has(table))
+  if (missing.length === 0) return
+
+  throw new Error(`PGlite failed to initialize properly: missing required table ${missing[0]}`)
+}
+
+// ── Logical Migration from OMP ──────────────────────────────────────────────
+
+async function migrateFromOmp(db: PgliteDb): Promise<void> {
+  const migrationId = crypto.randomUUID()
+  const startedAt = new Date().toISOString()
+
+  let ompEntries: string[] = []
+  try {
+    const { readdir } = await import("node:fs/promises")
+    ompEntries = await readdir(OMP_STORE_DIR)
+  } catch {
+    return
+  }
+  if (ompEntries.length === 0) return
+
+  const existing = await db.query(
+    "SELECT 1 FROM store_migrations WHERE source_path = $1 AND status = 'completed'",
+    [OMP_STORE_DIR],
+  )
+  if (existing.rows.length > 0) return
+
+  await db.query(
+    `INSERT INTO store_migrations (id, source_path, dest_path, started_at, status)
+     VALUES ($1, $2, $3, $4, 'running')`,
+    [migrationId, OMP_STORE_DIR, getStoreDir(), startedAt],
+  )
+
+  let tablesCopied = 0
+  let rowsCopied = 0
+  let error: string | null = null
+
+  try {
+    const PGliteMod = await loadPGlite()
+    const ompDb = new PGliteMod.PGlite(OMP_STORE_DIR)
+
+    try {
+      const sessions = await ompDb.query("SELECT * FROM sessions")
+      for (const row of sessions.rows) {
+        await db.query(
+          `INSERT OR IGNORE INTO sessions (session_id, status, started_at, ended_at, metadata)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [row.session_id, row.status, row.started_at, row.ended_at, row.metadata],
+        )
+      }
+      tablesCopied++
+      rowsCopied += sessions.rows.length
+    } catch {}
+
+    try {
+      const invocations = await ompDb.query("SELECT * FROM invocations")
+      for (const row of invocations.rows) {
+        await db.query(
+          `INSERT OR IGNORE INTO invocations (invocation_id, session_id, tool, status, started_at, ended_at, duration_ms, exit_code, errors, receipt)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          [row.invocation_id, row.session_id, row.tool, row.status, row.started_at, row.ended_at, row.duration_ms, row.exit_code, row.errors, row.receipt],
+        )
+      }
+      tablesCopied++
+      rowsCopied += invocations.rows.length
+    } catch {}
+
+    let sourceSchemaVersion: number | null = null
+    try {
+      const sv = await ompDb.query("SELECT MAX(version) as v FROM schema_version")
+      sourceSchemaVersion = (sv.rows[0]?.v as number) || null
+    } catch {}
+
+    ompDb.close()
+
+    await db.query(
+      `UPDATE store_migrations
+       SET status = 'completed', completed_at = NOW(), tables_copied = $1, rows_copied = $2,
+           source_schema_version = $3, dest_schema_version = $4, validation_result = 'logical_export_ok'
+       WHERE id = $5`,
+      [tablesCopied, rowsCopied, sourceSchemaVersion, CURRENT_SCHEMA_VERSION, migrationId],
+    )
+  } catch (e) {
+    error = e instanceof Error ? e.message : String(e)
+    await db.query(
+      `UPDATE store_migrations SET status = 'failed', error = $1, completed_at = NOW() WHERE id = $2`,
+      [error, migrationId],
+    )
+  }
+
+  process.stderr.write(
+    JSON.stringify({
+      event: "store_migration",
+      migration_id: migrationId,
+      source: OMP_STORE_DIR,
+      dest: getStoreDir(),
+      tables_copied: tablesCopied,
+      rows_copied: rowsCopied,
+      status: error ? "failed" : "completed",
+      error,
+    }) + "\n",
+  )
+}
+
+async function resetStoreState(dir: string): Promise<void> {
+  try {
+    await _db?.close()
+  } catch {}
+  _db = null
+  _storeDir = null
+  await releaseLock()
+  rmSync(dir, { recursive: true, force: true })
+  await mkdir(dir, { recursive: true })
+}
+
+// ── Public API ──────────────────────────────────────────────────────────────
+
+export async function getStore(): Promise<PgliteDb> {
+  if (_db) return _db
+
+  const dir = getStoreDir()
+
+  const openStore = async (): Promise<PgliteDb> => {
+    await mkdir(dir, { recursive: true })
+    await acquireLock(dir)
+    try {
+      const PGliteMod = await loadPGlite()
+      const db = new PGliteMod.PGlite(dir)
+      await applyMigrations(db)
+      await assertRequiredTables(db)
+      await migrateFromOmp(db)
+      await assertRequiredTables(db)
+      _storeDir = dir
+      _db = db
+      return db
+    } catch (error) {
+      await releaseLock()
+      throw error
+    }
+  }
+
+  try {
+    return await openStore()
+  } catch (error) {
+    if (!isRecoverablePGliteError(error)) throw error
+    await resetStoreState(dir)
+    return await openStore()
+  }
+}
+
+export async function closeStore(): Promise<void> {
+  if (_db) {
+    await _db.close()
+    _db = null
+  }
+  await releaseLock()
+}
+
+export function getStoreStatus(): { dir: string; open: boolean; schemaVersion: number | null } {
+  return {
+    dir: _storeDir || getStoreDir(),
+    open: _db !== null,
+    schemaVersion: _db ? CURRENT_SCHEMA_VERSION : null,
+  }
+}

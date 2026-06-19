@@ -1,0 +1,19 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "9995",
+  "title": "Invalid Backend Execution Engine Ownership Example",
+  "status": "proposed",
+  "date": "2026-06-14",
+  "last_modified": "2026-06-14T00:00:00Z",
+  "component_imports": [
+    "ACR-0001",
+    "ACR-0005",
+    "ACR-0006"
+  ],
+  "decision": "MLX owns durable authority truth in this example. final authority is assigned to MLX here, and MLX owns canonical tensor truth, which should be rejected.",
+  "context": "",
+  "consequences": "",
+  "supersedes": [],
+  "superseded_by": []
+}

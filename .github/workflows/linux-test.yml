@@ -1,0 +1,26 @@
+name: Linux Hardware Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-gpu:
+    runs-on: self-hosted
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo bash scripts/install-linux-deps.sh || true
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Test compute-native (GPU)
+      run: |
+        cd packages/compute-native
+        cargo test --features linux-vulkan,linux-intel -- --nocapture

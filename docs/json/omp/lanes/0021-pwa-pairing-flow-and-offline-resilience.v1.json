@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0021",
+  "type": "lane",
+  "name": "PWA Pairing Flow and Offline Resilience",
+  "slug": "pwa-pairing-flow-and-offline-resilience",
+  "description": "Implement QR code pairing flow: desktop generates pairing URL with short-lived challenge → phone scans QR → device claim with scoped capability token → push notification registration. Implement offline mode: cached last-known projections, queued notification history, discard-and-resync on reconnect.",
+  "scope": "pwa-pairing",
+  "missionId": "0014",
+  "status": "completed",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/app/src/",
+    "packages/opencode/src/session/"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": "2026-06-06T12:00:31.929Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:51:00.145Z",
+  "updated_at": "2026-06-06T12:00:31.929Z"
+}

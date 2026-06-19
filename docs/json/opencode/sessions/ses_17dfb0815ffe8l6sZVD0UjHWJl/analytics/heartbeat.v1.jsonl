@@ -1,0 +1,30 @@
+{"at":"2026-06-01T07:13:31.230Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore\\.layer|InstanceHealthStore\\.Service|instance-health"}
+{"at":"2026-06-01T07:13:31.446Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"5 matches in 500 files"}
+{"at":"2026-06-01T07:13:32.216Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore"}
+{"at":"2026-06-01T07:13:32.350Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"7 matches in 3 files"}
+{"at":"2026-06-01T07:13:55.488Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"serviceOption.*Health|InstanceHealth.*serviceOption"}
+{"at":"2026-06-01T07:13:55.627Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"6 matches in 500 files"}
+{"at":"2026-06-01T07:15:15.596Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore\\.layer|instanceHealth.*layer|health.*Layer\\.provide"}
+{"at":"2026-06-01T07:15:15.783Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T07:15:16.523Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"provide\\(InstanceHealth|\\.provide\\(.*[Hh]ealth"}
+{"at":"2026-06-01T07:15:16.603Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T07:16:19.013Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"instance.*health|InstanceHealth"}
+{"at":"2026-06-01T07:16:19.189Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"19 matches in 4 files"}
+{"at":"2026-06-01T07:18:48.271Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"HttpApiBuilder\\.make|RootHttpApi|globalHandlers"}
+{"at":"2026-06-01T07:18:48.301Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"14 matches in 4 files"}
+{"at":"2026-06-01T07:22:51.750Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"Effect\\.forEach|Effect\\.all"}
+{"at":"2026-06-01T07:22:51.751Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T07:22:52.089Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"Disposable|addFinalizer|Scope"}
+{"at":"2026-06-01T07:22:52.090Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T07:22:57.398Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"cachedWithTTL|cachedDisposeAll"}
+{"at":"2026-06-01T07:22:57.400Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T07:24:47.028Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore"}
+{"at":"2026-06-01T07:24:47.179Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T07:25:39.237Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore"}
+{"at":"2026-06-01T07:25:39.401Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"0 matches in 394 files"}
+{"at":"2026-06-01T07:26:28.212Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"instance.health"}
+{"at":"2026-06-01T07:26:28.354Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"7 matches in 4 files"}
+{"at":"2026-06-01T07:27:02.619Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore\\.layer"}
+{"at":"2026-06-01T07:27:02.964Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T07:27:41.902Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"started","detail":"Layer\\.launch|Runtime\\.run|Layer\\.toRuntime|provide.*layer"}
+{"at":"2026-06-01T07:27:42.069Z","session_id":"ses_17dfb0815ffe8l6sZVD0UjHWJl","agent":"state-poisoner","tool":"smart_grep","phase":"completed","detail":"57 matches in 35 files"}

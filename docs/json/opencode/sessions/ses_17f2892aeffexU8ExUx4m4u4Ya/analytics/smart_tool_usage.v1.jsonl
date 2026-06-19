@@ -1,0 +1,2 @@
+{"at":"2026-06-01T01:44:47.241Z","session_id":"ses_17f2892aeffexU8ExUx4m4u4Ya","agent":"isolation-tester","tool":"smart_grep","pattern":"decodeAuthData","path":"packages/opencode/src/mcp"}
+{"at":"2026-06-01T01:44:48.315Z","session_id":"ses_17f2892aeffexU8ExUx4m4u4Ya","agent":"isolation-tester","tool":"smart_grep","pattern":"annotateLogs","path":"packages/opencode/src"}

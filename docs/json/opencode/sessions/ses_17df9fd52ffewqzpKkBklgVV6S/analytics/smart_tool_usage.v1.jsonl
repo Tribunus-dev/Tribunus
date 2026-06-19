@@ -1,0 +1,5 @@
+{"at":"2026-06-01T07:12:37.194Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","command":"typecheck","elapsed_ms":21050,"exit_code":2}
+{"at":"2026-06-01T07:13:28.402Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","command":"run","elapsed_ms":49,"exit_code":1}
+{"at":"2026-06-01T07:14:59.914Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","command":"tsgo","elapsed_ms":21683,"exit_code":2}
+{"at":"2026-06-01T07:15:57.917Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","command":"tsc","elapsed_ms":27684,"exit_code":1}
+{"at":"2026-06-01T07:16:56.275Z","session_id":"ses_17df9fd52ffewqzpKkBklgVV6S","agent":"vitals","tool":"smart_bun","command":"tsgo","elapsed_ms":24662,"exit_code":0}

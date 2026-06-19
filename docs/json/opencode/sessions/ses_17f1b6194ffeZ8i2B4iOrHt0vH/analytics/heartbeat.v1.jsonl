@@ -1,0 +1,32 @@
+{"at":"2026-06-01T02:01:38.270Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"import.*RuntimeEvent.*from.*campaign"}
+{"at":"2026-06-01T02:01:38.435Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:01:38.457Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"import.*RuntimeEvent.*from.*state-machine"}
+{"at":"2026-06-01T02:01:38.567Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T02:03:23.068Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"from [\"']@/campaign[\"']|from [\"']\\.\\.\\/campaign[\"']|from [\"']\\./campaign[\"']"}
+{"at":"2026-06-01T02:03:23.284Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:03:24.114Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"import.*\\{[^}]*RuntimeEvent[^}]*\\}.*from"}
+{"at":"2026-06-01T02:03:24.211Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"16 matches in 500 files"}
+{"at":"2026-06-01T02:04:45.582Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"from [\"'].*campaign[\"']"}
+{"at":"2026-06-01T02:04:45.659Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:04:46.758Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"from [\"'].*campaign/types[\"']"}
+{"at":"2026-06-01T02:04:46.853Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T02:07:01.215Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"from [\"'].*campaign/(binder|integrator|secretary|orchestrator|state-machine)"}
+{"at":"2026-06-01T02:07:01.378Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T02:07:02.228Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"import.*\\{[^}]*Binder[^}]*\\}.*from"}
+{"at":"2026-06-01T02:07:02.338Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"4 matches in 500 files"}
+{"at":"2026-06-01T02:08:34.821Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"from ['\"]@/campaign['\"]"}
+{"at":"2026-06-01T02:08:34.922Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:08:35.927Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"campaign"}
+{"at":"2026-06-01T02:08:36.037Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"305 matches in 22 files"}
+{"at":"2026-06-01T02:09:58.585Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"from ['\"]\\.\\.\\/campaign|from ['\"]\\.\\/campaign"}
+{"at":"2026-06-01T02:09:58.767Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T02:09:59.600Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"import.*Campaign['\"]|import.*campaign['\"]"}
+{"at":"2026-06-01T02:09:59.727Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:11:44.715Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"campaign/index|campaign/auditor|campaign/push|campaign/orchestrator|campaign/sec"}
+{"at":"2026-06-01T02:11:44.938Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:13:25.184Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"campaign"}
+{"at":"2026-06-01T02:13:25.186Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"8 matches in 5 files"}
+{"at":"2026-06-01T02:13:26.023Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"campaign"}
+{"at":"2026-06-01T02:13:26.067Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"7 matches in 186 files"}
+{"at":"2026-06-01T02:14:56.796Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"started","detail":"from ['\"]@/campaign"}
+{"at":"2026-06-01T02:14:56.984Z","session_id":"ses_17f1b6194ffeZ8i2B4iOrHt0vH","agent":"debuggability-forecaster","tool":"smart_grep","phase":"completed","detail":"2 matches in 500 files"}

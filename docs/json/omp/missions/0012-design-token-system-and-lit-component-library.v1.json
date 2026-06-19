@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0012",
+  "type": "mission",
+  "name": "Design Token System and Lit Component Library",
+  "slug": "design-token-system-and-lit-component-library",
+  "description": "Build the unified Tribunus component vocabulary on Lit (Web Components). Domain components: SessionCard, AgentRail, GateRequest, CommandReceipt, ProjectionStream, DharmaScore, QueueItem, CodexNode, DiagnosticPacket, ApprovalSheet, DevicePresence, RelayStatus, TrustBadge, ReceiptTimeline, MissionCard. Adapted via CSS Container Queries across form factors.",
+  "purpose": "One component vocabulary serving all four surfaces. Built once, adapted via CSS — not four separate implementations.",
+  "campaignId": "0004",
+  "status": "completed",
+  "priority": 95,
+  "acceptanceCriteria": [
+    "All domain components implemented as Lit Web Components",
+    "CSS Container Queries adapt layouts without framework-specific logic",
+    "Components render compact on phone, split-pane on tablet, dense on desktop",
+    "Public mode attribute renders demo data; authenticated mode binds to projection stream",
+    "W3C DTCG design tokens as the shared design foundation",
+    "Component library documented with Storybook or equivalent"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:48:46.565Z",
+  "updated_at": "2026-06-06T11:48:49.002Z"
+}

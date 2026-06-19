@@ -1,0 +1,36 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0234-migration-bridge-architecture",
+  "type": "mission",
+  "name": "Migration Bridge Architecture",
+  "slug": "migration-bridge-architecture",
+  "description": "Design the VS Code migration bridge and the import-from-existing-tools workflow. Covers VS Code extension-to-Tribunus mapping (keybindings, settings, workspace config, extensions), incremental import of projects from Cursor, Windsurf, Continue.dev, Claude Code, and other agent-IDEs, conflict resolution strategies, and rollback-on-failure guarantees.",
+  "purpose": "Lower switching costs by providing automated migration tools that import configuration, workspace state, and project history from existing agent tools and VS Code-based IDEs, with safe rollback if the migration fails.",
+  "campaignId": "0031",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "VS Code migration bridge specification maps all major VS Code configuration groups to Tribunus equivalents (keybindings, settings, snippets, tasks, launch configs, workspace state)",
+    "Import workflow specification covers Cursor, Windsurf, Continue.dev, Claude Code, and generic VS Code-based IDE imports",
+    "Conflict resolution strategy documents auto-merge rules, conflict triage UX, and manual resolution prompts",
+    "Rollback mechanism specification guarantees atomic migration with full undo on failure",
+    "Migration workflow specification includes pre-import validation, dry-run preview, incremental import steps, and completion report"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "migration",
+    "vscode",
+    "import",
+    "onboarding",
+    "cursor",
+    "windsurf"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:48:03.078Z",
+  "updated_at": "2026-06-07T05:53:26.157Z"
+}

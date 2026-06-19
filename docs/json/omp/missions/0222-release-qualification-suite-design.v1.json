@@ -1,0 +1,32 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0222-release-qualification-suite-design",
+  "type": "mission",
+  "name": "Release Qualification Suite Design",
+  "slug": "release-qualification-suite-design",
+  "description": "Design the release qualification suite specifying what tests must pass before a release ships, under what conditions (environment, scale, data volume), with what evidence artifacts (logs, screenshots, benchmark numbers), and who certifies each gate. Include regression gates, security gates, accessibility gates, and performance regression gates.",
+  "purpose": "Without a formal release qualification suite, releases are gated by tribal knowledge and manual judgment. A written specification makes release criteria objective, auditable, and delegatable to automation. Every stakeholder (QA, security, product, engineering) needs a single document that defines what \"ready to ship\" means for this project.",
+  "campaignId": "0025",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Qualification suite specification document defining gate stages, entry/exit criteria per stage, and required evidence artifacts",
+    "Documented test selection policy — which tests run per gate (smoke, full regression, fuzz, chaos) and under what environment/scale conditions",
+    "Certification matrix mapping each gate to designated reviewer role (QA lead, security lead, engineering lead) with sign-off procedure"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "release",
+    "qualification",
+    "gates",
+    "quality-engineering"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:51.710Z",
+  "updated_at": "2026-06-07T05:53:00.331Z"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0009",
+  "type": "mission",
+  "name": "@tribunus/client — TypeScript SDK",
+  "slug": "tribunusclient-typescript-sdk",
+  "description": "Build the public TypeScript SDK wrapping the internal TribunusRuntimeClient. Semantic operations only — never expose PGlite/Valkey/DuckDB. Transport-agnostic with HTTP, WebSocket, and RPC support. Type-safe contracts from @tribunus/protocol. Idempotent operations with receipts.",
+  "purpose": "Provide the governed interface for external tools, IDE plugins, desktop app surfaces, and automation scripts to interact with Tribunus runtime state.",
+  "campaignId": "0003",
+  "status": "completed",
+  "priority": 90,
+  "acceptanceCriteria": [
+    "Semantic operations: create project, open session, enqueue work, observe lifecycle",
+    "Transport-agnostic: HTTP, WebSocket, RPC support",
+    "Type-safe contracts from @tribunus/protocol",
+    "All operations are idempotent and produce receipts",
+    "Error handling with classified error types",
+    "No direct PGlite, Valkey, or DuckDB access ever exposed"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:48:46.563Z",
+  "updated_at": "2026-06-06T11:33:31.400Z"
+}

@@ -1,0 +1,319 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "artifact_kind": "rig.relay.e2e_test_scenarios.v1",
+  "generated_at": "2026-06-01T00:00:00Z",
+  "subject": "Two-Level Health Model — GET /global/health & SSE /global/event",
+  "source_files": [
+    "packages/opencode/src/server/routes/instance/httpapi/handlers/global.ts",
+    "packages/opencode/src/server/routes/instance/httpapi/groups/global.ts",
+    "packages/opencode/src/server/event.ts",
+    "packages/opencode/src/project/instance-store.ts",
+    "packages/opencode/src/project/instance-health.ts",
+    "packages/opencode/src/server/health.ts",
+    "packages/opencode/src/event/event-names.ts",
+    "packages/opencode/src/bus/global.ts"
+  ],
+  "model_summary": {
+    "level_1": {
+      "name": "Server Component Health",
+      "store": "HealthRegistry (in-memory Ref<Map>)",
+      "endpoint_field": "components",
+      "states": ["healthy", "degraded", "down", "unknown"]
+    },
+    "level_2": {
+      "name": "Instance Aggregate Health",
+      "store": "InstanceHealthStore (in-memory Ref<Map>)",
+      "endpoint_field": "instance_healthy",
+      "states": ["booting", "ready", "degraded", "failed"],
+      "computation": "undefined if no instances loaded; true if all instances status==='ready'; false otherwise"
+    },
+    "sse_events": {
+      "instance.loaded": "Emitted when an instance reaches status 'ready'",
+      "instance.degraded": "Emitted when an instance reaches status 'degraded' (some services failed)",
+      "instance.failed": "Emitted when an instance reaches status 'failed' (all services failed)"
+    }
+  },
+  "scenarios": [
+    {
+      "id": "s1-fresh-boot-no-instances",
+      "title": "Fresh boot: no instances loaded → instance_healthy is undefined",
+      "pre_condition": "Server started. InstanceStore layer constructed. No instances loaded.",
+      "steps": [
+        {
+          "step": 1,
+          "action": "GET /global/health",
+          "expected": {
+            "status": 200,
+            "body": {
+              "healthy": true,
+              "version": "<any non-empty string>",
+              "components": "<object, may be empty or populated with server components>",
+              "instance_healthy_absent": true
+            }
+          },
+          "rationale": "The handler computes instance_healthy = undefined when InstanceHealthStore.getAll() returns an empty Map (size === 0). Since undefined fields are stripped in JSON serialization, the response body MUST NOT contain the key 'instance_healthy'. This is the baseline — the server is healthy but has no instances."
+        }
+      ],
+      "failure_signals": [
+        "Response contains instance_healthy: false — means a phantom instance or stale state",
+        "Response contains instance_healthy: true — means the all.size===0 check is broken",
+        "HTTP 500 — server infrastructure failure"
+      ]
+    },
+    {
+      "id": "s2-single-instance-healthy",
+      "title": "One instance boots successfully → instance_healthy: true",
+      "pre_condition": "Fresh server. One project directory exists with a valid config.",
+      "steps": [
+        {
+          "step": 1,
+          "action": "POST /instance/<directory>/load (or equivalent load mechanism)",
+          "expected": "HTTP 200. Instance context returned. InstanceStore sets health to 'booting', then 'ready' after bootstrap.run completes successfully."
+        },
+        {
+          "step": 2,
+          "action": "GET /global/health",
+          "expected": {
+            "status": 200,
+            "body": {
+              "healthy": true,
+              "instance_healthy": true
+            }
+          },
+          "rationale": "One instance in the store, status 'ready'. The predicate [...all.values()].every(h => h.status === 'ready') evaluates to true. The response MUST include instance_healthy: true."
+        }
+      ],
+      "timing_note": "If the instance is still 'booting' when health is polled, instance_healthy will be false. A retry loop (up to 10s) should be used to wait for the ready transition.",
+      "failure_signals": [
+        "instance_healthy: false after instance is confirmed ready — health store synchronization issue",
+        "instance_healthy: undefined — cached empty map or store not shared between load and health endpoints",
+        "HTTP 500"
+      ]
+    },
+    {
+      "id": "s3-single-instance-degraded",
+      "title": "One instance with a failed service → instance_healthy: false",
+      "pre_condition": "Server started. A project exists where one service (e.g. MCP, LSP, or file watcher) will fail to initialize.",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Load the instance (POST /instance/<directory>/load)",
+          "expected": "Bootstrap returns { status: 'degraded', failedServices: ['service_name'] }. InstanceStore sets health to { status: 'degraded', failedServices: [...] }"
+        },
+        {
+          "step": 2,
+          "action": "GET /global/health",
+          "expected": {
+            "status": 200,
+            "body": {
+              "healthy": true,
+              "instance_healthy": false
+            }
+          },
+          "rationale": "One instance with status 'degraded'. The predicate [...all.values()].every(h => h.status === 'ready') is false because status !== 'ready'. instance_healthy MUST be false. The server itself remains healthy (healthy: true) — this is the Two-Level distinction."
+        }
+      ],
+      "failure_signals": [
+        "instance_healthy: true despite degraded instance — the every() predicate isn't checking correctly",
+        "instance_healthy: undefined — store lost the instance between load and health poll",
+        "No failedServices in the instance store — the bootstrap result was not propagated"
+      ]
+    },
+    {
+      "id": "s4-multi-instance-mixed",
+      "title": "Two instances: one ready, one degraded → instance_healthy: false",
+      "pre_condition": "Two project directories: one healthy, one with a failing service.",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Load instance A (healthy project) — wait for ready",
+          "expected": "Instance A reaches status 'ready'"
+        },
+        {
+          "step": 2,
+          "action": "Load instance B (degraded project) — wait for degraded",
+          "expected": "Instance B reaches status 'degraded'"
+        },
+        {
+          "step": 3,
+          "action": "GET /global/health",
+          "expected": {
+            "status": 200,
+            "body": {
+              "healthy": true,
+              "instance_healthy": false
+            }
+          },
+          "rationale": "Two instances: one 'ready', one 'degraded'. every() is false. instance_healthy MUST be false. This verifies the aggregate is AND-logic: all instances must be ready for the aggregate to be true."
+        }
+      ],
+      "failure_signals": [
+        "instance_healthy: true — aggregate is OR-logic instead of AND-logic",
+        "instance_healthy: undefined — store has 0 entries (race condition or shared state issue)",
+        "Only one instance in the response even though two exist (store collision)"
+      ]
+    },
+    {
+      "id": "s5-dispose-all-back-to-undefined",
+      "title": "Dispose all instances → instance_healthy returns to undefined",
+      "pre_condition": "At least one instance loaded (ready state).",
+      "steps": [
+        {
+          "step": 1,
+          "action": "GET /global/health (verify instance_healthy: true before dispose)",
+          "expected": { "healthy": true, "instance_healthy": true }
+        },
+        {
+          "step": 2,
+          "action": "POST /global/dispose",
+          "expected": "HTTP 200, body: true. All instances disposed. InstanceStore.disposeAll calls health.remove(ctx.directory) for each instance."
+        },
+        {
+          "step": 3,
+          "action": "GET /global/health",
+          "expected": {
+            "status": 200,
+            "body": {
+              "healthy": true,
+              "instance_healthy_absent": true
+            }
+          },
+          "rationale": "After disposeAll, the InstanceHealthStore Map is empty. instance_healthy is undefined (key absent in JSON). This must match the fresh-boot state from scenario S1."
+        }
+      ],
+      "failure_signals": [
+        "instance_healthy still true after dispose — health.remove() didn't actually remove",
+        "instance_healthy: false — residual entry with stale status",
+        "dispose returns false or 500 — disposal failed silently"
+      ]
+    },
+    {
+      "id": "s6-sse-event-stream",
+      "title": "SSE event stream emits instance.degraded and instance.failed events",
+      "pre_condition": "Server started. SSE connection established to /global/event.",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Connect to GET /global/event (Accept: text/event-stream)",
+          "expected": "Connection opened. First event: { type: 'server.connected', properties: {} }. Then periodic heartbeat events ({ type: 'server.heartbeat', properties: {} }) every 10 seconds."
+        },
+        {
+          "step": 2,
+          "action": "Load an instance that boots successfully",
+          "expected_event": {
+            "type": "instance.loaded",
+            "properties": { "directory": "<directory>" }
+          },
+          "rationale": "InstanceStore.boot emits GlobalBus.emit('event', { payload: { type: 'instance.loaded', ... } }). The SSE handler subscribes to GlobalBus.on('event', ...) and streams every event. The instance.loaded event MUST appear in the SSE stream."
+        },
+        {
+          "step": 3,
+          "action": "Load a second instance where one service fails (degraded)",
+          "expected_event": {
+            "type": "instance.degraded",
+            "properties": {
+              "directory": "<directory>",
+              "failedServices": ["<service_name>"]
+            }
+          },
+          "rationale": "When bootstrap.run returns { status: 'degraded', failedServices: [...] }, the handler emits instance.degraded with the failedServices array. The SSE stream MUST include this event."
+        },
+        {
+          "step": 4,
+          "action": "Load a third instance where ALL services fail (failed)",
+          "expected_event": {
+            "type": "instance.failed",
+            "properties": {
+              "directory": "<directory>",
+              "error": "All services failed to initialize"
+            }
+          },
+          "rationale": "When bootstrap.run returns { status: 'failed' } (not ready, not degraded), the handler emits instance.failed with the error message. The SSE stream MUST include this event."
+        },
+        {
+          "step": 5,
+          "action": "POST /global/dispose",
+          "expected_event": {
+            "type": "global.disposed",
+            "properties": {}
+          },
+          "rationale": "The disposeAllInstancesAndEmitGlobalDisposed function emits a global.disposed event. The SSE stream MUST include it."
+        }
+      ],
+      "sse_format_expectations": [
+        "Each event is a properly framed SSE message: 'event: message\\ndata: <JSON>\\n\\n'",
+        "Events arrive in chronological order (loaded before degraded before failed before disposed)",
+        "Heartbeat events continue to arrive even when no instance events are firing",
+        "Connection receives Cache-Control: no-cache, no-transform header",
+        "Connection receives text/event-stream content-type"
+      ],
+      "failure_signals": [
+        "Missing instance.degraded event — GlobalBus.emit not called or SSE subscription not receiving",
+        "Missing instance.failed event — the else branch in the state machine isn't reached",
+        "Event arrives but failedServices array is empty — bootstrap result not passed through",
+        "SSE connection closes prematurely after an instance event",
+        "Heartbeat events stop after instance events — Stream.merge halted incorrectly"
+      ]
+    }
+  ],
+  "edge_cases": [
+    {
+      "id": "ec1-booting-transient",
+      "description": "During instance boot (status='booting'), instance_healthy is false because the predicate checks status==='ready'. A health check polled during boot returns false. This is intentional (the instance isn't ready yet) but consumers must be aware that a false result may be transient.",
+      "affected_scenarios": ["s2"],
+      "recommendation": "Document that instance_healthy: false may flip to true without any client action, and that consumers should poll with a retry loop or watch SSE for instance.loaded."
+    },
+    {
+      "id": "ec2-failed-instance-health",
+      "description": "An instance with status 'failed' produces instance_healthy: false. It also produces instance_healthy: false if every instance after it is ready. The aggregate cannot recover until the failed instance is disposed or replaced.",
+      "affected_scenarios": ["s3", "s4"],
+      "recommendation": "Consider adding instance-level detail to the health response (list of instance IDs with their statuses) so consumers can identify which instance is dragging down the aggregate."
+    },
+    {
+      "id": "ec3-dispose-race",
+      "description": "If disposeAll is called while an instance is still booting, health.remove() is called after deferred resolution. The entry may be removed from the health store before the boot completes, or the boot may overwrite the removal.",
+      "affected_scenarios": ["s5"],
+      "recommendation": "Test concurrent dispose + boot to verify no stale health entries remain."
+    },
+    {
+      "id": "ec4-sse-reconnection",
+      "description": "If the SSE connection drops and reconnects, the client receives server.connected again but misses any events emitted during the gap. There is no event replay mechanism.",
+      "affected_scenarios": ["s6"],
+      "recommendation": "Clients should poll GET /global/health on reconnect to reconcile state."
+    }
+  ],
+  "ux_observations": [
+    {
+      "scenario": "s3-single-instance-degraded",
+      "observation": "The health response does not indicate WHICH instance is degraded or WHICH services failed. The instance_healthy boolean is lossy — a consumer knows something is wrong but not what.",
+      "severity": "medium",
+      "suggestion": "Add an instances field to the health response mapping directory → { status, failedServices[] } for at-a-glance diagnosis."
+    },
+    {
+      "scenario": "s6-sse-event-stream",
+      "observation": "The SSE event stream emits instance.degraded and instance.failed but NOT instance.booting or instance.ready/instance.loaded. A consumer watching only SSE cannot observe the booting→ready transition without also polling /global/health.",
+      "severity": "low",
+      "suggestion": "Already partially addressed — instance.loaded IS emitted (see event.ts). But instance.booting is not. Consider adding an instance.booting SSE event for completeness."
+    },
+    {
+      "scenario": "s1-fresh-boot-no-instances",
+      "observation": "instance_healthy is undefined (omitted from JSON). Some JSON parsers treat missing keys as null, some as undefined, some throw. Consumers must use 'instance_healthy' in response !== undefined rather than truthiness checks.",
+      "severity": "low",
+      "suggestion": "Document the tri-state semantics: absent = no instances, true = all ready, false = at least one not ready."
+    }
+  ],
+  "coverage_matrix": {
+    "instance_healthy_undefined": ["s1", "s5"],
+    "instance_healthy_true": ["s2"],
+    "instance_healthy_false": ["s3", "s4"],
+    "sse_instance_loaded": ["s6"],
+    "sse_instance_degraded": ["s6"],
+    "sse_instance_failed": ["s6"],
+    "sse_global_disposed": ["s6"],
+    "health_registry_components": ["s1"],
+    "dispose_all": ["s5"],
+    "multi_instance": ["s4"],
+    "booting_transient": ["ec1"],
+    "dispose_race": ["ec3"]
+  }
+}

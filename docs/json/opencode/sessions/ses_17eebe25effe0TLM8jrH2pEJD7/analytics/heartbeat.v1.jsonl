@@ -1,0 +1,22 @@
+{"at":"2026-06-01T02:49:52.784Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"health.*handler|handler.*health|healthEndpoint|HealthHandler"}
+{"at":"2026-06-01T02:49:52.850Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"0 matches in 79 files"}
+{"at":"2026-06-01T02:49:53.796Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"fromDirectory"}
+{"at":"2026-06-01T02:49:53.803Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"7 matches in 2 files"}
+{"at":"2026-06-01T02:50:46.740Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*.ts"}
+{"at":"2026-06-01T02:50:46.746Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","phase":"failed","detail":"path not found"}
+{"at":"2026-06-01T02:51:23.763Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"*.ts"}
+{"at":"2026-06-01T02:51:23.776Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"*.ts"}
+{"at":"2026-06-01T02:52:00.432Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"health|HealthRegistry"}
+{"at":"2026-06-01T02:52:00.435Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T02:52:01.039Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"bootstrap*.ts"}
+{"at":"2026-06-01T02:52:01.150Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"bootstrap*.ts"}
+{"at":"2026-06-01T02:52:40.714Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"\\\"health\\\"|healthy|HealthRegistry"}
+{"at":"2026-06-01T02:52:40.741Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"9 matches in 79 files"}
+{"at":"2026-06-01T02:54:12.798Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"disposeContext|dispose.*health|health.*dispose"}
+{"at":"2026-06-01T02:54:12.840Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"0 matches in 79 files"}
+{"at":"2026-06-01T02:55:05.973Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"test.*health|health.*test"}
+{"at":"2026-06-01T02:55:06.218Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"3 matches in 3 files"}
+{"at":"2026-06-01T02:55:07.159Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"started","detail":"Effect\\.runSync|Effect\\.runPromise"}
+{"at":"2026-06-01T02:55:07.390Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_grep","phase":"completed","detail":"118 matches in 20 files"}
+{"at":"2026-06-01T02:56:31.469Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","phase":"started","detail":"bunfig*"}
+{"at":"2026-06-01T02:56:31.695Z","session_id":"ses_17eebe25effe0TLM8jrH2pEJD7","agent":"isolation-tester","tool":"smart_find","phase":"completed","detail":"bunfig*"}

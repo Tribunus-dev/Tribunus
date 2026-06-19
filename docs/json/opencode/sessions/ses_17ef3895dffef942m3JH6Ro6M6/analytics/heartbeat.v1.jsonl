@@ -1,0 +1,176 @@
+{"at":"2026-06-01T02:41:05.334Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"publishPluginError"}
+{"at":"2026-06-01T02:41:05.335Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T02:42:10.091Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Layer\\.effect"}
+{"at":"2026-06-01T02:42:10.092Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:43:07.709Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"for \\(const"}
+{"at":"2026-06-01T02:43:07.709Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"9 matches in 1 files"}
+{"at":"2026-06-01T02:43:31.249Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"PluginLoader\\.init"}
+{"at":"2026-06-01T02:43:31.259Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:43:48.572Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"PluginLoader"}
+{"at":"2026-06-01T02:43:48.573Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:44:09.630Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"bridge\\.fork"}
+{"at":"2026-06-01T02:44:09.630Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:44:23.890Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"const init"}
+{"at":"2026-06-01T02:44:23.892Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:44:37.175Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"^"}
+{"at":"2026-06-01T02:44:37.175Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 0 files"}
+{"at":"2026-06-01T02:44:43.320Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"export const layer"}
+{"at":"2026-06-01T02:44:43.321Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:44:56.901Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"PluginLoader\\.loadExternal"}
+{"at":"2026-06-01T02:44:56.902Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:45:18.929Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"function publishPluginError"}
+{"at":"2026-06-01T02:45:18.931Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:45:44.862Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Effect\\.tryPromise"}
+{"at":"2026-06-01T02:45:44.863Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:45:53.615Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"tryPromise"}
+{"at":"2026-06-01T02:45:53.616Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"7 matches in 1 files"}
+{"at":"2026-06-01T02:46:04.262Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"publishPluginError\\(\""}
+{"at":"2026-06-01T02:46:04.263Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:46:13.351Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"publishPluginError"}
+{"at":"2026-06-01T02:46:13.351Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T02:46:34.608Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"export const layer = Layer"}
+{"at":"2026-06-01T02:46:34.612Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:46:53.014Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"const init = yield\\*"}
+{"at":"2026-06-01T02:46:53.016Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:47:08.634Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"publishPluginError"}
+{"at":"2026-06-01T02:47:08.636Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T02:47:26.811Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"EffectBridge"}
+{"at":"2026-06-01T02:47:26.825Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:48:04.390Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"PluginLoader\\.loadExternal"}
+{"at":"2026-06-01T02:48:04.394Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:50:12.709Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Failed to install"}
+{"at":"2026-06-01T02:50:12.712Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:51:04.110Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"applyPlugin\\(load"}
+{"at":"2026-06-01T02:51:04.110Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:51:37.348Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"pluginId = yield\\*"}
+{"at":"2026-06-01T02:51:37.349Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:52:16.610Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"bridge ="}
+{"at":"2026-06-01T02:52:16.613Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:52:52.113Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"catch:"}
+{"at":"2026-06-01T02:52:52.114Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"7 matches in 1 files"}
+{"at":"2026-06-01T02:53:26.081Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"for \\(const load of"}
+{"at":"2026-06-01T02:53:26.083Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:54:01.432Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"InstanceState"}
+{"at":"2026-06-01T02:54:01.436Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"11 matches in 1 files"}
+{"at":"2026-06-01T02:54:30.882Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"hooks\\.push"}
+{"at":"2026-06-01T02:54:30.886Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:55:18.913Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"hooks\\.push\\(init"}
+{"at":"2026-06-01T02:55:18.914Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:55:53.979Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"plugins\\.push"}
+{"at":"2026-06-01T02:55:53.982Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:56:21.514Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"\\.plugins\\.push"}
+{"at":"2026-06-01T02:56:21.516Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:56:40.894Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"publishPluginError\\(`Failed to load plugin"}
+{"at":"2026-06-01T02:56:40.897Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:57:04.616Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"parsed\\."}
+{"at":"2026-06-01T02:57:04.617Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:57:40.668Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"config\\.plugins"}
+{"at":"2026-06-01T02:57:40.668Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:57:59.315Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"cfg\\.plugins"}
+{"at":"2026-06-01T02:57:59.316Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:58:15.124Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Config\\."}
+{"at":"2026-06-01T02:58:15.125Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:58:34.516Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"config\\["}
+{"at":"2026-06-01T02:58:34.518Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:58:52.372Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"config\\.provider"}
+{"at":"2026-06-01T02:58:52.372Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:59:09.444Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"const plugins"}
+{"at":"2026-06-01T02:59:09.446Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:59:14.590Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"cfg\\."}
+{"at":"2026-06-01T02:59:14.593Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:59:30.355Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"pluginId\\b"}
+{"at":"2026-06-01T02:59:30.355Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"30 matches in 1 files"}
+{"at":"2026-06-01T02:59:47.497Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"registrations\\.push"}
+{"at":"2026-06-01T02:59:47.497Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:59:59.610Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Log\\."}
+{"at":"2026-06-01T02:59:59.611Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:00:12.148Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"log\\."}
+{"at":"2026-06-01T03:00:12.149Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"16 matches in 1 files"}
+{"at":"2026-06-01T03:00:29.643Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Session\\.Event"}
+{"at":"2026-06-01T03:00:29.646Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:00:40.069Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"McpStatusChanged"}
+{"at":"2026-06-01T03:00:40.279Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"3 matches in 500 files"}
+{"at":"2026-06-01T03:00:53.041Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"^"}
+{"at":"2026-06-01T03:00:53.045Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"50 matches in 1 files"}
+{"at":"2026-06-01T03:01:37.594Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"McpStatusChanged = BusEvent"}
+{"at":"2026-06-01T03:01:37.595Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:02:16.615Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"McpStatusChanged = BusEvent\\.define"}
+{"at":"2026-06-01T03:02:16.617Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:03:22.051Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"BusEvent\\.define"}
+{"at":"2026-06-01T03:03:22.052Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T03:03:56.683Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Event\\.Error"}
+{"at":"2026-06-01T03:03:56.696Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"10 matches in 24 files"}
+{"at":"2026-06-01T03:04:28.434Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"export const Event ="}
+{"at":"2026-06-01T03:04:28.458Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"5 matches in 44 files"}
+{"at":"2026-06-01T03:04:58.838Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"export const Event"}
+{"at":"2026-06-01T03:04:58.839Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:05:24.458Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Event = \\{"}
+{"at":"2026-06-01T03:05:24.459Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:06:17.475Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Error: BusEvent"}
+{"at":"2026-06-01T03:06:17.475Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:07:19.081Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Error: BusEvent\\.define"}
+{"at":"2026-06-01T03:07:19.082Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:07:54.924Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"EventName\\.SessionError"}
+{"at":"2026-06-01T03:07:54.925Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:08:22.339Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"export const define"}
+{"at":"2026-06-01T03:08:22.340Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T03:09:59.586Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"import.*Bus"}
+{"at":"2026-06-01T03:09:59.587Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:10:25.217Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"\\bbus\\b"}
+{"at":"2026-06-01T03:10:25.217Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T03:10:54.341Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"catch.*err.*\\{"}
+{"at":"2026-06-01T03:10:54.342Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T03:11:17.200Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"log\\.error\\(\\\"failed to load plugin\\\""}
+{"at":"2026-06-01T03:11:17.201Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:11:39.689Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"pluginList\\.push"}
+{"at":"2026-06-01T03:11:39.690Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:12:12.240Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"pluginList"}
+{"at":"2026-06-01T03:12:12.242Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T03:12:43.905Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"loaded\\["}
+{"at":"2026-06-01T03:12:43.906Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T03:13:02.847Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"register\\(pluginId"}
+{"at":"2026-06-01T03:13:02.848Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:13:25.201Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"internalPlugins"}
+{"at":"2026-06-01T03:13:25.202Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:13:56.611Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"cfg\\.plugin_origins"}
+{"at":"2026-06-01T03:13:56.614Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T03:14:17.527Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Error: BusEvent\\.define\\("}
+{"at":"2026-06-01T03:14:17.528Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:14:37.378Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Schema\\.Struct.*error"}
+{"at":"2026-06-01T03:14:37.382Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T03:15:07.945Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"SessionError"}
+{"at":"2026-06-01T03:15:07.947Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:16:23.826Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"publish\\("}
+{"at":"2026-06-01T03:16:23.830Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"4 matches in 3 files"}
+{"at":"2026-06-01T03:22:54.603Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"load\\.source"}
+{"at":"2026-06-01T03:22:54.604Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:25:18.742Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"load\\.spec"}
+{"at":"2026-06-01T03:25:18.744Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T03:27:24.604Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Loaded"}
+{"at":"2026-06-01T03:27:24.605Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T03:28:22.126Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"type Loaded ="}
+{"at":"2026-06-01T03:28:22.127Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:30:43.585Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"type Resolved ="}
+{"at":"2026-06-01T03:30:43.588Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:32:09.348Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"Loaded = Resolved"}
+{"at":"2026-06-01T03:32:09.350Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:33:01.655Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"export type Loaded"}
+{"at":"2026-06-01T03:33:01.656Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:34:57.303Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"flags\\.pure"}
+{"at":"2026-06-01T03:34:57.304Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:36:22.055Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"disableDefaultPlugins"}
+{"at":"2026-06-01T03:36:22.056Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:37:19.703Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"PluginInput"}
+{"at":"2026-06-01T03:37:19.705Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T03:37:53.469Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"const input: PluginInput"}
+{"at":"2026-06-01T03:37:53.470Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:38:26.242Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"createOpencodeClient"}
+{"at":"2026-06-01T03:38:26.246Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:38:56.884Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"built-in-"}
+{"at":"2026-06-01T03:38:56.886Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:39:24.516Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"const registrations"}
+{"at":"2026-06-01T03:39:24.516Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T03:39:32.401Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"pluginList,"}
+{"at":"2026-06-01T03:39:32.403Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:39:54.295Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"savePluginHealthStore"}
+{"at":"2026-06-01T03:39:54.298Z","session_id":"ses_17ef3895dffef942m3JH6Ro6M6","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}

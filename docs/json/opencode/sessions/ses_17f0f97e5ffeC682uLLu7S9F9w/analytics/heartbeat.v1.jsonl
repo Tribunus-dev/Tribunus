@@ -1,0 +1,19 @@
+{"at":"2026-06-01T02:13:15.308Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"pipeline"}
+{"at":"2026-06-01T02:13:15.398Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"0 matches in 0 files"}
+{"at":"2026-06-01T02:13:16.076Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"catchAll"}
+{"at":"2026-06-01T02:13:16.076Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"0 matches in 4 files"}
+{"at":"2026-06-01T02:14:41.188Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","phase":"started","detail":"**/pipeline.ts"}
+{"at":"2026-06-01T02:14:41.463Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","phase":"completed","detail":"**/pipeline.ts"}
+{"at":"2026-06-01T02:14:41.831Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"catchAll"}
+{"at":"2026-06-01T02:14:42.030Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:19:49.265Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","phase":"started","detail":"**/pipeline*"}
+{"at":"2026-06-01T02:19:49.492Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","phase":"completed","detail":"**/pipeline*"}
+{"at":"2026-06-01T02:23:24.590Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","phase":"started","detail":"**/pipeline.ts"}
+{"at":"2026-06-01T02:23:39.786Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_find","phase":"completed","detail":"**/pipeline.ts"}
+{"at":"2026-06-01T02:23:39.894Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"catchAll"}
+{"at":"2026-06-01T02:23:55.004Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:26:43.485Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"annotateLogs"}
+{"at":"2026-06-01T02:26:53.661Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:33:46.461Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/mcp/auth.ts"}
+{"at":"2026-06-01T02:35:45.684Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/mcp/auth.ts"}
+{"at":"2026-06-01T02:38:44.816Z","session_id":"ses_17f0f97e5ffeC682uLLu7S9F9w","agent":"surgeon","tool":"smart_sd","phase":"completed","detail":"1 match in packages/opencode/src/mcp/oauth-callback.ts"}

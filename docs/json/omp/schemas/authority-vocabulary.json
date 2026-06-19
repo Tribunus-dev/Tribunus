@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/authority-vocabulary.v1",
+  "title": "Tribunus Authority Vocabulary",
+  "description": "Canonical definitions for all authority terms used across Tribunus subsystems. No subsystem may define conflicting terminology.",
+  "type": "object",
+  "properties": {
+    "vocabulary": {
+      "type": "array",
+      "description": "Ordered list of authority terms with canonical definitions",
+      "items": {
+        "type": "object",
+        "required": ["term", "definition", "scope"],
+        "properties": {
+          "term": { "type": "string", "description": "Canonical term name" },
+          "definition": { "type": "string", "description": "Single authoritative definition" },
+          "scope": { "type": "string", "description": "Where this term applies (global, coordination, session, tool, extension)" },
+          "supersedes": { "type": "array", "items": { "type": "string" }, "description": "Terms this definition replaces" },
+          "see_also": { "type": "array", "items": { "type": "string" }, "description": "Related terms" }
+        }
+      }
+    }
+  },
+  "vocabulary": [
+    {
+      "term": "principal",
+      "definition": "The root identity that initiates action — a human user, an organization, or a system root. Every action is ultimately attributable to a principal.",
+      "scope": "global"
+    },
+    {
+      "term": "actor",
+      "definition": "An entity that performs an action on behalf of a principal. Actors include agents, tools, and automated processes. An actor's authority is always a subset of its principal's authority.",
+      "scope": "global"
+    },
+    {
+      "term": "delegate",
+      "definition": "A temporary or scoped transfer of authority from a principal to an actor. Delegation has an expiry, a scope, and is revocable. Delegation chains are traceable.",
+      "scope": "global"
+    },
+    {
+      "term": "service_identity",
+      "definition": "A non-human principal representing a system component or external service. Service identities have capability grants like principals but no interactive authentication.",
+      "scope": "global"
+    },
+    {
+      "term": "capability",
+      "definition": "A named permission to perform a specific class of actions. Capabilities are granted, not assumed. Every capability has a scope, a grantor, and a grantee.",
+      "scope": "global"
+    },
+    {
+      "term": "grant",
+      "definition": "The assignment of a capability from a grantor to a grantee. Grants are durable records in PGlite. A grant may be time-limited, scope-limited, or conditional.",
+      "scope": "global"
+    },
+    {
+      "term": "receipt",
+      "definition": "A durable, queryable record that an authority-relevant action occurred. Receipts are stored in PGlite and are the sole evidence that an action was authorized. No claim of authority without a receipt.",
+      "scope": "global"
+    },
+    {
+      "term": "evidence",
+      "definition": "An artifact or observation that supports or refutes an authority claim. Evidence is linked to receipts and forms the evidence chain.",
+      "scope": "global"
+    },
+    {
+      "term": "evidence_chain",
+      "definition": "An append-only, cryptographically linked sequence of evidence entries. Each entry references its predecessor. Evidence chains support replayability and cross-instance verification.",
+      "scope": "global"
+    },
+    {
+      "term": "policy",
+      "definition": "A declarative rule that governs whether an action is permitted, denied, or requires escalation. Policies are evaluated at decision points.",
+      "scope": "global"
+    },
+    {
+      "term": "decision",
+      "definition": "The output of policy evaluation: permitted, denied, or escalated. Every decision produces a receipt.",
+      "scope": "global"
+    },
+    {
+      "term": "approval",
+      "definition": "A human or quorum decision that authorizes an action requiring elevated authority. Approvals are receipted and form part of the evidence chain.",
+      "scope": "global"
+    },
+    {
+      "term": "revocation",
+      "definition": "The removal of a previously granted capability or delegation. Revocation is immediate, receipted, and propagates to all transitive dependents.",
+      "scope": "global"
+    },
+    {
+      "term": "escalation",
+      "definition": "The process of routing an authority decision to a higher level when policy evaluation cannot resolve it. Escalation follows a defined escalation policy.",
+      "scope": "global"
+    },
+    {
+      "term": "durable_ack",
+      "definition": "An acknowledgment that is backed by a PGlite write before any Valkey stream acknowledgment. The PGlite write is the authority; the XACK is a receipt of durable state.",
+      "scope": "coordination"
+    },
+    {
+      "term": "authority_binding",
+      "definition": "The invariant that every authority claim must be backed by observable PGlite state. No Valkey ACK without a preceding PGlite commit.",
+      "scope": "coordination"
+    },
+    {
+      "term": "permission_broker",
+      "definition": "The centralized service that evaluates capability grants and produces authorization decisions. All permission checks flow through the broker.",
+      "scope": "session"
+    },
+    {
+      "term": "sandbox_cell",
+      "definition": "An isolated execution context for extensions with capability-scoped handles. No ambient authority. Every external interaction requires an explicit capability grant.",
+      "scope": "extension"
+    }
+  ]
+}

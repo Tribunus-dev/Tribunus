@@ -1,0 +1,35 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0034",
+  "type": "lane",
+  "name": "Receipt replay test",
+  "slug": "receipt-replay-test",
+  "description": "Extend the lifecycle/replay test surface so receipt folding is proven in-order and rejects duplicate or malformed transitions.",
+  "scope": "compute-native-receipt-replay",
+  "missionId": "0237",
+  "status": "idle",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/compute-native/src/inference_profile/evidence.rs",
+    "packages/compute-native/src/inference_profile/ledger_jsonl.rs",
+    "packages/compute-native/src/engine_receipts.rs",
+    "packages/compute-native/tests/coreml_lifecycle.rs",
+    "packages/compute-native/tests/treatment_lifecycle.rs",
+    "packages/compute-native/tests/coreml_minimal_repro_tests.rs"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "replay",
+    "tests"
+  ],
+  "created_at": "2026-06-13T10:57:05.260Z",
+  "updated_at": "2026-06-13T10:57:05.260Z"
+}

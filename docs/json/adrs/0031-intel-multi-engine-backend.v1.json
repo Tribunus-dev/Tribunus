@@ -1,0 +1,42 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "0031",
+  "title": "Intel Multi-Engine Backend \u2014 Arc Xe GPU, NPU, and AMX CPU Inference for Tribunus Compute",
+  "status": "proposed",
+  "date": "2026-06-17",
+  "last_modified": "2026-06-17T18:00:00.000Z",
+  "authors": [
+    "system"
+  ],
+  "component_imports": [
+    "ACR-0001",
+    "ACR-0002",
+    "ACR-0003",
+    "ACR-0004",
+    "ACR-0005",
+    "ADR-0034"
+  ],
+  "component_extensions": [],
+  "component_overrides": [],
+  "component_definitions": [],
+  "component_conflicts": [],
+  "tags": [
+    "compute",
+    "backend",
+    "port",
+    "intel",
+    "arc",
+    "xe",
+    "xmx",
+    "openvino",
+    "oneapi",
+    "level-zero",
+    "amx"
+  ],
+  "context": "Intel's compute architecture spans three distinct engines that map to Tribunus' multi-backend model. The Arc Battlemage GPU (Xe2 architecture) provides dedicated Xe Matrix Extensions (XMX) for matrix arithmetic \u2014 160 XMX engines on the B580 delivering 233 INT8 TOPS and 14.6 FP32 TFLOPS. The Intel NPU (integrated in Meteor Lake, Lunar Lake, and Arrow Lake) provides low-power inference via OpenVINO. The CPU cores provide Advanced Matrix Extensions (AMX) on Granite Rapids P-cores and Lunar Lake E-cores for tile-based matrix operations. This three-engine architecture mirrors both Apple Silicon (GPU + ANE + AMX) and AMD Ryzen (RDNA3 + XDNA + Zen4 AMX). The Intel stack is fully open: oneAPI is built on SYCL/Level Zero/DPC++, OpenVINO is open source, and the AMX instruction set is documented in the Intel Architecture Instruction Set Extensions manual.",
+  "decision": "## Decision\n\nImplement three Intel compute backends for Tribunus \u2014 Arc Xe GPU (via oneAPI/Level Zero), Intel NPU (via OpenVINO), and CPU AMX (via AMX intrinsics + OpenBLAS) \u2014 following the same five-layer architecture as the AMD64 port (ADR 0029) with engine-specific substitutions.\n\n### Layer 1: Arc Xe GPU Backend (Level Zero + SYCL)\n\nIntel Arc GPUs are programmed through oneAPI, which provides multiple API surfaces. The lowest-level is Level Zero \u2014 a direct-to-metal API similar to Vulkan that provides device discovery, command queues, and memory management without driver overhead. Level Zero is the appropriate target for Tribunus because it gives explicit control over XMX engine dispatch, device-local memory, and command synchronization.\n\nImplementation files:\n- arc_inventory.rs: Device discovery via zeDeviceGet, query Xe-core count, XMX engine count, VRAM size, and EU count per subslice\n- arc_executor.rs: Command queue management, kernel dispatch, synchronization via zeFence\n- arc_backend.rs: TensorBackend trait implementation that dispatches SYCL-compiled SPIR-V kernels to the Arc GPU\n\nKey implementation details:\n- XMX engines (Xe Matrix Extensions) are the primary compute target for quantized matmul. Each XMX engine processes 8x8x16 INT8 tiles per clock. The 160 XMX engines on B580 can dispatch 256+ parallel tile operations per wave.\n- Level Zero provides zeKernelSuggestGroupSize for optimal workgroup sizing on Arc's Xe-core architecture (8 EUs per slice, hardware thread scheduler)\n- Device-local memory (VRAM) is managed via zeMemAllocDevice. Model weights staged through zeMemAllocShared (host-visible device memory) for zero-copy on integrated SKUs, or zeCommandListCopy for discrete SKUs\n- Kernel compilation uses SYCL offline compiler (icpx -fsycl) to produce SPIR-V binaries loaded via zeModuleCreate\n- Fused kernels (matmul + bias + activation) are authored as SYCL single-source kernels with XMX intrinsics, compiled offline, loaded at startup\n\n### Layer 2: Intel NPU Backend (OpenVINO)\n\nThe Intel NPU (Neural Processing Unit) is a dedicated AI accelerator integrated in Meteor Lake, Lunar Lake, and Arrow Lake processors. It provides ~10-45 TOPS INT8 depending on generation. Accessed through OpenVINO C API (ov_core.h).\n\nImplementation files:\n- openvino_bridge.rs: Rust FFI to ov_core.h\n- openvino_state.rs: Model loading (ov_core_read_model), NPU compilation (ov_compile_model with device=NPU), lifecycle\n- openvino_pipeline.rs: Subgraph partitioner for NPU-compatible INT8 operations\n- bridge/openvino_exec.c: C FFI wrappers for inference operations\n\nThe NPU suits speculative decoding draft models (1-2 layer transformers at ~30 tok/s), low-power background inference, and offloading small models when the GPU is power-gated.\n\n### Layer 3: CPU AMX Backend\n\nIntel AMX provides tile-based matrix operations via x86 AMX tile intrinsics. The CPU dispatch layer (zenblas.rs from ADR 0029) selects between AMX, OpenBLAS, and AVX2. Adding Intel AMX extends the dispatch table with Intel tile instructions at the same intrinsic level as AMD Zen4 AMX.\n\nDetection: __builtin_cpu_supports(amx-tile) or /proc/cpuinfo flags amx_tile / amx_bf16 / amx_int8.\nPerformance: AMX INT8 tile matmul ~2x throughput over AVX-512 VNNI on Granite Rapids for tile sizes 16x64+.\n\n### Layer 4: Multi-Engine Routing\n\nRouting selects between Arc GPU, NPU, and CPU AMX based on operation type, model size, latency requirement, and power state. Superset of AMD64 routing table.\n\n### Layer 5: Profiling and Monitoring\n\n- GPU: Intel GPA or Level Zero zeEvent for command-level timing\n- NPU: OpenVINO ov_infer_request_get_profiling_info\n- CPU AMX: Linux perf tile instruction counters\n\n### Porting Strategy\n\n~70% code reuse from AMD64 port:\n- CPU dispatch (zenblas.rs): ~80% shared \u2014 same x86 AMX intrinsics\n- GPU backend: ~70% shared \u2014 Level Zero replaces Vulkan\n- NPU bridge: ~60% shared \u2014 OpenVINO C API replaces ONNX Runtime C API\n- Routing: ~90% shared \u2014 Intel-specific capability descriptions\n\n### Additional Backend: oneDNN Integration\n\noneDNN provides optimized primitives for AMX, AVX-512, and Xe GPUs. CPU dispatch should prefer oneDNN over OpenBLAS when available.\n\n### Risk and Mitigation\n\n- Level Zero fragmentation between integrated and discrete Arc \u2014 maintain capability switch\n- OpenVINO NPU support varies by generation \u2014 gracefully fall back to CPU\n- XMX utilization requires explicit SYCL annotations\n- Install dependencies: intel-opencl-icd and level-zero packages",
+  "consequences": "## Consequences\n\n### Positive\n\n* Third multi-engine port with ~70% code reuse from AMD64\n* Highest raw consumer throughput (B580: 233 INT8 TOPS)\n* NPU for power-efficient background inference\n* AMX reuse from AMD64 port (same x86 instruction encoding)\n* oneDNN optimization eliminates hand-tuned CPU dispatch\n\n### Negative\n\n* Two different low-level GPU APIs to maintain (Level Zero + Vulkan)\n* OpenVINO C API less mature than ONNX Runtime\n* Intel GPU compute driver stability weaker than AMD ROCm\n* NPU absent on desktop platforms\n\n### Estimated Effort\n\n- Layer 1 (Arc GPU via Level Zero): 2 weeks\n- Layer 2 (NPU via OpenVINO): 1-2 weeks\n- Layer 3 (CPU AMX): 3 days (shared with AMD64 port)\n- Layer 4 (Multi-engine routing table): 2 days\n- Layer 5 (Profiling): 3 days\n- Integration and conformance testing: 1 week\n- Total with AMD64 port complete: 4-6 weeks\n- Total from scratch: 8-10 weeks\n\n### Hardware Recommendation\n\nIntel Arc B580 (12 GB, $250 USD) for GPU development. Meteor Lake or Lunar Lake laptop with OpenVINO NPU for NPU. NPU dev can proceed in CPU emulation mode.",
+  "supersedes": [],
+  "superseded_by": []
+}

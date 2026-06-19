@@ -1,0 +1,25 @@
+{"at":"2026-06-01T02:07:55.914Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_find","phase":"started","detail":"*.json"}
+{"at":"2026-06-01T02:07:55.918Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_find","phase":"completed","detail":"*.json"}
+{"at":"2026-06-01T02:07:56.755Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_find","phase":"started","detail":"*tool-registry*"}
+{"at":"2026-06-01T02:08:05.071Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_find","phase":"completed","detail":"*tool-registry*"}
+{"at":"2026-06-01T02:10:54.593Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_find","phase":"started","detail":"*tc*"}
+{"at":"2026-06-01T02:11:01.993Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_find","phase":"completed","detail":"*tc*"}
+{"at":"2026-06-01T02:11:02.120Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_find","phase":"started","detail":"*P1*"}
+{"at":"2026-06-01T02:11:09.572Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_find","phase":"completed","detail":"*P1*"}
+{"at":"2026-06-01T02:26:21.848Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"Plugin\\.Service\\.of"}
+{"at":"2026-06-01T02:26:21.851Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:26:22.773Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"\\.pipe\\("}
+{"at":"2026-06-01T02:26:22.774Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:32:29.623Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"const registryLayer = "}
+{"at":"2026-06-01T02:32:29.625Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:38:13.945Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"unquarantine|getCrashStatus"}
+{"at":"2026-06-01T02:38:13.947Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T02:40:22.248Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"defaultLayer"}
+{"at":"2026-06-01T02:40:22.248Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:40:22.270Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"Plugin\\.Service\\.of"}
+{"at":"2026-06-01T02:42:24.967Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"ToolCache"}
+{"at":"2026-06-01T02:42:25.093Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"completed","detail":"20 matches in 365 files"}
+{"at":"2026-06-01T02:42:25.690Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"Plugin\\.Service\\.of"}
+{"at":"2026-06-01T02:42:25.759Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"completed","detail":"1 matches in 365 files"}
+{"at":"2026-06-01T02:42:32.144Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"started","detail":"^export"}
+{"at":"2026-06-01T02:42:32.145Z","session_id":"ses_17f1327fcffeaVtreahBewrLGP","agent":"critic","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}

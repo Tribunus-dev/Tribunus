@@ -1,0 +1,2 @@
+{"at":"2026-06-01T06:20:08.916Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","command":"test","cwd":"packages/opencode","elapsed_ms":5748,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:21:20.673Z","session_id":"ses_17e2caea5ffeCLQavm9FYvKsJO","agent":"surgeon","command":"test","cwd":"packages/opencode","elapsed_ms":1975,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}

@@ -1,0 +1,31 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "COMPUTE-AUTHORITY-REMOTE-CI-AND-STORAGE-KERNEL-0008",
+  "type": "mission",
+  "name": "Compute Authority — Remote CI and Storage Kernel Closure",
+  "slug": "compute-authority-remote-ci-and-storage-kernel-0008",
+  "description": "Mark mission 0008 as passed: storage kernel contract implemented, runtime contracts in place, orchestration skeleton complete, remote CI workflow configured on macOS arm64 runners. The storage kernel prevents PGlite, Valkey, and DuckDB from becoming competing sources of truth by defining Rust contracts (DurableAuthorityPort, CoordinationPort, ProjectionPort) with StorageReconciler as the judge verifying durable receipts back all claims.",
+  "purpose": "Close mission 0008 with verification that the authority architecture is sound and locally complete. Remote CI proof pending one main branch run.",
+  "campaignId": "0009",
+  "status": "completed",
+  "priority": 100,
+  "acceptanceCriteria": [
+    "storage_kernel_module_exists=true",
+    "durable_authority_port_exists=true",
+    "coordination_port_exists=true",
+    "projection_port_exists=true",
+    "storage_reconciler_exists=true",
+    "storage_kernel_tests_green=true",
+    "architecture_lore_added=true",
+    "compute_authority_workflow_configured=true",
+    "authority_subset_scoped=true",
+    "failure_ledger_artifacts_configured=true",
+    "remote_ci_visible_on_main=pending_next_run"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": ["authority", "storage-kernel", "ci", "0008"],
+  "created_at": "2026-06-14T19:00:00.000Z",
+  "updated_at": "2026-06-14T19:00:00.000Z"
+}

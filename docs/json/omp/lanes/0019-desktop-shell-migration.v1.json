@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0019",
+  "type": "lane",
+  "name": "Desktop Shell Migration",
+  "slug": "desktop-shell-migration",
+  "description": "Replace inherited opencode desktop screens with Tribunus cockpit components. New features exclusively use Lit domain components. Old screens replaced when touched — no big-bang rewrite. Electron main/renderer split maintained: Lit components in renderer, native APIs in main via IPC.",
+  "scope": "desktop-migration",
+  "missionId": "0013",
+  "status": "completed",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/desktop/src/renderer/",
+    "packages/desktop/src/main/"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": null,
+  "leaseExpiresAt": "2026-06-06T12:00:31.929Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:50:46.813Z",
+  "updated_at": "2026-06-06T12:00:31.929Z"
+}

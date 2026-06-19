@@ -1,0 +1,64 @@
+{"at":"2026-06-01T01:39:22.771Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"EventName"}
+{"at":"2026-06-01T01:39:22.904Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"0 matches in 0 files"}
+{"at":"2026-06-01T01:39:24.255Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_find","phase":"started","detail":"src/event/*.ts"}
+{"at":"2026-06-01T01:39:24.400Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_find","phase":"completed","detail":"src/event/*.ts"}
+{"at":"2026-06-01T01:40:49.731Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_find","phase":"started","detail":"**/event/**"}
+{"at":"2026-06-01T01:40:49.783Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_find","phase":"completed","detail":"**/event/**"}
+{"at":"2026-06-01T01:49:14.966Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_find","phase":"started","detail":"**/bus/**"}
+{"at":"2026-06-01T01:49:15.087Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_find","phase":"completed","detail":"**/bus/**"}
+{"at":"2026-06-01T01:49:15.915Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"instance-trace|InstanceTrace"}
+{"at":"2026-06-01T01:49:16.079Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T01:53:15.293Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"connectRemote|connectLocal"}
+{"at":"2026-06-01T01:53:15.294Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T01:55:47.501Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\(\\\"Plugin\\.init\\\"\\)"}
+{"at":"2026-06-01T01:55:47.501Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T01:55:48.734Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"const defs =|function defs|\\.defs\\b"}
+{"at":"2026-06-01T01:55:48.736Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T01:55:49.681Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"import.*Bus|Bus\\b"}
+{"at":"2026-06-01T01:55:49.682Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T01:58:23.411Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus\\.publish|bus\\.publish|yield\\* bus"}
+{"at":"2026-06-01T01:58:23.584Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"46 matches in 23 files"}
+{"at":"2026-06-01T01:59:53.381Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"const init = Effect\\.fn\\(\\\"Plugin\\.init\\\"\\)"}
+{"at":"2026-06-01T01:59:53.383Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T01:59:54.939Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"const defs = Effect\\.fn|const connectRemote|const connectLocal"}
+{"at":"2026-06-01T01:59:54.940Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T01:59:56.488Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"const layer = Layer\\.effect\\(|export const Service =|InstanceState\\.make"}
+{"at":"2026-06-01T01:59:56.490Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:01:13.565Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Plugin\\.init\\\"\\)\\(function"}
+{"at":"2026-06-01T02:01:13.567Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:02:15.026Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"const init = Effect\\.fn"}
+{"at":"2026-06-01T02:02:15.027Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:02:26.151Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus\\.publish.*ToolsChanged|Bus\\.publish.*Mcp|Bus\\.publish.*instance"}
+{"at":"2026-06-01T02:02:26.458Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:03:19.142Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus\\b.*publish|ToolsChanged|InstanceDisposed"}
+{"at":"2026-06-01T02:03:19.143Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:03:20.490Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus\\b.*publish|ToolsChanged|InstanceDisposed|BrowserOpenFailed"}
+{"at":"2026-06-01T02:03:20.492Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T02:03:21.799Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus\\b.*publish|ToolsChanged|InstanceDisposed|bus\\.publish"}
+{"at":"2026-06-01T02:03:21.801Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:04:02.917Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus|bus"}
+{"at":"2026-06-01T02:04:02.918Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T02:04:04.149Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus|bus"}
+{"at":"2026-06-01T02:04:04.150Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"15 matches in 1 files"}
+{"at":"2026-06-01T02:04:05.537Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus|bus"}
+{"at":"2026-06-01T02:04:05.538Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:04:51.436Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"const layer = Layer|yield\\*|Bus\\.Service"}
+{"at":"2026-06-01T02:04:51.437Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"30 matches in 1 files"}
+{"at":"2026-06-01T02:04:52.619Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus|bus"}
+{"at":"2026-06-01T02:04:52.619Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:04:53.671Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"Bus|bus"}
+{"at":"2026-06-01T02:04:53.672Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:06:00.245Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"InstanceState"}
+{"at":"2026-06-01T02:06:00.247Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"10 matches in 1 files"}
+{"at":"2026-06-01T02:06:01.189Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"InstanceState"}
+{"at":"2026-06-01T02:06:01.190Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T02:07:00.202Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"McpStatusChanged|EventName\\.Mcp"}
+{"at":"2026-06-01T02:07:00.205Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"4 matches in 1 files"}
+{"at":"2026-06-01T02:07:02.096Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"BusEvent\\.define"}
+{"at":"2026-06-01T02:07:02.097Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:07:10.991Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"yield\\*|Effect\\.fn"}
+{"at":"2026-06-01T02:07:10.992Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"27 matches in 1 files"}
+{"at":"2026-06-01T02:08:40.817Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"defaultLayer|Layer\\.provide"}
+{"at":"2026-06-01T02:08:40.820Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"15 matches in 1 files"}
+{"at":"2026-06-01T02:08:41.844Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"started","detail":"defaultLayer|Layer\\.provide"}
+{"at":"2026-06-01T02:08:41.845Z","session_id":"ses_17f2b0205ffekpGAgfC5iVsUtM","agent":"coupling-auditor","tool":"smart_grep","phase":"completed","detail":"30 matches in 1 files"}

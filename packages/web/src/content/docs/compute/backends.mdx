@@ -1,0 +1,61 @@
+---
+title: Backends
+description: Tribunus Compute backend support — Apple Silicon, Linux, and cross-platform
+sidebar:
+  order: 3
+---
+
+## Apple Silicon Backends
+
+Tribunus Compute provides three backends for Apple Silicon, selected per-operation by the compiled placement manifest:
+
+### MLX (Metal GPU)
+
+MLX provides Metal-backed array computation on Apple Silicon. In Tribunus Compute, MLX is treated as one backend lane rather than the owner of inference. Its lazy evaluation and on-the-fly Metal JIT compilation are managed by the ComputeImage pipeline: the compilation phase generates tailored Metal kernel candidates, benchmarks them, and freezes winners into the compute image.
+
+- **DType support:** FP32, FP16 (Apple Silicon only), BF16 (Apple Silicon only)
+- **Key operators:** matmul, attention, fused MLP, KV cache operations
+- **Role in pipeline:** compute-heavy regions, verifier batching
+
+### Core ML (ANE)
+
+Not an operation backend — a compiled region backend. The compiler creates stable-shape MIL islands or mlpackages large enough to amortize boundary and fence costs.
+
+- **Used for:** fused regions, speculative proposal islands, attention/MLP fragments
+- **Contract:** receives pre-bound islands, never tiny ad hoc ops
+- **Integration:** Core ML pixel buffer backed by IOSurface, zero-copy with SharedMemoryIsland
+
+### Accelerate (CPU)
+
+A fused execution recipe backend using vDSP, vForce, BLAS, LAPACK, and BNNS over resident pages with preallocated scratch.
+
+- **Used for:** reductions, normalization, sampling helpers, checksums, validation
+- **Key property:** deterministic low-latency CPU-side execution, no hidden allocation
+
+## Linux Backends
+
+Tribunus Compute supports Linux deployments via cargo feature flags:
+
+| Backend | Feature Flag | Hardware |
+|---|---|---|
+| CPU Fallback | `linux` | Any x86_64 with AMX/AVX2 |
+| Vulkan (AMD) | `linux-vulkan` | AMD RDNA3 (RX 7000, Ryzen 7040+) |
+| Level Zero (Intel) | `linux-intel` | Intel Arc / Core Ultra |
+
+### AMD GPU Backend (Vulkan)
+
+Requires Mesa 24.1+ and the `mesa-vulkan-drivers` package. Supports RDNA3 hardware with Wave32/Wave64 execution models.
+
+### Intel GPU Backend (Level Zero / OpenVINO)
+
+Requires `intel-level-zero-gpu`, `level-zero-dev`, and OpenVINO 2025.4+ for NPU support. Supports XMX matrix extensions for accelerated AI compute.
+
+## Cross-Backend Design
+
+The same compilation pipeline and placement manifest architecture applies across backends:
+
+1. **Tribunus Compute defines** the phase, inputs, outputs, layout, dtype, residency, latency budget, tolerance, and legal fallbacks
+2. **Backend candidates compete** during assessment
+3. **The compute image freezes** the winner per phase
+
+This design enables adding backends without changing the inference runtime — only the compiler gains a new target.

@@ -1,0 +1,38 @@
+{"at":"2026-06-01T02:14:49.303Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"bootstrap.ts"}
+{"at":"2026-06-01T02:14:49.390Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"bootstrap.ts"}
+{"at":"2026-06-01T02:14:49.799Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"instance-store.ts"}
+{"at":"2026-06-01T02:14:49.863Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"instance-store.ts"}
+{"at":"2026-06-01T02:14:50.446Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"**/health/*.ts"}
+{"at":"2026-06-01T02:14:50.518Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"**/health/*.ts"}
+{"at":"2026-06-01T02:15:48.238Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"health*"}
+{"at":"2026-06-01T02:15:48.254Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"health*"}
+{"at":"2026-06-01T02:17:00.480Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"health"}
+{"at":"2026-06-01T02:17:00.495Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"6 matches in 39 files"}
+{"at":"2026-06-01T02:17:00.864Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"global.ts"}
+{"at":"2026-06-01T02:17:00.865Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"global.ts"}
+{"at":"2026-06-01T02:17:06.661Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"bootstrap-service.ts"}
+{"at":"2026-06-01T02:17:06.665Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"bootstrap-service.ts"}
+{"at":"2026-06-01T02:18:20.284Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"health|Health"}
+{"at":"2026-06-01T02:18:20.291Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"12 matches in 1 files"}
+{"at":"2026-06-01T02:20:27.106Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"GlobalHealthData|GlobalHealthResponses|healthy"}
+{"at":"2026-06-01T02:20:27.111Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T02:20:28.258Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"Effect\\.serviceOption|Layer\\.provide|Layer\\.effect"}
+{"at":"2026-06-01T02:20:28.259Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:21:39.444Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"export type GlobalHealth"}
+{"at":"2026-06-01T02:21:39.446Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T02:22:07.960Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"export type GlobalHealthData"}
+{"at":"2026-06-01T02:22:07.962Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:22:43.125Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"Literal.*true|Literal.*healthy"}
+{"at":"2026-06-01T02:22:43.156Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"5 matches in 78 files"}
+{"at":"2026-06-01T02:22:44.384Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"health|Health"}
+{"at":"2026-06-01T02:22:44.405Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"22 matches in 63 files"}
+{"at":"2026-06-01T02:23:38.926Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"Effect\\.serviceOption"}
+{"at":"2026-06-01T02:23:38.926Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:24:20.376Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"GlobalHealthData"}
+{"at":"2026-06-01T02:24:20.382Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:26:13.954Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"started","detail":"*instance-health*"}
+{"at":"2026-06-01T02:26:14.036Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","phase":"completed","detail":"*instance-health*"}
+{"at":"2026-06-01T02:26:14.706Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"InstanceHealth"}
+{"at":"2026-06-01T02:26:14.967Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T02:26:42.937Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"started","detail":"layer|GlobalBus"}
+{"at":"2026-06-01T02:26:42.941Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}

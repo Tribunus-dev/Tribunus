@@ -1,0 +1,17 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "9998",
+  "title": "Invalid Copy Ledger Example",
+  "status": "proposed",
+  "date": "2026-06-14",
+  "last_modified": "2026-06-14T00:00:00Z",
+  "component_imports": [
+    "ACR-0010"
+  ],
+  "decision": "Unknown copies are authority-eligible in this example. Unknown copies are not authority-eligible and unreceipted copies are allowed.",
+  "context": "",
+  "consequences": "",
+  "supersedes": [],
+  "superseded_by": []
+}

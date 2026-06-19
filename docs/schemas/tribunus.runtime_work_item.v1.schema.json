@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.local/schemas/tribunus.runtime_work_item.v1.schema.json",
+  "title": "Tribunus Runtime Work Item",
+  "type": "object",
+  "required": [
+    "schema",
+    "schema_version",
+    "work_id",
+    "run_id",
+    "phase_id",
+    "backend_target",
+    "island_id",
+    "input_tensor_ids",
+    "output_tensor_ids",
+    "authority_mode",
+    "deadline",
+    "budget_class",
+    "retry_policy",
+    "expected_receipts",
+    "receipt_before_ack"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "tribunus.runtime_work_item.v1" },
+    "schema_version": { "const": "v1" },
+    "work_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "phase_id": { "type": "string", "minLength": 1 },
+    "canonical_phase": { "type": "string" },
+    "backend_target": {
+      "type": "string",
+      "enum": ["mlx", "coreml", "accelerate", "reference", "other"]
+    },
+    "island_id": { "type": "string", "minLength": 1 },
+    "input_tensor_ids": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "output_tensor_ids": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "authority_mode": {
+      "type": "string",
+      "enum": ["authority", "provisional", "fallback", "research"]
+    },
+    "deadline": { "type": "string", "format": "date-time" },
+    "budget_class": {
+      "type": "string",
+      "enum": ["interactive", "background", "batch", "research"]
+    },
+    "retry_policy": {
+      "type": "object",
+      "required": ["max_retries", "backoff_ms"],
+      "properties": {
+        "max_retries": { "type": "integer", "minimum": 0 },
+        "backoff_ms": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "expected_receipts": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "receipt_before_ack": {
+      "type": "boolean",
+      "const": true,
+      "description": "Must always be true; acknowledgement cannot precede durable receipt commit."
+    }
+  }
+}

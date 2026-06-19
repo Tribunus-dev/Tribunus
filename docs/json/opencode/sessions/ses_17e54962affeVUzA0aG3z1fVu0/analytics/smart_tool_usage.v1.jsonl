@@ -1,0 +1,8 @@
+{"at":"2026-06-01T05:37:26.007Z","session_id":"ses_17e54962affeVUzA0aG3z1fVu0","agent":"risk-enumerator","tool":"smart_grep","pattern":"catchCause","path":"packages/opencode/src"}
+{"at":"2026-06-01T05:37:26.821Z","session_id":"ses_17e54962affeVUzA0aG3z1fVu0","agent":"risk-enumerator","tool":"smart_grep","pattern":"isDie","path":"packages/opencode"}
+{"at":"2026-06-01T05:37:27.572Z","session_id":"ses_17e54962affeVUzA0aG3z1fVu0","agent":"risk-enumerator","tool":"smart_grep","pattern":"Cause\\.pretty","path":"packages/opencode/src"}
+{"at":"2026-06-01T05:37:28.457Z","session_id":"ses_17e54962affeVUzA0aG3z1fVu0","agent":"risk-enumerator","tool":"smart_grep","pattern":"disableInstanceTrace","path":"packages/opencode"}
+{"at":"2026-06-01T05:37:29.351Z","session_id":"ses_17e54962affeVUzA0aG3z1fVu0","agent":"risk-enumerator","tool":"smart_grep","pattern":"instance-trace|InstanceTrace|instanceTrace","path":"packages/opencode/src"}
+{"at":"2026-06-01T05:40:11.330Z","session_id":"ses_17e54962affeVUzA0aG3z1fVu0","agent":"risk-enumerator","tool":"smart_grep","pattern":"instance-startup\\.jsonl","path":"packages/opencode"}
+{"at":"2026-06-01T05:40:12.187Z","session_id":"ses_17e54962affeVUzA0aG3z1fVu0","agent":"risk-enumerator","tool":"smart_grep","pattern":"catchAllCause","path":"packages/opencode"}
+{"at":"2026-06-01T05:41:30.815Z","session_id":"ses_17e54962affeVUzA0aG3z1fVu0","agent":"risk-enumerator","tool":"smart_grep","pattern":"TraceEntry|trace.*entry|readTrace|parseEntries","path":"packages/opencode/src"}

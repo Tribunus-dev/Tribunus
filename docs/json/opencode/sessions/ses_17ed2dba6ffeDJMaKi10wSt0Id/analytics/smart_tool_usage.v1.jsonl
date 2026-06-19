@@ -1,0 +1,26 @@
+{"at":"2026-06-01T03:16:42.195Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/instance-failure-codes*","path":""}
+{"at":"2026-06-01T03:16:53.252Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"classifyError","path":""}
+{"at":"2026-06-01T03:20:43.145Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/ib-error-gaps/**","path":""}
+{"at":"2026-06-01T03:24:09.748Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/snapshot/index.ts","path":""}
+{"at":"2026-06-01T03:24:20.943Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/format/index.ts","path":""}
+{"at":"2026-06-01T03:24:34.656Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/file/index.ts","path":""}
+{"at":"2026-06-01T03:24:48.131Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"ib-error-gaps","path":""}
+{"at":"2026-06-01T03:25:01.394Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"classifyError","path":""}
+{"at":"2026-06-01T03:26:22.389Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/snapshot/*.ts","path":""}
+{"at":"2026-06-01T03:26:33.356Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/format/*.ts","path":""}
+{"at":"2026-06-01T03:26:44.415Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"*/file.ts","path":""}
+{"at":"2026-06-01T03:26:55.796Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/*ib-error*","path":""}
+{"at":"2026-06-01T03:27:08.078Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/*instance-failure*","path":""}
+{"at":"2026-06-01T03:29:54.421Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"class Service extends Context\\.Service.*File","path":"packages/opencode/src/file"}
+{"at":"2026-06-01T03:29:54.446Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"class Service extends Context\\.Service.*Snapshot","path":"packages/opencode/src/snapshot"}
+{"at":"2026-06-01T03:30:06.975Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"src/file/*.ts","path":""}
+{"at":"2026-06-01T03:30:19.827Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"src/snapshot/*.ts","path":""}
+{"at":"2026-06-01T03:31:43.456Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"instance.failure|InstanceFailure|instance-failure","path":""}
+{"at":"2026-06-01T03:33:01.556Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"diagnostic.*instance|instance.*failure.*code","path":""}
+{"at":"2026-06-01T03:33:13.671Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/diagnostic/**","path":""}
+{"at":"2026-06-01T03:33:25.697Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"classifyError|failureCode|failure.*code","path":""}
+{"at":"2026-06-01T03:35:47.345Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/*ib-error*plan*","path":""}
+{"at":"2026-06-01T03:35:59.534Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/*instance-failure*","path":""}
+{"at":"2026-06-01T03:36:11.159Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_find","pattern":"**/.build/**ib***","path":""}
+{"at":"2026-06-01T03:39:38.639Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"classifyError|BOOTSTRAP_SERVICE_INIT|InstanceFailureCode","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:39:39.620Z","session_id":"ses_17ed2dba6ffeDJMaKi10wSt0Id","agent":"convergence-checker","tool":"smart_grep","pattern":"Context\\.Service.*\\(\"","path":"packages/opencode/src"}

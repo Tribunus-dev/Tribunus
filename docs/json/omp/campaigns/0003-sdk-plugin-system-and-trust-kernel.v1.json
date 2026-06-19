@@ -1,0 +1,22 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0003",
+  "type": "campaign",
+  "name": "SDK, Plugin System, and Trust Kernel",
+  "slug": "sdk-plugin-system-and-trust-kernel",
+  "description": "Ship the governed runtime contract: @tribunus/protocol (low-level schema package), @tribunus/client (TypeScript SDK), @tribunus/plugin (capability-scoped extension SDK), and the Trust Kernel security enforcement layer. Established by ADR 0018.",
+  "objective": "Third-party plugins run in isolated extension host with capability-scoped handles only. No raw DB/filesystem/network access. All authority-relevant actions produce durable receipts. Trust Kernel enforces technical confinement, capability governance, provenance, and dharma overlay.",
+  "status": "completed",
+  "projectId": null,
+  "startDate": "2026-06-06",
+  "endDate": "2026-06-06",
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "maturity": "bootstrap_complete",
+  "horizon": "committed",
+  "follow_on_campaigns": ["0012", "0018", "0019", "0027"],
+  "created_at": "2026-06-06T08:47:13.228Z",
+  "updated_at": "2026-06-06T11:56:17.734Z"
+}

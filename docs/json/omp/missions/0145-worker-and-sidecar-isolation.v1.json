@@ -1,0 +1,45 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0145-worker-and-sidecar-isolation",
+  "type": "mission",
+  "name": "Worker and Sidecar Isolation",
+  "slug": "worker-and-sidecar-isolation",
+  "description": "Web workers and native sidecars run in isolated contexts with defined IPC contracts, resource limits (CPU/memory), and no ambient authority. Sidecar processes are explicitly spawned and managed.",
+  "purpose": "Prevent worker and sidecar processes from escaping their intended scope by enforcing isolation with defined IPC contracts, resource limits, and no ambient authority.",
+  "campaignId": "0018",
+  "status": "completed",
+  "priority": 75,
+  "acceptanceCriteria": [
+    "Web workers have no access to Node.js APIs or filesystem",
+    "Native sidecar processes are explicitly spawned with scoped capabilities",
+    "Worker/sidecar IPC contracts are documented and enforced",
+    "Resource limits (CPU, memory) are enforced per worker/sidecar",
+    "Workers and sidecars cannot escape their sandbox boundaries",
+    "Worker/sidecar lifecycle is managed and audited"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "missions0018"
+  ],
+  "tags": [
+    "security",
+    "workers",
+    "sidecars",
+    "isolation"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:44:55.744Z",
+  "updated_at": "2026-06-07T05:51:44.632Z"
+}

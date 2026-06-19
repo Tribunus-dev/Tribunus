@@ -1,0 +1,16 @@
+{"at":"2026-06-01T08:03:39.692Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore"}
+{"at":"2026-06-01T08:03:39.850Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"9 matches in 500 files"}
+{"at":"2026-06-01T08:04:15.194Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_batch","phase":"started","detail":"batch edit"}
+{"at":"2026-06-01T08:04:15.195Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_batch","phase":"failed","detail":"validation failed: 1/7"}
+{"at":"2026-06-01T08:04:28.166Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_batch","phase":"started","detail":"batch edit"}
+{"at":"2026-06-01T08:04:28.205Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_batch","phase":"completed","detail":"8 edits across 4 files"}
+{"at":"2026-06-01T08:04:37.847Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T08:04:59.739Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T08:05:03.943Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T08:05:27.579Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T08:05:34.316Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"typecheck|tsgo|tsc"}
+{"at":"2026-06-01T08:05:34.318Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T08:05:40.859Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_bun","phase":"started","detail":"run"}
+{"at":"2026-06-01T08:06:07.886Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_bun","phase":"completed","detail":"run exit=0"}
+{"at":"2026-06-01T08:06:16.013Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore"}
+{"at":"2026-06-01T08:06:16.182Z","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","agent":"surgeon","tool":"smart_grep","phase":"completed","detail":"8 matches in 500 files"}

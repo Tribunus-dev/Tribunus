@@ -1,0 +1,36 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0001",
+  "title": "Durable Authority Receipt",
+  "status": "proposed",
+  "component_type": "receipt_contract",
+  "owner_subsystem": "PGlite",
+  "definition": "A durable authority receipt is the committed, queryable proof that a transition happened and was recorded in the authoritative store.",
+  "invariants": [
+    "A durable receipt must exist before authority advances to the next coordination step.",
+    "A receipt must be queryable after restart."
+  ],
+  "allowed_states": [
+    "pending",
+    "committed",
+    "queried"
+  ],
+  "forbidden_states": [
+    "ephemeral_only",
+    "uncommitted_truth"
+  ],
+  "required_receipts": [
+    "durable_write_receipt",
+    "queryable_commit_receipt"
+  ],
+  "required_validators": [
+    "pglite_commit_validator"
+  ],
+  "imported_by": [
+    "ADR-0021",
+    "ADR-0022"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

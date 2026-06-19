@@ -1,0 +1,29 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "0028",
+  "type": "task",
+  "name": "Inventory exported module truth surfaces",
+  "slug": "inventory-exported-module-truth-surfaces",
+  "description": "Classify the compute-native exported surface as implemented, test-only, scaffold, or removable, and mark any placeholder exports explicitly without creating a second contract.",
+  "laneId": "0028",
+  "missionId": "0237",
+  "status": "pending",
+  "priority": 80,
+  "estimatedEffort": "1 day",
+  "actualEffort": null,
+  "dependsOn": [],
+  "blocks": [],
+  "assignedTo": "Main",
+  "startedAt": null,
+  "completedAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "exports",
+    "truth-contract"
+  ],
+  "created_at": "2026-06-13T10:57:20.390Z",
+  "updated_at": "2026-06-13T10:57:20.390Z"
+}

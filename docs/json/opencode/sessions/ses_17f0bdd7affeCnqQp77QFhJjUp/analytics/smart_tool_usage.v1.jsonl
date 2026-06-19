@@ -1,0 +1,16 @@
+{"at":"2026-06-01T02:15:48.168Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"BusEvent\\.define\\(","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:15:48.785Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Schema\\.Boolean","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:15:49.573Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Schema\\.Literal\\(true\\)","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:15:50.130Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Schema\\.Literal\\(false\\)","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:15:50.917Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"GlobalBus\\.emit","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:19:06.248Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"GlobalBus\\.emit","path":"packages/opencode/src/worktree/index.ts"}
+{"at":"2026-06-01T02:19:07.076Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"GlobalBus\\.emit","path":"packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T02:19:42.326Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"GlobalBus\\.emit","path":"packages/opencode/src/worktree/index.ts"}
+{"at":"2026-06-01T02:19:43.206Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_grep","pattern":"GlobalBus\\.emit","path":"packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T02:20:22.756Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_bun","command":"run","elapsed_ms":52,"exit_code":0}
+{"at":"2026-06-01T02:21:35.779Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_bun","command":"tsgo","elapsed_ms":213,"exit_code":2}
+{"at":"2026-06-01T02:22:04.096Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_bun","command":"run","elapsed_ms":38,"exit_code":0}
+{"at":"2026-06-01T02:22:39.098Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_bun","command":"run","elapsed_ms":39,"exit_code":0}
+{"at":"2026-06-01T02:23:22.084Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_bun","command":"install","elapsed_ms":1745,"exit_code":1}
+{"at":"2026-06-01T02:23:55.102Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_bun","command":"run","elapsed_ms":50,"exit_code":0}
+{"at":"2026-06-01T02:24:36.668Z","session_id":"ses_17f0bdd7affeCnqQp77QFhJjUp","agent":"architecture-reviewer","tool":"smart_bun","command":"run","elapsed_ms":40,"exit_code":1}

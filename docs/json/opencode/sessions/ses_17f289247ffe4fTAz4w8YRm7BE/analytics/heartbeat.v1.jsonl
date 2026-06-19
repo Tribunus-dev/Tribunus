@@ -1,0 +1,8 @@
+{"at":"2026-06-01T01:46:26.383Z","session_id":"ses_17f289247ffe4fTAz4w8YRm7BE","agent":"error-trace-auditor","tool":"smart_grep","phase":"started","detail":"annotateLogs"}
+{"at":"2026-06-01T01:46:26.637Z","session_id":"ses_17f289247ffe4fTAz4w8YRm7BE","agent":"error-trace-auditor","tool":"smart_grep","phase":"completed","detail":"19 matches in 500 files"}
+{"at":"2026-06-01T01:46:27.170Z","session_id":"ses_17f289247ffe4fTAz4w8YRm7BE","agent":"error-trace-auditor","tool":"smart_grep","phase":"started","detail":"annotateCurrentSpan"}
+{"at":"2026-06-01T01:46:27.317Z","session_id":"ses_17f289247ffe4fTAz4w8YRm7BE","agent":"error-trace-auditor","tool":"smart_grep","phase":"completed","detail":"18 matches in 500 files"}
+{"at":"2026-06-01T01:46:28.091Z","session_id":"ses_17f289247ffe4fTAz4w8YRm7BE","agent":"error-trace-auditor","tool":"smart_grep","phase":"started","detail":"Log\\.create"}
+{"at":"2026-06-01T01:46:28.190Z","session_id":"ses_17f289247ffe4fTAz4w8YRm7BE","agent":"error-trace-auditor","tool":"smart_grep","phase":"completed","detail":"30 matches in 140 files"}
+{"at":"2026-06-01T01:47:00.343Z","session_id":"ses_17f289247ffe4fTAz4w8YRm7BE","agent":"error-trace-auditor","tool":"smart_grep","phase":"started","detail":"Effect\\.fn\\("}
+{"at":"2026-06-01T01:47:00.343Z","session_id":"ses_17f289247ffe4fTAz4w8YRm7BE","agent":"error-trace-auditor","tool":"smart_grep","phase":"completed","detail":"9 matches in 1 files"}

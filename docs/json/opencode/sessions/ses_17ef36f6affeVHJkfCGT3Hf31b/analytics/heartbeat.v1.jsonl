@@ -1,0 +1,50 @@
+{"at":"2026-06-01T02:40:14.026Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_find","phase":"started","detail":"event-names.ts"}
+{"at":"2026-06-01T02:40:14.164Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_find","phase":"completed","detail":"event-names.ts"}
+{"at":"2026-06-01T02:40:47.515Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"ToolsChanged|McpStatusChanged|BrowserOpenFailed"}
+{"at":"2026-06-01T02:40:47.516Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"8 matches in 1 files"}
+{"at":"2026-06-01T02:40:48.413Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"Bus.*publish.*ToolsChanged"}
+{"at":"2026-06-01T02:40:48.413Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:41:14.957Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"export const ToolsChanged"}
+{"at":"2026-06-01T02:41:14.958Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:41:15.707Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"export const McpStatusChanged"}
+{"at":"2026-06-01T02:41:15.709Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:41:16.654Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"bus\\.publish"}
+{"at":"2026-06-01T02:41:16.655Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T02:42:00.539Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"ToolsChanged = BusEvent"}
+{"at":"2026-06-01T02:42:00.568Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:42:01.421Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"McpStatusChanged = BusEvent"}
+{"at":"2026-06-01T02:42:01.421Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:42:02.340Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"yield\\* bus\\.publish\\(ToolsChanged"}
+{"at":"2026-06-01T02:42:02.341Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:42:03.230Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"bus\\.publish\\(BrowserOpenFailed"}
+{"at":"2026-06-01T02:42:03.231Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:42:32.532Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_find","phase":"started","detail":"index.ts"}
+{"at":"2026-06-01T02:42:32.534Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_find","phase":"completed","detail":"index.ts"}
+{"at":"2026-06-01T02:43:46.760Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"^"}
+{"at":"2026-06-01T02:43:46.761Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:44:28.681Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"BusEvent\\.define\\("}
+{"at":"2026-06-01T02:44:28.682Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:44:41.992Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"EventName\\.McpToolsChanged"}
+{"at":"2026-06-01T02:44:41.992Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:44:59.859Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"Status = BusEvent\\.define"}
+{"at":"2026-06-01T02:44:59.860Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:45:00.806Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"ToolsChanged = BusEvent\\.define\\("}
+{"at":"2026-06-01T02:45:00.807Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:45:01.666Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"BrowserOpenFailed = BusEvent\\.define\\("}
+{"at":"2026-06-01T02:45:01.666Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:45:02.578Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"yield.* bus\\.publish\\("}
+{"at":"2026-06-01T02:45:02.579Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:45:32.245Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"type Status"}
+{"at":"2026-06-01T02:45:32.248Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:45:33.264Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"Schema\\.Literal.*connected.*disconnected"}
+{"at":"2026-06-01T02:45:33.266Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"0 matches in 1 files"}
+{"at":"2026-06-01T02:45:45.645Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"const Status"}
+{"at":"2026-06-01T02:45:45.646Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"6 matches in 1 files"}
+{"at":"2026-06-01T02:45:46.530Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"Schema\\.Literal"}
+{"at":"2026-06-01T02:45:46.531Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"5 matches in 1 files"}
+{"at":"2026-06-01T02:45:56.658Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"export const Status = Schema\\.Union"}
+{"at":"2026-06-01T02:45:56.658Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T02:45:57.589Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"NeedsClientRegistration"}
+{"at":"2026-06-01T02:45:57.592Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T02:46:12.960Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"started","detail":"return bus\\.publish\\(BrowserOpenFailed"}
+{"at":"2026-06-01T02:46:12.962Z","session_id":"ses_17ef36f6affeVHJkfCGT3Hf31b","agent":"architecture-reviewer","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}

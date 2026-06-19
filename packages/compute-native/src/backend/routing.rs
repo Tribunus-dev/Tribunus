@@ -1,0 +1,1019 @@
+//! Deterministic heterogeneous routing types.
+//!
+//! Every operation carries a stable `OperationId` and complete descriptor.
+//! The router selects a backend from a sealed `ComputeRouteProfile`; it does
+//! not make opportunistic decisions.  All routing events emit typed receipts
+//! into the evidence plane so future profiles are derived from measured data,
+//! not hand-written assumptions.
+
+use std::collections::HashMap;
+
+use super::DType;
+
+// ── Identity types ────────────────────────────────────────────────────────
+
+/// Identifies a logical tensor across backend boundaries.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct TensorId(pub u64);
+
+/// Identifies a logical operation in the Tribunus-owned execution graph.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct OperationId(pub u64);
+
+/// Identifies a specific backend implementation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct BackendId(pub u32);
+
+/// Identifies a sealed route profile (deterministic backend assignment).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct RouteProfileId(pub u64);
+
+/// Identifies a compiled backend artifact (e.g. Core ML model, packed layout).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct BackendArtifactId(pub u64);
+
+/// Identifies a specific materialization of a tensor on a particular backend.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct TensorMaterializationId(pub u64);
+
+/// Identifies a compiled graph region.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct CompiledRegionHandle {
+    /// Slot index into the backend's compiled region array.
+    pub slot: u32,
+    /// Generation counter, bumped on eviction/replacement.
+    pub generation: u32,
+}
+
+/// Identifies an evaluation group (synchronization fence).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct EvaluationGroupId(pub u64);
+
+/// Machine profile identity (model + hardware + thermal state).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct MachineProfileId(pub u64);
+
+/// Evidence digest — content-addressed proof of a measurement.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct EvidenceDigest(pub String);
+
+// ── Substrate ─────────────────────────────────────────────────────────────
+
+/// Requested compute substrate.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RequestedSubstrate {
+    Cpu,
+    Gpu,
+    NeuralEngine,
+    CpuAndGpu,
+    CpuAndNeuralEngine,
+    All,
+}
+
+/// Observed compute substrate — `Unknown` until native instrumentation
+/// provides defensible placement evidence.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Substrate {
+    Cpu,
+    Gpu,
+    NeuralEngine,
+    Unknown,
+}
+
+// ── Operation descriptor ──────────────────────────────────────────────────
+
+/// Logical shape before any physical layout is applied.
+#[derive(Debug, Clone)]
+pub struct LogicalShape {
+    pub dims: Vec<u32>,
+}
+
+/// Physical layout (row-major, column-major, packed, etc.).
+#[derive(Debug, Clone)]
+pub enum PhysicalLayout {
+    RowMajor,
+    ColumnMajor,
+    PackedU32 { group_size: u32, bits: u8 },
+    Custom(String),
+}
+
+/// Quantization contract carried through the operation.
+#[derive(Debug, Clone)]
+pub struct QuantizationContract {
+    pub bits: u8,
+    pub group_size: u32,
+    pub symmetric: bool,
+}
+
+/// Tensor shape descriptor.
+#[derive(Debug, Clone)]
+pub struct TensorShape {
+    pub dims: Vec<u32>,
+}
+
+/// Execution phase.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Phase {
+    Prefill,
+    Decode,
+    Conditioning,
+    Qualification,
+}
+
+/// Operation family for classification.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OperationFamily {
+    QuantizedMatmul,
+    Matmul,
+    RmsNorm,
+    RoPE,
+    Silu,
+    Add,
+    Multiply,
+    Softmax,
+    Transpose,
+    Reshape,
+    IndexSelect,
+    Sampling,
+    Reduction,
+    LayoutTransform,
+    Checksum,
+    MlpBlock,
+    AttentionBlock,
+    DecoderLayer,
+    PrefillFragment,
+}
+
+pub type OperationContractDigest = EvidenceDigest;
+
+/// Policy for correctness checkpointing.
+#[derive(Debug, Clone)]
+pub enum CorrectnessCheckpointPolicy {
+    None,
+    CompareAgainstAuthority { tolerance: f64 },
+    Checksum { digest: EvidenceDigest },
+}
+
+/// Complete descriptor for a single logical operation.
+#[derive(Debug, Clone)]
+pub struct OperationDescriptor {
+    pub operation_id: OperationId,
+    pub family: OperationFamily,
+    pub layer_index: Option<u32>,
+    pub phase: Phase,
+    pub logical_shape: LogicalShape,
+    pub physical_layout: PhysicalLayout,
+    pub input_dtypes: Vec<DType>,
+    pub output_dtype: DType,
+    pub quantization: Option<QuantizationContract>,
+    pub expected_output_shape: TensorShape,
+    pub correctness_checkpoint: CorrectnessCheckpointPolicy,
+}
+
+// ── Routing ────────────────────────────────────────────────────────────────
+
+/// How the router selects a backend.
+#[derive(Debug, Clone)]
+pub enum RoutingMode {
+    /// Execute only on the specified backend; fail if unavailable.
+    Forced(BackendId),
+    /// Execute on the control/authority backend.
+    Baseline,
+    /// Authority produces result; candidate executes for measurement only.
+    ShadowCompare {
+        authority: BackendId,
+        candidate: BackendId,
+    },
+    /// Use a measured, evidence-authorized selection.
+    MeasuredSelection,
+    /// Production policy (sealed profile).
+    ProductionPolicy,
+}
+
+/// A routing request for one operation.
+#[derive(Debug, Clone)]
+pub struct RouteRequest {
+    pub operation: OperationDescriptor,
+    pub candidate_backends: Vec<BackendId>,
+    pub routing_mode: RoutingMode,
+    pub session_id: u64, // SessionId from compute_lane
+    pub evaluation_group_id: EvaluationGroupId,
+}
+
+/// Reason the router selected a specific backend.
+#[derive(Debug, Clone)]
+pub enum RouteSelectionReason {
+    Forced,
+    BaselineAuthority,
+    OnlyCandidate,
+    PolicyMatch { evidence: Option<EvidenceDigest> },
+    Fallback { original_error: String },
+}
+
+/// Information about a candidate backend considered during routing.
+#[derive(Debug, Clone)]
+pub struct BackendCandidate {
+    pub backend_id: BackendId,
+    pub eligible: bool,
+    pub reason: String,
+}
+
+/// Receipt emitted before execution — the router's decision.
+#[derive(Debug, Clone)]
+pub struct RouteDecisionReceipt {
+    pub operation_id: OperationId,
+    pub requested_backend: BackendId,
+    pub selected_backend: BackendId,
+    pub selection_reason: RouteSelectionReason,
+    pub candidate_backends: Vec<BackendCandidate>,
+    pub forced: bool,
+    pub fallback_allowed: bool,
+    pub decision_duration_ns: u64,
+}
+
+// ── Execution receipts ─────────────────────────────────────────────────────
+
+/// Backend version identity.
+#[derive(Debug, Clone)]
+pub struct BackendVersion {
+    pub backend_name: String,
+    pub version: String,
+    pub git_commit: Option<String>,
+}
+
+/// Physical execution receipt — what the backend actually did.
+#[derive(Debug, Clone)]
+pub struct BackendExecutionReceipt {
+    pub operation_id: OperationId,
+    pub backend_id: BackendId,
+    pub backend_version: BackendVersion,
+    pub requested_substrate: Option<RequestedSubstrate>,
+    pub observed_substrate: Option<Substrate>,
+    pub graph_build_ns: Option<u64>,
+    pub compile_ns: Option<u64>,
+    pub queue_wait_ns: Option<u64>,
+    pub submit_ns: Option<u64>,
+    pub execution_ns: Option<u64>,
+    pub synchronization_ns: Option<u64>,
+    pub total_wall_ns: u64,
+    pub bytes_read: Option<u64>,
+    pub bytes_written: Option<u64>,
+    pub temporary_bytes: Option<u64>,
+    pub active_memory_before: Option<u64>,
+    pub active_memory_after: Option<u64>,
+    pub cache_memory_before: Option<u64>,
+    pub cache_memory_after: Option<u64>,
+    pub transfer_in_ns: Option<u64>,
+    pub transfer_out_ns: Option<u64>,
+    pub fallback_occurred: bool,
+}
+
+// ── Tensor transfer ────────────────────────────────────────────────────────
+
+/// Conversion required when moving a tensor between backends.
+#[derive(Debug, Clone)]
+pub enum LayoutConversion {
+    None,
+    Transpose,
+    Cast { from: DType, to: DType },
+    Pack { group_size: u32, bits: u8 },
+    Unpack { group_size: u32, bits: u8 },
+    Contiguous,
+}
+
+/// Receipt for explicit cross-backend tensor movement.
+///
+/// Preserves exact source and destination layouts, dtypes, and timings.
+/// No invented detail — every field is observed or absent.
+#[derive(Debug, Clone)]
+pub struct TensorTransferReceipt {
+    pub tensor_id: TensorId,
+    pub tensor_version: TensorVersion,
+    pub source_materialization: TensorMaterializationId,
+    pub destination_materialization: TensorMaterializationId,
+    pub source_backend: BackendId,
+    pub destination_backend: BackendId,
+    pub source_layout: PhysicalLayout,
+    pub destination_layout: PhysicalLayout,
+    pub source_dtype: DType,
+    pub destination_dtype: DType,
+    pub bytes_read: u64,
+    pub bytes_written: u64,
+    pub transfer_ns: u64,
+    pub conversion_ns: u64,
+    pub zero_copy: bool,
+}
+
+// ── Tensor version ────────────────────────────────────────────────────────
+
+/// Version counter for a logical tensor (incremented on mutation).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct TensorVersion(pub u64);
+
+// ── Transfer plan ──────────────────────────────────────────────────────────
+
+/// Kind of conversion in a compile-time transfer plan.
+#[derive(Debug, Clone)]
+pub enum ConversionKind {
+    None,
+    LayoutConversion,
+    DtypeCast,
+    OwnedCopy,
+    SharedReference,
+}
+
+/// Compile-time plan for moving a tensor between backends.
+#[derive(Debug, Clone)]
+pub struct TensorTransferPlan {
+    pub tensor_id: TensorId,
+    pub source_backend: BackendId,
+    pub destination_backend: BackendId,
+    pub source_layout: PhysicalLayout,
+    pub destination_layout: PhysicalLayout,
+    pub conversion: ConversionKind,
+    pub expected_bytes: u64,
+    pub synchronization_before: bool,
+    pub synchronization_after: bool,
+}
+
+// ── Route profile ──────────────────────────────────────────────────────────
+
+/// One routed operation in a deterministic profile.
+#[derive(Debug, Clone)]
+pub struct RoutedOperation {
+    pub operation_id: OperationId,
+    pub operation_contract: OperationContractDigest,
+    pub backend: BackendId,
+    pub requested_substrate: RequestedSubstrate,
+    pub backend_artifact: Option<BackendArtifactId>,
+    pub input_materializations: Vec<TensorMaterializationId>,
+    pub output_materialization: TensorMaterializationId,
+    pub evaluation_group: EvaluationGroupId,
+    pub fallback_policy: FallbackPolicy,
+}
+
+/// What to do when the routed backend cannot execute.
+#[derive(Debug, Clone)]
+pub enum FallbackPolicy {
+    FailClosed,
+    FallbackTo(BackendId),
+    RetryOnce(BackendId),
+}
+
+/// Manifest of backend-specific artifacts referenced by a route profile.
+#[derive(Debug, Clone)]
+pub struct BackendArtifactManifest {
+    pub coreml: Vec<BackendArtifactId>,
+    pub accelerate: Vec<BackendArtifactId>,
+    pub mlx: Vec<BackendArtifactId>,
+}
+
+// ── Route profile ──────────────────────────────────────────────────────────
+
+/// A sealed, deterministic route profile — compiled, not improvised.
+#[derive(Debug, Clone)]
+pub struct ComputeRouteProfile {
+    pub profile_id: RouteProfileId,
+    pub logical_image_hash: EvidenceDigest,
+    pub artifact_root_hash: EvidenceDigest,
+    pub machine_profile: MachineProfileId,
+    pub operations: Vec<RoutedOperation>,
+    pub transfers: Vec<TensorTransferPlan>,
+    pub backend_artifacts: BackendArtifactManifest,
+    /// Single source of truth for evaluation boundaries — supersedes
+    /// both SynchronizationGroup and EvaluationGroupPlan.
+    pub execution_boundaries: Vec<SealedExecutionBoundaryPlan>,
+    pub evidence_basis: Vec<EvidenceDigest>,
+}
+
+// ── Evaluation policy ────────────────────────────────────────────────────
+
+/// Cardinality of evaluation groups in a plan.
+#[derive(Debug, Clone)]
+pub enum EvaluationGroupCardinality {
+    /// Exact number of groups known at compile time.
+    Fixed(u32),
+    /// One group per materialized operation (determined at plan generation).
+    PerOperation,
+}
+
+/// Who controls when tensors are materialised and at what granularity.
+#[derive(Debug, Clone)]
+pub enum EvaluationPolicy {
+    /// Preserve the backend's normal lazy behaviour.  MLX builds the full
+    /// layer graph; materialisation happens at the backend's discretion.
+    BackendLazy,
+
+    /// Tribunus defines one or more explicit fusion regions.  MLX may
+    /// still fuse operations inside each region, but must materialise
+    /// every `materialized_output` at the region boundary.
+    ExplicitRegion,
+
+    /// Insert a materialization request after each operation.  Synchronization
+    /// is controlled by the boundary's SynchronizationPolicy, not the policy itself.
+    ExplicitOperation,
+
+    /// Require completion before the next operation begins, prohibit
+    /// deferred dependencies crossing the boundary, and enforce
+    /// deterministic lifetime release.  Synchronization level is derived
+    /// from the boundary's SynchronizationPolicy.
+    Eager {
+        release_inputs_after_use: bool,
+        prohibit_deferred_nodes: bool,
+    },
+}
+
+/// Whether a backend natively supports a given evaluation policy.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EvaluationPolicySupport {
+    Native,
+    Emulated,
+    Unsupported,
+}
+
+/// Qualifies which backends support which policies.
+pub fn policy_support(backend: BackendId, policy: &EvaluationPolicy) -> EvaluationPolicySupport {
+    match backend.0 {
+        0 => match policy {
+            // MLX: all lazy variants native
+            EvaluationPolicy::BackendLazy => EvaluationPolicySupport::Native,
+            EvaluationPolicy::ExplicitRegion => EvaluationPolicySupport::Native,
+            EvaluationPolicy::ExplicitOperation => EvaluationPolicySupport::Native,
+            EvaluationPolicy::Eager { .. } => EvaluationPolicySupport::Emulated,
+        },
+        1 => match policy {
+            // Accelerate: naturally eager, lazy is unsupported
+            EvaluationPolicy::BackendLazy => EvaluationPolicySupport::Unsupported,
+            EvaluationPolicy::ExplicitRegion => EvaluationPolicySupport::Emulated,
+            EvaluationPolicy::ExplicitOperation => EvaluationPolicySupport::Native,
+            EvaluationPolicy::Eager { .. } => EvaluationPolicySupport::Native,
+        },
+        2 => match policy {
+            // Core ML: region execution native, per-operation unsupported
+            EvaluationPolicy::BackendLazy => EvaluationPolicySupport::Unsupported,
+            EvaluationPolicy::ExplicitRegion => EvaluationPolicySupport::Native,
+            EvaluationPolicy::ExplicitOperation => EvaluationPolicySupport::Unsupported,
+            EvaluationPolicy::Eager { .. } => EvaluationPolicySupport::Unsupported,
+        },
+        _ => EvaluationPolicySupport::Unsupported,
+    }
+}
+
+/// Synchronization requirement for a boundary.
+#[derive(Debug, Clone)]
+pub enum SynchronizationPolicy {
+    None,
+    Barrier,
+    Stream,
+    Device,
+}
+
+impl SynchronizationPolicy {
+    pub fn is_synchronized(&self) -> bool {
+        !matches!(self, SynchronizationPolicy::None)
+    }
+}
+
+/// One authoritative execution boundary — the single source of truth
+/// for evaluation groups, superseding both the older SynchronizationGroup
+/// and EvaluationGroupPlan types.
+///
+/// The compiler guarantees every operation is assigned exactly once,
+/// operations are topologically ordered, all materialized tensors are
+/// outputs of operations within or before the group, no consumer executes
+/// before its producer, and backends transitions have explicit transfer
+/// plans.
+#[derive(Debug, Clone)]
+pub struct ExecutionBoundaryPlan {
+    pub group_id: EvaluationGroupId,
+    pub backend_id: BackendId,
+    pub operations: Vec<OperationId>,
+    pub materialized_outputs: Vec<TensorId>,
+    pub policy: EvaluationPolicy,
+    pub synchronization: SynchronizationPolicy,
+    pub release_after: Vec<TensorId>,
+    /// Canonical content digest — proves which boundary plan was executed.
+    pub content_digest: Option<EvidenceDigest>,
+}
+
+/// Sealed plan — digest is mandatory.
+#[derive(Debug, Clone)]
+pub struct SealedExecutionBoundaryPlan {
+    pub plan: ExecutionBoundaryPlan,
+    pub content_digest: EvidenceDigest,
+}
+
+impl SealedExecutionBoundaryPlan {
+    pub fn seal(plan: ExecutionBoundaryPlan) -> Self {
+        let digest = compute_boundary_digest(&plan);
+        Self { plan, content_digest: digest }
+    }
+    pub fn verify(&self) -> bool {
+        self.content_digest == compute_boundary_digest(&self.plan)
+    }
+}
+
+/// Directed edge in the operation dependency graph.
+#[derive(Debug, Clone)]
+pub struct DependencyEdge {
+    pub from: OperationId,
+    pub to: OperationId,
+    pub via_tensor: TensorId,
+}
+
+/// Complete context for boundary-plan validation.
+#[derive(Debug, Clone)]
+pub struct BoundaryValidationContext<'a> {
+    pub expected_operations: &'a [OperationId],
+    pub dependency_edges: &'a [DependencyEdge],
+    pub transfer_plans: &'a [TensorTransferPlan],
+}
+
+// ── Plan validation ───────────────────────────────────────────────────────
+
+/// Errors detected during boundary-plan validation.
+#[derive(Debug, Clone)]
+pub enum PlanValidationError {
+    DuplicateOperation(OperationId),
+    MissingOperation(OperationId),
+    TopologicalViolation { before: OperationId, after: OperationId },
+    UnreferencedMaterializedOutput(TensorId),
+    ConsumerBeforeProducer { tensor: TensorId, consumer: OperationId },
+    BackendTransitionWithoutTransfer { from: BackendId, to: BackendId },
+    EagerWithDeferredDependency { op: OperationId, via: TensorId, crosses_boundary_to: EvaluationGroupId },
+    UnsupportedPolicy { backend: BackendId, policy: EvaluationPolicy },
+    EmptyBoundary(EvaluationGroupId),
+}
+
+/// Validate boundary plans against the full operation graph, dependency
+/// edges, and transfer plans.
+pub fn validate_boundary_plans(
+    plans: &[ExecutionBoundaryPlan],
+    ctx: &BoundaryValidationContext,
+) -> Result<(), Vec<PlanValidationError>> {
+    let mut errors = Vec::new();
+    let mut op_to_boundary = std::collections::HashMap::new();
+
+    // Build operation→boundary index and check duplicates
+    for plan in plans {
+        for &op in &plan.operations {
+            if let Some(&prev_group) = op_to_boundary.get(&op) {
+                errors.push(PlanValidationError::DuplicateOperation(op));
+                let _ = prev_group;
+            }
+            op_to_boundary.insert(op, plan.group_id);
+        }
+    }
+
+    // Check every expected operation is covered
+    for &op in ctx.expected_operations {
+        if !op_to_boundary.contains_key(&op) {
+            errors.push(PlanValidationError::MissingOperation(op));
+        }
+    }
+
+    // Backend transitions: every crossing dependency whose producer and
+    // consumer occupy different backends must have a matching transfer
+    // plan for the exact edge.via_tensor.
+    {
+        let mut backend_of: std::collections::HashMap<EvaluationGroupId, BackendId> =
+            std::collections::HashMap::new();
+        for plan in plans {
+            backend_of.insert(plan.group_id, plan.backend_id);
+        }
+        for edge in ctx.dependency_edges {
+            let from_gid = op_to_boundary.get(&edge.from);
+            let to_gid = op_to_boundary.get(&edge.to);
+            let (Some(&fg), Some(&tg)) = (from_gid, to_gid) else { continue };
+            let (Some(&fb), Some(&tb)) = (backend_of.get(&fg), backend_of.get(&tg)) else { continue };
+            if fb != tb {
+                let has_transfer = ctx.transfer_plans.iter().any(|tp| {
+                    tp.tensor_id == edge.via_tensor
+                        && tp.source_backend == fb
+                        && tp.destination_backend == tb
+                });
+                if !has_transfer {
+                    errors.push(PlanValidationError::BackendTransitionWithoutTransfer {
+                        from: fb,
+                        to: tb,
+                    });
+                }
+            }
+        }
+    }
+
+    // Build a set of materialized-and-synchronized outputs per boundary
+    let mut materialized_outputs: std::collections::HashMap<EvaluationGroupId, Vec<TensorId>> =
+        std::collections::HashMap::new();
+    for plan in plans {
+        materialized_outputs.insert(plan.group_id, plan.materialized_outputs.clone());
+    }
+
+    for plan in plans {
+        if plan.operations.is_empty() {
+            errors.push(PlanValidationError::EmptyBoundary(plan.group_id));
+        }
+
+        match policy_support(plan.backend_id, &plan.policy) {
+            EvaluationPolicySupport::Unsupported => {
+                errors.push(PlanValidationError::UnsupportedPolicy {
+                    backend: plan.backend_id,
+                    policy: plan.policy.clone(),
+                });
+            }
+            _ => {}
+        }
+
+        // ── Per-edge validation (runs for every crossing dependency) ──
+        for edge in ctx.dependency_edges {
+            let from_boundary = op_to_boundary.get(&edge.from);
+            let to_boundary = op_to_boundary.get(&edge.to);
+            if from_boundary != Some(&plan.group_id)
+                || to_boundary.is_none()
+                || to_boundary == from_boundary
+            {
+                continue;
+            }
+
+            // Release-liveness: a tensor consumed downstream must not be
+            // released at the producing boundary (graph invariant, all policies).
+            if plan.release_after.contains(&edge.via_tensor) {
+                errors.push(PlanValidationError::EagerWithDeferredDependency {
+                    op: edge.from,
+                    via: edge.via_tensor,
+                    crosses_boundary_to: *to_boundary.unwrap(),
+                });
+            }
+
+            // Eager-specific: unevaluated deferred dependency crossing check
+            if let EvaluationPolicy::Eager { prohibit_deferred_nodes: true, .. } = &plan.policy {
+                let output_is_materialized = materialized_outputs
+                    .get(&plan.group_id)
+                    .map(|outputs| outputs.contains(&edge.via_tensor))
+                    .unwrap_or(false);
+                if !(output_is_materialized && plan.synchronization.is_synchronized()) {
+                    errors.push(PlanValidationError::EagerWithDeferredDependency {
+                        op: edge.from,
+                        via: edge.via_tensor,
+                        crosses_boundary_to: *to_boundary.unwrap(),
+                    });
+                }
+            }
+        }
+    }
+
+    if errors.is_empty() { Ok(()) } else { Err(errors) }
+}
+
+/// Canonical SHA-256 content digest for an execution boundary plan.
+/// Serialization is versioned, length-delimited, and field-tagged so
+/// materially different plans produce different digests.
+pub fn compute_boundary_digest(plan: &ExecutionBoundaryPlan) -> EvidenceDigest {
+    use sha2::{Sha256, Digest};
+    let mut buf: Vec<u8> = Vec::new();
+
+    // Schema version byte
+    buf.push(1u8);
+
+    // group_id (8 bytes LE)
+    buf.extend_from_slice(&plan.group_id.0.to_le_bytes());
+    // backend_id (4 bytes LE)
+    buf.extend_from_slice(&plan.backend_id.0.to_le_bytes());
+
+    // operation count + each ID
+    buf.extend_from_slice(&(plan.operations.len() as u32).to_le_bytes());
+    for op in &plan.operations {
+        buf.extend_from_slice(&op.0.to_le_bytes());
+    }
+
+    // materialized output count + each ID
+    buf.extend_from_slice(&(plan.materialized_outputs.len() as u32).to_le_bytes());
+    for t in &plan.materialized_outputs {
+        buf.extend_from_slice(&t.0.to_le_bytes());
+    }
+
+    // Policy discriminant (4 bits) + variant fields for Eager
+    match &plan.policy {
+        EvaluationPolicy::BackendLazy => buf.push(0u8),
+        EvaluationPolicy::ExplicitRegion => buf.push(1u8),
+        EvaluationPolicy::ExplicitOperation => buf.push(2u8),
+        EvaluationPolicy::Eager { release_inputs_after_use, prohibit_deferred_nodes } => {
+            buf.push(3u8);
+            buf.push(*release_inputs_after_use as u8);
+            buf.push(*prohibit_deferred_nodes as u8);
+        }
+    }
+
+    // synchronization discriminant
+    let sync_disc: u8 = match &plan.synchronization {
+        SynchronizationPolicy::None => 0,
+        SynchronizationPolicy::Barrier => 1,
+        SynchronizationPolicy::Stream => 2,
+        SynchronizationPolicy::Device => 3,
+    };
+    buf.push(sync_disc);
+
+    // release_after count + each ID
+    buf.extend_from_slice(&(plan.release_after.len() as u32).to_le_bytes());
+    for t in &plan.release_after {
+        buf.extend_from_slice(&t.0.to_le_bytes());
+    }
+
+    let hash = Sha256::digest(&buf);
+    EvidenceDigest(format!("{:x}", hash))
+}
+
+// ── Boundary executor ─────────────────────────────────────────────────────
+
+/// Executor that consumes a sealed ExecutionBoundaryPlan and enforces
+/// evaluation boundaries at runtime.
+pub trait BoundaryExecutor {
+    /// Execute all boundaries in a plan, emitting observed receipts.
+    fn execute_boundaries(
+        &mut self,
+        plans: &[ExecutionBoundaryPlan],
+    ) -> Result<Vec<BoundaryExecutionReceipt>, String>;
+}
+
+/// Observed receipt from executing one evaluation boundary.
+#[derive(Debug, Clone)]
+pub struct BoundaryExecutionReceipt {
+    pub group_id: EvaluationGroupId,
+    pub planned_policy: EvaluationPolicy,
+    pub backend: BackendId,
+    pub operation_count: usize,
+    pub planned_materialized_outputs: usize,
+    pub actual_eval_calls: usize,
+    pub actual_sync_count: usize,
+    pub graph_build_ns: u64,
+    pub submit_ns: u64,
+    pub execution_ns: u64,
+    pub wait_ns: u64,
+    pub temporary_bytes: u64,
+    pub released_tensor_count: usize,
+    pub unaccounted_ns: u64,
+    pub policy_support: EvaluationPolicySupport,
+}
+
+// ── Research routing policy ───────────────────────────────────────────────
+
+/// Static research policy — no learned heuristic.
+#[derive(Debug, Clone)]
+pub enum ResearchRoutingPolicy {
+    MlxControl,
+    AccelerateCandidate,
+    CoreMlCandidate,
+    Shadow {
+        authority: BackendId,
+        candidate: BackendId,
+    },
+}
+
+/// Evidence-derived route policy entry.
+#[derive(Debug, Clone)]
+pub struct RoutePolicyEntry {
+    pub predicate: RoutePredicate,
+    pub selected_backend: BackendId,
+    pub expected_latency_ns: Box<(u64, u64)>, // (median, p99)
+    pub expected_memory_bytes: Box<(u64, u64)>,
+    pub confidence: f64,
+    pub evidence_digest: EvidenceDigest,
+    pub fallback_backend: BackendId,
+}
+
+/// Condition that must be satisfied for a policy to apply.
+#[derive(Debug, Clone)]
+pub struct RoutePredicate {
+    pub family: OperationFamily,
+    pub m_min: Option<u32>,
+    pub m_max: Option<u32>,
+    pub k_min: Option<u32>,
+    pub k_max: Option<u32>,
+    pub n_min: Option<u32>,
+    pub n_max: Option<u32>,
+    pub phase: Option<Phase>,
+    pub cold_state: Option<bool>,
+    pub integrated: Option<bool>,
+}
+
+// ── Deterministic router ──────────────────────────────────────────────────
+
+/// Lookup-only router — does not make decisions, only resolves profiles.
+pub trait DeterministicRouter {
+    fn route(
+        &self,
+        profile: &ComputeRouteProfile,
+        operation_id: OperationId,
+    ) -> Result<RoutedOperation, String>;
+}
+
+// ── Graph region descriptor ───────────────────────────────────────────────
+
+/// A stable subgraph region (e.g. MLP block, attention block, decoder layer).
+#[derive(Debug, Clone)]
+pub struct GraphRegion {
+    pub region_id: u64,
+    pub family: OperationFamily,
+    pub operations: Vec<OperationId>,
+    pub input_tensors: Vec<TensorId>,
+    pub output_tensors: Vec<TensorId>,
+    pub shape_constraints: Vec<TensorShape>,
+}
+
+
+// ── Cross-vendor GPU routing ──────────────────────────────────────────────
+
+use crate::compiler::pipeline_shape::{SystemTopology, GpuInfo};
+use std::collections::HashMap;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum P2pLink {
+    SameVendor(f32), // Bandwidth in GB/s
+    HostStaging(f32),
+}
+
+#[derive(Debug, Clone)]
+pub struct LayerAssignment {
+    pub gpu_index: usize,
+    pub num_layers: usize,
+}
+
+pub struct CrossVendorRouter {
+    pub topology: SystemTopology,
+}
+
+impl CrossVendorRouter {
+    pub fn new(topology: SystemTopology) -> Self {
+        Self { topology }
+    }
+
+    /// Determines P2P connectivity between two GPUs
+    pub fn setup_p2p(&self, gpu_a: &GpuInfo, gpu_b: &GpuInfo) -> P2pLink {
+        if gpu_a.vendor == gpu_b.vendor {
+            // Profile P2P bandwidth at startup (mocked here)
+            P2pLink::SameVendor(300.0)
+        } else {
+            // Cross-vendor uses host memory staging buffer
+            P2pLink::HostStaging(64.0)
+        }
+    }
+
+    /// Divide model layers across GPUs proportional to VRAM.
+    pub fn shard_vram_proportional(&self, total_layers: usize, model_vram_gb: f32) -> Vec<LayerAssignment> {
+        let mut total_available_vram = 0.0;
+        let mut max_vram = 0.0;
+        let mut max_gpu_idx = 0;
+
+        for gpu in &self.topology.gpus {
+            total_available_vram += gpu.vram_gb;
+            if gpu.vram_gb > max_vram {
+                max_vram = gpu.vram_gb;
+                max_gpu_idx = gpu.index;
+            }
+        }
+
+        // Fallback: if one GPU has enough VRAM for the entire model, don't shard.
+        if max_vram >= model_vram_gb {
+            return vec![LayerAssignment {
+                gpu_index: max_gpu_idx,
+                num_layers: total_layers,
+            }];
+        }
+
+        if total_available_vram == 0.0 {
+            return vec![];
+        }
+
+        let mut assignments = Vec::new();
+        let mut remaining_layers = total_layers;
+
+        for (i, gpu) in self.topology.gpus.iter().enumerate() {
+            if i == self.topology.gpus.len() - 1 {
+                assignments.push(LayerAssignment {
+                    gpu_index: gpu.index,
+                    num_layers: remaining_layers,
+                });
+            } else {
+                let proportion = gpu.vram_gb / total_available_vram;
+                let layers = (total_layers as f32 * proportion).round() as usize;
+                let layers = std::cmp::min(layers, remaining_layers);
+                assignments.push(LayerAssignment {
+                    gpu_index: gpu.index,
+                    num_layers: layers,
+                });
+                remaining_layers -= layers;
+            }
+        }
+
+        assignments
+    }
+
+    /// Route each phase to the backend with the fastest expected latency.
+    pub fn route_phase(&self, phase_name: &str, candidate_backends: &[BackendId]) -> BackendId {
+        let mut best_backend = candidate_backends[0];
+        let mut best_latency = f64::MAX;
+
+        for &backend in candidate_backends {
+            let latency = self.estimate_latency(phase_name, backend);
+            if latency < best_latency {
+                best_latency = latency;
+                best_backend = backend;
+            }
+        }
+
+        best_backend
+    }
+
+    fn estimate_latency(&self, phase_name: &str, backend: BackendId) -> f64 {
+        // Mock routing table
+        match (phase_name, backend.0) {
+            ("matmul", 1) => 10.0, // Metal
+            ("matmul", 2) => 100.0, // CPU
+            ("softmax", 1) => 50.0, // Metal
+            ("softmax", 2) => 5.0,  // CPU
+            _ => 1000.0,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::compiler::pipeline_shape::{CpuInfo, MemoryTopology};
+
+    #[test]
+    fn test_cross_vendor_routing() {
+        let topology = SystemTopology {
+            cpu: CpuInfo {
+                cores: 8,
+                amx: false,
+                avx2: false,
+                avx512: false,
+                memory_gb: 16.0,
+            },
+            gpus: vec![
+                GpuInfo {
+                    index: 0,
+                    vendor: "Apple".to_string(),
+                    name: "Metal".to_string(),
+                    vram_gb: 24.0,
+                    compute_capability: (0, 0),
+                    interconnect: vec![],
+                },
+                GpuInfo {
+                    index: 1,
+                    vendor: "Intel".to_string(),
+                    name: "CPU".to_string(),
+                    vram_gb: 12.0,
+                    compute_capability: (0, 0),
+                    interconnect: vec![],
+                },
+            ],
+            memory: MemoryTopology {
+                total_ram: 16.0,
+                huge_pages: false,
+                numa_nodes: 1,
+            },
+        };
+
+        let router = CrossVendorRouter::new(topology.clone());
+
+        // Test P2P
+        let p2p = router.setup_p2p(&topology.gpus[0], &topology.gpus[1]);
+        match p2p {
+            P2pLink::HostStaging(_) => {}
+            _ => panic!("Expected HostStaging for cross-vendor"),
+        }
+
+        let p2p_same = router.setup_p2p(&topology.gpus[0], &topology.gpus[0]);
+        match p2p_same {
+            P2pLink::SameVendor(_) => {}
+            _ => panic!("Expected SameVendor for same-vendor"),
+        }
+
+        // Test VRAM-proportional sharding (fallback)
+        let assignments = router.shard_vram_proportional(30, 20.0);
+        assert_eq!(assignments.len(), 1);
+        assert_eq!(assignments[0].gpu_index, 0);
+        assert_eq!(assignments[0].num_layers, 30);
+
+        // Test VRAM-proportional sharding (sharded)
+        let assignments_sharded = router.shard_vram_proportional(30, 50.0);
+        assert_eq!(assignments_sharded.len(), 2);
+        assert_eq!(assignments_sharded[0].gpu_index, 0);
+        assert_eq!(assignments_sharded[0].num_layers, 20); // 24 / 36 * 30
+        assert_eq!(assignments_sharded[1].gpu_index, 1);
+        assert_eq!(assignments_sharded[1].num_layers, 10); // 12 / 36 * 30
+
+        // Test Phase routing
+        let metal_backend = BackendId(1);
+        let cpu_backend = BackendId(2);
+        let candidates = vec![metal_backend, cpu_backend];
+        
+        let matmul_backend = router.route_phase("matmul", &candidates);
+        assert_eq!(matmul_backend, metal_backend);
+
+        let softmax_backend = router.route_phase("softmax", &candidates);
+        assert_eq!(softmax_backend, cpu_backend);
+    }
+}

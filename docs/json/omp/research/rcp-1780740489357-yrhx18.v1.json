@@ -1,0 +1,575 @@
+{
+  "schema": "rig.relay.research-context-packet.v1",
+  "schema_version": "v1",
+  "id": "rcp-1780740489357-yrhx18",
+  "type": "research_context_packet",
+  "research_topic": "SDK and Plugin Architecture - Extension Host Isolation, Capability Security, and Supply Chain Risk",
+  "transcript_summary": "ADR 0018 defines the architecture spine for the Tribunus SDK and Plugin system. The existing ADR covers: SDK thesis (runtime-contract client), architecture layers (@tribunus/protocol, @tribunus/client, @tribunus/plugin), plugin system design (declarative manifests, contribution categories vs capability classes, capability model, governance pipeline, extension-host isolation, receipts, revocation), trust kernel security model (4 layers: technical confinement, capability governance, provenance/accountability, Dharma overlay), trust lanes, extension store as trust ledger, MCP integration strategy, VS Code/Chrome patterns to adopt/avoid, and non-goals. Deep research was conducted on: VS Code Extension API (Extension Host isolation, activation events, contribution points, AI integration 2026), Chrome Manifest V3 (fully deprecated V2 by 2026, no remote code, service workers, DNR, granular permissions), extension isolation patterns (process isolation, IPC, capability-scoped handles), plugin manifest formats, plugin security models (least privilege, capability-based, permission escalation detection), extension stores/trust (VS Code Marketplace, Chrome Web Store, npm security crisis 2026), auto-update security (silent update risks, permission escalation, manifest diff), plugin signing/verification (code signing, checksums, reproducible builds), dependency risk (supply chain attacks, lockfile verification, pnpm v11 mitigations), and UCAN for plugin capability grants.",
+  "research_findings": [
+    {
+      "category": "architecture",
+      "title": "VS Code Extension API Architecture",
+      "finding": "Extensions run in a separate Extension Host process, isolated from the main UI process. Three host types: Local Node.js, Web, and Remote. Lazy activation via declarative activationEvents (onLanguage, onCommand, onView, onStartupFinished). Contribution points in package.json enables declarative registration of commands, menus, views, languages, themes, etc. without running extension code. 2026 emphasis: AI integration (chatInstructions, chatPromptFiles), web support, continued granular permissions discussions.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://code.visualstudio.com/api/get-started/extension-anatomy",
+          "title": "VS Code Extension Anatomy",
+          "relevance": "Official VS Code extension architecture documentation",
+          "key_excerpts": [
+            "Extensions run in a separate Extension Host process",
+            "Three extension host types: local, web, remote"
+          ]
+        },
+        {
+          "url": "https://code.visualstudio.com/api/references/activation-events",
+          "title": "VS Code Activation Events",
+          "relevance": "Official reference for lazy activation patterns",
+          "key_excerpts": [
+            "Activation events enable lazy loading of extensions",
+            "onLanguage, onCommand, onView are primary activation events"
+          ]
+        },
+        {
+          "url": "https://code.visualstudio.com/api/references/contribution-points",
+          "title": "VS Code Contribution Points",
+          "relevance": "Official reference for declarative extension integration",
+          "key_excerpts": [
+            "Extension capabilities declared statically in package.json",
+            "commands, menus, views, languages are declared without running code"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "process isolation",
+        "activation events",
+        "contribution points",
+        "extension host",
+        "declarative manifests"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Chrome Extension Manifest V3",
+      "finding": "MV3 is a comprehensive security overhaul. By 2026, Manifest V2 is fully deprecated. Key changes: no remotely hosted code, Declarative Net Request API replaces blocking webRequest, service workers replace persistent background pages, stricter CSP, granular permission model with separate host_permissions. Service workers are ephemeral (30s inactivity timeout), event-driven, no DOM access, must use storage APIs.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://developer.chrome.com/docs/extensions/mv3/intro/",
+          "title": "Chrome Manifest V3 Introduction",
+          "relevance": "Official Chrome MV3 documentation",
+          "key_excerpts": [
+            "No remotely hosted code",
+            "Service workers replace background pages",
+            "CSP restricted to 'self' and 'wasm-unsafe-eval'"
+          ]
+        },
+        {
+          "url": "https://developer.chrome.com/docs/extensions/mv3/service_workers/",
+          "title": "Chrome Extension Service Workers",
+          "relevance": "Official service worker documentation for MV3",
+          "key_excerpts": [
+            "Service workers have 30s inactivity timeout",
+            "Top-level event listener registration required"
+          ]
+        },
+        {
+          "url": "https://css-tricks.com/manifest-v3/",
+          "title": "CSS Tricks: Manifest V3 Analysis",
+          "relevance": "Technical analysis of MV3 changes",
+          "key_excerpts": [
+            "MV3 eliminates remotely hosted code to reduce RCE surface",
+            "Host permissions separated from API permissions"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "manifest v3",
+        "service workers",
+        "declarative net request",
+        "content security policy",
+        "host permissions",
+        "deprecation"
+      ]
+    },
+    {
+      "category": "architecture",
+      "title": "Extension Isolation Patterns",
+      "finding": "Three core patterns: (1) Process isolation - OS-enforced separate memory spaces per extension/plugin, preventing cross-contamination. (2) Message passing (IPC) - safe communication via send/receive through kernel mediation, avoiding shared memory. (3) Capability-scoped handles - unforgeable tokens encapsulating object ID + access rights, enabling least-privilege delegation. Browsers use process isolation per tab/extension; VS Code uses Extension Host process separation. Capabilities are (object_id, access_rights) tuples supporting delegation and attenuation.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Process_isolation",
+          "title": "Wikipedia: Process Isolation",
+          "relevance": "Foundational reference for OS-level isolation",
+          "key_excerpts": [
+            "OS-enforced separate memory spaces prevent cross-contamination",
+            "Memory segmentation and virtual memory enforce boundaries"
+          ]
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Capability-based_security",
+          "title": "Wikipedia: Capability-based Security",
+          "relevance": "Foundational reference for capability security model",
+          "key_excerpts": [
+            "Unforgeable tokens with (object_id, access_rights)",
+            "Holder can create restricted child capability, never exceeding parent permissions"
+          ]
+        },
+        {
+          "url": "https://www.securview.com/plugin-security-architecture/",
+          "title": "Plugin Security Architecture",
+          "relevance": "Industry analysis of plugin security patterns",
+          "key_excerpts": [
+            "Modularity + clear API contracts + sandboxing + controlled IPC + capability-based access"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "process isolation",
+        "IPC",
+        "capability-based security",
+        "memory isolation",
+        "sandboxing"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "Plugin Manifest Formats",
+      "finding": "Two dominant formats: Chrome manifest.json (MV3) and VS Code package.json. Both are JSON-based declarative metadata. Chrome focuses on web permissions, host access, content scripts, service workers, CSP. VS Code extends Node.js package.json with activationEvents, contributes section, extensionDependencies, engine compatibility. Common principles: unique identifiers, versioning, declarative permissions/hooks, marketplace metadata.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://developer.chrome.com/docs/extensions/mv3/manifest/",
+          "title": "Chrome Manifest.json Reference",
+          "relevance": "Official Chrome manifest format documentation",
+          "key_excerpts": [
+            "manifest_version, permissions, host_permissions, background, content_scripts",
+            "action, web_accessible_resources"
+          ]
+        },
+        {
+          "url": "https://code.visualstudio.com/api/references/extension-manifest",
+          "title": "VS Code Extension Manifest",
+          "relevance": "Official VS Code extension manifest documentation",
+          "key_excerpts": [
+            "publisher, displayName, activationEvents, main, contributes",
+            "extensionDependencies, engine compatibility"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "declarative manifests",
+        "JSON schema",
+        "permission declarations",
+        "entry points",
+        "marketplace metadata"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "Plugin Security Models",
+      "finding": "Three pillars: (1) Principle of Least Privilege (PoLP) - grant minimum access needed; increasingly automated with continuous monitoring; aligned with Zero Trust. (2) Capability-based security - unforgeable tokens shift from 'who you are' to 'what you can do'; enables granular control, dynamic revocation, secure delegation. (3) Permission escalation detection - AI-powered behavioral analysis for sleeper agents, automated vulnerability scanning, log analysis, CVE monitoring. Real attacks (CVE-2026-6226, CVE-2026-6741) demonstrate the threat landscape.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Principle_of_least_privilege",
+          "title": "Wikipedia: Principle of Least Privilege",
+          "relevance": "Foundational reference for security principle",
+          "key_excerpts": [
+            "PoLP reduces attack surface and blast radius",
+            "Applied to IDEs, cloud, APIs"
+          ]
+        },
+        {
+          "url": "https://owasp.org/www-project-top-ten/",
+          "title": "OWASP Top Ten",
+          "relevance": "Industry standard for web application security",
+          "key_excerpts": [
+            "Supply chain attacks are the dominant threat vector"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "least privilege",
+        "capability-based security",
+        "permission escalation",
+        "zero trust",
+        "sleeper agents"
+      ]
+    },
+    {
+      "category": "comparison",
+      "title": "Extension Stores and Trust",
+      "finding": "VS Code Marketplace uses malware scanning (Microsoft Defender), dynamic sandbox testing, signature verification on install, secret scanning, impersonation prevention, block list, community reporting. Chrome Web Store uses ML + human review pipeline, 2SV required, privacy policy mandatory, code quality enforced, Safety Check alerts. npm supply chain in 2026 is under severe attack - malicious packages up 73% in 2025; 10,000+ malicious packages detected. Major incidents: Shai-Hulud worm (796 packages), Axios hijack (100M+ weekly downloads, March 2026), Red Hat Cloud Services compromise, IronWorm (Rust-built self-replicating malware). pnpm v11 mitigations: strictDepBuilds, minimumReleaseAge, trustPolicy.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://code.visualstudio.com/api/working-with-extensions/publishing-extension",
+          "title": "VS Code Extension Publishing",
+          "relevance": "VS Code extension publishing and marketplace security",
+          "key_excerpts": [
+            "Microsoft Defender scanning",
+            "Signature verification on install",
+            "Verified Publisher checkmark"
+          ]
+        },
+        {
+          "url": "https://developer.chrome.com/docs/webstore/review-process/",
+          "title": "Chrome Web Store Review Process",
+          "relevance": "Chrome Web Store security and review documentation",
+          "key_excerpts": [
+            "ML + human review pipeline",
+            "2SV required for publishers"
+          ]
+        },
+        {
+          "url": "https://www.reversinglabs.com/blog/2026-software-supply-chain-security-report",
+          "title": "ReversingLabs 2026 Supply Chain Report",
+          "relevance": "Industry report on software supply chain security",
+          "key_excerpts": [
+            "73% increase in malicious packages in 2025",
+            "10,000+ npm malicious packages detected"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "marketplace security",
+        "supply chain attacks",
+        "code signing",
+        "publisher verification",
+        "malware scanning"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "Auto-Update Security Risks",
+      "finding": "Auto-updates essential for patching vulnerabilities but create attack vectors. Silent updates amplify risks: attackers compromise developer accounts or exploit update systems to push malicious versions, creating 'sleeper agent' extensions that start benign and turn malicious. Permission escalation on update is critical: extensions can silently gain <all_urls> access without user reauthorization, especially for third-party-installed extensions. Manifest diff detection (monitoring permission changes between versions) is crucial. CVE-2026-0628, CVE-2026-11092 document policy enforcement bypasses. Manifest V3's explicit host_permissions and no remote code help but effectiveness still being evaluated.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://seraphicsecurity.com/blog/browser-extension-security-risks/",
+          "title": "Browser Extension Security Risks",
+          "relevance": "Analysis of browser extension security risks",
+          "key_excerpts": [
+            "Compromised developer accounts can push malicious updates silently",
+            "Sleeper agents: benign initial version, malicious later"
+          ]
+        },
+        {
+          "url": "https://pluto.security/blog/extension-permission-escalation",
+          "title": "Extension Permission Escalation",
+          "relevance": "Analysis of permission escalation in extension updates",
+          "key_excerpts": [
+            "Extensions can add <all_urls> without obvious user alert",
+            "Third-party installed extensions may bypass permission reauthorization"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "auto-update",
+        "sleeper agents",
+        "permission escalation",
+        "manifest diff",
+        "silent updates"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "Plugin Signature and Verification",
+      "finding": "Code signing: developer digitally signs code using CA-issued certificate; OS/app verifies signature on install (hash comparison). Chrome CRX files embed public key + signature; invalid signature aborts installation. VS Code Marketplace signs all extensions; verified on install. Grafana categorizes plugin signatures (Core/Signed/Invalid/Modified/Unsigned) and refuses to load unsigned. Reproducible builds allow independent verification that binary matches source code. SHA-256/SHA-512 preferred for tamper detection.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Code_signing",
+          "title": "Wikipedia: Code Signing",
+          "relevance": "Foundational reference for code signing",
+          "key_excerpts": [
+            "Hash -> encrypt with private key -> user decrypts with public key -> compare",
+            "Digital signature verifies publisher identity and content integrity"
+          ]
+        },
+        {
+          "url": "https://grafana.com/docs/grafana/latest/administration/plugin-signing/",
+          "title": "Grafana Plugin Signing",
+          "relevance": "Production example of plugin signature enforcement",
+          "key_excerpts": [
+            "5 signature categories: Core, Signed, Invalid, Modified, Unsigned",
+            "Unsigned/invalid plugins won't load"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "code signing",
+        "checksums",
+        "reproducible builds",
+        "CRX format",
+        "SHA-256"
+      ]
+    },
+    {
+      "category": "risk",
+      "title": "Dependency Risk Analysis",
+      "finding": "Supply chain security for plugins in 2026 under active attack. npm ecosystem: 73% increase in malicious packages in 2025, 10K+ detections, double 2024. Attackers exploit trusted distribution channels, OIDC token manipulation, dependency confusion, compromised maintainer accounts. Key incidents: Axios hijack (March 2026, North Korean actor, 100M+ weekly downloads, provenance bypass), Red Hat Cloud Services (June 2026, compromised employee GitHub, 30+ packages), IronWorm (June 2026, Rust-built self-replicating malware, 36 npm packages), Shai-Hulud worm (2025, registry-native worm, 796 packages, 132M monthly downloads). Mitigations: pnpm v11 strictDepBuilds, minimumReleaseAge, trustPolicy; npm audit signatures; version pinning, lockfiles, private registry proxies.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://www.paloaltonetworks.com/blog/2026/05/npm-supply-chain-attacks/",
+          "title": "Palo Alto Networks: npm Supply Chain Attacks 2026",
+          "relevance": "Analysis of the npm supply chain crisis",
+          "key_excerpts": [
+            "Axios hijack March 2026, North Korean actor",
+            "Red Hat Cloud Services June 2026, 30+ packages compromised"
+          ]
+        },
+        {
+          "url": "https://pnpm.io/blog/2026/04/pnpm-v11-supply-chain-security",
+          "title": "pnpm v11 Supply Chain Security",
+          "relevance": "pnpm's latest supply chain mitigations",
+          "key_excerpts": [
+            "strictDepBuilds blocks lifecycle scripts",
+            "minimumReleaseAge quarantines new releases",
+            "trustPolicy for curated packages"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "supply chain",
+        "dependency confusion",
+        "lockfiles",
+        "provenance",
+        "OIDC",
+        "pnpm",
+        "transitive dependencies"
+      ]
+    },
+    {
+      "category": "pattern",
+      "title": "UCAN for Plugin Capability Grants",
+      "finding": "UCAN (User Controlled Authorization Networks) is a decentralized, user-originated authorization scheme using public-key cryptography. Extends JWT with capability/resource model. Users create cryptographic key pairs; capabilities are unforgeable tokens encoding (action, resource) pairs. Key feature: delegation chains - users issue UCANs to delegate authority without sharing private keys, creating verifiable proof chains. Scoped authority enables fine-grained constraints (time limits, resource subsets, custom restrictions). Attenuation ensures delegated capabilities never exceed parent permissions. Open-source specification, community-driven. Applied to decentralized storage, API access, IoT, Web3. Ideal model for plugin permission systems: each plugin gets attenuated UCAN for its scope.",
+      "confidence": "high",
+      "sources": [
+        {
+          "url": "https://ucan.xyz/",
+          "title": "UCAN Specification",
+          "relevance": "Official UCAN specification",
+          "key_excerpts": [
+            "Decentralized, user-originated authorization",
+            "Public-key cryptography based"
+          ]
+        },
+        {
+          "url": "https://github.com/ucan-wg/spec",
+          "title": "UCAN Working Group Spec",
+          "relevance": "UCAN specification repository",
+          "key_excerpts": [
+            "Capability tokens extend JWT with (capability, resource) pairs",
+            "Delegation chains with verifiable proof"
+          ]
+        },
+        {
+          "url": "https://storacha.network/blog/ucan-introduction",
+          "title": "UCAN Introduction",
+          "relevance": "Practical introduction to UCAN",
+          "key_excerpts": [
+            "Local-first authorizations work offline",
+            "Attenuation ensures delegated capabilities never exceed parent"
+          ]
+        }
+      ],
+      "related_concepts": [
+        "UCAN",
+        "delegation chains",
+        "capability tokens",
+        "JWT",
+        "public-key cryptography",
+        "attenuation",
+        "decentralized authorization"
+      ]
+    }
+  ],
+  "implementation_specs": [
+    {
+      "title": "Extension Host Process Isolation",
+      "description": "Define the concrete process model for the Tribunus extension host. Plugins MUST run in an isolated process, not the Electron main process. Must define the IPC protocol, startup lifecycle, failure recovery, and resource limits. Implement capability-scoped handles for all plugin-runtime communication.",
+      "acceptance_criteria": [
+        "Plugins execute in a separate OS process from the Electron main process",
+        "Plugin crashes do not affect the main runtime process",
+        "All plugin-runtime communication goes through a typed message boundary",
+        "Capability handles are unforgeable and scoped to (resource, action) tuples",
+        "Extension host lifecycle: start, activate, execute, deactivate, terminate",
+        "Extension host can be restarted independently of the runtime"
+      ],
+      "implementation_patterns": [
+        {
+          "name": "Extension Host via child_process.fork",
+          "description": "Spawn extension host as a forked Node.js process with dedicated IPC channel. Each plugin gets its own isolated context within the host. VS Code uses this pattern.",
+          "code_example": "const child = require('child_process');\nconst extHost = child.fork('./extension-host.js', [], {\n  execArgv: ['--experimental-vm-modules'],\n  serialization: 'advanced'\n});\n// Typed IPC through capability-scoped MessagePort\nconst { port1, port2 } = new MessageChannel();\nextHost.send({ type: 'init', port: port2 }, [port2]);\nport1.on('message', handleCapabilityRequest);",
+          "references": [
+            "https://code.visualstudio.com/api/working-with-extensions/publishing-extension"
+          ]
+        },
+        {
+          "name": "Capability Handle Pattern",
+          "description": "Capability handles are unforgeable tokens wrapping (resource, rights, constraints) triples. Runtime creates handles; plugins receive them through IPC. Attenuation creates restricted child handles.",
+          "code_example": "class CapabilityHandle {\n  constructor(resource, rights, constraints = {}) {\n    this.#resource = resource;    // e.g., 'files:/src/**'\n    this.#rights = rights;        // e.g., Set(['read'])\n    this.#constraints = constraints; // e.g., { maxBytes: 1048576 }\n    Object.freeze(this);\n  }\n  attest(operation, target) {\n    return this.#rights.has(operation) &&\n           this.#matchesResource(target) &&\n           this.#satisfiesConstraints(operation, target);\n  }\n  attenuate(subRights, subConstraints) {\n    return new CapabilityHandle(\n      this.#resource,\n      intersection(this.#rights, subRights),\n      { ...this.#constraints, ...subConstraints }\n    );\n  }\n}",
+          "references": [
+            "https://en.wikipedia.org/wiki/Capability-based_security"
+          ]
+        },
+        {
+          "name": "IPC Message Boundary Pattern",
+          "description": "Define a typed message protocol for all plugin-runtime communication. Each message has a type, payload, capability handle reference, and receipt correlation ID. Runtime validates capability before dispatching.",
+          "code_example": "type PluginMessage =\n  | { type: 'intent'; capability: string; action: string; payload: unknown; correlationId: string }\n  | { type: 'subscribe'; event: string; capability: CapabilityHandle }\n  | { type: 'response'; correlationId: string; status: 'ok' | 'denied' | 'error'; data?: unknown };\n\nfunction validateAndDispatch(msg: PluginMessage, capabilities: Map<string, CapabilityHandle>) {\n  const cap = capabilities.get(msg.capability);\n  if (!cap || !cap.attest(msg.type, msg.action)) {\n    return { status: 'denied', reason: 'capability not granted' };\n  }\n  // Route to governed handler\n}",
+          "references": [
+            "https://www.geeksforgeeks.org/message-passing-in-operating-system/"
+          ]
+        }
+      ],
+      "suggested_campaign": {
+        "title": "SDK and Plugin Architecture Implementation",
+        "objective": "Implement the three-layer SDK architecture (protocol, client, plugin) with capability-governed extension host"
+      },
+      "suggested_missions": [
+        {
+          "title": "Extension Host Process Isolation",
+          "purpose": "Implement the extension host process model with IPC, capability handles, and lifecycle management",
+          "acceptance_criteria": [
+            "Extension host process spawns and communicates via typed IPC",
+            "Capability handles enforced at runtime",
+            "Plugin crashes isolated from main process",
+            "Extension host can be restarted independently"
+          ],
+          "priority": 90,
+          "suggested_lanes": [
+            {
+              "title": "Extension Host IPC Protocol",
+              "scope": "extension-host-ipc",
+              "description": "Define and implement the typed message protocol between runtime and extension host",
+              "write_paths": [
+                "packages/protocol/src/",
+                "packages/plugin-host/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Define IPC message types",
+                  "description": "Define TypeScript types for all plugin-runtime IPC messages: intents, capabilities, events, receipts, errors",
+                  "estimated_effort": "2 days",
+                  "priority": 90,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement extension host process lifecycle",
+                  "description": "Implement fork-based extension host spawning, activation sequence, and graceful shutdown",
+                  "estimated_effort": "3 days",
+                  "priority": 85,
+                  "depends_on": [
+                    "Define IPC message types"
+                  ]
+                },
+                {
+                  "title": "Build capability handle attestation engine",
+                  "description": "Implement capability handle creation, attestation, attenuation, and revocation in the runtime",
+                  "estimated_effort": "3 days",
+                  "priority": 90,
+                  "depends_on": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Plugin Manifest and Governance Pipeline",
+          "purpose": "Implement the declarative plugin manifest format and the capability governance pipeline (declaration -> registration -> classification -> policy evaluation -> grant/deny -> enforcement -> receipts)",
+          "acceptance_criteria": [
+            "Plugin manifest schema validated on registration",
+            "Capability classification by risk level",
+            "Policy evaluation against workspace trust, user policy, project policy",
+            "Grant/deny with scoped handles or denial reasons",
+            "Every authority-relevant action produces a durable receipt"
+          ],
+          "priority": 85,
+          "suggested_lanes": [
+            {
+              "title": "Plugin Manifest Schema",
+              "scope": "plugin-manifest-schema",
+              "description": "Define and validate the declarative plugin manifest JSON schema",
+              "write_paths": [
+                "packages/protocol/src/",
+                "packages/plugin/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Design manifest JSON schema",
+                  "description": "Design the complete plugin manifest schema with required/optional fields, capability declarations, activation events, contribution points",
+                  "estimated_effort": "3 days",
+                  "priority": 90,
+                  "depends_on": []
+                },
+                {
+                  "title": "Implement manifest validation",
+                  "description": "Implement JSON Schema validation for plugin manifests with descriptive error messages",
+                  "estimated_effort": "2 days",
+                  "priority": 85,
+                  "depends_on": [
+                    "Design manifest JSON schema"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Auto-Update and Permission Escalation Protection",
+          "purpose": "Implement safe auto-update that never silently expands authority. Manifest diff detection, permission re-grant for new capabilities, and sleeper agent detection.",
+          "acceptance_criteria": [
+            "Auto-update compares current vs new manifest capabilities",
+            "New capabilities require user reauthorization or policy review",
+            "Permission increases trigger re-grant workflow",
+            "Manifest diff visible to user before update applies",
+            "Sleeper agent detection: flagged if behavior changes significantly between versions"
+          ],
+          "priority": 80,
+          "suggested_lanes": [
+            {
+              "title": "Manifest Diff Engine",
+              "scope": "manifest-diff-engine",
+              "description": "Build the capability manifest diff engine for auto-update safety",
+              "write_paths": [
+                "packages/protocol/src/",
+                "packages/plugin/"
+              ],
+              "suggested_tasks": [
+                {
+                  "title": "Implement manifest diff comparison",
+                  "description": "Implement deep comparison of manifests between versions: capabilities, permissions, contribution points",
+                  "estimated_effort": "2 days",
+                  "priority": 80,
+                  "depends_on": []
+                },
+                {
+                  "title": "Build auto-update governance workflow",
+                  "description": "Implement the workflow that checks for permission expansion on update and triggers re-grant or blocks update",
+                  "estimated_effort": "3 days",
+                  "priority": 85,
+                  "depends_on": [
+                    "Implement manifest diff comparison"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "linked_entities": [
+    {
+      "entity_type": "adr",
+      "entity_id": "0018",
+      "relationship": "decision"
+    }
+  ],
+  "session_id": "unknown",
+  "created_at": "2026-06-06T10:08:09.357Z"
+}

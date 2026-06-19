@@ -1,0 +1,59 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0053-instance-bootstrap-and-dependency-assembly",
+  "type": "mission",
+  "name": "Instance Bootstrap and Dependency Assembly",
+  "slug": "instance-bootstrap-and-dependency-assembly",
+  "description": "Define how the application discovers, validates, and assembles all runtime dependencies before entering the ready state.",
+  "purpose": "Boot is deterministic and diagnosable.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Bootstrap sequence is defined as an ordered DAG of dependency checks",
+    "Each dependency has a health probe with clear pass/fail output",
+    "Bootstrap halts on critical dependency failure with actionable error message",
+    "Bootstrap logs every check with timing and result for diagnostics",
+    "Application does not enter ready state until all dependencies are validated"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "bootstrap",
+    "lifecycle",
+    "dependency-injection",
+    "startup"
+  ],
+  "depends_on": [],
+  "unlocks": [
+    "0055-workspace-open-and-close-semantics",
+    "0063-runtime-truth-projection-into-the-cockpit"
+  ],
+  "authority_scope": "startup",
+  "allowed_paths": [
+    "packages/app/src/runtime/bootstrap/**"
+  ],
+  "required_evidence": [
+    "DAG-ordered dependency check execution test",
+    "Health probe pass/fail test for each dependency",
+    "Bootstrap halt on critical failure test",
+    "Diagnostic log output test with timing"
+  ],
+  "acceptance_gates": [
+    "Bootstrap completes only after all dependencies validated",
+    "Each dependency check produces clear pass/fail",
+    "Critical failure halts with actionable error",
+    "Logs include per-check timing"
+  ],
+  "rollback_strategy": "Bootstrap has no side effects to roll back — failure leaves no state",
+  "recovery_strategy": "Retry bootstrap from clean state after resolving failure cause",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "After max bootstrap attempts, escalate to user with failure diagnostics and resolution hints",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.470Z",
+  "updated_at": "2026-06-07T05:40:06.878Z"
+}

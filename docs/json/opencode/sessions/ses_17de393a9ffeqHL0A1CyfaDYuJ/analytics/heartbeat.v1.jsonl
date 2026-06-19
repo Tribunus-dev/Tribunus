@@ -1,0 +1,20 @@
+{"at":"2026-06-01T07:36:59.268Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T07:37:23.254Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T07:37:58.403Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_grep","phase":"started","detail":"\"typecheck\""}
+{"at":"2026-06-01T07:37:58.404Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"1 matches in 1 files"}
+{"at":"2026-06-01T07:37:59.133Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_grep","phase":"started","detail":"tsgo|tsc|typecheck"}
+{"at":"2026-06-01T07:37:59.134Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"3 matches in 1 files"}
+{"at":"2026-06-01T07:38:37.740Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:39:02.098Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T07:39:22.156Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:39:50.158Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T07:40:37.179Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:40:37.379Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T07:40:48.500Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:40:55.943Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T07:41:46.022Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:42:08.977Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"completed","detail":"tsgo exit=0"}
+{"at":"2026-06-01T07:42:25.646Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T07:42:43.880Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T07:43:34.677Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore"}
+{"at":"2026-06-01T07:43:34.817Z","session_id":"ses_17de393a9ffeqHL0A1CyfaDYuJ","agent":"monitor","tool":"smart_grep","phase":"completed","detail":"8 matches in 500 files"}

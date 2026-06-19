@@ -1,0 +1,43 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0161-board-state-synchronization",
+  "type": "mission",
+  "name": "Board State Synchronization",
+  "slug": "board-state-synchronization",
+  "description": "Sync the control-plane board state (campaigns, missions, lanes, tasks) across devices with causal consistency.",
+  "purpose": "Ensure the control-plane board state (campaigns, missions, lanes, tasks) is consistently replicated across devices with causal consistency guarantees.",
+  "campaignId": "0020",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Board entity operations are recorded in the operation log with causal metadata.",
+    "Devices converge to the same board state under causal consistency.",
+    "Conflict detection and resolution uses the taxonomy and merge registry.",
+    "Full-board sync can be triggered on demand or runs on a schedule.",
+    "Sync respects role-based permissions (if applicable)."
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "sync",
+    "board-state",
+    "causal-consistency"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:45:04.608Z",
+  "updated_at": "2026-06-07T05:49:53.180Z"
+}

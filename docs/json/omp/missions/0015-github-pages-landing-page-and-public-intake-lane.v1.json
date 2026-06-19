@@ -1,0 +1,28 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0015",
+  "type": "mission",
+  "name": "GitHub Pages Landing Page and Public Intake Lane",
+  "slug": "github-pages-landing-page-and-public-intake-lane",
+  "description": "GitHub Pages hosts the static PWA shell serving: the public landing page with demo data, the installable PWA (manifest + service worker), and the public intake lane where visitors submit questions to a hosted queue. The desktop subscribes to that queue. Public users never reach the desktop directly.",
+  "purpose": "The landing page IS the cockpit at rest. Public mode dogfoods the product — simulated mission timeline, demo receipts, architecture cards, and a codex browser. Clean community intake without exposing the desktop.",
+  "campaignId": "0004",
+  "status": "completed",
+  "priority": 75,
+  "acceptanceCriteria": [
+    "GitHub Pages serves static PWA shell with HTTPS",
+    "Public mode renders demo data through same Lit components",
+    "Landing page includes simulated mission timeline and demo receipts",
+    "Codex browser is read-only public knowledge",
+    "Ask a question intake lane submits to hosted queue",
+    "Desktop subscribes to intake queue — operator approves/ignores",
+    "Approved questions open scoped sessions with status updates via web",
+    "Raw shell, filesystem, Valkey, PGlite, and local network never exposed to public"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:49:12.533Z",
+  "updated_at": "2026-06-06T11:48:49.004Z"
+}

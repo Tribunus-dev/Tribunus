@@ -1,0 +1,19 @@
+{"at":"2026-06-01T02:14:49.390Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","pattern":"bootstrap.ts","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:14:49.863Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","pattern":"instance-store.ts","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:14:50.518Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","pattern":"**/health/*.ts","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:15:48.253Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","pattern":"health*","path":"packages/opencode/src/server"}
+{"at":"2026-06-01T02:17:00.494Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"health","path":"packages/sdk/js/src"}
+{"at":"2026-06-01T02:17:00.865Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","pattern":"global.ts","path":"packages/opencode/src/bus"}
+{"at":"2026-06-01T02:17:06.664Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","pattern":"bootstrap-service.ts","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:18:20.288Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"health|Health","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:20:27.110Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"GlobalHealthData|GlobalHealthResponses|healthy","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:20:28.259Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"Effect\\.serviceOption|Layer\\.provide|Layer\\.effect","path":"packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T02:21:39.446Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"export type GlobalHealth","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:22:07.962Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"export type GlobalHealthData","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:22:43.156Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"Literal.*true|Literal.*healthy","path":"packages/opencode/src/server"}
+{"at":"2026-06-01T02:22:44.405Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"health|Health","path":"packages/opencode/src/server/routes/instance/httpapi"}
+{"at":"2026-06-01T02:23:38.926Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"Effect\\.serviceOption","path":"packages/opencode/src/server/routes/instance/httpapi/handlers/global.ts"}
+{"at":"2026-06-01T02:24:20.382Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"GlobalHealthData","path":"packages/sdk/js/src/v2/gen/types.gen.ts"}
+{"at":"2026-06-01T02:26:14.036Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_find","pattern":"*instance-health*","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:26:14.966Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"InstanceHealth","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:26:42.940Z","session_id":"ses_17f0c3a29ffe8AXrIzCVptbbZB","agent":"risk-enumerator","tool":"smart_grep","pattern":"layer|GlobalBus","path":"packages/opencode/src/bus/index.ts"}

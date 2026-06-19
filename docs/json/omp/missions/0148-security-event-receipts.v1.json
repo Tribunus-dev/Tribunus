@@ -1,0 +1,44 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0148-security-event-receipts",
+  "type": "mission",
+  "name": "Security Event Receipts",
+  "slug": "security-event-receipts",
+  "description": "All security-relevant events (permission grants, denials, policy violations, boundary crossings) produce durable, tamper-evident, structured receipts stored in the receipt journal.",
+  "purpose": "Establish a durable, tamper-evident audit trail of all security-relevant events so that incidents can be investigated, policies validated, and compliance demonstrated.",
+  "campaignId": "0018",
+  "status": "completed",
+  "priority": 80,
+  "acceptanceCriteria": [
+    "Security event receipt schema is defined and versioned",
+    "All security-sensitive operations produce structured receipts",
+    "Receipts include: timestamp, event type, source identity, outcome, policy reference",
+    "Receipts are stored durably (append-only journal)",
+    "Receipts cannot be tampered with or deleted by non-admin processes",
+    "Receipt journal is queryable for audit and investigation"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "missions0018"
+  ],
+  "tags": [
+    "security",
+    "audit",
+    "receipts"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:44:55.759Z",
+  "updated_at": "2026-06-07T05:51:44.633Z"
+}

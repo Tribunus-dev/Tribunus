@@ -1,0 +1,4 @@
+{"at":"2026-06-01T03:49:52.368Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","pattern":"GlobalBus\\.on|GlobalBus\\.emit","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:49:53.343Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","pattern":"ib-bootstrap-phases|ib-sidecar-boundary","path":"packages"}
+{"at":"2026-06-01T03:50:55.649Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","pattern":"classifyError","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:53:32.968Z","session_id":"ses_17eb2d2c1ffe6Wga7xuc7O97Yh","agent":"root-cause-analyst","tool":"smart_grep","pattern":"Cause\\.isFailure|Cause\\.isDie|Cause\\.isInterrupt|_tag.*Fail|_tag.*Die","path":"packages/opencode/src"}

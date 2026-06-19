@@ -1,0 +1,29 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "0029",
+  "type": "task",
+  "name": "Harden stringly receipt schemas",
+  "slug": "harden-stringly-receipt-schemas",
+  "description": "Replace stringly receipt domains with stable serde-backed enums where the domain is already known, and update the builders/emitters that produce them.",
+  "laneId": "0029",
+  "missionId": "0237",
+  "status": "pending",
+  "priority": 75,
+  "estimatedEffort": "2 days",
+  "actualEffort": null,
+  "dependsOn": [],
+  "blocks": [],
+  "assignedTo": "Main",
+  "startedAt": null,
+  "completedAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "receipts",
+    "schema"
+  ],
+  "created_at": "2026-06-13T10:57:20.391Z",
+  "updated_at": "2026-06-13T10:57:20.391Z"
+}

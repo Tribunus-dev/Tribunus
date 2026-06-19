@@ -1,0 +1,44 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0140-network-egress-policy",
+  "type": "mission",
+  "name": "Network Egress Policy",
+  "slug": "network-egress-policy",
+  "description": "Define and enforce which processes can make network requests, to which hosts, on which ports, and using which protocols. Network requests not matching policy are blocked with receipts.",
+  "purpose": "Prevent unauthorized network egress by enforcing a process-level network policy that restricts which hosts, ports, and protocols each process is permitted to contact.",
+  "campaignId": "0018",
+  "status": "completed",
+  "priority": 80,
+  "acceptanceCriteria": [
+    "Network egress policy is defined per process or process group",
+    "Allowed hosts, ports, and protocols are enumerated in policy",
+    "Network requests not matching policy are blocked",
+    "Blocked requests produce security event receipts",
+    "Policy is enforceable at the OS/network level (e.g., firewall, netfilter)",
+    "Inspected egress requests produce audit log entries"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "missions0018"
+  ],
+  "tags": [
+    "security",
+    "network",
+    "egress-policy"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "authority_scope": "",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "",
+  "recovery_strategy": "",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:44:55.733Z",
+  "updated_at": "2026-06-07T05:47:45.232Z"
+}

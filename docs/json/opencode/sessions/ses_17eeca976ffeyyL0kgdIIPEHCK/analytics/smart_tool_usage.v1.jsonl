@@ -1,0 +1,13 @@
+{"at":"2026-06-01T02:50:51.862Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"OPENCODE_DISABLE_","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:51:29.687Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"InstanceStore","path":"packages/opencode/src/control-plane/workspace.ts"}
+{"at":"2026-06-01T02:51:31.479Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"testInstanceStoreLayer|InstanceStore\\.defaultLayer|noopBootstrap","path":"packages/opencode/test"}
+{"at":"2026-06-01T02:52:09.460Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"acp-next.*InstanceStore|InstanceStore.*acp","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:52:42.490Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"acp-next","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:52:43.131Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"InstanceLayer","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:56:45.028Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"serviceOption","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:56:47.060Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"\\\"effect\\\"","path":"packages"}
+{"at":"2026-06-01T02:58:32.310Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"Layer\\.empty","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:58:33.097Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"Cause\\.pretty","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:58:34.155Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"Option\\.match|Option\\.isSome|Option\\.getOrElse","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:58:53.184Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"Context\\.empty","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:58:53.965Z","session_id":"ses_17eeca976ffeyyL0kgdIIPEHCK","agent":"architect","tool":"smart_grep","pattern":"crypto\\.randomUUID","path":"packages/opencode/src"}

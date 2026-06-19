@@ -1,0 +1,15 @@
+{
+  "schema": "rig.relay.memory-link.v1",
+  "schema_version": "v1",
+  "id": "ml-1780740438137-je2zlr",
+  "type": "memory_link",
+  "entity_type": "adr",
+  "entity_id": "0016-sandbox-cell",
+  "memory_bank": "tribunus-core",
+  "memory_id": "rcp-1780740438136-5teq0j",
+  "relationship": "context",
+  "relevance_score": 1,
+  "notes": "Research context packet: Browser sandbox technologies for ADR 0016 (Sandbox Cell) — WebContainer, OPFS, iframe sandbox, COOP/COEP, Yjs collaborative editing, xterm.js terminal, capability security",
+  "session_id": "unknown",
+  "created_at": "2026-06-06T10:07:18.136Z"
+}

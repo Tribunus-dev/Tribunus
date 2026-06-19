@@ -1,0 +1,4 @@
+{"schema_version":"v2","action":"modified","target":"packages/opencode/src/project/instance-health.ts","agent":"surgeon","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","recorded_at":"2026-06-01T08:06:25.222Z"}
+{"schema_version":"v2","action":"modified","target":"packages/opencode/src/project/instance-store.ts","agent":"surgeon","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","recorded_at":"2026-06-01T08:06:26.483Z"}
+{"schema_version":"v2","action":"modified","target":"packages/opencode/src/project/instance-layer.ts","agent":"surgeon","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","recorded_at":"2026-06-01T08:06:27.557Z"}
+{"schema_version":"v2","action":"modified","target":"packages/opencode/src/server/routes/instance/httpapi/handlers/global.ts","agent":"surgeon","session_id":"ses_17dca60a3ffe1Ik2Jti0fLdmy8","recorded_at":"2026-06-01T08:06:28.770Z"}

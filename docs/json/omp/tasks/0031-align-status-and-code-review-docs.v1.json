@@ -1,0 +1,29 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "0031",
+  "type": "task",
+  "name": "Align status and code-review docs",
+  "slug": "align-status-and-code-review-docs",
+  "description": "Update STATUS.md and CODE_REVIEW.md so the documented qualification state, exported surface, and review notes match the current compute-runtime contract.",
+  "laneId": "0031",
+  "missionId": "0237",
+  "status": "pending",
+  "priority": 60,
+  "estimatedEffort": "4 hours",
+  "actualEffort": null,
+  "dependsOn": [],
+  "blocks": [],
+  "assignedTo": "Main",
+  "startedAt": null,
+  "completedAt": null,
+  "authors": [
+    "Main"
+  ],
+  "tags": [
+    "status",
+    "docs"
+  ],
+  "created_at": "2026-06-13T10:57:20.392Z",
+  "updated_at": "2026-06-13T10:57:20.392Z"
+}

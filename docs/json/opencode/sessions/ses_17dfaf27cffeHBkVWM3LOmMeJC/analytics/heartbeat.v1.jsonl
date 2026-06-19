@@ -1,0 +1,18 @@
+{"at":"2026-06-01T07:11:29.386Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"GlobalBus\\.on|GlobalBus\\.emit"}
+{"at":"2026-06-01T07:11:29.540Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"18 matches in 500 files"}
+{"at":"2026-06-01T07:11:29.560Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"InstanceDegraded|instance\\.degraded"}
+{"at":"2026-06-01T07:11:29.680Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"5 matches in 500 files"}
+{"at":"2026-06-01T07:11:48.334Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"health\\.remove|healthStore\\.remove|health\\.set|healthStore\\.set"}
+{"at":"2026-06-01T07:11:48.485Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"5 matches in 500 files"}
+{"at":"2026-06-01T07:12:52.662Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore|instance-health"}
+{"at":"2026-06-01T07:12:52.693Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"3 matches in 79 files"}
+{"at":"2026-06-01T07:14:03.304Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"isPublicUIPath"}
+{"at":"2026-06-01T07:14:03.412Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"3 matches in 500 files"}
+{"at":"2026-06-01T07:15:18.758Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"failedServices"}
+{"at":"2026-06-01T07:15:18.857Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"8 matches in 500 files"}
+{"at":"2026-06-01T07:18:07.747Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"GlobalBus\\.on|subscribe"}
+{"at":"2026-06-01T07:18:07.764Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"1 matches in 11 files"}
+{"at":"2026-06-01T07:19:57.558Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"health\\.(set|remove)|healthStore\\.(set|remove)"}
+{"at":"2026-06-01T07:19:57.580Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"0 matches in 79 files"}
+{"at":"2026-06-01T07:19:57.590Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"started","detail":"InstanceHealthStore"}
+{"at":"2026-06-01T07:19:57.608Z","session_id":"ses_17dfaf27cffeHBkVWM3LOmMeJC","agent":"security-adversary","tool":"smart_grep","phase":"completed","detail":"2 matches in 79 files"}

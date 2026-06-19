@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0014",
+  "type": "lane",
+  "name": "Plugin Revocation and Capability Lifecycle",
+  "slug": "plugin-revocation-and-capability-lifecycle",
+  "description": "Implement revocation for packages, publishers, signing keys, versions, individual capabilities, agent invocation rights, and network/secrets access. Support immediate, graceful, and cascade revocation modes. All revocations produce durable receipts with fanout via Valkey Pub/Sub.",
+  "scope": "plugin-revocation",
+  "missionId": "0010",
+  "status": "completed",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/plugin/src/"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": "2026-06-06T11:33:59.204Z",
+  "leaseExpiresAt": "2026-06-06T11:38:37.485Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:50:33.361Z",
+  "updated_at": "2026-06-06T11:38:37.485Z"
+}

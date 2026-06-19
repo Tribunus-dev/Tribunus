@@ -1,0 +1,26 @@
+{
+  "schema": "rig.relay.campaign.v1",
+  "schema_version": "v1",
+  "id": "0018",
+  "type": "campaign",
+  "name": "Security, Sandboxing, and Permission Broker",
+  "slug": "security-sandboxing-and-permission-broker",
+  "description": "Application threat model, Electron main/renderer isolation, context isolation enforcement, navigation and window creation policy, IPC schema validation, capability permission broker, filesystem scope enforcement, network egress policy, process spawn policy, secret access broker, clipboard and screen capture permissions, extension sandbox cells, worker/sidecar isolation, content security policy, untrusted project mode, security event receipts, vulnerability response workflow, fuzzing harness, and red-team release gate.",
+  "objective": "Implement defense-in-depth: isolation, permission broker, sandbox cells, and security release gates.",
+  "status": "not_started",
+  "projectId": null,
+  "startDate": "2026-06-07",
+  "endDate": null,
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "security",
+    "sandboxing",
+    "permissions",
+    "isolation"
+  ],
+  "maturity": "modeled",
+  "horizon": "planned",
+  "created_at": "2026-06-07T04:35:41.209Z",
+  "updated_at": "2026-06-07T04:35:41.209Z"
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0228-retention-export-and-deletion-architecture",
+  "type": "mission",
+  "name": "Retention, Export, and Deletion Architecture",
+  "slug": "retention-export-and-deletion-architecture",
+  "description": "Design the data retention rules engine, user data export format and workflow, and deletion workflows. Define retention rule data model (data type, duration, legal hold override), retention enforcement points, and purge scheduling. Design user data export covering all data categories with structured output formats. Design deletion workflows for right-to-erasure (GDPR Art. 17), account deletion, and cascading cleanup of derived data.",
+  "purpose": "GDPR and similar regulations mandate data retention limits, user data portability, and the right to erasure. A unified retention, export, and deletion architecture ensures compliance while minimizing operational risk from complex cascading cleanup.",
+  "campaignId": "0028",
+  "status": "completed",
+  "priority": 30,
+  "acceptanceCriteria": [
+    "Retention policy document defines rule model with data type, duration, legal hold override, enforcement points, and purge scheduling",
+    "Export workflow diagrams cover data assembly across all categories, structured output (JSON/CSV), and delivery mechanisms",
+    "Deletion workflow diagrams cover cascading cleanup, derived data handling, audit trail, and grace-period reversibility"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [
+    "privacy",
+    "retention",
+    "export",
+    "deletion",
+    "gdpr",
+    "data-portability"
+  ],
+  "depends_on": [],
+  "unlocks": [],
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "created_at": "2026-06-07T04:47:55.566Z",
+  "updated_at": "2026-06-07T05:53:14.604Z"
+}

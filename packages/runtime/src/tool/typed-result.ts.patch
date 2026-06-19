@@ -1,0 +1,45 @@
+<<<<<<< SEARCH
+  if (error instanceof Tool.InvalidArgumentsError) {
+    return {
+      errorKind: "invalid_arguments",
+      recoverable: true,
+      summary: error.message,
+    }
+  }
+  if (error instanceof Tool.ToolError) {
+    return {
+      errorKind: error.recoverable ? "tool_error" : "fatal_tool_error",
+      recoverable: error.recoverable,
+      summary: error.message,
+    }
+  }
+  if (error instanceof Tool.TimeoutError) {
+    return {
+      errorKind: "timeout",
+      recoverable: true,
+      summary: error.message,
+    }
+  }
+=======
+  if (error instanceof Tool.InvalidArgumentsError || (error as any)?._tag === "ToolInvalidArgumentsError") {
+    return {
+      errorKind: "invalid_arguments",
+      recoverable: true,
+      summary: (error as any).message ?? "Invalid arguments",
+    }
+  }
+  if (error instanceof Tool.ToolError || (error as any)?._tag === "ToolError") {
+    return {
+      errorKind: (error as any).recoverable ? "tool_error" : "fatal_tool_error",
+      recoverable: (error as any).recoverable,
+      summary: (error as any).message ?? "Tool Error",
+    }
+  }
+  if (error instanceof Tool.TimeoutError || (error as any)?._tag === "TimeoutError") {
+    return {
+      errorKind: "timeout",
+      recoverable: true,
+      summary: (error as any).message ?? "Timeout",
+    }
+  }
+>>>>>>> REPLACE

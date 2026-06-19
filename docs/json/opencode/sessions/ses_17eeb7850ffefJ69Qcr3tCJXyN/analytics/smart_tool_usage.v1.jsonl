@@ -1,0 +1,22 @@
+{"at":"2026-06-01T02:49:45.661Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_find","pattern":"instance-health*","path":"packages"}
+{"at":"2026-06-01T02:49:47.201Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_find","pattern":"instance-store*","path":"packages"}
+{"at":"2026-06-01T02:49:47.457Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"InstanceHealthStore","path":"packages"}
+{"at":"2026-06-01T02:49:47.635Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"ServerInstanceLoaded|ServerInstanceDegraded|ServerInstanceFailed","path":"packages"}
+{"at":"2026-06-01T02:51:52.540Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_find","pattern":"**/groups/global*","path":"packages"}
+{"at":"2026-06-01T02:51:54.593Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_find","pattern":"**/handlers/global*","path":"packages"}
+{"at":"2026-06-01T02:51:56.506Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_find","pattern":"**/httpapi/server*","path":"packages"}
+{"at":"2026-06-01T02:51:56.771Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"Schema\\.Literal\\(true\\)","path":"packages/opencode"}
+{"at":"2026-06-01T02:51:56.975Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"health","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:52:40.246Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"GlobalBus\\.emit","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:52:40.992Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"fromDirectory","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:52:41.725Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"tapError","path":"packages/opencode/src/project"}
+{"at":"2026-06-01T02:52:42.519Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_find","pattern":"*.test.ts","path":"packages/opencode/test"}
+{"at":"2026-06-01T02:53:16.225Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"server\\.instance","path":"packages/opencode/src/event/event-names.ts"}
+{"at":"2026-06-01T02:53:17.318Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"ServerInstance|server\\.instance","path":"packages/opencode/src/bus/index.ts"}
+{"at":"2026-06-01T02:54:03.252Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"instance-store|instanceStore|InstanceStore","path":"packages/opencode/test"}
+{"at":"2026-06-01T02:54:04.431Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"health","path":"packages/opencode/test"}
+{"at":"2026-06-01T02:54:05.488Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"InstanceDisposed|ServerInstanceDisposed","path":"packages/opencode"}
+{"at":"2026-06-01T02:56:18.700Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"Effect\\.exit","path":"packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T02:56:19.590Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"Deferred\\.done","path":"packages/opencode/src/project/instance-store.ts"}
+{"at":"2026-06-01T02:56:47.708Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"BusEvent\\.define","path":"packages/opencode/src/bus"}
+{"at":"2026-06-01T02:59:04.421Z","session_id":"ses_17eeb7850ffefJ69Qcr3tCJXyN","agent":"reversibility-checker","tool":"smart_grep","pattern":"from \\\"\\./instance-health\\\"|from \\\"@/project/instance-health\\\"|InstanceHealth","path":"packages/opencode/src"}

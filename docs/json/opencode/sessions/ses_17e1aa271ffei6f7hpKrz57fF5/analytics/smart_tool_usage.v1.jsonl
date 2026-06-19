@@ -1,0 +1,13 @@
+{"at":"2026-06-01T06:37:36.499Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_bun","command":"test","elapsed_ms":104,"exit_code":1}
+{"at":"2026-06-01T06:38:37.920Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_bun","command":"test","elapsed_ms":1799,"exit_code":0}
+{"at":"2026-06-01T06:38:51.219Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_bun","command":"test","elapsed_ms":1552,"exit_code":0}
+{"at":"2026-06-01T06:39:04.017Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_find","pattern":"tmp-classify-error-smoke*","path":"packages/opencode"}
+{"at":"2026-06-01T06:39:36.725Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_bun","command":"run","elapsed_ms":1587,"exit_code":0}
+{"at":"2026-06-01T06:39:50.763Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_bun","command":"run","elapsed_ms":1440,"exit_code":0}
+{"at":"2026-06-01T06:40:00.922Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_bun","command":"run","elapsed_ms":1418,"exit_code":0}
+{"at":"2026-06-01T06:40:13.077Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_bun","command":"run","elapsed_ms":1586,"exit_code":0}
+{"at":"2026-06-01T06:40:28.765Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_grep","pattern":"(pass|fail)","path":"/tmp/test-out.txt"}
+{"at":"2026-06-01T06:40:38.423Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_grep","pattern":"Error|fail|Fail","path":"/tmp/test-out.txt"}
+{"at":"2026-06-01T06:40:45.966Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_grep","pattern":"pass|fail|tests|ran","path":"/tmp/test-out.txt"}
+{"at":"2026-06-01T06:40:51.632Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_grep","pattern":"^(0|60|pass|fail|ran)","path":"/tmp/test-out.txt"}
+{"at":"2026-06-01T06:41:15.370Z","session_id":"ses_17e1aa271ffei6f7hpKrz57fF5","agent":"lab-rat","tool":"smart_bun","command":"run","elapsed_ms":62,"exit_code":1}

@@ -1,0 +1,41 @@
+{"at":"2026-06-01T03:22:00.130Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"**/health.ts","path":""}
+{"at":"2026-06-01T03:22:10.833Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"**/event.ts","path":""}
+{"at":"2026-06-01T03:22:21.926Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"**/bus/index.ts","path":""}
+{"at":"2026-06-01T03:22:32.572Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"**/instance-store.ts","path":""}
+{"at":"2026-06-01T03:22:42.990Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"**/bootstrap.ts","path":""}
+{"at":"2026-06-01T03:25:05.048Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"packages/*","path":""}
+{"at":"2026-06-01T03:25:05.864Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*.ts","path":"packages"}
+{"at":"2026-06-01T03:27:14.570Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":""}
+{"at":"2026-06-01T03:28:16.223Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":"packages"}
+{"at":"2026-06-01T03:30:38.046Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"**/server/**/*.ts","path":"packages"}
+{"at":"2026-06-01T03:30:39.945Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"**/bus/**","path":"packages"}
+{"at":"2026-06-01T03:32:04.804Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":"packages/core/src"}
+{"at":"2026-06-01T03:32:05.756Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":"packages/app/src"}
+{"at":"2026-06-01T03:32:48.318Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":"packages/core/src"}
+{"at":"2026-06-01T03:34:28.313Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"HealthRegistry|HealthStatus|InstanceHealthStore|InstanceStatus","path":"packages"}
+{"at":"2026-06-01T03:34:28.907Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Context\\.Service|Layer\\.effect|Layer\\.mergeAll","path":"packages"}
+{"at":"2026-06-01T03:34:29.586Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"BusEvent\\.define|GlobalBus","path":"packages"}
+{"at":"2026-06-01T03:35:21.078Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Effect\\.gen|Effect\\.sync|Effect\\.try","path":"packages"}
+{"at":"2026-06-01T03:35:21.727Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"import.*from.*effect","path":"packages"}
+{"at":"2026-06-01T03:35:22.494Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Context|Layer|Ref","path":"packages/desktop/src"}
+{"at":"2026-06-01T03:35:27.342Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":"specs"}
+{"at":"2026-06-01T03:35:27.900Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":".opencode/plans"}
+{"at":"2026-06-01T03:35:28.411Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":".build"}
+{"at":"2026-06-01T03:37:02.461Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*sidecar*","path":""}
+{"at":"2026-06-01T03:38:45.413Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":"docs/json/opencode/plans"}
+{"at":"2026-06-01T03:38:46.693Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Two-Level|two.level|health.*model|InstanceHealth|instance.*health","path":"docs"}
+{"at":"2026-06-01T03:39:45.972Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Two-Level Health Model|InstanceHealthStore|instance-health","path":"docs/json/opencode/journal/session_journal.v1.jsonl"}
+{"at":"2026-06-01T03:40:18.078Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:40:45.521Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:43:28.976Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_find","pattern":"*two-level*","path":""}
+{"at":"2026-06-01T03:43:29.673Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"instance-health|instance_health|InstanceHealth","path":"packages"}
+{"at":"2026-06-01T03:45:17.364Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Context\\.Service.*\\(\\)\\(\"@opencode/","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:45:18.051Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Effect\\.sync\\(\\(\\) => GlobalBus\\.emit","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:45:41.924Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"GlobalBus\\.emit","path":"packages/opencode/src"}
+{"at":"2026-06-01T03:46:46.319Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"emitUpdated","path":"packages/opencode/src/project/project.ts"}
+{"at":"2026-06-01T03:47:16.497Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"const emitUpdated","path":"packages/opencode/src/project/project.ts"}
+{"at":"2026-06-01T03:47:27.694Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"const emitUpdated =","path":"packages/opencode/src/project/project.ts"}
+{"at":"2026-06-01T03:47:42.182Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"emitUpdated.*GlobalBus","path":"packages/opencode/src/project/project.ts"}
+{"at":"2026-06-01T03:47:57.303Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"Effect\\.sync\\(\\(\\)\"","path":"packages/opencode/src/project/project.ts"}
+{"at":"2026-06-01T03:48:11.059Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"GlobalBus","path":"packages/opencode/src/project/project.ts"}
+{"at":"2026-06-01T03:48:47.100Z","session_id":"ses_17ed28027ffeCrrCw6PHgHdW0Q","agent":"architecture-reviewer","tool":"smart_grep","pattern":"instance\\.|Instance","path":"packages/opencode/src/event/event-names.ts"}

@@ -1,0 +1,18 @@
+{
+  "schema": "rig.relay.adr.v1",
+  "schema_version": "v1",
+  "id": "9992",
+  "title": "Invalid Backend Ownership Example",
+  "status": "proposed",
+  "date": "2026-06-14",
+  "last_modified": "2026-06-14T00:00:00Z",
+  "component_imports": [
+    "ACR-0001",
+    "ACR-0005"
+  ],
+  "decision": "Core ML owns durable tensor truth in this example. final authority is assigned to Core ML here, and Core ML owns canonical tensor truth, which should be rejected.",
+  "context": "",
+  "consequences": "",
+  "supersedes": [],
+  "superseded_by": []
+}

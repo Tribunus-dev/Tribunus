@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opencode.ai/schemas/desktop-theme.json",
+  "title": "OpenCode Desktop Theme",
+  "description": "A theme definition for the OpenCode desktop application",
+  "type": "object",
+  "required": ["name", "id", "light", "dark"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable theme name"
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique theme identifier (slug)",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "light": {
+      "$ref": "#/$defs/ThemeVariant",
+      "description": "Light mode color variant"
+    },
+    "dark": {
+      "$ref": "#/$defs/ThemeVariant",
+      "description": "Dark mode color variant"
+    }
+  },
+  "$defs": {
+    "ThemeSeedColors": {
+      "type": "object",
+      "description": "The legacy semantic seed set used to generate a theme",
+      "additionalProperties": false,
+      "required": ["neutral", "primary", "success", "warning", "error", "info", "interactive", "diffAdd", "diffDelete"],
+      "properties": {
+        "neutral": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" },
+        "primary": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" },
+        "success": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" },
+        "warning": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" },
+        "error": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" },
+        "info": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" },
+        "interactive": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" },
+        "diffAdd": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" },
+        "diffDelete": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/HexColor" }
+      }
+    },
+    "ThemePaletteColors": {
+      "type": "object",
+      "description": "Palette color definitions for theme variants",
+      "additionalProperties": false,
+      "properties": {
+        "primary": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "primaryHover": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "primaryActive": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "primaryDisabled": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "secondary": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "secondaryHover": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "secondaryActive": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "secondaryDisabled": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "success": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "warning": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "error": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "info": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "text": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "textSecondary": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "textDisabled": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "background": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "backgroundSecondary": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "backgroundHover": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "backgroundActive": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "backgroundDisabled": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "border": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "borderHover": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "borderActive": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "borderDisabled": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "surface": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "surfaceHover": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "surfaceActive": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" },
+        "surfaceDisabled": { "$ref": "https://opencode.ai/schemas/defs.json#/$defs/ColorValue" }
+      }
+    },
+    "ThemeVariant": {
+      "type": "object",
+      "description": "A theme variant for light or dark mode",
+      "required": ["palette", "seed"],
+      "properties": {
+        "palette": { "$ref": "#/$defs/ThemePaletteColors" },
+        "seed": { "$ref": "#/$defs/ThemeSeedColors" }
+      }
+    }
+  }
+}

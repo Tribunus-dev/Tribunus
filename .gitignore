@@ -1,0 +1,17 @@
+node_modules/
+.bun/
+dist/
+target/
+*.pyc
+__pycache__/
+.DS_Store
+*.log
+.env
+.env.local
+test_compile
+test_stub
+test_script*.sh
+patch_*.py
+.research-data/
+.omp/state/
+.tribunus/

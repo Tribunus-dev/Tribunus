@@ -1,0 +1,6 @@
+{"at":"2026-06-01T06:20:03.122Z","tool":"smart_bun","action":"ran","command":"typecheck","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:20:08.917Z","tool":"smart_bun","action":"ran","command":"test","exit_code":1,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:21:18.665Z","tool":"smart_bun","action":"ran","command":"tsgo","exit_code":2,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:21:20.673Z","tool":"smart_bun","action":"ran","command":"test","exit_code":1,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:21:35.671Z","tool":"smart_bun","action":"ran","command":"run","exit_code":1,"cwd":"packages/opencode"}
+{"at":"2026-06-01T06:25:48.486Z","tool":"smart_bun","action":"ran","command":"run","exit_code":0,"cwd":"packages/opencode"}

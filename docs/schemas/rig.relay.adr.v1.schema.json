@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/adr.v1",
+  "title": "Architecture Decision Record",
+  "description": "Schema for structured Architecture Decision Records (ADRs). ADRs document significant architectural decisions, their context, rationale, and consequences. Designed for the repo's JSON-first documentation policy — human-readable renderings are generated from these canonical JSON sources.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    }
+  },
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "rig.relay.adr.v1",
+      "description": "Schema identifier for self-describing documents"
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Version of the ADR schema used at creation time"
+    },
+    "id": {
+      "type": "string",
+      "description": "ADR identifier — zero-padded sequential number (e.g. '0001')",
+      "pattern": "^\\d{4}$"
+    },
+    "title": {
+      "type": "string",
+      "description": "ADR title"
+    },
+    "status": {
+      "type": "string",
+      "description": "ADR status (e.g., proposed, accepted, deprecated, superseded)"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the ADR was created"
+    },
+    "last_modified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last modification timestamp"
+    },
+    "context": {
+      "type": "string",
+      "description": "Context and problem statement"
+    },
+    "decision": {
+      "type": "string",
+      "description": "Decision made"
+    },
+    "consequences": {
+      "type": "string",
+      "description": "Consequences of the decision"
+    },
+    "supersedes": {
+      "type": "string",
+      "description": "ADR ID this one supersedes, if any"
+    },
+    "superseded_by": {
+      "type": "string",
+      "description": "ADR ID that supersedes this one, if any"
+    },
+    "authors": {
+      "type": "array",
+      "description": "List of authors",
+      "items": { "type": "string" }
+    },
+    "tags": {
+      "type": "array",
+      "description": "List of tags",
+      "items": { "type": "string" }
+    }
+  },
+  "required": ["schema", "id", "title", "status", "date", "context", "decision", "consequences"],
+  "additionalProperties": false
+}

@@ -1,0 +1,122 @@
+{"at":"2026-06-01T03:02:01.708Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*event-names|import.*event-names|@/event/event-names|\"\\.\\.\\/event\\/event-na"}
+{"at":"2026-06-01T03:02:01.969Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"15 matches in 492 files"}
+{"at":"2026-06-01T03:02:01.986Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*[\"']@/mcp[\"']|from.*[\"'].*\\/mcp[\"']|from.*[\"'].*\\/mcp\\/index[\"']"}
+{"at":"2026-06-01T03:02:02.290Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"4 matches in 492 files"}
+{"at":"2026-06-01T03:02:02.309Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*[\"']@/plugin[\"']|from.*[\"'].*\\/plugin[\"']|from.*[\"'].*\\/plugin\\/index[\"']"}
+{"at":"2026-06-01T03:02:02.476Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 226 files"}
+{"at":"2026-06-01T03:02:02.492Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName\\."}
+{"at":"2026-06-01T03:02:02.703Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 391 files"}
+{"at":"2026-06-01T03:02:27.323Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"import.*event-names|from.*event-names"}
+{"at":"2026-06-01T03:02:27.969Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:02:37.414Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*[\"']@/mcp[\"']|from.*[\"']\\.\\.\\/mcp[\"']|from.*[\"']\\.\\/mcp[\"']"}
+{"at":"2026-06-01T03:02:38.003Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:02:38.034Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*[\"']@/plugin[\"']|from.*[\"']\\.\\.\\/plugin[\"']|from.*[\"']\\.\\/plugin[\"']"}
+{"at":"2026-06-01T03:02:38.508Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"8 matches in 500 files"}
+{"at":"2026-06-01T03:02:38.532Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*[\"']@opencode-ai/plugin[\"']"}
+{"at":"2026-06-01T03:02:38.969Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:03:07.356Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"**/event-names*"}
+{"at":"2026-06-01T03:03:08.972Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"**/event-names*"}
+{"at":"2026-06-01T03:03:09.120Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"**/mcp/index.ts"}
+{"at":"2026-06-01T03:03:10.453Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"**/mcp/index.ts"}
+{"at":"2026-06-01T03:03:10.495Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"**/plugin/index.ts"}
+{"at":"2026-06-01T03:03:11.861Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"**/plugin/index.ts"}
+{"at":"2026-06-01T03:03:40.342Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"**/event*"}
+{"at":"2026-06-01T03:03:41.946Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"**/event*"}
+{"at":"2026-06-01T03:03:42.141Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"**/mcp*"}
+{"at":"2026-06-01T03:03:42.964Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"**/mcp*"}
+{"at":"2026-06-01T03:03:43.202Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"**/plugin*"}
+{"at":"2026-06-01T03:03:43.998Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"**/plugin*"}
+{"at":"2026-06-01T03:04:18.434Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:04:18.505Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:04:47.560Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:04:47.579Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:05:17.739Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:05:17.773Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:05:44.078Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:05:44.093Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:05:45.078Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:05:45.082Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:06:13.016Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"export.*MCP|class MCP|function.*mcp|BusEvent"}
+{"at":"2026-06-01T03:06:13.790Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:07:17.102Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName"}
+{"at":"2026-06-01T03:07:17.883Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:07:18.237Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"BusEvent"}
+{"at":"2026-06-01T03:07:18.662Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:07:19.720Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"publishPluginError|PluginInitSucceeded|McpToolsChanged|McpStatusChanged"}
+{"at":"2026-06-01T03:07:20.069Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:07:58.967Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"trace|observation|hook|mcp-observ|ib-plugin-mcp-observe"}
+{"at":"2026-06-01T03:07:59.011Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"66 matches in 22 files"}
+{"at":"2026-06-01T03:07:59.723Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*plan*"}
+{"at":"2026-06-01T03:07:59.752Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*plan*"}
+{"at":"2026-06-01T03:08:27.633Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"trace|observation|hook|mcp|plugin.*trace|EventName|BusEvent"}
+{"at":"2026-06-01T03:08:27.635Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"2 matches in 1 files"}
+{"at":"2026-06-01T03:08:56.022Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*trace*"}
+{"at":"2026-06-01T03:08:56.036Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*trace*"}
+{"at":"2026-06-01T03:08:56.930Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*observ*"}
+{"at":"2026-06-01T03:08:56.931Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*observ*"}
+{"at":"2026-06-01T03:08:57.734Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*mcp*\""}
+{"at":"2026-06-01T03:08:57.745Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*mcp*\""}
+{"at":"2026-06-01T03:09:22.546Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"trace observation|publishPluginError|McpToolsChanged|EventName"}
+{"at":"2026-06-01T03:09:22.584Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"99 matches in 10 files"}
+{"at":"2026-06-01T03:09:23.394Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:09:23.395Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:10:14.766Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"opencode"}
+{"at":"2026-06-01T03:10:14.796Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"opencode"}
+{"at":"2026-06-01T03:10:44.776Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:10:44.944Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:11:08.263Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:11:08.271Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:11:09.444Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"**/src/**/*.ts"}
+{"at":"2026-06-01T03:11:09.597Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"**/src/**/*.ts"}
+{"at":"2026-06-01T03:12:01.247Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:12:01.255Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:12:36.592Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:12:36.599Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:13:03.556Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"@/event|@/mcp|@/plugin|from \\\"@\\/\""}
+{"at":"2026-06-01T03:13:03.824Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 492 files"}
+{"at":"2026-06-01T03:13:32.599Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from \\\"@/mcp|from \\\"@/plugin|from \\\"@/event"}
+{"at":"2026-06-01T03:13:32.745Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"40 matches in 342 files"}
+{"at":"2026-06-01T03:13:34.059Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from \\\"@/mcp|from \\\"@/plugin|from \\\"@/event"}
+{"at":"2026-06-01T03:13:34.182Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"17 matches in 335 files"}
+{"at":"2026-06-01T03:14:47.519Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*[\"']@/bus[\"']|from.*[\"']\\.\\.\\/bus[\"']|from.*[\"']\\.\\/bus[\"']|from.*[\"']@ope"}
+{"at":"2026-06-01T03:14:48.182Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:14:49.071Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*[\"']@/bus/bus-event[\"']|from.*[\"']\\.\\.\\/bus/bus-event[\"']"}
+{"at":"2026-06-01T03:14:49.704Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:14:50.531Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"McpToolsChanged|McpStatusChanged|McpBrowserOpenFailed|ToolsChanged|BrowserOpenFa"}
+{"at":"2026-06-01T03:14:59.922Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T03:15:21.292Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from \\\"@/bus|from \\\"\\.\\.\\/bus|from \\\"\\.\\/bus"}
+{"at":"2026-06-01T03:15:21.435Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"40 matches in 284 files"}
+{"at":"2026-06-01T03:15:22.583Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"MCP\\.ToolsChanged|MCP\\.BrowserOpenFailed|MCP\\.StatusChanged"}
+{"at":"2026-06-01T03:15:22.729Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 500 files"}
+{"at":"2026-06-01T03:18:13.129Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"MCP\\.(ToolsChanged|StatusChanged|BrowserOpenFailed|get|connect|disconnect|auth|l"}
+{"at":"2026-06-01T03:18:13.359Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"1 matches in 500 files"}
+{"at":"2026-06-01T03:18:13.386Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"BusEvent\\.define|EventName\\."}
+{"at":"2026-06-01T03:18:13.389Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"6 matches in 4 files"}
+{"at":"2026-06-01T03:21:38.949Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"Fix-A|Fix-B|Fix-C|Fix-D|ib-plugin-mcp|trace observation"}
+{"at":"2026-06-01T03:21:38.989Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"24 matches in 71 files"}
+{"at":"2026-06-01T03:21:39.009Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"ib-plugin-mcp|trace observation hooks|Fix-A.*EventName"}
+{"at":"2026-06-01T03:21:39.542Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 48 files"}
+{"at":"2026-06-01T03:31:20.619Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent|MCP.*ToolsChanged|plugin.*init|PluginV2"}
+{"at":"2026-06-01T03:31:20.668Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 2 files"}
+{"at":"2026-06-01T03:31:21.951Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent|MCP.*ToolsChanged|@opencode-ai/sdk"}
+{"at":"2026-06-01T03:31:22.389Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 92 files"}
+{"at":"2026-06-01T03:31:23.224Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"EventName|BusEvent|@/mcp|@/plugin"}
+{"at":"2026-06-01T03:31:23.324Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 211 files"}
+{"at":"2026-06-01T03:32:35.900Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from \\\"@/mcp|from \\\"@/plugin|from \\\"@/event|from \\\"@/bus"}
+{"at":"2026-06-01T03:32:36.083Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"30 matches in 288 files"}
+{"at":"2026-06-01T03:32:37.987Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"MCP\\b|Plugin\\b.*\\.(init|create|layer|list)"}
+{"at":"2026-06-01T03:32:38.097Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"96 matches in 21 files"}
+{"at":"2026-06-01T03:34:04.388Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:34:04.389Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:34:05.363Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:34:05.395Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:34:06.822Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"McpToolsChanged|McpStatusChanged|McpBrowserOpenFailed|publishPluginError|PluginI"}
+{"at":"2026-06-01T03:34:07.487Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"35 matches in 2 files"}
+{"at":"2026-06-01T03:35:11.322Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:35:11.326Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:35:11.357Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"started","detail":"*"}
+{"at":"2026-06-01T03:35:11.364Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_find","phase":"completed","detail":"*"}
+{"at":"2026-06-01T03:37:02.700Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*[\"']\\.\\.\"|from.*[\"']@/mcp"}
+{"at":"2026-06-01T03:37:02.703Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"0 matches in 4 files"}
+{"at":"2026-06-01T03:37:38.417Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"started","detail":"from.*@/mcp/auth|from.*@/mcp/oauth|from.*@/mcp\\\""}
+{"at":"2026-06-01T03:37:38.621Z","session_id":"ses_17edf6dadffejLAzsAC6htiSky","agent":"surface-area-mapper","tool":"smart_grep","phase":"completed","detail":"2 matches in 500 files"}

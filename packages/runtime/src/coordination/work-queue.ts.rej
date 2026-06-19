@@ -1,0 +1,19 @@
+--- packages/runtime/src/coordination/work-queue.ts
++++ packages/runtime/src/coordination/work-queue.ts
+@@ -699,16 +700,3 @@
+   })
+ )
+
+-// ── Helper to get Valkey Redis ────────────────────────────────────────
+-
+-/**
+- * Get the Valkey Redis client.
+- * This is a placeholder - in production, this would come from the coordination fabric.
+- */
+-function getValkeyRedis(): Effect.Effect<Redis> {
+-  // TODO: Wire this up to the actual Valkey fabric
+-  // For now, we return a dummy that will fail at runtime
+-  // This is just to make the types work
+-  return Effect.die(new Error("Valkey Redis not configured - implement getValkeyRedis()"))
+-}
+-

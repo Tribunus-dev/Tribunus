@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0003",
+  "type": "mission",
+  "name": "DuckDB Analytical Reflection Layer",
+  "slug": "duckdb-analytical-reflection-layer",
+  "description": "Build the DuckDB-powered retrospective learning loop: which packet families propagate fastest, which frameworks produce repeated failures, which dharma signals correlate with merged PRs, which codex entries are going stale, and which agent routes produce bad matches.",
+  "purpose": "Enable inspectable, local-first product analytics without cloud dependency. DuckDB queries run against snapshots, never against the transactional store directly.",
+  "campaignId": "0001",
+  "status": "completed",
+  "priority": 70,
+  "acceptanceCriteria": [
+    "DuckDB consumes snapshots from PGlite and events from Valkey",
+    "Analytical queries answer product questions without touching transactional store",
+    "Embedded Node.js client integration for in-process queries",
+    "File-backed databases for persistence across restarts",
+    "Queries never impact PGlite transaction latency"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:48:00.808Z",
+  "updated_at": "2026-06-06T11:18:34.835Z"
+}

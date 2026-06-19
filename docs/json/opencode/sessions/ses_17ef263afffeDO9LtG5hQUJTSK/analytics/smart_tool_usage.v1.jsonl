@@ -1,0 +1,5 @@
+{"at":"2026-06-01T02:41:54.232Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_find","pattern":"*.json","path":".build/rig-relay"}
+{"at":"2026-06-01T02:43:51.985Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","pattern":"ServerInstance|server.instance","path":"packages/opencode/src/event/event-names.ts"}
+{"at":"2026-06-01T02:43:53.433Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","pattern":"ServerInstance|server\\.instance\\.","path":"packages/opencode/src/event"}
+{"at":"2026-06-01T02:44:40.966Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","pattern":"ServerConnected|ServerHeartbeat|GlobalDisposed","path":"packages/opencode/src/event/event-names.ts"}
+{"at":"2026-06-01T02:51:19.360Z","session_id":"ses_17ef263afffeDO9LtG5hQUJTSK","agent":"critic","tool":"smart_grep","pattern":"ib-sidecar-boundary","path":".build/rig-relay"}

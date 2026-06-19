@@ -1,0 +1,37 @@
+{
+  "schema": "tribunus.architecture_component_record.v1",
+  "schema_version": "v1",
+  "id": "ACR-0005",
+  "title": "IOSurface Runtime Island",
+  "status": "proposed",
+  "component_type": "memory_component",
+  "owner_subsystem": "IOSurface",
+  "definition": "IOSurface is the authority-visible runtime memory island for Apple Silicon v1 tensor truth.",
+  "invariants": [
+    "Authority-visible tensors live in the island.",
+    "Backend-private memory is not authority-visible."
+  ],
+  "allowed_states": [
+    "allocated",
+    "borrowed",
+    "committed",
+    "synchronized"
+  ],
+  "forbidden_states": [
+    "backend_truth",
+    "durable_outside_island"
+  ],
+  "required_receipts": [
+    "surface_allocate_receipt",
+    "surface_commit_receipt"
+  ],
+  "required_validators": [
+    "iosurface_island_validator"
+  ],
+  "imported_by": [
+    "ADR-0021",
+    "ADR-0022"
+  ],
+  "supersedes": [],
+  "superseded_by": []
+}

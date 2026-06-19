@@ -1,0 +1,22 @@
+{"at":"2026-06-01T02:47:35.580Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_find","pattern":"*.json","path":".build/rig-relay"}
+{"at":"2026-06-01T02:47:46.744Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_find","pattern":"*health*","path":"docs/json"}
+{"at":"2026-06-01T02:48:56.673Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"HealthRegistry|InstanceHealth|instance.*health|health.*instance","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:48:57.683Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"deprecat|migrat.*away|phase.*out|remove.*in","path":"packages/opencode/src/server"}
+{"at":"2026-06-01T02:48:58.428Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_find","pattern":"*instance-health*","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:49:55.047Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"health|healthy","path":"packages/opencode/src/server/routes"}
+{"at":"2026-06-01T02:49:56.054Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"health","path":".build/rig-relay/plans"}
+{"at":"2026-06-01T02:50:00.515Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"health","path":"docs/json"}
+{"at":"2026-06-01T02:51:40.941Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"instance-store|InstanceStore","path":"packages/opencode/src/effect"}
+{"at":"2026-06-01T02:51:41.629Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_find","pattern":"*instance-store*","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:51:42.539Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"InstanceHealthStore|instance.health","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:52:27.857Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"ServerInstance","path":"packages/opencode/src/event"}
+{"at":"2026-06-01T02:52:28.632Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"BusEvent\\.define","path":"packages/opencode/src/bus"}
+{"at":"2026-06-01T02:53:07.099Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"BusEvent\\.define\\(","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:53:08.650Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"healthy|health","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:53:54.052Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"health|healthy","path":"packages/opencode/src/server/routes/instance"}
+{"at":"2026-06-01T02:54:21.730Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"InstanceDisposed|instance\\.disposed","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:54:22.910Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"classifyError|component.*health|health.*component","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:55:16.629Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"server\\.instance\\.","path":"packages/opencode/src/event"}
+{"at":"2026-06-01T02:55:17.967Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"InstanceHealth|instance.health|two.level|two-level|TwoLevel","path":"packages/opencode/src"}
+{"at":"2026-06-01T02:56:19.831Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"Ready: BusEvent|Failed: BusEvent","path":"packages/opencode/src/worktree"}
+{"at":"2026-06-01T02:56:21.316Z","session_id":"ses_17eec350dffe440t63B09C69Wi","agent":"convergence-checker","tool":"smart_grep","pattern":"deprecated|Deprecated|migrate.*away|legacy","path":"packages/opencode/src"}

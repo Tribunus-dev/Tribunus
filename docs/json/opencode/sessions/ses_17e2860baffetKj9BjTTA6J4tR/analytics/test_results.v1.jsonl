@@ -1,0 +1,4 @@
+{"at":"2026-06-01T06:28:17.271Z","session_id":"ses_17e2860baffetKj9BjTTA6J4tR","agent":"trial","command":"test","cwd":"packages/opencode","elapsed_ms":1657,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:28:20.278Z","session_id":"ses_17e2860baffetKj9BjTTA6J4tR","agent":"trial","command":"test","cwd":"packages/opencode","elapsed_ms":2991,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:33:01.208Z","session_id":"ses_17e2860baffetKj9BjTTA6J4tR","agent":"trial","command":"test","cwd":"packages/opencode","elapsed_ms":1750,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}
+{"at":"2026-06-01T06:33:07.298Z","session_id":"ses_17e2860baffetKj9BjTTA6J4tR","agent":"trial","command":"test","cwd":"packages/opencode","elapsed_ms":6073,"pass":0,"fail":0,"total":0,"passed_tests":[],"failed_tests":[]}

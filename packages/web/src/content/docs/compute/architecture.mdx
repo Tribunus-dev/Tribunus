@@ -1,0 +1,62 @@
+---
+title: Architecture
+description: Tribunus Compute architecture — layers, memory model, and backend routing
+sidebar:
+  order: 2
+---
+
+## ComputeImage Pipeline
+
+The ComputeImage pipeline is the heart of Tribunus Compute compilation. It transforms a model into a machine-specific golden path executable.
+
+### Phase 1: Assessment
+
+Records which backend actually wins for each model family, shape class, sequence length, dtype, layout, and token phase on the current machine. Assessment discovers backend truth and runs during compute-image compilation — never during inference.
+
+### Phase 2: Compilation
+
+Emits a placement manifest:
+- Which phases run on MLX (Metal GPU)
+- Which fused regions run on Core ML (ANE / MIL islands)
+- Which recipes run through Accelerate (CPU deterministic helpers)
+- What pages each phase reads and writes
+- What fallbacks are legal
+- Which receipts must be emitted
+
+Custom Metal kernel candidates are generated, benchmarked, and validated on the current device during assessment. Winning variants are frozen into the compute image. At runtime only already-qualified kernels are selected.
+
+### Phase 3: Inference
+
+A deterministic state machine over precompiled backend lanes and page leases. The runtime knows the model, shapes, phase schedule, placement, memory layout, and golden path before the first token is generated.
+
+### Phase 4: Receipts
+
+Per-token or per-region receipts showing actual backend execution, native symbols called, bytes copied, arena allocations, Core ML / ANE prediction status, fallback count, and scheduler timing.
+
+## Memory Model
+
+### SharedMemoryIsland
+
+The runtime uses IOSurface-backed shared memory pages that can be zero-copy accessed by Metal GPU, ANE (via Core ML pixel buffers), and CPU. The arena ring buffer allocator manages page leases with generation counters for stale-handle detection.
+
+### Weight Streaming
+
+For models exceeding available RAM, weights are tiered across:
+- **Tier 1:** GPU-resident hot weights (Metal shared buffers)
+- **Tier 2:** ANE-resident active weights (Core ML mlpackage)
+- **Tier 3:** SSD-backed cold weights (memory-mapped, page-fault loaded)
+
+### KV Cache
+
+Paged KV cache with TurboQuant compression (sub-2-bit quantization). Supports speculative branch commit/rollback via generation counters. Draft KV pages never contaminate authoritative target KV unless accepted.
+
+## Backend Routing
+
+The FlexDispatch scheduler routes operations based on the compiled placement manifest:
+
+- **Metal GPU (MLX):** compute-heavy matmul, attention, fused MLP regions
+- **Core ML (ANE):** fused MIL islands, speculative proposal islands, attention/MLP fragments
+- **Accelerate (CPU):** reductions, normalization, sampling helpers, checksums
+- **Custom Metal Kernels:** precompiled, device-specialized, frozen into compute image
+
+The compiler defines each phase's inputs, outputs, layout, dtype, residency, latency budget, tolerance, and legal fallbacks. Backend candidates compete during assessment; the compute image freezes the winner.

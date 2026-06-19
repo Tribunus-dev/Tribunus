@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.lane.v1",
+  "schema_version": "v1",
+  "id": "0006",
+  "type": "lane",
+  "name": "DuckDB Snapshot Pipeline and Analytical Queries",
+  "slug": "duckdb-snapshot-pipeline-and-analytical-queries",
+  "description": "Build the snapshot pipeline: consume PGlite confirmation chains and Valkey consumer group metrics into DuckDB. Implement analytical queries: which packet families propagate fastest, which frameworks produce repeated failures, which dharma signals correlate with merged PRs, which codex entries are going stale, which agent routes produce bad matches.",
+  "scope": "duckdb-analytics",
+  "missionId": "0003",
+  "status": "completed",
+  "isReadOnly": false,
+  "writePaths": [
+    "packages/opencode/src/storage/"
+  ],
+  "streamKey": null,
+  "consumerGroup": null,
+  "currentLeaseHolder": null,
+  "leaseAcquiredAt": "2026-06-06T11:06:41.347Z",
+  "leaseExpiresAt": "2026-06-06T11:18:34.834Z",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T08:50:09.616Z",
+  "updated_at": "2026-06-06T11:18:34.834Z"
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0205-session-close-consolidation",
+  "type": "mission",
+  "name": "Session-Close Consolidation",
+  "slug": "session-close-consolidation",
+  "description": "On session close, temporary memories are evaluated for promotion to durable memories. A consolidation policy determines which ephemeral memories become permanent.",
+  "purpose": "Bridge ephemeral and durable memory — at session boundaries, automatically extract valuable context from temporary memories and promote them to permanent storage where they benefit future sessions.",
+  "campaignId": "0016",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "Temporary memories are tagged with session ID",
+    "On session close, memories are evaluated against consolidation policy",
+    "Consolidation policy defines: min confidence, min recurrence, min relevance",
+    "Promoted memories are copied to durable bank with provenance",
+    "Ephemeral memories that fail consolidation are archived or evicted",
+    "Consolidation is logged with promotion decisions and reasoning"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "depends_on": [
+    "0202-remember-deduplication",
+    "0164-memory-retention-policy"
+  ],
+  "unlocks": [],
+  "authority_scope": "memory:sessions",
+  "allowed_paths": [],
+  "required_evidence": [],
+  "acceptance_gates": [],
+  "rollback_strategy": "Restore pre-consolidation state; re-evaluate promotion decisions",
+  "recovery_strategy": "Re-run consolidation on session journal from checkpoint",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:45:36.248Z",
+  "updated_at": "2026-06-07T05:47:45.235Z"
+}

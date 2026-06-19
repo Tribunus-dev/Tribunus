@@ -1,0 +1,61 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0056-crash-recovery-and-abandoned-session-reconciliation",
+  "type": "mission",
+  "name": "Crash Recovery and Abandoned Session Reconciliation",
+  "slug": "crash-recovery-and-abandoned-session-reconciliation",
+  "description": "On crash or unexpected termination, detect abandoned sessions, reconcile state from durable stores, and offer recovery paths.",
+  "purpose": "Crashes should never corrupt state or strand work.",
+  "campaignId": "0006",
+  "status": "completed",
+  "priority": 50,
+  "acceptanceCriteria": [
+    "On startup, scanner detects sessions with no active heartbeat",
+    "Abandoned sessions are flagged and offered for recovery or cleanup",
+    "Recovery replays session journal from last checkpoint to reconstruct state",
+    "Recovery is user-confirmed before mutating any durable state",
+    "Cleanup of abandoned sessions releases all claimed resources (locks, ports, file handles)",
+    "Recovery logs are written for post-mortem analysis"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [
+    "system"
+  ],
+  "tags": [
+    "crash-recovery",
+    "session",
+    "reconciliation",
+    "durability",
+    "heartbeat"
+  ],
+  "depends_on": [
+    "0054-session-open-checkpoint-resume-consolidate-and-close",
+    "0060-resource-ownership-and-deterministic-teardown"
+  ],
+  "unlocks": [],
+  "authority_scope": "recovery",
+  "allowed_paths": [
+    "packages/app/src/runtime/recovery/**"
+  ],
+  "required_evidence": [
+    "Abandoned session detection on startup test",
+    "Recovery replay from checkpoint test",
+    "User confirmation gate test (recovery does not proceed without consent)",
+    "Cleanup releases all claimed resources test"
+  ],
+  "acceptance_gates": [
+    "Startup scanner detects sessions with no heartbeat",
+    "Recovery replays journal from last checkpoint",
+    "Recovery is user-confirmed before mutation",
+    "Cleanup releases all resources"
+  ],
+  "rollback_strategy": "Recovery that fails mid-step rolls back partial state restoration via resource teardown",
+  "recovery_strategy": "Recovery is itself the recovery strategy — journal replay from last checkpoint",
+  "automation_mode": "manual",
+  "maximum_attempts": 3,
+  "escalation_policy": "If recovery fails after max attempts, flag session for manual forensics and alert user",
+  "maturity_target": "bootstrap_complete",
+  "created_at": "2026-06-07T04:40:48.479Z",
+  "updated_at": "2026-06-07T05:45:51.152Z"
+}

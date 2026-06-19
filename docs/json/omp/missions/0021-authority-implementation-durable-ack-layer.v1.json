@@ -1,0 +1,25 @@
+{
+  "schema": "rig.relay.mission.v1",
+  "schema_version": "v1",
+  "id": "0021-authority-implementation-durable-ack-layer",
+  "type": "mission",
+  "name": "Distributed Durable ACK and Runtime Authority Convergence",
+  "slug": "distributed-durable-ack-and-runtime-authority-convergence",
+  "description": "Implement the durable ACK layer: every terminal Valkey ACK must be preceded by a committed PGlite lifecycle write. Build completeAndAck, failTerminalAndAck, failRetryableAndAck, deadLetterAndAck with PGlite-first ordering. Wire recovery receipts, scheduler promotion, and pending reconciliation.",
+  "purpose": "Implement durable-first authority: PGlite writes always precede Valkey ACKs. No claim without observable backing.",
+  "campaignId": "0009",
+  "status": "completed",
+  "priority": 90,
+  "acceptanceCriteria": [
+    "durable-store.ts exports WorkQueueDurableStoreService with PGlite-backed failTerminal/retry/scheduler methods",
+    "work-queue.ts parses and typechecks — completeAndAck/failTerminalAndAck/failRetryableAndAck/deadLetterAndAck all write PGlite before XACK",
+    "recovery.ts setRecoveryState and getRecoveryState persist to PGlite",
+    "observability.ts inspectWorkItem reads real PGlite rows",
+    "Tests assert PGlite rows match Valkey stream/PEL state after every terminal ACK"
+  ],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": [],
+  "created_at": "2026-06-06T17:52:53.804Z",
+  "updated_at": "2026-06-07T04:59:59.548Z"
+}

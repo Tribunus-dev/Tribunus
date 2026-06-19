@@ -1,0 +1,6 @@
+{"at":"2026-06-01T02:14:42.743Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"import.*from.*server/health"}
+{"at":"2026-06-01T02:14:42.841Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"6 matches in 500 files"}
+{"at":"2026-06-01T02:14:43.313Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"BusEvent\\.define"}
+{"at":"2026-06-01T02:14:43.408Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"30 matches in 356 files"}
+{"at":"2026-06-01T02:14:44.026Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","phase":"started","detail":"HealthRegistry"}
+{"at":"2026-06-01T02:14:44.147Z","session_id":"ses_17f0ca6dbffegiNx4n4Arqz6zR","agent":"root-cause-analyst","tool":"smart_grep","phase":"completed","detail":"17 matches in 500 files"}

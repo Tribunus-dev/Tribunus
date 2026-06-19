@@ -1,0 +1,6 @@
+{"at":"2026-06-01T03:50:12.051Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","phase":"started","detail":"typecheck"}
+{"at":"2026-06-01T03:50:37.767Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"typecheck exit=2"}
+{"at":"2026-06-01T03:51:52.837Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsgo"}
+{"at":"2026-06-01T03:52:18.393Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsgo exit=2"}
+{"at":"2026-06-01T03:53:45.657Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","phase":"started","detail":"tsc"}
+{"at":"2026-06-01T03:54:20.214Z","session_id":"ses_17eb287c1ffeltN9Qug7oAaITd","agent":"vitals","tool":"smart_bun","phase":"failed","detail":"tsc exit=1"}

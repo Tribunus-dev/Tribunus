@@ -1,0 +1,20 @@
+{
+  "schema": "rig.relay.task.v1",
+  "schema_version": "v1",
+  "id": "add-adapter-integration-tests-0009-04",
+  "type": "task",
+  "title": "Add Adapter Integration Tests",
+  "description": "Add roundtrip tests for each adapter: PgDurableAuthorityAdapter, ValkeyCoordinationAdapter, DuckDBProjectionAdapter. Use in-memory instances where possible.",
+  "laneId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "missionId": "STORAGE-KERNEL-ADAPTER-WIRING-0009",
+  "status": "pending",
+  "priority": 95,
+  "estimatedEffort": "1 day",
+  "dependsOn": [],
+  "blocks": [],
+  "memoryBank": "tribunus-core",
+  "authors": [],
+  "tags": ["storage-kernel", "tests", "0009"],
+  "created_at": "2026-06-14T19:00:00.000Z",
+  "updated_at": "2026-06-14T19:00:00.000Z"
+}

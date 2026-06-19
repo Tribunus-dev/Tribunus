@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.local/schemas/tribunus.architecture_component_record.v1.schema.json",
+  "title": "Tribunus Architecture Component Record",
+  "type": "object",
+  "required": [
+    "schema",
+    "schema_version",
+    "id",
+    "title",
+    "status",
+    "component_type",
+    "owner_subsystem",
+    "definition",
+    "invariants",
+    "allowed_states",
+    "forbidden_states",
+    "required_receipts",
+    "required_validators",
+    "imported_by",
+    "supersedes",
+    "superseded_by"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "tribunus.architecture_component_record.v1" },
+    "schema_version": { "const": "v1" },
+    "id": { "type": "string", "pattern": "^ACR-\\d{4}$" },
+    "title": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["proposed", "accepted", "deprecated", "superseded"] },
+    "component_type": {
+      "type": "string",
+      "enum": [
+        "truth_owner",
+        "state_machine",
+        "receipt_contract",
+        "boundary_contract",
+        "runtime_component",
+        "memory_component",
+        "orchestration_component",
+        "backend_component",
+        "schema_component",
+        "invariant"
+      ]
+    },
+    "owner_subsystem": { "type": "string", "minLength": 1 },
+    "definition": { "type": "string", "minLength": 1 },
+    "invariants": { "type": "array", "items": { "type": "string" } },
+    "allowed_states": { "type": "array", "items": { "type": "string" } },
+    "forbidden_states": { "type": "array", "items": { "type": "string" } },
+    "required_receipts": { "type": "array", "items": { "type": "string" } },
+    "required_validators": { "type": "array", "items": { "type": "string" } },
+    "imported_by": { "type": "array", "items": { "type": "string" } },
+    "supersedes": { "type": "array", "items": { "type": "string" } },
+    "superseded_by": { "type": "array", "items": { "type": "string" } }
+  }
+}

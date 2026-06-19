@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tribunus.dev/schemas/push_record.v1",
+  "title": "Push Record",
+  "description": "Verifiable push record linking commit SHAs to lane binder digests with full evidence audit trail.",
+  "type": "object",
+  "$defs": {
+    "NormalizedError": {
+      "$ref": "https://opencode.ai/schemas/defs.json#/$defs/NormalizedError"
+    }
+  },
+  "properties": {
+    "pushId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the push"
+    },
+    "campaignId": {
+      "type": "string",
+      "description": "Campaign that produced this push"
+    },
+    "laneId": {
+      "type": "string",
+      "description": "Lane that produced this push"
+    },
+    "boundary": {
+      "type": "string",
+      "description": "Declared boundary identifier for this push"
+    },
+    "claim": {
+      "type": "string",
+      "description": "Consumer-purpose claim for this push"
+    },
+    "gates": {
+      "type": "array",
+      "description": "List of gate evaluation results that guarded this push",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gateName": { "type": "string", "description": "Name of the gate predicate" },
+          "passed": { "type": "boolean", "description": "Whether the gate passed" },
+          "evidenceHash": { "type": "string", "description": "SHA256 hash of the evidence used to evaluate this gate" },
+          "timestamp": { "type": "string", "format": "date-time", "description": "ISO 8601 timestamp when this gate was evaluated" }
+        },
+        "required": ["gateName", "passed", "evidenceHash", "timestamp"]
+      }
+    },
+    "evidenceHashes": {
+      "type": "array",
+      "description": "Aggregate evidence SHA256 hashes for this push",
+      "items": { "type": "string" }
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the push was initiated"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["initiated", "gates_pending", "gates_passed", "gates_failed", "published", "blocked"],
+      "description": "Current status of the push"
+    }
+  },
+  "required": ["pushId", "campaignId", "laneId", "boundary", "claim", "timestamp", "status"]
+}

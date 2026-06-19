@@ -1,0 +1,17 @@
+lazy_static = "1.4"
+aho-corasick = "1.1.4"
+rand = "0.8"
+linux = ["linux-target"]
+linux-vulkan = ["ash", "vk-sys", "gpu-allocator", "spirv_cross"]
+linux-cpu = []
+linux-intel = []
+ttnn = []
+rocm = []
+intel = []
+linux-moe = []
+accelerate = []
+spirv_cross = { version = "0.23", optional = true }
+# openblas-sys = { version = "0.10", optional = true }
+# level-zero-sys = { git = "https://github.com/oneapi-src/level-zero-sys.git", optional = true }
+# openvino-sys = { git = "https://github.com/intel/openvino-rs.git", optional = true }
+# paged-attention = { version = "0.1", optional = true }
