@@ -77,6 +77,7 @@ pub mod streaming;
 pub mod receipts;
 pub mod contracts;
 pub mod research_contracts;
+pub mod memory;
 pub mod research_trace;
 pub mod research_metrics;
 mod session;
