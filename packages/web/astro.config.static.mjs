@@ -28,8 +28,13 @@ export default defineConfig({
   },
   build: {},
   vite: {
-    esbuild: {
-      target: "esnext",
+    resolve: {
+      alias: {
+        "solid-js": "solid-js/dist/solid.js",
+      },
+    },
+    ssr: {
+      noExternal: ["solid-js"],
     },
   },
   integrations: [
