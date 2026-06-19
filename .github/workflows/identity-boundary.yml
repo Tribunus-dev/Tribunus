@@ -20,7 +20,7 @@ jobs:
         run: bun run scripts/identity/verify-identity.ts
       - name: Upload identity receipt
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: identity-receipt
           path: artifacts/identity/identity-verification.receipt.json

@@ -41,7 +41,7 @@ jobs:
         working-directory: mlx-rs
         run: cargo run --features evidence --example backend_conformance > backend-conformance.jsonl
       - name: Upload backend evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mlx-rs-backend-evidence
           path: |

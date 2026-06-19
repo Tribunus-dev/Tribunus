@@ -35,7 +35,7 @@ jobs:
           TRIBUNUS_STORE_DIR: ${{ github.workspace }}/state/pglite
 
       - name: Upload candidate as Actions artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dataset-release-${{ github.event.inputs.version || github.ref_name }}
           path: |
