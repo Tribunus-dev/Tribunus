@@ -4,7 +4,9 @@ import appPlugin from "@tribunus/app/vite"
 import * as fs from "node:fs/promises"
 import { execSync } from "node:child_process"
 
-const OPENCODE_SERVER_DIST = "../opencode/dist/node"
+
+const RUNTIME_NODE_SRC = new URL("../runtime/src/node.ts", import.meta.url).pathname
+const RUNTIME_DIST_NODE = new URL("../runtime/dist/node", import.meta.url).pathname
 
 const channel = (() => {
   const raw = process.env.OPENCODE_CHANNEL
@@ -48,6 +50,11 @@ export default defineConfig({
       // of its node_modules package layout, causing ENOENT on sidecar startup.
       externalizeDeps: { include: [nodePtyPkg, "@electric-sql/pglite"] },
     },
+    resolve: {
+      alias: {
+        "@": new URL("../runtime/src", import.meta.url).pathname,
+      },
+    },
     plugins: [
       {
         name: "opencode:node-pty-narrower",
@@ -60,16 +67,45 @@ export default defineConfig({
         name: "opencode:virtual-server-module",
         enforce: "pre",
         resolveId(id) {
-          if (id === "virtual:opencode-server") return this.resolve(`${OPENCODE_SERVER_DIST}/node.js`)
+          if (id === "virtual:opencode-server") return RUNTIME_NODE_SRC
+        },
+      },
+      {
+        name: "opencode:web-ui-stub",
+        enforce: "pre",
+        resolveId(id) {
+          if (id === "opencode-web-ui.gen.ts")
+            return "\0opencode-web-ui"
+        },
+        load(id) {
+          if (id === "\0opencode-web-ui") return "export default {}"
+        },
+      },
+      {
+        name: "opencode:markdown-import",
+        enforce: "pre",
+        transform(code, id) {
+          if (id.endsWith(".md")) return `export default ${JSON.stringify(code)}`
+        },
+      },
+      {
+        name: "opencode:wasm-import",
+        enforce: "pre",
+        resolveId(id) {
+          if (id.endsWith(".wasm")) return "\0wasm:" + id
+        },
+        load(id) {
+          if (id.startsWith("\0wasm:")) return "export default {}"
         },
       },
       {
         name: "opencode:copy-server-assets",
         async writeBundle() {
-          // Copy from opencode dist first (fast path)
-          for (const l of await fs.readdir(OPENCODE_SERVER_DIST)) {
+          // Copy from runtime dist/node
+          const files = await fs.readdir(RUNTIME_DIST_NODE).catch(() => [])
+          for (const l of files) {
             if (!l.endsWith(".wasm") && !l.endsWith(".data")) continue
-            await fs.writeFile(`./out/main/chunks/${l}`, await fs.readFile(`${OPENCODE_SERVER_DIST}/${l}`))
+            await fs.writeFile(`./out/main/chunks/${l}`, await fs.readFile(`${RUNTIME_DIST_NODE}/${l}`))
           }
           // Fallback: copy from node_modules via find (handles + in package name)
           const cwd = process.cwd()

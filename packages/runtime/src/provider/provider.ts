@@ -300,7 +300,6 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         yield* dep.env.set("AWS_BEARER_TOKEN_BEDROCK", auth.key)
         awsBearerToken = auth.key
       }
-        }
 
       const awsWebIdentityTokenFile = env["AWS_WEB_IDENTITY_TOKEN_FILE"]
 
@@ -545,7 +544,6 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         yield* dep.env.set("AICORE_SERVICE_KEY", auth.key)
         envServiceKey = auth.key
       }
-        }
       const deploymentId = env["AICORE_DEPLOYMENT_ID"]
       const resourceGroup = env["AICORE_RESOURCE_GROUP"]
 
