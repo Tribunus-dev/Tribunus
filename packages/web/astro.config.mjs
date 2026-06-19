@@ -181,6 +181,11 @@ export default defineConfig({
       },
       sidebar: [
         "",
+        {
+          label: "Blog",
+          translations: { en: "Blog" },
+          items: ["blog/tribunus-thesis"],
+        },
         "config",
         "providers",
         "network",
