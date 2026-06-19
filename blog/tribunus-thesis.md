@@ -1,10 +1,10 @@
 ## Prologue -- The Thread
 
-Tribunus is not one thing. That is the first fact any serious analysis must confront. It is an inference engine that compiles model graphs into frozen golden paths. It is an agent runtime that executes long-running, recoverable missions over mutable world state. It is a plugin system with capability-scoped sandboxes. It is a security model where every authority must be explicitly granted and every mutation must be receipted. And the tension between these identities is not an accident of scope creep -- it is the point.
+Tribunus is not one thing. That is the first fact any serious analysis must confront. It is an inference engine that compiles model graphs into frozen golden paths **[In CI]**. It is an agent runtime that executes long-running, recoverable missions over mutable world state **[In CI]**. It is a plugin system with capability-scoped sandboxes **[Designed]**. It is a security model where every authority must be explicitly granted and every mutation must be receipted **[In CI]**. And the tension between these identities is not an accident of scope creep -- it is the point.
 
 The core thesis is this: these layers must be compiled together, not assembled at runtime. An agent framework that calls out to an inference server over HTTP is not an integrated system -- it is two systems that happen to be in the same building. A runtime that grafts plugin support on after the fact cannot audit what plugins do. A memory manager that treats the KV cache as a black box cannot make optimal scheduling decisions.
 
-Tribunus compiles the entire stack from a single canonical representation: the compute image. The compute image is not just a serialized model. It encodes the plan -- which hardware backend runs each operation, where tensor memory lives, how the KV cache is compressed, what the agent's state transitions are, and what receipts must be produced before a mutation is considered committed. Everything else -- the agent loop, the plugin dispatcher, the network fabric -- exists to execute the plan, not to improvise one at runtime.
+Tribunus compiles the entire stack from a single canonical representation: the compute image **[In CI]**. The compute image is not just a serialized model. It encodes the plan -- which hardware backend runs each operation, where tensor memory lives, how the KV cache is compressed, what the agent's state transitions are, and what receipts must be produced before a mutation is considered committed. Everything else -- the agent loop, the plugin dispatcher, the network fabric -- exists to execute the plan, not to improvise one at runtime.
 
 This essay traces the intellectual architecture that leads to that conclusion, paper by paper, constraint by constraint.
 
@@ -20,48 +20,31 @@ The key concepts from the paper that structure Tribunus's agent design:
 
 ### World Models and Amortized Inference
 
-A world model predicts the next state of the environment given the current state and an action. LeCun distinguishes between predicting in latent space (which is cheap) and predicting in observation space (which is expensive). Tribunus agents maintain a world-state memory that is always latent -- a structured, typed representation of the entities, relationships, and pending operations the agent knows about. The agent does not re-prompt the LLM to reconstruct the world state every cycle. It reads from the latent state and only invokes the inference engine when it needs to project a new course of action.
+A world model predicts the next state of the environment given the current state and an action. LeCun distinguishes between predicting in latent space (which is cheap) and predicting in observation space (which is expensive). Tribunus agents maintain a world-state memory that is always latent **[In CI]** -- a structured, typed representation of the entities, relationships, and pending operations the agent knows about. The agent does not re-prompt the LLM to reconstruct the world state every cycle. It reads from the latent state and only invokes the inference engine when it needs to project a new course of action.
 
 ### Hierarchical Planning over Multiple Timescales
 
-The paper describes a hierarchical architecture where a slow, abstract planner proposes subgoals and a fast, concrete executor fulfills them. Tribunus implements this as a stack:
+The paper describes a hierarchical architecture where a slow, abstract planner proposes subgoals and a fast, concrete executor fulfills them. Tribunus implements this as a stack **[In CI]**:
 
 1.  **Mission level**: A mission descriptor defines the agent's objective, constraints, and success criteria. This rarely changes.
 2.  **Plan level**: A sequence of plan steps, each with a precondition, an action specification, and expected effects. The plan is computed once and then executed step by step.
 3.  **Step level**: Each plan step maps to one or more tool calls, inference invocations, or state mutations. The step executor can retry, roll back, or escalate.
 
-This is not a chat loop. The agent does not regenerate the entire plan on every turn. It only re-plans when a step's postcondition does not match the observed world state.
+This is not a chat loop. The agent does not regenerate the entire plan on every turn. It only re-plans when a step's postcondition does not match the observed world state **[In CI]**.
 
 ### Intrinsic Motivation and Model Predictive Control
 
 > "An agent equipped with a world model can engage in *intrinsic motivation*: seeking out states that increase the information content of the model itself."
 
-LeCun's formulation of intrinsic motivation as uncertainty reduction maps directly to Tribunus's receipt system. When an agent executes a mutation (writes to the KV store, inserts a row in PGlite, calls an external API), the runtime produces a receipt -- a cryptographically bound record of what happened, when, and what the world state was before and after.
-
-```rust
-// Every execution produces a receipt with per-backend provenance
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BackendVersionInfo {
-    pub mlx_version: Option<String>,
-    pub coreml_xcode_version: Option<String>,
-    pub coreml_compiler_version: Option<String>,
-    pub accelerate_sdk_version: Option<String>,
-    pub mlx_diagnostic: Option<String>,
-    pub coreml_diagnostic: Option<String>,
-    pub accelerate_diagnostic: Option<String>,
-}
-```
-
-The receipt records not just which backend ran, but which version of that backend observed the execution. This is critical for evidence discipline: a receipt that says "MLX executed this GEMM" is useless without knowing which MLX version, on which macOS, with which Metal compiler.
- Receipts are not optional logging. They are the mechanism by which the agent's world model is updated with ground truth. An agent that cannot produce receipts for its actions cannot distinguish between "I changed the world" and "I was told the world changed."
+LeCun's formulation of intrinsic motivation as uncertainty reduction maps directly to Tribunus's receipt system. When an agent executes a mutation (writes to the KV store, inserts a row in PGlite, calls an external API), the runtime produces a receipt **[Implemented]** -- a cryptographically bound record of what happened, when, and what the world state was before and after. Receipts are not optional logging. They are the mechanism by which the agent's world model is updated with ground truth. An agent that cannot produce receipts for its actions cannot distinguish between "I changed the world" and "I was told the world changed."
 
 ### JEPA-Style Latent Prediction
 
-The Joint Embedding Predictive Architecture (JEPA) operates in latent space rather than observation space. Tribunus makes the same choice for its agent memory: the world-state memory is a structured key-value store (backed by Valkey for ephemeral state and PGlite for durable state), not an LLM context window. The agent reads from and writes to this structured memory. The inference engine (the LLM) only enters the critical path when the agent needs to project a future state or reason about a branch point.
+The Joint Embedding Predictive Architecture (JEPA) operates in latent space rather than observation space. Tribunus makes the same choice for its agent memory: the world-state memory is a structured key-value store (backed by Valkey for ephemeral state **[In CI]** and PGlite for durable state **[In CI]**), not an LLM context window. The agent reads from and writes to this structured memory. The inference engine (the LLM) only enters the critical path when the agent needs to project a future state or reason about a branch point.
 
 ### Separation of World Model and Actor
 
-LeCun separates the *world model* (predicts state transitions) from the *actor* (produces actions given a goal). Tribunus separates the *inference engine* (which encodes and decodes the latent world state through the LLM) from the *executor* (which carries out tool calls and state mutations). The two communicate through the plan and the receipt chain. They do not share a single prompt.
+LeCun separates the *world model* (predicts state transitions) from the *actor* (produces actions given a goal). Tribunus separates the *inference engine* (which encodes and decodes the latent world state through the LLM) from the *executor* (which carries out tool calls and state mutations) **[In CI]**. The two communicate through the plan and the receipt chain. They do not share a single prompt.
 
 ---
 
@@ -73,49 +56,19 @@ The vLLM paper, published at SOSP 2023, reframed inference serving as a memory-m
 
 vLLM's insight was straightforward: treat KV cache pages the way operating systems treat virtual memory pages. Allocate them on demand, share them across requests that share prefixes (parallel sampling, beam search), and evict them under memory pressure. The throughput gains were dramatic -- 2-4x over prior systems -- because the bottleneck was never GPU compute. It was always GPU memory.
 
-### Current Benchmarks (Qwen2.5 0.5B, M1 Max)
-
-| Phase | tok/s | What it means |
-|-------|-------|---------------|
-| Current baseline | 65 | Custom MLX-heavy runtime with heterogeneous scaffolding |
-| Arena/residency | 100-160 | Zero-copy arena, paged residency, fused backend regions |
-| Speculation active | 180-280 | Speculative decode with ANE draft, GPU verifier |
-| Full stack | 300+ | Draft model, verifier batching, Core ML region fusion, KV transactions |
-
-These are measured on M1 Max (64GB) with Qwen2.5 0.5B NF4 quantized. The 65 tok/s baseline is the current shipping mode. Each tier above it corresponds to a compile-time optimizer pass that is implemented and passing tests but not yet gated into production.
-
-
 Tribunus takes this lesson and pushes it further:
 
 ### TurboQuant KV Cache Compression
 
-The KV cache is the dominant memory cost at inference time. For a 70B parameter model with a 32K context, the KV cache alone can exceed 80 GB at FP16. Tribunus compresses the KV cache using quantization-aware techniques (TurboQuant) that reduce per-token KV memory by 4-8x while preserving generation quality. This is not a separate optimization -- it is wired into the compute image compiler so that the cache layout is known at plan-compile time, not discovered at runtime.
-
-```rust
-// TurboQuant — in-flight KV cache compression state
-pub struct TurboQuantState {
-    pub keys: Vec<u8>,           // Quantized key tensor (byte-aligned)
-    pub values: Vec<u8>,         // Quantized value tensor
-    pub num_tokens: usize,       // Tokens stored in this slot
-    pub bits: u32,               // Target bit width (2-8)
-    pub head_dim: usize,         // Head dimension for dequant
-    pub k_bits: u32,             // Key bit width (may differ from values)
-    pub v_bits: u32,             // Value bit width
-    pub qjl_keys: Vec<u8>,       // QJL error correction bits (TurboQuant3 mode)
-    pub qjl_values: Vec<u8>,     // QJL error correction for values
-}
-```
-
-This struct is the per-slot state for the quantized KV cache. Each cache slot carries its own quantization parameters, allowing per-layer and even per-head quantization budgets. The QJL error correction fields enable 2.5-bit effective compression with sub-1% quality degradation on GSM8K.
-
+The KV cache is the dominant memory cost at inference time. For a 70B parameter model with a 32K context, the KV cache alone can exceed 80 GB at FP16. Tribunus compresses the KV cache using quantization-aware techniques (TurboQuant) that reduce per-token KV memory by 4-8x while preserving generation quality **[Implemented]**. This is not a separate optimization -- it is wired into the compute image compiler so that the cache layout is known at plan-compile time, not discovered at runtime.
 
 ### Decode/Prefill Phase Separation
 
-The prefill phase (computing the initial KV cache from the prompt) has fundamentally different compute and memory characteristics than the decode phase (generating one token at a time). Prefill is compute-bound and benefits from large batches. Decode is memory-bound and benefits from small, latency-optimized batches. Tribunus separates these phases at the scheduler level, routing prefill work to different hardware lanes (ANE for amortized prefill, GPU for burst decode, CPU for fallback).
+The prefill phase (computing the initial KV cache from the prompt) has fundamentally different compute and memory characteristics than the decode phase (generating one token at a time). Prefill is compute-bound and benefits from large batches. Decode is memory-bound and benefits from small, latency-optimized batches. Tribunus separates these phases at the scheduler level, routing prefill work to different hardware lanes (ANE for amortized prefill **[Experimental]**, GPU for burst decode **[In CI]**, CPU for fallback **[Implemented]**).
 
 ### Cache-Aware Routing
 
-When a request arrives, the compute image already knows the cache topology: which layers are quantized, which blocks are pinned to which memory island, which prefixes are hot in the shared prefix cache. The scheduler routes to the worker that can reuse the most existing cache state. This is not possible in a system that discovers cache state at runtime.
+When a request arrives, the compute image already knows the cache topology: which layers are quantized, which blocks are pinned to which memory island, which prefixes are hot in the shared prefix cache **[In CI]**. The scheduler routes to the worker that can reuse the most existing cache state **[In CI]**. This is not possible in a system that discovers cache state at runtime.
 
 Tribunus is not a wrapper around llama.cpp or MLX. It is becoming a serious inference engine in its own right, built from the memory-first principles that the vLLM paper established.
 
@@ -131,48 +84,26 @@ MLIR solved this by making the IR composable. Dialects live side by side. Transf
 
 Tribunus's compute image compiler is not an MLIR dialect. But it is MLIR's architecture applied to the Tribunus problem:
 
-```mermaid
-graph TD
-    subgraph Assessment[Layer 0 — Assessment]
-        A1[Measure backend wins per op/shape/dtype]
-    end
-    subgraph Compilation[Layer 1 — Compilation]
-        C1[Emit placement manifest]
-        C2[Generate + benchmark candidate kernels]
-        C3[Freeze winning variants]
-    end
-    subgraph Inference[Layer 2 — Inference]
-        I1[Deterministic state machine]
-        I2[Lease page → submit region → fence]
-        I3[FlexDispatch routing]
-    end
-    subgraph Receipts[Layer 3 — Receipts]
-        R1[Per-token attestation]
-        R2[Seal per inference run]
-    end
-```
-
-
 ### PhaseIR
 
-The compiler's internal representation (PhaseIR) is a dialect-neutral graph of operations on tensors and control flow. It is not tied to any specific backend's graph format. A model that enters the compiler as an MLX graph (captured via the MLX Python or Rust API) is lifted into PhaseIR. A model that enters as a Core ML model is lifted into PhaseIR. The compiler then applies optimization passes that are PhaseIR-native: fusion, quantization planning, memory layout, phase qualification.
+The compiler's internal representation (PhaseIR) is a dialect-neutral graph of operations on tensors and control flow **[In CI]**. It is not tied to any specific backend's graph format. A model that enters the compiler as an MLX graph (captured via the MLX Python or Rust API) is lifted into PhaseIR **[In CI]**. A model that enters as a Core ML model is lifted into PhaseIR **[In CI]**. The compiler then applies optimization passes that are PhaseIR-native: fusion, quantization planning, memory layout, phase qualification **[In CI]**.
 
 ### The Compute Image Pipeline
 
-1.  **Capture**: The model graph is captured from a frontend (MLX, Core ML, ONNX).
-2.  **Lift**: The graph is lifted into PhaseIR, normalizing away frontend-specific idiosyncrasies.
-3.  **Qualify**: Each operation is qualified against the available backends. Can this GEMM run on the ANE? Does this attention pattern have a Metal kernel? The result is a *phase-qualified plan* where every node is tagged with one or more valid backends.
-4.  **Optimize**: Backend-agnostic passes (fusion, dead-code elimination, constant folding) run first. Then backend-specific passes (cache tiling, quantization insertion, memory island assignment).
-5.  **Lower**: Each backend's subgraph is lowered to its native format. MLX ops become mlx\_core calls. Core ML ops become MIL program operations. Metal ops become MSL source.
-6.  **Freeze**: The lowered subgraphs, memory layout, and cache plan are serialized into a compute image. The compute image is the frozen golden path. It is not re-compiled at load time.
+1.  **Capture**: The model graph is captured from a frontend (MLX, Core ML, ONNX) **[Implemented]**.
+2.  **Lift**: The graph is lifted into PhaseIR, normalizing away frontend-specific idiosyncrasies **[In CI]**.
+3.  **Qualify**: Each operation is qualified against the available backends. Can this GEMM run on the ANE? Does this attention pattern have a Metal kernel? The result is a *phase-qualified plan* where every node is tagged with one or more valid backends **[In CI]**.
+4.  **Optimize**: Backend-agnostic passes (fusion, dead-code elimination, constant folding) run first **[In CI]**. Then backend-specific passes (cache tiling, quantization insertion, memory island assignment) **[In CI]**.
+5.  **Lower**: Each backend's subgraph is lowered to its native format. MLX ops become mlx_core calls. Core ML ops become MIL program operations. Metal ops become MSL source **[In CI]**.
+6.  **Freeze**: The lowered subgraphs, memory layout, and cache plan are serialized into a compute image. The compute image is the frozen golden path. It is not re-compiled at load time **[In CI]**.
 
 ### Avoiding the MLX-as-Universal-Compiler Mistake
 
-MLX is an excellent array framework and a usable frontend. It is not a compiler. Using MLX's graph capture as the sole IR for a heterogeneous backend would be the same mistake as using LLVM IR for everything before MLIR existed. MLX's graph is MLX-shaped. It does not express Core ML MIL operations, Metal threadgroup memory layouts, or Accelerate BNNS graph nodes. The compute image compiler lifts MLX graphs into PhaseIR and then lowers them to the right backend, rather than trying to make MLX do everything.
+MLX is an excellent array framework and a usable frontend. It is not a compiler. Using MLX's graph capture as the sole IR for a heterogeneous backend would be the same mistake as using LLVM IR for everything before MLIR existed. MLX's graph is MLX-shaped. It does not express Core ML MIL operations, Metal threadgroup memory layouts, or Accelerate BNNS graph nodes. The compute image compiler lifts MLX graphs into PhaseIR and then lowers them to the right backend **[In CI]**, rather than trying to make MLX do everything.
 
 ### Backend-Agnostic Compilation
 
-The golden path is not backend-specific. The same PhaseIR plan can produce a compute image for ANE-only deployment, GPU-only deployment, or heterogeneous deployment. The difference is in the lowering pass, not in the plan. This is what makes Tribunus a compiler, not a wrapper.
+The golden path is not backend-specific. The same PhaseIR plan can produce a compute image for ANE-only deployment, GPU-only deployment, or heterogeneous deployment **[Designed]**. The difference is in the lowering pass, not in the plan. This is what makes Tribunus a compiler, not a wrapper.
 
 ---
 
@@ -182,12 +113,12 @@ The golden path is not backend-specific. The same PhaseIR plan can produce a com
 
 NVIDIA's Dynamo project (open-sourced in 2025) is the closest industry parallel to Tribunus's distributed inference architecture. Dynamo treats inference serving as a distributed systems problem: request routing, load-aware scheduling, prefix caching across nodes, dynamic batching, and fault tolerance.
 
-Tribunus's dharma model takes this further. Dharma is a mutual-aid inference fabric where participating nodes contribute compute capacity and draw from the pool as needed. The architecture is:
+Tribunus's dharma model takes this further. Dharma is a mutual-aid inference fabric where participating nodes contribute compute capacity and draw from the pool as needed **[Designed]**. The architecture is:
 
-- Each node runs a local infererence stack (MLX, Core ML, Metal).
-- Nodes advertise their capabilities (model availability, backend types, current load) through a capability-discovery protocol.
-- When a node receives a request it cannot serve (wrong model, wrong backend, insufficient memory), it routes the request to a peer that can serve it.
-- The routing decision is informed by the same phase-qualified plan that drives local execution. The planner knows which backends are needed and which peers have them.
+- Each node runs a local inference stack (MLX, Core ML, Metal) **[Implemented]**.
+- Nodes advertise their capabilities (model availability, backend types, current load) through a capability-discovery protocol **[Designed]**.
+- When a node receives a request it cannot serve (wrong model, wrong backend, insufficient memory), it routes the request to a peer that can serve it **[Designed]**.
+- The routing decision is informed by the same phase-qualified plan that drives local execution. The planner knows which backends are needed and which peers have them **[Designed]**.
 
 This is not distributed inference in the traditional sense (split a model across nodes). It is federated inference: each node serves the entire model on its own hardware, and the federation handles overflow, failover, and capability mismatch.
 
@@ -203,19 +134,19 @@ Tribunus's Cell model applies this at the agent runtime level:
 
 ### PGlite as Durable Local Authority
 
-Every Tribunus cell runs an embedded PGlite instance. This is the durable authority for the cell's state. Agent missions, receipts, entity records, and plan history live in Postgres-compatible tables. The cell never waits for a network round trip to commit its state.
+Every Tribunus cell runs an embedded PGlite instance **[Implemented]**. This is the durable authority for the cell's state. Agent missions, receipts, entity records, and plan history live in Postgres-compatible tables. The cell never waits for a network round trip to commit its state.
 
 ### Valkey as Ephemeral Coordination
 
-Valkey (a Redis-compatible key-value store) holds the ephemeral state: cache entries, session tokens, lock leases, and the current working set of the agent's world model. Valkey is not durable. If Valkey restarts, the ephemeral state is reconstructed from PGlite.
+Valkey (a Redis-compatible key-value store) holds the ephemeral state **[In CI]**: cache entries, session tokens, lock leases, and the current working set of the agent's world model. Valkey is not durable. If Valkey restarts, the ephemeral state is reconstructed from PGlite.
 
 ### DuckDB as Projection/Analytics
 
-DuckDB provides the analytical projection layer. The agent runs SQL queries against DuckDB tables that are periodically refreshed from PGlite or from streaming data. This is separate from the operational state in PGlite -- analytics workloads do not compete with transaction workloads.
+DuckDB provides the analytical projection layer **[Designed]**. The agent runs SQL queries against DuckDB tables that are periodically refreshed from PGlite or from streaming data. This is separate from the operational state in PGlite -- analytics workloads do not compete with transaction workloads.
 
 ### Federation Envelopes
 
-Cells synchronize through federation envelopes -- typed, serialized packets of state diffs that flow between cells through the dharma fabric. The envelope format includes a schema version, a capability signature, and optional receipts. Cells that receive an envelope apply the diff to their local PGlite and update their DuckDB projections.
+Cells synchronize through federation envelopes **[Designed]** -- typed, serialized packets of state diffs that flow between cells through the dharma fabric. The envelope format includes a schema version, a capability signature, and optional receipts. Cells that receive an envelope apply the diff to their local PGlite and update their DuckDB projections.
 
 The cell is the unit of deployment, the unit of failure isolation, and the unit of trust. Two cells in the same federation do not share memory or processes. They share envelopes.
 
@@ -231,17 +162,17 @@ Tribunus extends this model to agent plugins:
 
 ### Capability-Scoped Plugins
 
-Every plugin declares a manifest listing the capabilities it requires:
+Every plugin declares a manifest listing the capabilities it requires **[Designed]**:
 - Which inference backends it can access.
 - Which state stores (PGlite tables, Valkey keyspaces) it can read or write.
 - Which external APIs it can call.
 - Which tool definitions it can register.
 
-The capability set is not extensible at runtime. A plugin cannot request access to a state store that was not in its manifest, and the manifest is verified at install time and pinned in the compute image.
+The capability set is not extensible at runtime **[Designed]**. A plugin cannot request access to a state store that was not in its manifest, and the manifest is verified at install time and pinned in the compute image.
 
 ### Approval Levels
 
-Not all capabilities have the same risk profile. Tribunus defines three approval levels:
+Not all capabilities have the same risk profile. Tribunus defines three approval levels **[Designed]**:
 
 | Level | Scope | Example |
 |-------|-------|---------|
@@ -251,15 +182,15 @@ Not all capabilities have the same risk profile. Tribunus defines three approval
 
 ### Mutation Classes
 
-Every mutation carries a class tag: `STATE_READ`, `STATE_WRITE`, `EXTERNAL_CALL`, `PLUGIN_INSTALL`, `CAPABILITY_ESCALATE`. The scheduler uses the class tag to decide whether a receipt is required, whether user confirmation is needed, and whether the operation should be batched or serialized.
+Every mutation carries a class tag **[Designed]**: `STATE_READ`, `STATE_WRITE`, `EXTERNAL_CALL`, `PLUGIN_INSTALL`, `CAPABILITY_ESCALATE`. The scheduler uses the class tag to decide whether a receipt is required, whether user confirmation is needed, and whether the operation should be batched or serialized.
 
 ### Surface Separation
 
-Web, PWA, and mobile surfaces do not inherit desktop or runtime authority. A plugin that can read the entire PGlite database when running in the desktop runtime cannot do so when running in the web surface. The capability grant is per-surface, per-session, and per-context.
+Web, PWA, and mobile surfaces do not inherit desktop or runtime authority **[Designed]**. A plugin that can read the entire PGlite database when running in the desktop runtime cannot do so when running in the web surface. The capability grant is per-surface, per-session, and per-context.
 
 ### No Ambient Authority
 
-Tools do not get ambient authority over state. Every tool invocation is explicit about what it will read, what it will write, and what receipts it will produce. The runtime checks the tool's declared mutation class against the agent's current capability grant before dispatching. If the check fails, the tool call is rejected before any code executes.
+Tools do not get ambient authority over state **[In CI]**. Every tool invocation is explicit about what it will read, what it will write, and what receipts it will produce. The runtime checks the tool's declared mutation class against the agent's current capability grant before dispatching. If the check fails, the tool call is rejected before any code executes.
 
 ---
 
@@ -279,10 +210,10 @@ Several architectures and frameworks constrained the design of Tribunus's backen
 | Burn (Tracel) | Rust ML framework with WGPU backend | Inform the backend-capability discovery protocol and compilation pipeline design |
 | CubeCL | GPU kernel compilation from Rust | Reference for Metal kernel generation from Rust host code |
 | DLPack | Standard tensor interchange; no device memory guarantees | Use for cross-backend tensor handoff; never for persistent tensor ownership |
-| Apache Arrow C Data / Device Interface | Zero-copy columnar data interchange | Reference for zero-copy tensor transfer between backends (CPU-ANE bidirectional) |
+| Apache Arrow C Data / Device Interface | Zero-copy columnar data interchange | Reference for zero-copy tensor transfer between backends (CPU↔GPU↔ANE) |
 | llama.cpp | CPU-first inference with quantization; limited multi-backend support | Quantization strategy (GGUF format awareness) but not as execution backbone |
 
-The unifying constraint across all these references is copy-honest tensor movement. Every tensor transfer between backends must be explicit and auditable. No hidden memcpy's. No implicit device-to-host fallbacks. If a tensor moves from ANE to GPU, the plan says so, and the cost is accounted for.
+The unifying constraint across all these references is copy-honest tensor movement **[In CI]**. Every tensor transfer between backends must be explicit and auditable. No hidden memcpy's. No implicit device-to-host fallbacks. If a tensor moves from ANE to GPU, the plan says so, and the cost is accounted for.
 
 Tribunus does not try to abstract away the hardware. It compiles for it.
 
@@ -301,11 +232,11 @@ Every paper and architecture discussed here converges on the same lesson: optima
 
 Tribunus applies this principle to the entire stack:
 
-**Receipts verify execution.** Every mutation produces a cryptographic receipt that proves the state before, the state after, and the operation that transformed one into the other. Receipts are the ground truth that the agent's world model consumes. Without receipts, the agent cannot distinguish between executing a plan and imagining one.
+**Receipts verify execution.** Every mutation produces a cryptographic receipt that proves the state before, the state after, and the operation that transformed one into the other **[Implemented]**. Receipts are the ground truth that the agent's world model consumes. Without receipts, the agent cannot distinguish between executing a plan and imagining one.
 
-**Compute images freeze the golden path.** A compute image is a compiled, frozen, signed artifact that contains the complete execution plan for a model or an agent. It is not re-interpreted at load time. It is not re-optimized at runtime. The golden path is determined once, verified once, and frozen. Everything else is execution.
+**Compute images freeze the golden path.** A compute image is a compiled, frozen, signed artifact that contains the complete execution plan for a model or an agent **[In CI]**. It is not re-interpreted at load time. It is not re-optimized at runtime. The golden path is determined once, verified once, and frozen. Everything else is execution.
 
-**The compiler owns the contract.** The PhaseIR plan, the capability manifest, the cache topology, the memory layout, and the receipt schema are defined by the compiler, not by the runtime. The runtime's job is to execute the plan faithfully and produce the receipts that prove it did.
+**The compiler owns the contract.** The PhaseIR plan, the capability manifest, the cache topology, the memory layout, and the receipt schema are defined by the compiler, not by the runtime **[In CI]**. The runtime's job is to execute the plan faithfully and produce the receipts that prove it did.
 
 This is why Tribunus compiles the entire stack. Not because runtime assembly is impossible -- it is obviously possible, and most systems do it. But runtime assembly leaves the most important decisions to the least informed component: a scheduler that has no knowledge of the model's memory layout, an agent loop that has no knowledge of the plugin's capability profile, a cache manager that has no knowledge of the attention pattern it is serving.
 
