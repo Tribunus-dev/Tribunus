@@ -8,7 +8,7 @@
 //! one logical fence, and shape inspection does not trigger
 //! hidden evaluation.
 
-use tribunus_compute_native::backend::{
+use tribunus_compute_core::backend::{
     BackendCapabilities,
     DType,
     EvaluationReceipt,

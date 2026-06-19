@@ -27,13 +27,13 @@ use std::time::{Duration, Instant};
 use parking_lot::Mutex;
 use serde_json::Value;
 
-use tribunus_compute_native::kv_cache::KvCache;
-use tribunus_compute_native::contracts::RunInstrumentationContext;
-use tribunus_compute_native::profiled_executor::{LoadedProfiledModel, ProfiledInferenceSession};
-use tribunus_compute_native::worker_memory::{
+use tribunus_compute_core::kv_cache::KvCache;
+use tribunus_compute_core::contracts::RunInstrumentationContext;
+use crate::profiled_executor::{LoadedProfiledModel, ProfiledInferenceSession};
+use tribunus_compute_core::worker_memory::{
     configure_mlx_memory_limits, sample_mlx_memory, sample_process_rss_self,
 };
-use tribunus_compute_native::worker_protocol::{
+use tribunus_compute_core::worker_protocol::{
     Frame, GenerationCompletedPayload, GenerationFailedPayload, HeartbeatPayload, HostCommand,
     MessageKind, PolicySnapshotPayload, ProtocolValidator, StartGenerationPayload, TokenPayload,
     WorkerEvent, WorkerFatalPayload, V1_0, MAX_FRAME_SIZE_BYTES,
@@ -489,7 +489,7 @@ fn command_thread(
 
             HostCommand::MemoryPressure => {
                 eprintln!("[worker {}] memory pressure signal received", worker_id);
-                let freed = tribunus_compute_native::compute_image::clear_mlx_cache();
+                let freed = tribunus_compute_core::compute_image::clear_mlx_cache();
                 eprintln!("[worker {}] cleared {} bytes from MLX cache", worker_id, freed);
             }
         }

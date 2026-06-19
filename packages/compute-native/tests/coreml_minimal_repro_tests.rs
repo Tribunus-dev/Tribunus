@@ -4,10 +4,10 @@
 //! the exact class of bugs it is designed to prevent.
 
 use coreml_proto::proto::mil_spec;
-use tribunus_compute_native::decode_attribution::coreml_minimal_repro::{
+use tribunus_compute_core::decode_attribution::coreml_minimal_repro::{
     DiagnosticGraphContract, VerificationErrorCode, verify_graph_contract, all_diagnostic_graphs,
 };
-use tribunus_compute_native::mil_builder::MilBuilder;
+use tribunus_compute_core::mil_builder::MilBuilder;
 
 /// Helper: build a valid matmul program.
 fn build_valid_matmul() -> mil_spec::Program {

@@ -7,28 +7,28 @@
 use std::time::Instant;
 use tempfile::tempdir;
 use hf_hub::api::sync::ApiBuilder;
-use tribunus_compute_native::compute_image::{compile_with_authority, CompilationAuthority, ComputeImage};
-use tribunus_compute_native::backend::realizer::NumericalOracleResult;
-use tribunus_compute_native::compiler::pipeline_shape::assess_shapes;
-use tribunus_compute_native::compiler::pipeline_candidates::{generate_candidates, SystemTopology};
-use tribunus_compute_native::compiler::pipeline_arena::plan_arena;
+use tribunus_compute_core::compute_image::{compile_with_authority, CompilationAuthority, ComputeImage};
+use tribunus_compute_core::backend::realizer::NumericalOracleResult;
+use tribunus_compute_core::compiler::pipeline_shape::assess_shapes;
+use tribunus_compute_core::compiler::pipeline_candidates::{generate_candidates, SystemTopology};
+use tribunus_compute_core::compiler::pipeline_arena::plan_arena;
 
 // We will assume these are public items as the reviewer says they are.
 // I can't find them with basic grep but maybe I missed them or they are re-exported.
-use tribunus_compute_native::compiler::pipeline_weight::ingest_weights;
-use tribunus_compute_native::compiler::pipeline_phase::lower_phases;
-use tribunus_compute_native::compiler::pipeline_candidates::check_oracle;
+use tribunus_compute_core::compiler::pipeline_weight::ingest_weights;
+use tribunus_compute_core::compiler::pipeline_phase::lower_phases;
+use tribunus_compute_core::compiler::pipeline_candidates::check_oracle;
 
 #[cfg(any(target_vendor = "apple", target_os = "cuda"))]
 fn run_inference(image: &ComputeImage, input: &[u32]) -> Result<Vec<f32>, String> {
     // Metal on Apple, CUDA on NVIDIA
-    image.execute(tribunus_compute_native::compute_image::ExecuteOn::Default, input)
+    image.execute(tribunus_compute_core::compute_image::ExecuteOn::Default, input)
 }
 
 #[cfg(not(any(target_vendor = "apple", target_os = "cuda")))]
 fn run_inference(image: &ComputeImage, input: &[u32]) -> Result<Vec<f32>, String> {
     // Pure CPU reference — scalar matmul, no GPU dependency
-    image.execute(tribunus_compute_native::compute_image::ExecuteOn::CpuFallback, input)
+    image.execute(tribunus_compute_core::compute_image::ExecuteOn::CpuFallback, input)
 }
 
 fn run_fp32_reference(_model_path: &str, input: &[u32]) -> Result<Vec<f32>, String> {

@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
-    use tribunus_compute_native::xdna::xdna_bridge::{XdnaSession, init_xdna_subsystem};
-    use tribunus_compute_native::xdna::xdna_pipeline::{Graph, Node, OpType, Partitioner};
-    use tribunus_compute_native::xdna::xdna_state::XdnaState;
+    use tribunus_compute_core::xdna::xdna_bridge::{XdnaSession, init_xdna_subsystem};
+    use tribunus_compute_core::xdna::xdna_pipeline::{Graph, Node, OpType, Partitioner};
+    use tribunus_compute_core::xdna::xdna_state::XdnaState;
 
     #[test]
     fn test_xdna_bridge_init_and_load() {

@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use mlx_rs::{Array, Dtype};
-use tribunus_compute_native::arena::Arena;
+use tribunus_compute_core::arena::Arena;
 use std::time::Instant;
 
 fn bench_mlx_eval(c: &mut Criterion) {

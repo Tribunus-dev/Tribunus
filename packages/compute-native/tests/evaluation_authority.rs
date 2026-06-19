@@ -4,7 +4,7 @@
 //! policy-support matrix, cardinality, transfer-aware transitions, and
 //! eager deferred-dependency detection based on actual edges.
 
-use tribunus_compute_native::backend::routing::{
+use tribunus_compute_core::backend::routing::{
     BackendId, BoundaryValidationContext, compute_boundary_digest,
     DependencyEdge, EvaluationGroupCardinality,
     EvaluationGroupId, EvaluationPolicy, EvaluationPolicySupport,
@@ -52,9 +52,9 @@ fn xfer(from: BackendId, to: BackendId) -> TensorTransferPlan {
         tensor_id: TensorId(0),
         source_backend: from,
         destination_backend: to,
-        source_layout: tribunus_compute_native::backend::routing::PhysicalLayout::RowMajor,
-        destination_layout: tribunus_compute_native::backend::routing::PhysicalLayout::RowMajor,
-        conversion: tribunus_compute_native::backend::routing::ConversionKind::None,
+        source_layout: tribunus_compute_core::backend::routing::PhysicalLayout::RowMajor,
+        destination_layout: tribunus_compute_core::backend::routing::PhysicalLayout::RowMajor,
+        conversion: tribunus_compute_core::backend::routing::ConversionKind::None,
         expected_bytes: 0,
         synchronization_before: false,
         synchronization_after: false,

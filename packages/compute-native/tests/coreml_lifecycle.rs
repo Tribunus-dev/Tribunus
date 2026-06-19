@@ -4,9 +4,9 @@
 //! rejection, real MLModel loading, and compile/execute lifecycle.
 //! Uses `CoreMlModel::load` through the native coreml_bridge.
 
-use tribunus_compute_native::backend::coreml::CoreMlBackend;
-use tribunus_compute_native::backend::graph::GraphBackend;
-use tribunus_compute_native::backend::routing::{
+use tribunus_compute_core::backend::coreml::CoreMlBackend;
+use tribunus_compute_core::backend::graph::GraphBackend;
+use tribunus_compute_core::backend::routing::{
     CompiledRegionHandle, GraphRegion, OperationFamily,
 };
 

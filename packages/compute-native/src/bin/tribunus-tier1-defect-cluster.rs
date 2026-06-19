@@ -18,7 +18,7 @@
 use std::path::PathBuf;
 use std::time::Instant;
 
-use tribunus_compute_native::decode_attribution::defect_clustering::{
+use tribunus_compute_core::decode_attribution::defect_clustering::{
     cluster_defects, load_receipts_from_run,
     write_clusters_json, write_correlations_json, write_next_fix_gates_json,
     write_observations_json, write_summary_md, write_tier2_blockers_json,

@@ -16,9 +16,9 @@ use rayon::prelude::*;
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
-use tribunus_compute_native::profiled_executor::{LoadedProfiledModel, ProfiledInferenceSession, ExecutionMode};
-use tribunus_compute_native::kv_cache::KvCache;
-use tribunus_compute_native::compute_image;
+use tribunus_compute_core::profiled_executor::{LoadedProfiledModel, ProfiledInferenceSession, ExecutionMode};
+use tribunus_compute_core::kv_cache::KvCache;
+use crate::compute_image;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Entry point

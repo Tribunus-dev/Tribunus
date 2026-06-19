@@ -1,11 +1,15 @@
-//! Accelerate backend lowering adapter — proves the semantic→scheduled→Accelerate
+//! Accelerate backend lowering adapter — proves the semantic.scheduled→Accelerate
 //! pipeline preserves the already-qualified Accelerate matmul route.
 
 use std::time::Instant;
 
 use super::dataset::F32MatmulDataset;
+#[cfg(target_os = "macos")]
 use crate::backend::accelerate::AccelerateBackend;
-use crate::backend::routing::{BackendArtifactId, BackendId, EvidenceDigest};
+#[cfg(target_os = "macos")]
+use crate::backend::routing::{BackendArtifactId, BackendId};
+use crate::backend::routing::EvidenceDigest;
+#[cfg(target_os = "macos")]
 use crate::backend::{MatmulOp, TensorBackend};
 use crate::compiler::LoweringReceipt;
 
@@ -23,6 +27,7 @@ pub struct AccelerateLoweringReceipt {
 }
 
 /// Lower a scheduled F32 matmul region through Accelerate and verify.
+#[cfg(target_os = "macos")]
 pub fn lower_matmul_accelerate(
     dataset: &F32MatmulDataset,
     _semantic_digest: EvidenceDigest,
@@ -69,4 +74,12 @@ pub fn lower_matmul_accelerate(
         output_verified,
         readback_ns,
     })
+}
+
+#[cfg(not(target_os = "macos"))]
+pub fn lower_matmul_accelerate(
+    _dataset: &F32MatmulDataset,
+    _semantic_digest: EvidenceDigest,
+) -> Result<AccelerateLoweringReceipt, String> {
+    Err("Accelerate lowering: not available on this platform".into())
 }

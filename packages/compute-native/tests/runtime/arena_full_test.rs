@@ -1,4 +1,4 @@
-use tribunus_compute_native::runtime::arena_integration::*;
+use tribunus_compute_core::runtime::arena_integration::*;
 
 struct MockCpuLane {}
 impl BackendLane for MockCpuLane {

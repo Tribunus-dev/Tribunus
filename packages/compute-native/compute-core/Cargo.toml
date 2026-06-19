@@ -142,4 +142,4 @@ cc = "1.2"
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
-tribunus_compute_native = { package = "tribunus-compute-core", path = "." }
+tribunus_compute_core = { package = "tribunus-compute-core", path = "." }

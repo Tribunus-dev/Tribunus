@@ -1,8 +1,9 @@
 //! Direct FFI bindings to Accelerate BLAS (cblas_sgemm).
 //!
-//! Accelerate is a system framework on all Apple platforms.
-//! #[link] attribute is sufficient — no third-party crate required.
+//! Accelerate is a system framework on macOS only.
+//! The entire extern block is gated behind #[cfg(target_os = "macos")].
 
+#[cfg(target_os = "macos")]
 #[link(name = "Accelerate", kind = "framework")]
 extern "C" {
     /// Single-precision general matrix multiply: C = alpha * op(A) * op(B) + beta * C.
@@ -41,6 +42,7 @@ extern "C" {
 }
 
 // BLAS constants
+// These are platform-independent integer constants, always available.
 pub const CBLAS_ROW_MAJOR: i32 = 101;
 pub const CBLAS_NO_TRANS: i32 = 111;
 pub const CBLAS_TRANS: i32 = 112;

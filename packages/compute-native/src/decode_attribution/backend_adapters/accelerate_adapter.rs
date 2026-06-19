@@ -11,6 +11,7 @@
 
 use std::time::Instant;
 
+#[cfg(target_os = "macos")]
 use crate::backend::accelerate_ffi;
 /// Pure-Rust CPU implementation of matmul for use as domain CPU glue.
 /// Same triple-loop as reference_adapter::matmul but name-scoped for the Accelerate adapter.
@@ -360,6 +361,7 @@ pub fn prepare_matmul(
 }
 
 /// Run a single matmul via `cblas_sgemm` and return elapsed time in nanoseconds.
+#[cfg(target_os = "macos")]
 pub fn run_matmul(
     input: &[f32],
     weight: &[f32],
@@ -393,6 +395,17 @@ pub fn run_matmul(
     Ok(elapsed.as_nanos() as u64)
 }
 
+#[cfg(not(target_os = "macos"))]
+pub fn run_matmul(
+    _input: &[f32],
+    _weight: &[f32],
+    _output: &mut [f32],
+    _m: i32,
+    _k: i32,
+    _n: i32,
+) -> Result<u64, String> {
+    Err("Accelerate run_matmul: not available on this platform".into())
+}
 // ── accelerate_vector: vDSP primitives (validation tests only) ────────────
 // ── accelerate_vforce: vectorized transcendental ops ───────────────────────
 
@@ -403,8 +416,9 @@ fn sigmoid_scalar(x: f32) -> f32 {
 
 /// Vector sigmoid using vForce vvexpf when available, CPU fallback otherwise.
 /// Computes: negate input → exp → add_one → reciprocal
+#[cfg(target_os = "macos")]
 pub fn sigmoid_f32(data: &[f32]) -> Result<Vec<f32>, String> {
-    #[cfg_attr(target_vendor = "apple", link(name = "Accelerate", kind = "framework"))]
+    #[link(name = "Accelerate", kind = "framework")]
     extern "C" {
         fn vvexpf(result: *mut f32, input: *const f32, count: *const i32);
     }
@@ -428,17 +442,28 @@ pub fn sigmoid_f32(data: &[f32]) -> Result<Vec<f32>, String> {
     Ok(output)
 }
 
+#[cfg(not(target_os = "macos"))]
+pub fn sigmoid_f32(_data: &[f32]) -> Result<Vec<f32>, String> {
+    Err("Accelerate sigmoid_f32: not available on this platform".into())
+}
+
 /// SiLU: x * sigmoid(x) — uses sigmoid_f32 + vDSP_vmul or CPU mul.
+#[cfg(target_os = "macos")]
 pub fn silu_f32(data: &[f32]) -> Result<Vec<f32>, String> {
     let sig = sigmoid_f32(data)?;
     vector_mul(data, &sig)
 }
 
+#[cfg(not(target_os = "macos"))]
+pub fn silu_f32(_data: &[f32]) -> Result<Vec<f32>, String> {
+    Err("Accelerate silu_f32: not available on this platform".into())
+}
 // ── accelerate_vector: vDSP primitives ────────────────────────────────────
 
 /// Raw FFI for vDSP vector operations (using extern at file scope so multiple
 /// `extern "C"` blocks coexist without shadowing).
-#[cfg_attr(target_vendor = "apple", link(name = "Accelerate", kind = "framework"))]
+#[cfg(target_os = "macos")]
+#[link(name = "Accelerate", kind = "framework")]
 extern "C" {
     fn vDSP_vadd(
         a: *const f32, a_stride: isize,
@@ -455,6 +480,7 @@ extern "C" {
 }
 
 /// Vector add via `vDSP_vadd`. Primitive validation — NOT a lattice row.
+#[cfg(target_os = "macos")]
 pub fn vector_add(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
     if a.len() != b.len() {
         return Err(format!("vector_add: length mismatch {} != {}", a.len(), b.len()));
@@ -466,7 +492,13 @@ pub fn vector_add(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
     Ok(result)
 }
 
+#[cfg(not(target_os = "macos"))]
+pub fn vector_add(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
+    Err(format!("Accelerate vector_add: not available on this platform (lengths {} and {})", a.len(), b.len()))
+}
+
 /// Vector multiply via `vDSP_vmul`. Primitive validation — NOT a lattice row.
+#[cfg(target_os = "macos")]
 pub fn vector_mul(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
     if a.len() != b.len() {
         return Err(format!("vector_mul: length mismatch {} != {}", a.len(), b.len()));
@@ -478,11 +510,16 @@ pub fn vector_mul(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
     Ok(result)
 }
 
+#[cfg(not(target_os = "macos"))]
+pub fn vector_mul(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
+    Err(format!("Accelerate vector_mul: not available on this platform (lengths {} and {})", a.len(), b.len()))
+}
 // ── Legacy API (backward compat) ──────────────────────────────────────────
 
 pub use support_tier as support_status;
 
 #[cfg(test)]
+#[cfg(target_os = "macos")]
 mod tests {
     use super::*;
 

@@ -3,6 +3,7 @@
 //! F32 matmul wired via cblas_sgemm.  All other primitives return
 //! "not yet implemented" until native bindings are added.
 
+#[cfg(target_os = "macos")]
 use super::accelerate_ffi;
 use super::routing::*;
 use super::*;
@@ -159,29 +160,37 @@ impl TensorBackend for AccelerateBackend {
         let n = i32::try_from(op.n).map_err(|_| format!("matmul: N={} exceeds i32", op.n))?;
         let k = i32::try_from(op.k).map_err(|_| format!("matmul: K={} exceeds i32", op.k))?;
 
-        let out_len = (m as usize).checked_mul(n as usize)
-            .ok_or("matmul: output size overflow")?;
-        let mut c_data = vec![0.0f32; out_len];
+        #[cfg(target_os = "macos")]
+        {
+            let out_len = (m as usize).checked_mul(n as usize)
+                .ok_or("matmul: output size overflow")?;
+            let mut c_data = vec![0.0f32; out_len];
 
-        // No-copy access to resident buffers
-        let a_ptr = self.data(a)?;
-        let b_ptr = self.data(b)?;
+            // No-copy access to resident buffers
+            let a_ptr = self.data(a)?;
+            let b_ptr = self.data(b)?;
 
-        unsafe {
-            accelerate_ffi::cblas_sgemm(
-                accelerate_ffi::CBLAS_ROW_MAJOR,
-                accelerate_ffi::CBLAS_NO_TRANS,
-                accelerate_ffi::CBLAS_NO_TRANS,
-                m, n, k,
-                1.0f32,           // alpha — passed by value
-                a_ptr.as_ptr(), k,
-                b_ptr.as_ptr(), n,
-                0.0f32,           // beta — passed by value
-                c_data.as_mut_ptr(), n,
-            );
+            unsafe {
+                accelerate_ffi::cblas_sgemm(
+                    accelerate_ffi::CBLAS_ROW_MAJOR,
+                    accelerate_ffi::CBLAS_NO_TRANS,
+                    accelerate_ffi::CBLAS_NO_TRANS,
+                    m, n, k,
+                    1.0f32,           // alpha — passed by value
+                    a_ptr.as_ptr(), k,
+                    b_ptr.as_ptr(), n,
+                    0.0f32,           // beta — passed by value
+                    c_data.as_mut_ptr(), n,
+                );
+            }
+
+            self.create_f32(&c_data, &[m, n])
         }
-
-        self.create_f32(&c_data, &[m, n])
+        #[cfg(not(target_os = "macos"))]
+        {
+            let _ = (m, n, k);
+            Err("AccelerateBackend: matmul not available on this platform".into())
+        }
     }
 
     fn rms_norm(&mut self, _op: &RmsNormOp, _x: TensorHandle, _weight: TensorHandle) -> Result<TensorHandle, String> {

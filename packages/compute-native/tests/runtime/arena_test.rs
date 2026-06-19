@@ -1,6 +1,6 @@
 
-use tribunus_compute_native::runtime::{ArenaPage, DataType, ResidencyTier, RingSlot, SlotState};
-use tribunus_compute_native::decode_attribution::backend_adapters::BackendKind;
+use tribunus_compute_core::runtime::{ArenaPage, DataType, ResidencyTier, RingSlot, SlotState};
+use tribunus_compute_core::decode_attribution::backend_adapters::BackendKind;
 
 #[test]
 fn test_arena_page_alloc_and_fill() {

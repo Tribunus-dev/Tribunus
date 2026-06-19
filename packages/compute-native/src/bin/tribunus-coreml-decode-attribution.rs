@@ -13,11 +13,11 @@
 use std::fs;
 use std::io::Write;
 
-use tribunus_compute_native::decode_attribution::matrices::{
+use tribunus_compute_core::decode_attribution::matrices::{
     RunConfig, run_matrix_a, run_matrix1, run_matrix2, run_matrix2b, run_matrix_lattice,
     run_negative_evidence_fixture,
 };
-use tribunus_compute_native::decode_attribution::report::{
+use tribunus_compute_core::decode_attribution::report::{
     generate_report, generate_coverage_json, generate_coverage_table,
 };
 
@@ -188,7 +188,7 @@ fn main() {
     eprintln!("Report:  {}", report_path);
 }
 
-fn write_jsonl(dir: &str, name: &str, receipts: &[tribunus_compute_native::decode_attribution::receipt::DecodeAttributionReceipt]) {
+fn write_jsonl(dir: &str, name: &str, receipts: &[tribunus_compute_core::decode_attribution::receipt::DecodeAttributionReceipt]) {
     let path = format!("{}/{}.jsonl", dir, name);
     let mut f = fs::File::create(&path).expect("create jsonl file");
     for r in receipts {

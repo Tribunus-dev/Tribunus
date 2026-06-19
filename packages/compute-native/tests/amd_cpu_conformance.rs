@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use tribunus_compute_native::backend::zenblas::{CPUDispatch, matmul_f32, matmul_int8, get_dispatch};
+    use tribunus_compute_core::backend::zenblas::{CPUDispatch, matmul_f32, matmul_int8, get_dispatch};
     
     #[test]
     fn test_cpu_matmul_f32_conformance() {

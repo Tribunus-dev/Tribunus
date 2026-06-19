@@ -16,11 +16,11 @@ use std::fs;
 use std::process::Command;
 use std::time::Instant;
 
-use tribunus_compute_native::decode_attribution::coreml_minimal_repro::{
+use tribunus_compute_core::decode_attribution::coreml_minimal_repro::{
     DiagnosticGraphContract, graphs_for_track, verify_graph_contract,
 };
-use tribunus_compute_native::mil_builder::MilBuilder;
-use tribunus_compute_native::mlpackage::{self, ModelMeta};
+use tribunus_compute_core::mil_builder::MilBuilder;
+use tribunus_compute_core::mlpackage::{self, ModelMeta};
 
 struct RunConfig {
     run_id: String,

@@ -4,7 +4,7 @@
 //! requiring the 12B compute image.  Every policy, recipe, and state machine
 //! is constructed from synthetic data in-process.
 
-use tribunus_compute_native::treatment::{
+use tribunus_compute_core::treatment::{
     ConditioningExecutor, PrefetchCoordinator, ReadinessManager, ScratchArena, TreatmentSummary,
 };
 use tribunus_evidence_schema::{

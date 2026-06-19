@@ -19,7 +19,7 @@ use std::time::Duration;
 use serde_json::json;
 use uuid::Uuid;
 
-use tribunus_compute_native::worker_protocol::{
+use tribunus_compute_core::worker_protocol::{
     Frame, GenerationCompletedPayload, HostCommand, MessageKind, TokenPayload, WorkerEvent, V1_0,
     MAX_FRAME_SIZE_BYTES,
 };
