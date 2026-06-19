@@ -1,0 +1,32 @@
+Tribunus Compute is a compiled inference engine for Apple Silicon that turns models into machine-specific compute images. Rather than running a dynamic tensor program at inference time, the system compiles an executable golden path with known shapes, placement, and memory layout before any tokens are generated.
+
+## Core Thesis
+
+Backend optimality must be compiled, not improvised. Assessment measures real backend behavior on the current machine topology. Compilation emits a machine-specific compute image with prequalified backend regions and a placement manifest. Inference executes a deterministic state machine over backend lanes and memory-page leases. Receipts verify actual execution, fallback behavior, copy bytes, page lifecycle, latency, and numerical correctness.
+
+## Current State (June 2026)
+
+Tribunus Compute runs on Apple Silicon via three backends: MLX (Metal GPU), Accelerate (CPU), and Core ML (ANE). Key features include:
+
+- **ComputeImage pipeline** — compile-time model analysis and golden-path generation
+- **FlexDispatch** — heterogeneous scheduler routing work to the optimal backend
+- **TurboQuant** — in-flight KV cache quantization with sub-2-bit compression
+- **Weight streaming** — tiered memory with SSD-backed overflow for large models
+- **Speculative decoding** — draft model on ANE, verifier on GPU, up to 3-5x throughput
+- **Multi-token prediction (MTP)** — predict multiple tokens per forward pass
+- **SharedMemoryIsland** — IOSurface-backed zero-copy arena runtime
+
+## Performance Projections
+
+| Machine | Raw target tok/s | Effective (w/ speculation) |
+|---|---|---|
+| M1 Max (today) | 140-230 | — |
+| M1 Max (full compute-image plan) | 250-450 | 500-900 |
+| M5 Max (full compute-image plan) | 300-550 | 800-1600 |
+
+## Architecture Layers
+
+- **Layer 0: Assessment** — records which backend wins per operation, shape class, and dtype
+- **Layer 1: Compilation** — emits placement manifest, custom Metal kernel candidates, and frozen compute image
+- **Layer 2: Inference** — deterministic state machine over precompiled backend lanes and page leases
+- **Layer 3: Receipts** — per-token or per-region execution attestation
