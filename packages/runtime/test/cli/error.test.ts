@@ -1,95 +1,45 @@
-import { describe, expect, test } from "bun:test"
-import { AccountTransportError } from "../../src/account/schema"
-import { FormatError } from "../../src/cli/error"
-import { UI } from "../../src/cli/ui"
-
-describe("cli.error", () => {
-  test("formats legacy and tagged config errors the same way", () => {
-    const cases = [
-      {
-        tag: "ConfigJsonError",
-        data: { path: "/tmp/opencode.jsonc", message: "Unexpected token" },
-        expected: "Config file at /tmp/opencode.jsonc is not valid JSON(C): Unexpected token",
-      },
-      {
-        tag: "ConfigDirectoryTypoError",
-        data: { path: "/tmp/opencode.jsonc", dir: ".opencode", suggestion: "opencode" },
-        expected:
-          'Directory ".opencode" in /tmp/opencode.jsonc is not valid. Rename the directory to "opencode" or remove it. This is a common typo.',
-      },
-      {
-        tag: "ConfigFrontmatterError",
-        data: { path: "/tmp/AGENTS.md", message: "failed frontmatter" },
-        expected: "failed frontmatter",
-      },
-      {
-        tag: "ConfigInvalidError",
-        data: {
-          path: "/tmp/opencode.jsonc",
-          message: "schema mismatch",
-          issues: [{ message: "Expected string", path: ["provider", "id"] }],
-        },
-        expected: "Configuration is invalid at /tmp/opencode.jsonc: schema mismatch\n↳ Expected string provider.id",
-      },
-    ]
-
-    for (const item of cases) {
-      expect(FormatError({ name: item.tag, data: item.data })).toBe(item.expected)
-      expect(FormatError({ _tag: item.tag, ...item.data })).toBe(item.expected)
-    }
-  })
-
-  test("preserves multiline JSONC diagnostics for tagged config errors", () => {
+      "Try: `tribunus models` to list available models",
+      "Or check your config (tribunus.jsonc) provider/model names",
+  test("formats ModelNotFound error correctly", () => {
     const data = {
-      path: "/tmp/opencode.jsonc",
-      message:
-        '\n--- JSONC Input ---\n{\n  "model": \n}\n--- Errors ---\nValueExpected at line 3, column 1\n   Line 3: }\n          ^\n--- End ---',
+      modelID: "gpt-4",
+      suggestions: ["Qwen3-0.6B", "DeepSeek-V3", "llama-3.2-3b"]
     }
-    const expected = `Config file at ${data.path} is not valid JSON(C): ${data.message}`
-
-    expect(FormatError({ name: "ConfigJsonError", data })).toBe(expected)
-    expect(FormatError({ _tag: "ConfigJsonError", ...data })).toBe(expected)
+    const expected = "Model 'gpt-4' not found. Did you mean 'Qwen3-0.6B', 'DeepSeek-V3', 'llama-3.2-3b'? See tribunus search."
+    expect(FormatError({ _tag: "ModelNotFound", ...data })).toBe(expected)
   })
 
-  test("formats account transport errors clearly", () => {
-    const error = new AccountTransportError({
-      method: "POST",
-      url: "https://console.opencode.ai/auth/device/code",
-    })
-
-    const formatted = FormatError(error)
-
-    expect(formatted).toContain("Could not reach POST https://console.opencode.ai/auth/device/code.")
-    expect(formatted).toContain("This failed before the server returned an HTTP response.")
-    expect(formatted).toContain("Check your network, proxy, or VPN configuration and try again.")
-  })
-
-  test("formats legacy and tagged provider model errors the same way", () => {
+  test("formats VRAMFull error correctly", () => {
     const data = {
-      providerID: "anthropic",
-      modelID: "claude-sonet-4",
-      suggestions: ["claude-sonnet-4"],
+      required_gb: 4.2,
+      available_gb: 4.0,
+      model: "llama-3.2-3b"
     }
-    const expected = [
-      "Model not found: anthropic/claude-sonet-4",
-      "Did you mean: claude-sonnet-4",
-      "Try: `opencode models` to list available models",
-      "Or check your config (opencode.json) provider/model names",
-    ].join("\n")
-
-    expect(FormatError({ name: "ProviderModelNotFoundError", data })).toBe(expected)
-    expect(FormatError({ _tag: "ProviderModelNotFoundError", ...data })).toBe(expected)
+    const expected = "VRAM full (4.2/4.0 GB). Try tribunus estimate llama-3.2-3b --quant q4_k_m, or tribunus unload llama-3.2-3b."
+    expect(FormatError({ _tag: "VRAMFull", ...data })).toBe(expected)
   })
 
-  test("formats legacy and tagged provider init errors the same way", () => {
-    const data = { providerID: "anthropic" }
-    const expected = 'Failed to initialize provider "anthropic". Check credentials and configuration.'
-
-    expect(FormatError({ name: "ProviderInitError", data })).toBe(expected)
-    expect(FormatError({ _tag: "ProviderInitError", ...data })).toBe(expected)
+  test("formats BackendMissing error correctly", () => {
+    const data = { backend: "Vulkan" }
+    const formatted = FormatError({ _tag: "BackendMissing", ...data })
+    expect(formatted).toMatch(/Vulkan not found\. Install: (brew install molten-vk|sudo apt install mesa-vulkan-drivers) \((macOS|Linux)\)\. See tribunus\.dev\/install\/(macos|linux)\./)
   })
 
-  test("formats cancelled UI errors as empty output", () => {
-    expect(FormatError(new UI.CancelledError())).toBe("")
+  test("formats GPUNotFound error correctly", () => {
+    const data = {
+      detected: "AMD Radeon 5600M (Metal 2, 8GB)",
+      using: "Metal"
+    }
+    const expected = "No NVIDIA GPU. Found: AMD Radeon 5600M (Metal 2, 8GB). Using Metal backend."
+    expect(FormatError({ _tag: "GPUNotFound", ...data })).toBe(expected)
   })
-})
+
+  test("formats Timeout error correctly", () => {
+    const data = {
+      operation: "Decode",
+      timeout_ms: 30000
+    }
+    const expected = "Decode timed out after 30s. Increase server.timeout_ms in tribunus.jsonc, or disable with server.timeout_ms: 0."
+    expect(FormatError({ _tag: "Timeout", ...data })).toBe(expected)
+  })
+

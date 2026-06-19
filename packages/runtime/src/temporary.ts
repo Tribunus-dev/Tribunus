@@ -1,32 +1,29 @@
-import yargs from "yargs"
-
-import { InstallationVersion } from "@tribunus/core/installation/version"
-import { hideBin } from "yargs/helpers"
-import { Log } from "./node"
-
-Log.init({
-  print: false,
-})
-
-const cli = yargs(hideBin(process.argv))
-  .parserConfiguration({ "populate--": true })
-  .scriptName("opencode")
-  .wrap(100)
-  .help("help", "show help")
-  .alias("help", "h")
-  .version("version", "show version number", InstallationVersion)
-  .alias("version", "v")
-  .option("print-logs", {
-    describe: "print logs to stderr",
-    type: "boolean",
+import { loadConfig, generateDefaultConfig } from "./server/config"
+  .scriptName("tribunus")
+  .command("init", "Initialize tribunus.jsonc configuration", {}, async () => {
+    generateDefaultConfig()
   })
-  .option("log-level", {
-    describe: "log level",
-    type: "string",
-    choices: ["DEBUG", "INFO", "WARN", "ERROR"],
-  })
-  .option("pure", {
-    describe: "run without external plugins",
-    type: "boolean",
-  })
-  .parse()
+  .command(
+    "server",
+    "Start the Tribunus server",
+    (yargs) => {
+      return yargs
+        .option("port", { type: "number", describe: "Port to listen on" })
+        .option("model", { type: "string", describe: "Default model to use" })
+        .option("verbose", { type: "boolean", describe: "Print verbose output including effective config" })
+    },
+    async (argv) => {
+      const cliOverrides: any = {}
+      if (argv.port !== undefined) cliOverrides.server = { port: argv.port }
+      if (argv.model !== undefined) cliOverrides.model = { default: argv.model }
+      
+      const config = loadConfig(cliOverrides)
+      if (argv.verbose) {
+        console.log("Effective config:", JSON.stringify(config, null, 2))
+      }
+      
+      // The server startup will be initialized here
+    }
+  )
+
+cli.parse()

@@ -1,118 +1,64 @@
-import { NamedError } from "@tribunus/core/util/error"
-import { errorFormat } from "@/util/error"
-import { isRecord } from "@/util/record"
-
-type ConfigIssue = { message: string; path: string[] }
-
-function isTaggedError(error: unknown, tag: string): error is Record<string, unknown> {
-  return isRecord(error) && error._tag === tag
+function numberField(input: Record<string, unknown>, key: string): number | undefined {
+  return typeof input[key] === "number" ? input[key] : undefined
 }
 
-function configData(input: unknown, tag: string): Record<string, unknown> | undefined {
-  if (!isRecord(input)) return undefined
-  if (input.name === tag && isRecord(input.data)) return input.data
-  if (input._tag === tag) return input
-  return undefined
-}
-
-function stringField(input: Record<string, unknown>, key: string): string | undefined {
-  return typeof input[key] === "string" ? input[key] : undefined
-}
-
-function configIssues(input: Record<string, unknown>): ConfigIssue[] {
-  return Array.isArray(input.issues)
-    ? input.issues.filter((issue): issue is ConfigIssue => {
-        if (!isRecord(issue)) return false
-        return (
-          typeof issue.message === "string" &&
-          Array.isArray(issue.path) &&
-          issue.path.every((x) => typeof x === "string")
-        )
-      })
-    : []
-}
-
-export function FormatError(input: unknown): string | undefined {
-  if (input instanceof Error && isRecord(input.cause) && "body" in input.cause) {
-    const formatted = FormatError(input.cause.body)
-    if (formatted) return formatted
-  }
-
-  // CliError: domain failure surfaced from an effectCmd handler via fail("...")
-  if (isTaggedError(input, "CliError")) {
-    if (typeof input.exitCode === "number") process.exitCode = input.exitCode
-    return stringField(input, "message") ?? ""
-  }
-
-  // MCPFailed: { name: string }
-  if (NamedError.hasName(input, "MCPFailed")) {
-    const data = isRecord(input) && isRecord(input.data) ? stringField(input.data, "name") : undefined
-    return `MCP server "${data}" failed. Note, opencode does not support MCP authentication yet.`
-  }
-
-  // AccountServiceError, AccountTransportError: TaggedErrorClass
-  if (isTaggedError(input, "AccountServiceError") || isTaggedError(input, "AccountTransportError")) {
-    return stringField(input, "message") ?? ""
-  }
-
-  // ProviderModelNotFoundError: { providerID: string, modelID: string, suggestions?: string[] }
-  const providerModelNotFound = configData(input, "ProviderModelNotFoundError")
-  if (providerModelNotFound) {
-    const suggestions = Array.isArray(providerModelNotFound.suggestions)
-      ? providerModelNotFound.suggestions.filter((x) => typeof x === "string")
+  // MCPFailed
+    return `MCP server "${data}" failed. Note, tribunus does not support MCP authentication yet.`
+  // ModelNotFound
+  const modelNotFound = configData(input, "ModelNotFound")
+  if (modelNotFound) {
+    const modelId = stringField(modelNotFound, "modelID") || stringField(modelNotFound, "model_id") || "unknown"
+    const suggestionsRaw = modelNotFound.suggestions
+    const suggestions = Array.isArray(suggestionsRaw)
+      ? suggestionsRaw.filter((x) => typeof x === "string")
       : []
-    return [
-      `Model not found: ${stringField(providerModelNotFound, "providerID")}/${stringField(providerModelNotFound, "modelID")}`,
-      ...(suggestions.length ? ["Did you mean: " + suggestions.join(", ")] : []),
-      `Try: \`opencode models\` to list available models`,
-      `Or check your config (opencode.json) provider/model names`,
-    ].join("\n")
+    let suggestionText = suggestions.length > 0
+        ? ` Did you mean ${suggestions.map(s => `'${s}'`).join(", ")}?`
+        : ""
+    return `Model '${modelId}' not found.${suggestionText} See tribunus search.`
   }
 
-  // ProviderInitError: { providerID: string }
-  const providerInit = configData(input, "ProviderInitError")
-  if (providerInit) {
-    return `Failed to initialize provider "${stringField(providerInit, "providerID")}". Check credentials and configuration.`
+  // ProviderModelNotFoundError
+      `Try: \`tribunus models\` to list available models`,
+      `Or check your config (tribunus.jsonc) provider/model names`,
+  // VRAMFull
+  const vramFull = configData(input, "VRAMFull") || isTaggedError(input, "VRAMFull") ? input as any : undefined;
+  if (vramFull) {
+      const required = (numberField(vramFull, "required_gb") || 4.2).toFixed(1);
+      const available = (numberField(vramFull, "available_gb") || 4.0).toFixed(1);
+      const model = stringField(vramFull, "model") || "{name}";
+      return `VRAM full (${required}/${available} GB). Try tribunus estimate ${model} --quant q4_k_m, or tribunus unload ${model}.`;
+  }
+  
+  // BackendMissing
+  const backendMissing = configData(input, "BackendMissing") || isTaggedError(input, "BackendMissing") ? input as any : undefined;
+  if (backendMissing) {
+      const backend = stringField(backendMissing, "backend") || "Vulkan";
+      const platform = process.platform === "darwin" ? "macOS" : "Linux";
+      const command = process.platform === "darwin" ? "brew install molten-vk" : "sudo apt install mesa-vulkan-drivers";
+      return `${backend} not found. Install: ${command} (${platform}). See tribunus.dev/install/${platform.toLowerCase()}.`;
   }
 
-  // ConfigJsonError: { path: string, message?: string }
-  const configJson = configData(input, "ConfigJsonError")
-  if (configJson) {
-    const message = stringField(configJson, "message")
-    return `Config file at ${stringField(configJson, "path")} is not valid JSON(C)` + (message ? `: ${message}` : "")
+  // GPUNotFound
+  const gpuNotFound = configData(input, "GPUNotFound") || isTaggedError(input, "GPUNotFound") ? input as any : undefined;
+  if (gpuNotFound) {
+      const detected = stringField(gpuNotFound, "detected") || "AMD Radeon 5600M (Metal 2, 8GB)";
+      const using = stringField(gpuNotFound, "using") || "Metal";
+      return `No NVIDIA GPU. Found: ${detected}. Using ${using} backend.`;
   }
 
-  // ConfigDirectoryTypoError: { dir: string, path: string, suggestion: string }
-  const configDirectoryTypo = configData(input, "ConfigDirectoryTypoError")
-  if (configDirectoryTypo) {
-    return `Directory "${stringField(configDirectoryTypo, "dir")}" in ${stringField(configDirectoryTypo, "path")} is not valid. Rename the directory to "${stringField(configDirectoryTypo, "suggestion")}" or remove it. This is a common typo.`
+  // Timeout
+  const timeoutError = configData(input, "TimeoutError") || isTaggedError(input, "Timeout") || configData(input, "Timeout") ? input as any : undefined;
+  if (timeoutError) {
+      const operation = stringField(timeoutError, "operation") || "Decode";
+      const ms = numberField(timeoutError, "timeout_ms") || 30000;
+      const s = Math.round(ms / 1000);
+      return `${operation} timed out after ${s}s. Increase server.timeout_ms in tribunus.jsonc, or disable with server.timeout_ms: 0.`;
   }
 
-  // ConfigFrontmatterError: { message: string }
-  const configFrontmatter = configData(input, "ConfigFrontmatterError")
-  if (configFrontmatter) {
-    return stringField(configFrontmatter, "message") ?? ""
+  
+  // Generic fallback for any other tagged error with a message
+  if (isRecord(input) && typeof input._tag === "string" && typeof input.message === "string") {
+      return input.message;
   }
 
-  // ConfigInvalidError: { path?: string, message?: string, issues?: Array<{ message: string, path: string[] }> }
-  const configInvalid = configData(input, "ConfigInvalidError")
-  if (configInvalid) {
-    const path = stringField(configInvalid, "path")
-    const message = stringField(configInvalid, "message")
-    const issues = configIssues(configInvalid)
-    return [
-      `Configuration is invalid${path && path !== "config" ? ` at ${path}` : ""}` + (message ? `: ${message}` : ""),
-      ...issues.map((issue) => "↳ " + issue.message + " " + issue.path.join(".")),
-    ].join("\n")
-  }
-
-  // UICancelledError: user cancelled an interactive CLI prompt
-  if (isTaggedError(input, "UICancelledError") || NamedError.hasName(input, "UICancelledError")) {
-    return ""
-  }
-  return undefined
-}
-
-export function FormatUnknownError(input: unknown): string {
-  return errorFormat(input)
-}
