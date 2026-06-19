@@ -34,11 +34,15 @@
     "shiki": "catalog:",
     "solid-js": "catalog:",
     "toolbeam-docs-theme": "0.4.8",
-    "vscode-languageserver-types": "3.17.5"
+    "vscode-languageserver-types": "3.17.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@astrojs/check": "0.9.6",
     "typescript": "catalog:"
+  },
+  "overrides": {
+    "zod": "^3.23.8"
   }
 }
