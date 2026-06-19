@@ -1,10 +1,10 @@
-OpenCode supports standard proxy environment variables and custom certificates for enterprise network environments.
+Tribunus supports standard proxy environment variables and custom certificates for enterprise network environments.
 
 ---
 
 ## Proxy
 
-OpenCode respects standard proxy environment variables.
+Tribunus respects standard proxy environment variables.
 
 ```bash
 # HTTPS proxy (recommended)
@@ -43,7 +43,7 @@ For proxies requiring advanced authentication like NTLM or Kerberos, consider us
 
 ## Custom certificates
 
-If your enterprise uses custom CAs for HTTPS connections, configure OpenCode to trust them.
+If your enterprise uses custom CAs for HTTPS connections, configure Tribunus to trust them.
 
 ```bash
 export NODE_EXTRA_CA_CERTS=/path/to/ca-cert.pem

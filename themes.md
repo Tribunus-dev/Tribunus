@@ -1,6 +1,6 @@
-With OpenCode you can select from one of several built-in themes, use a theme that adapts to your terminal theme, or define your own custom theme.
+With Tribunus you can select from one of several built-in themes, use a theme that adapts to your terminal theme, or define your own custom theme.
 
-By default, OpenCode uses our own `opencode` theme.
+By default, Tribunus uses our own `opencode` theme.
 
 ---
 
@@ -18,7 +18,7 @@ Without truecolor support, themes may appear with reduced color accuracy or fall
 
 ## Built-in themes
 
-OpenCode comes with several built-in themes.
+Tribunus comes with several built-in themes.
 
 | Name                   | Description                                                                  |
 | ---------------------- | ---------------------------------------------------------------------------- |
@@ -48,7 +48,7 @@ The `system` theme is designed to automatically adapt to your terminal's color s
 
 The system theme is for users who:
 
-- Want OpenCode to match their terminal's appearance
+- Want Tribunus to match their terminal's appearance
 - Use custom terminal color schemes
 - Prefer a consistent look across all terminal applications
 
@@ -69,7 +69,7 @@ You can select a theme by bringing up the theme select with the `/theme` command
 
 ## Custom themes
 
-OpenCode supports a flexible JSON-based theme system that allows users to create and customize themes easily.
+Tribunus supports a flexible JSON-based theme system that allows users to create and customize themes easily.
 
 ---
 

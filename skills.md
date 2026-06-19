@@ -1,4 +1,4 @@
-Agent skills let OpenCode discover reusable instructions from your repo or home directory.
+Agent skills let Tribunus discover reusable instructions from your repo or home directory.
 Skills are loaded on-demand via the native `skill` tool—agents see available skills and can load the full content when needed.
 
 ---
@@ -6,7 +6,7 @@ Skills are loaded on-demand via the native `skill` tool—agents see available s
 ## Place files
 
 Create one folder per skill name and put a `SKILL.md` inside it.
-OpenCode searches these locations:
+Tribunus searches these locations:
 
 - Project config: `.opencode/skills/<name>/SKILL.md`
 - Global config: `~/.config/opencode/skills/<name>/SKILL.md`
@@ -19,7 +19,7 @@ OpenCode searches these locations:
 
 ## Understand discovery
 
-For project-local paths, OpenCode walks up from your current working directory until it reaches the git worktree.
+For project-local paths, Tribunus walks up from your current working directory until it reaches the git worktree.
 It loads any matching `skills/*/SKILL.md` in `.opencode/` and any matching `.claude/skills/*/SKILL.md` or `.agents/skills/*/SKILL.md` along the way.
 
 Global definitions are also loaded from `~/.config/opencode/skills/*/SKILL.md`, `~/.claude/skills/*/SKILL.md`, and `~/.agents/skills/*/SKILL.md`.
@@ -97,7 +97,7 @@ Ask clarifying questions if the target versioning scheme is unclear.
 
 ## Recognize tool description
 
-OpenCode lists available skills in the `skill` tool description.
+Tribunus lists available skills in the `skill` tool description.
 Each entry includes the skill name and description:
 
 ```xml

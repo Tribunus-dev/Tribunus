@@ -1,12 +1,12 @@
 import { Tabs, TabItem } from "@astrojs/starlight/components"
 
-The OpenCode CLI by default starts the [TUI](/docs/tui) when run without any arguments.
+The Tribunus CLI by default starts the [TUI](/docs/tui) when run without any arguments.
 
 ```bash
 opencode
 ```
 
-But it also accepts commands as documented on this page. This allows you to interact with OpenCode programmatically.
+But it also accepts commands as documented on this page. This allows you to interact with Tribunus programmatically.
 
 ```bash
 opencode run "Explain how closures work in JavaScript"
@@ -16,7 +16,7 @@ opencode run "Explain how closures work in JavaScript"
 
 ### tui
 
-Start the OpenCode terminal user interface.
+Start the Tribunus terminal user interface.
 
 ```bash
 opencode [project]
@@ -42,13 +42,13 @@ opencode [project]
 
 ## Commands
 
-The OpenCode CLI also has the following commands.
+The Tribunus CLI also has the following commands.
 
 ---
 
 ### agent
 
-Manage agents for OpenCode.
+Manage agents for Tribunus.
 
 ```bash
 opencode agent [command]
@@ -92,13 +92,13 @@ opencode agent list
 
 ### attach
 
-Attach a terminal to an already running OpenCode backend server started via `serve` or `web` commands.
+Attach a terminal to an already running Tribunus backend server started via `serve` or `web` commands.
 
 ```bash
 opencode attach [url]
 ```
 
-This allows using the TUI with a remote OpenCode backend. For example:
+This allows using the TUI with a remote Tribunus backend. For example:
 
 ```bash
 # Start the backend server for web/mobile access
@@ -133,13 +133,13 @@ opencode auth [command]
 
 #### login
 
-OpenCode is powered by the provider list at [Models.dev](https://models.dev), so you can use `opencode auth login` to configure API keys for any provider you'd like to use. This is stored in `~/.local/share/opencode/auth.json`.
+Tribunus is powered by the provider list at [Models.dev](https://models.dev), so you can use `opencode auth login` to configure API keys for any provider you'd like to use. This is stored in `~/.local/share/opencode/auth.json`.
 
 ```bash
 opencode auth login
 ```
 
-When OpenCode starts up it loads the providers from the credentials file. And if there are any keys defined in your environments or a `.env` file in your project.
+When Tribunus starts up it loads the providers from the credentials file. And if there are any keys defined in your environments or a `.env` file in your project.
 
 ##### Flags
 
@@ -322,7 +322,7 @@ opencode models anthropic
 | <nobr><code>{"--refresh"}</code></nobr> | Refresh the models cache from models.dev                     |
 | <nobr><code>{"--verbose"}</code></nobr> | Use more verbose model output (includes metadata like costs) |
 
-Use the `--refresh` flag to update the cached model list. This is useful when new models have been added to a provider and you want to see them in OpenCode.
+Use the `--refresh` flag to update the cached model list. This is useful when new models have been added to a provider and you want to see them in Tribunus.
 
 ```bash
 opencode models --refresh
@@ -381,7 +381,7 @@ opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 
 ### serve
 
-Start a headless OpenCode server for API access. Check out the [server docs](/docs/server) for the full HTTP interface.
+Start a headless Tribunus server for API access. Check out the [server docs](/docs/server) for the full HTTP interface.
 
 ```bash
 opencode serve
@@ -403,7 +403,7 @@ This starts an HTTP server that provides API access to opencode functionality wi
 
 ### session
 
-Manage OpenCode sessions.
+Manage Tribunus sessions.
 
 ```bash
 opencode session [command]
@@ -413,7 +413,7 @@ opencode session [command]
 
 #### list
 
-List all OpenCode sessions.
+List all Tribunus sessions.
 
 ```bash
 opencode session list
@@ -430,7 +430,7 @@ opencode session list
 
 #### delete
 
-Delete an OpenCode session.
+Delete an Tribunus session.
 
 ```bash
 opencode session delete <sessionID>
@@ -440,7 +440,7 @@ opencode session delete <sessionID>
 
 ### stats
 
-Show token usage and cost statistics for your OpenCode sessions.
+Show token usage and cost statistics for your Tribunus sessions.
 
 ```bash
 opencode stats
@@ -477,13 +477,13 @@ If you don't provide a session ID, you'll be prompted to select from available s
 
 ### import
 
-Import session data from a JSON file or OpenCode share URL.
+Import session data from a JSON file or Tribunus share URL.
 
 ```bash
 opencode import <file>
 ```
 
-You can import from a local file or an OpenCode share URL.
+You can import from a local file or an Tribunus share URL.
 
 ```bash
 opencode import session.json
@@ -494,13 +494,13 @@ opencode import https://opncd.ai/s/abc123
 
 ### web
 
-Start a headless OpenCode server with a web interface.
+Start a headless Tribunus server with a web interface.
 
 ```bash
 opencode web
 ```
 
-This starts an HTTP server and opens a web browser to access OpenCode through a web interface. Set `OPENCODE_SERVER_PASSWORD` to enable HTTP basic auth (username defaults to `opencode`).
+This starts an HTTP server and opens a web browser to access Tribunus through a web interface. Set `OPENCODE_SERVER_PASSWORD` to enable HTTP basic auth (username defaults to `opencode`).
 
 #### Flags
 
@@ -562,7 +562,7 @@ opencode plug <module>
 
 ### pr
 
-Fetch and checkout a GitHub PR branch, then run OpenCode.
+Fetch and checkout a GitHub PR branch, then run Tribunus.
 
 ```bash
 opencode pr <number>
@@ -608,7 +608,7 @@ opencode debug [command]
 
 ### uninstall
 
-Uninstall OpenCode and remove all related files.
+Uninstall Tribunus and remove all related files.
 
 ```bash
 opencode uninstall
@@ -669,7 +669,7 @@ The opencode CLI takes the following global flags.
 
 ## Environment variables
 
-OpenCode can be configured using environment variables.
+Tribunus can be configured using environment variables.
 
 | Variable                              | Type    | Description                                       |
 | ------------------------------------- | ------- | ------------------------------------------------- |

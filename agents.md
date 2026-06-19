@@ -10,7 +10,7 @@ You can switch between agents during a session or invoke them with the `@` menti
 
 ## Types
 
-There are two types of agents in OpenCode; primary agents and subagents.
+There are two types of agents in Tribunus; primary agents and subagents.
 
 ---
 
@@ -22,7 +22,7 @@ Primary agents are the main assistants you interact with directly. You can cycle
 You can use the **Tab** key to switch between primary agents during a session.
 :::
 
-OpenCode comes with two built-in primary agents, **Build** and **Plan**. We'll
+Tribunus comes with two built-in primary agents, **Build** and **Plan**. We'll
 look at these below.
 
 ---
@@ -31,13 +31,13 @@ look at these below.
 
 Subagents are specialized assistants that primary agents can invoke for specific tasks. You can also manually invoke them by **@ mentioning** them in your messages.
 
-OpenCode comes with three built-in subagents, **General**, **Explore**, and **Scout**. We'll look at this below.
+Tribunus comes with three built-in subagents, **General**, **Explore**, and **Scout**. We'll look at this below.
 
 ---
 
 ## Built-in
 
-OpenCode comes with two built-in primary agents and three built-in subagents.
+Tribunus comes with two built-in primary agents and three built-in subagents.
 
 ---
 
@@ -83,7 +83,7 @@ A fast, read-only agent for exploring codebases. Cannot modify files. Use this w
 
 _Mode_: `subagent`
 
-A read-only agent for external docs and dependency research. Use this when you need to clone a dependency repository into OpenCode's managed cache, inspect library source, or cross-reference local code against upstream implementations without modifying your workspace.
+A read-only agent for external docs and dependency research. Use this when you need to clone a dependency repository into Tribunus's managed cache, inspect library source, or cross-reference local code against upstream implementations without modifying your workspace.
 
 ---
 
@@ -279,7 +279,7 @@ Temperature values typically range from 0.0 to 1.0:
 }
 ```
 
-If no temperature is specified, OpenCode uses model-specific defaults; typically 0 for most models, 0.55 for Qwen models.
+If no temperature is specified, Tribunus uses model-specific defaults; typically 0 for most models, 0.55 for Qwen models.
 
 ---
 
@@ -339,7 +339,7 @@ Specify a custom system prompt file for this agent with the `prompt` config. The
 }
 ```
 
-This path is relative to where the config file is located. So this works for both the global OpenCode config and the project specific config.
+This path is relative to where the config file is located. So this works for both the global Tribunus config and the project specific config.
 
 ---
 
@@ -361,7 +361,7 @@ If you don’t specify a model, primary agents use the [model globally configure
 }
 ```
 
-The model ID in your OpenCode config uses the format `provider/model-id`. For example, if you're using [OpenCode Zen](/docs/zen), you would use `opencode/gpt-5.1-codex` for GPT 5.1 Codex.
+The model ID in your Tribunus config uses the format `provider/model-id`. For example, if you're using [Tribunus Zen](/docs/zen), you would use `opencode/gpt-5.1-codex` for GPT 5.1 Codex.
 
 ---
 

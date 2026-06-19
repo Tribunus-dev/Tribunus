@@ -1,10 +1,10 @@
-OpenCode can integrate with Language Server Protocol (LSP) servers to use diagnostics as feedback for the agent.
+Tribunus can integrate with Language Server Protocol (LSP) servers to use diagnostics as feedback for the agent.
 
 ---
 
 ## Built-in
 
-OpenCode comes with several built-in LSP servers for popular languages:
+Tribunus comes with several built-in LSP servers for popular languages:
 
 | LSP Server         | Extensions                                                          | Requirements                                                 |
 | ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------ |

@@ -1,4 +1,4 @@
-Tools allow the LLM to perform actions in your codebase. OpenCode comes with a set of built-in tools, but you can extend it with [custom tools](/docs/custom-tools) or [MCP servers](/docs/mcp-servers).
+Tools allow the LLM to perform actions in your codebase. Tribunus comes with a set of built-in tools, but you can extend it with [custom tools](/docs/custom-tools) or [MCP servers](/docs/mcp-servers).
 
 By default, all tools are **enabled** and don't need permission to run. You can control tool behavior through [permissions](/docs/permissions).
 
@@ -36,7 +36,7 @@ You can also use wildcards to control multiple tools at once. For example, to re
 
 ## Built-in
 
-Here are all the built-in tools available in OpenCode.
+Here are all the built-in tools available in Tribunus.
 
 ---
 
@@ -252,9 +252,9 @@ Allows the LLM to fetch and read web pages. Useful for looking up documentation 
 Search the web for information.
 
 :::note
-This tool is only available when using the OpenCode provider or when the `OPENCODE_ENABLE_EXA` environment variable is set to any truthy value (e.g., `true` or `1`).
+This tool is only available when using the Tribunus provider or when the `OPENCODE_ENABLE_EXA` environment variable is set to any truthy value (e.g., `true` or `1`).
 
-To enable when launching OpenCode:
+To enable when launching Tribunus:
 
 ```bash
 OPENCODE_ENABLE_EXA=1 opencode

@@ -1,4 +1,4 @@
-OpenCode's share feature allows you to create public links to your OpenCode conversations, so you can collaborate with teammates or get help from others.
+Tribunus's share feature allows you to create public links to your Tribunus conversations, so you can collaborate with teammates or get help from others.
 
 :::note
 Shared conversations are publicly accessible to anyone with the link.
@@ -8,7 +8,7 @@ Shared conversations are publicly accessible to anyone with the link.
 
 ## How it works
 
-When you share a conversation, OpenCode:
+When you share a conversation, Tribunus:
 
 1. Creates a unique public URL for your session
 2. Syncs your conversation history to our servers
@@ -18,13 +18,13 @@ When you share a conversation, OpenCode:
 
 ## Sharing
 
-OpenCode supports three sharing modes that control how conversations are shared:
+Tribunus supports three sharing modes that control how conversations are shared:
 
 ---
 
 ### Manual (default)
 
-By default, OpenCode uses manual sharing mode. Sessions are not shared automatically, but you can manually share them using the `/share` command:
+By default, Tribunus uses manual sharing mode. Sessions are not shared automatically, but you can manually share them using the `/share` command:
 
 ```
 /share
