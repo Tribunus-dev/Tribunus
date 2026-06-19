@@ -148,7 +148,10 @@ type CustomLoader = (provider: Info) => Effect.Effect<{
 type CustomDep = {
   auth: (id: string) => Effect.Effect<Auth.Info | undefined>
   config: () => Effect.Effect<Config.Info>
-  env: () => Effect.Effect<Record<string, string | undefined>>
+  env: {
+    (): Effect.Effect<Record<string, string | undefined>>
+    set(key: string, value: string): Effect.Effect<void>
+  }
   get: (key: string) => Effect.Effect<string | undefined>
 }
 
@@ -292,17 +295,12 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
 
       const awsAccessKeyId = env["AWS_ACCESS_KEY_ID"]
 
-      // TODO: Using process.env directly because Env.set only updates a process.env shallow copy,
-      // until the scope of the Env API is clarified (test only or runtime?)
-      const awsBearerToken = iife(() => {
-        const envToken = process.env.AWS_BEARER_TOKEN_BEDROCK
-        if (envToken) return envToken
-        if (auth?.type === "api") {
-          process.env.AWS_BEARER_TOKEN_BEDROCK = auth.key
-          return auth.key
+      let awsBearerToken = env["AWS_BEARER_TOKEN_BEDROCK"]
+      if (!awsBearerToken && auth?.type === "api") {
+        yield* dep.env.set("AWS_BEARER_TOKEN_BEDROCK", auth.key)
+        awsBearerToken = auth.key
+      }
         }
-        return undefined
-      })
 
       const awsWebIdentityTokenFile = env["AWS_WEB_IDENTITY_TOKEN_FILE"]
 
@@ -540,19 +538,16 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
     }),
     "sap-ai-core": Effect.fnUntraced(function* () {
       const auth = yield* dep.auth("sap-ai-core")
-      // TODO: Using process.env directly because Env.set only updates a shallow copy (not process.env),
-      // until the scope of the Env API is clarified (test only or runtime?)
-      const envServiceKey = iife(() => {
-        const envAICoreServiceKey = process.env.AICORE_SERVICE_KEY
-        if (envAICoreServiceKey) return envAICoreServiceKey
-        if (auth?.type === "api") {
-          process.env.AICORE_SERVICE_KEY = auth.key
-          return auth.key
+      const env = yield* dep.env()
+
+      let envServiceKey = env["AICORE_SERVICE_KEY"]
+      if (!envServiceKey && auth?.type === "api") {
+        yield* dep.env.set("AICORE_SERVICE_KEY", auth.key)
+        envServiceKey = auth.key
+      }
         }
-        return undefined
-      })
-      const deploymentId = process.env.AICORE_DEPLOYMENT_ID
-      const resourceGroup = process.env.AICORE_RESOURCE_GROUP
+      const deploymentId = env["AICORE_DEPLOYMENT_ID"]
+      const resourceGroup = env["AICORE_RESOURCE_GROUP"]
 
       return {
         autoload: !!envServiceKey,
@@ -1232,7 +1227,9 @@ export const layer = Layer.effect(
         const dep = {
           auth: (id: string) => auth.get(id).pipe(Effect.orDie),
           config: () => config.get(),
-          env: () => env.all(),
+          env: Object.assign(() => env.all(), {
+            set: (key: string, value: string) => env.set(key, value)
+          }),
           get: (key: string) => env.get(key),
         }
 

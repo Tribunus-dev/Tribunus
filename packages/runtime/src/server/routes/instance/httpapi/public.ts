@@ -447,8 +447,8 @@ function fixSelfReferencingComponents(spec: OpenApiSpec) {
     }
   }
   // Simplest fix: generate the raw spec (without transform) to get correct schemas
-  const raw: OpenApiSpec = OpenApi.fromApi(OpenCodeHttpApi)
-  const rawSchemas = raw.components?.schemas
+  const raw: OpenApi.OpenAPISpec = OpenApi.fromApi(OpenCodeHttpApi.annotateMerge(OpenApi.annotations({ transform: undefined })))
+  const rawSchemas = raw.components?.schemas as Record<string, OpenApiSchema> | undefined
   if (!rawSchemas) return
   for (const name of selfRefs) {
     if (rawSchemas[name]) schemas[name] = rawSchemas[name]

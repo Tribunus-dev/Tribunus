@@ -10,6 +10,18 @@ fn main() {
     forward("DEBUG");
 
     napi_build::setup();
+    // Run DPC++ build pipeline
+    let compile_script = std::path::Path::new("../../build/kernels/compile.sh");
+    if compile_script.exists() {
+        let status = std::process::Command::new("bash")
+            .arg(compile_script)
+            .status()
+            .expect("Failed to run kernel compile script");
+        if !status.success() {
+            println!("cargo:warning=Kernel compilation failed or gracefully degraded.");
+        }
+    }
+
     #[cfg(target_os = "linux")]
     {
         // Probe pkg-config for openblas and level-zero
@@ -45,6 +57,11 @@ fn main() {
         } else if std::path::Path::new("/usr/lib/x86_64-linux-gnu/libvulkan.so").exists() || std::path::Path::new("/usr/lib/libvulkan.so").exists() {
             println!("cargo:rustc-cfg=has_vulkan");
         }
+    }
+
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("macos") {
+        println!("cargo:rustc-link-arg=-Wl,-undefined,dynamic_lookup");
+    }
     }
 
 
