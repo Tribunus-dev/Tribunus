@@ -1,0 +1,804 @@
+<!DOCTYPE html><html lang="zh-CN" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-5lapnycg"> <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>服务器 | Tribunus</title><link rel="canonical" href="https://tribunus.dev/docs/zh-cn/server/"/><link rel="alternate" hreflang="en" href="https://tribunus.dev/docs/server/"/><link rel="alternate" hreflang="ar" href="https://tribunus.dev/docs/ar/server/"/><link rel="alternate" hreflang="bs-BA" href="https://tribunus.dev/docs/bs/server/"/><link rel="alternate" hreflang="da-DK" href="https://tribunus.dev/docs/da/server/"/><link rel="alternate" hreflang="de-DE" href="https://tribunus.dev/docs/de/server/"/><link rel="alternate" hreflang="es-ES" href="https://tribunus.dev/docs/es/server/"/><link rel="alternate" hreflang="fr-FR" href="https://tribunus.dev/docs/fr/server/"/><link rel="alternate" hreflang="it-IT" href="https://tribunus.dev/docs/it/server/"/><link rel="alternate" hreflang="ja-JP" href="https://tribunus.dev/docs/ja/server/"/><link rel="alternate" hreflang="ko-KR" href="https://tribunus.dev/docs/ko/server/"/><link rel="alternate" hreflang="nb-NO" href="https://tribunus.dev/docs/nb/server/"/><link rel="alternate" hreflang="pl-PL" href="https://tribunus.dev/docs/pl/server/"/><link rel="alternate" hreflang="pt-BR" href="https://tribunus.dev/docs/pt-br/server/"/><link rel="alternate" hreflang="ru-RU" href="https://tribunus.dev/docs/ru/server/"/><link rel="alternate" hreflang="th-TH" href="https://tribunus.dev/docs/th/server/"/><link rel="alternate" hreflang="tr-TR" href="https://tribunus.dev/docs/tr/server/"/><link rel="alternate" hreflang="zh-CN" href="https://tribunus.dev/docs/zh-cn/server/"/><link rel="alternate" hreflang="zh-TW" href="https://tribunus.dev/docs/zh-tw/server/"/><link rel="sitemap" href="/docs/sitemap-index.xml"/><link rel="icon" href="/favicon-v3.ico" sizes="32x32"/><link rel="icon" type="image/png" href="/favicon-96x96-v3.png" sizes="96x96"/><link rel="apple-touch-icon" href="/apple-touch-icon-v3.png" sizes="180x180"/><link rel="shortcut icon" href="/docs/favicon-v3.svg" type="image/svg+xml"/><meta name="generator" content="Astro v5.7.13"/><meta name="generator" content="Starlight v0.34.3"/><meta property="og:title" content="服务器"/><meta property="og:type" content="article"/><meta property="og:url" content="https://tribunus.dev/docs/zh-cn/server/"/><meta property="og:locale" content="zh-CN"/><meta property="og:description" content="通过 HTTP 与 opencode 服务器交互。"/><meta property="og:site_name" content="Tribunus"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="通过 HTTP 与 opencode 服务器交互。"/><meta property="og:image" content="https://social-cards.sst.dev/opencode-docs/JUU2JTlDJThEJUU1JThBJUExJUU1JTk5JUE4.png?desc=%E9%80%9A%E8%BF%87%20HTTP%20%E4%B8%8E%20opencode%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BA%A4%E4%BA%92%E3%80%82">
+  <meta property="twitter:image" content="https://social-cards.sst.dev/opencode-docs/JUU2JTlDJThEJUU1JThBJUExJUU1JTk5JUE4.png?desc=%E9%80%9A%E8%BF%87%20HTTP%20%E4%B8%8E%20opencode%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BA%A4%E4%BA%92%E3%80%82"><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/docs/_astro/print.DNXP8c50.css" media="print"><link rel="stylesheet" href="/docs/_astro/_id_.B4fkgSkc.css">
+<style>@layer starlight.components{:root{--sl-badge-default-border: var(--sl-color-accent);--sl-badge-default-bg: var(--sl-color-accent-low);--sl-badge-default-text: #fff;--sl-badge-note-border: var(--sl-color-blue);--sl-badge-note-bg: var(--sl-color-blue-low);--sl-badge-note-text: #fff;--sl-badge-danger-border: var(--sl-color-red);--sl-badge-danger-bg: var(--sl-color-red-low);--sl-badge-danger-text: #fff;--sl-badge-success-border: var(--sl-color-green);--sl-badge-success-bg: var(--sl-color-green-low);--sl-badge-success-text: #fff;--sl-badge-caution-border: var(--sl-color-orange);--sl-badge-caution-bg: var(--sl-color-orange-low);--sl-badge-caution-text: #fff;--sl-badge-tip-border: var(--sl-color-purple);--sl-badge-tip-bg: var(--sl-color-purple-low);--sl-badge-tip-text: #fff}[data-theme=light]:root{--sl-badge-default-bg: var(--sl-color-accent-high);--sl-badge-note-bg: var(--sl-color-blue-high);--sl-badge-danger-bg: var(--sl-color-red-high);--sl-badge-success-bg: var(--sl-color-green-high);--sl-badge-caution-bg: var(--sl-color-orange-high);--sl-badge-tip-bg: var(--sl-color-purple-high)}.sl-badge:where(.astro-h2x5kslp){display:inline-block;border:1px solid var(--sl-color-border-badge);border-radius:.25rem;font-family:var(--sl-font-system-mono);line-height:normal;color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere}.sidebar-content .sl-badge:where(.astro-h2x5kslp){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-h2x5kslp){--sl-color-bg-badge: transparent;--sl-color-border-badge: currentColor;color:inherit}.default:where(.astro-h2x5kslp){--sl-color-bg-badge: var(--sl-badge-default-bg);--sl-color-border-badge: var(--sl-badge-default-border);--sl-color-text-badge: var(--sl-badge-default-text)}.note:where(.astro-h2x5kslp){--sl-color-bg-badge: var(--sl-badge-note-bg);--sl-color-border-badge: var(--sl-badge-note-border);--sl-color-text-badge: var(--sl-badge-note-text)}.danger:where(.astro-h2x5kslp){--sl-color-bg-badge: var(--sl-badge-danger-bg);--sl-color-border-badge: var(--sl-badge-danger-border);--sl-color-text-badge: var(--sl-badge-danger-text)}.success:where(.astro-h2x5kslp){--sl-color-bg-badge: var(--sl-badge-success-bg);--sl-color-border-badge: var(--sl-badge-success-border);--sl-color-text-badge: var(--sl-badge-success-text)}.tip:where(.astro-h2x5kslp){--sl-color-bg-badge: var(--sl-badge-tip-bg);--sl-color-border-badge: var(--sl-badge-tip-border);--sl-color-text-badge: var(--sl-badge-tip-text)}.caution:where(.astro-h2x5kslp){--sl-color-bg-badge: var(--sl-badge-caution-bg);--sl-color-border-badge: var(--sl-badge-caution-border);--sl-color-text-badge: var(--sl-badge-caution-text)}.small:where(.astro-h2x5kslp){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-h2x5kslp){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-h2x5kslp){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-h2x5kslp){vertical-align:middle}}
+@layer starlight.components{svg:where(.astro-363hsjto){color:var(--sl-icon-color);font-size:var(--sl-icon-size, 1em);width:1em;height:1em}}
+@layer starlight.components{starlight-tabs:where(.astro-zqa2stjx){display:block}.tablist-wrapper:where(.astro-zqa2stjx){overflow-x:auto}:where(.astro-zqa2stjx)[role=tablist]{display:flex;list-style:none;border-bottom:2px solid var(--sl-color-gray-5);padding:0}.tab:where(.astro-zqa2stjx){margin-bottom:-2px}.tab:where(.astro-zqa2stjx)>:where(.astro-zqa2stjx)[role=tab]{display:flex;align-items:center;gap:.5rem;padding:0 1.25rem;text-decoration:none;border-bottom:2px solid var(--sl-color-gray-5);color:var(--sl-color-gray-3);outline-offset:var(--sl-outline-offset-inside);overflow-wrap:initial}.tab:where(.astro-zqa2stjx) :where(.astro-zqa2stjx)[role=tab][aria-selected=true]{color:var(--sl-color-white);border-color:var(--sl-color-text-accent);font-weight:600}.tablist-wrapper:where(.astro-zqa2stjx)~[role=tabpanel]{margin-top:1rem}}
+@layer starlight.components{.sl-steps{--bullet-size: calc(var(--sl-line-height) * 1rem);--bullet-margin: .375rem;list-style:none;counter-reset:steps-counter var(--sl-steps-start, 0);padding-inline-start:0}.sl-steps>li{counter-increment:steps-counter;position:relative;padding-inline-start:calc(var(--bullet-size) + 1rem);padding-bottom:1px;min-height:calc(var(--bullet-size) + var(--bullet-margin))}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);position:absolute;top:0;inset-inline-start:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);font-weight:600;text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);border-radius:99rem;box-shadow:inset 0 0 0 1px var(--sl-color-gray-5)}.sl-steps>li:after{--guide-width: 1px;content:"";position:absolute;top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2);width:var(--guide-width);background-color:var(--sl-color-hairline-light)}}@layer starlight.content{.sl-steps>li>:first-child{--lh: calc(1em * var(--sl-line-height));--shift-y: calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh: calc(1em * var(--sl-line-height-headings))}@supports (--prop: 1lh){.sl-steps>li>:first-child{--lh: 1lh}}}
+@layer starlight.components{.sl-link-button:where(.astro-s3zmvep2){align-items:center;border:1px solid transparent;border-radius:999rem;display:inline-flex;font-size:var(--sl-text-sm);gap:.5em;line-height:1.1875;outline-offset:.25rem;padding:.4375rem 1.125rem;text-decoration:none}.sl-link-button:where(.astro-s3zmvep2).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-s3zmvep2).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-s3zmvep2).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-s3zmvep2).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-s3zmvep2) svg{flex-shrink:0}@media(min-width:50rem){.sl-link-button:where(.astro-s3zmvep2){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-s3zmvep2){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-s3zmvep2):not(:where(p *)){margin-block:1rem}}
+</style><script type="module" src="/docs/_astro/page.7qqag-5g.js"></script></head> <body class="astro-5lapnycg"> <a href="#_top" class="astro-nj4xaijn">跳转到内容</a>  <div class="page sl-flex astro-72fyi7w6"> <header class="header astro-72fyi7w6"><div class="header sl-flex astro-lia4aqai"> <div class="title-wrapper sl-flex astro-lia4aqai"> <a href="/docs/zh-cn" class="site-title sl-flex astro-idrpryed">  <img class="light:sl-hidden print:hidden astro-idrpryed" alt src="/docs/_astro/logo-dark.C3W0CJu_.svg" width="720" height="129"> <img class="dark:sl-hidden print:block astro-idrpryed" alt src="/docs/_astro/logo-light.tRk7dwoM.svg" width="720" height="129"> <span class="sr-only astro-idrpryed" translate="no"> Tribunus </span> </a>  </div> <div class="middle-group sl-flex astro-lia4aqai"> <a class="links astro-nxrzcoak" href="/">app.header.home</a><a class="links astro-nxrzcoak" href="/docs/">app.header.docs</a> </div> <div class="sl-hidden md:sl-flex right-group astro-lia4aqai"> <div class="sl-flex social-icons astro-lia4aqai"> <a href="https://github.com/tribunus-dev/tribunus" rel="me" target="_blank" class="astro-lia4aqai"> <svg aria-hidden="true" class="astro-lia4aqai astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg> </a><a href="https://tribunus.dev/discord" rel="me" target="_blank" class="astro-lia4aqai"> <svg aria-hidden="true" class="astro-lia4aqai astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.93-1.51 13.78 13.78 0 0 0-.64 1.28 18.27 18.27 0 0 0-5.5 0 12.64 12.64 0 0 0-.64-1.28h-.05A19.74 19.74 0 0 0 3.64 4.4 20.26 20.26 0 0 0 .11 18.09l.02.02a19.9 19.9 0 0 0 6.04 3.03l.04-.02a14.24 14.24 0 0 0 1.23-2.03.08.08 0 0 0-.05-.07 13.1 13.1 0 0 1-1.9-.92.08.08 0 0 1 .02-.1 10.2 10.2 0 0 0 .41-.31h.04a14.2 14.2 0 0 0 12.1 0l.04.01a9.63 9.63 0 0 0 .4.32.08.08 0 0 1-.03.1 12.29 12.29 0 0 1-1.9.91.08.08 0 0 0-.02.1 15.97 15.97 0 0 0 1.27 2.01h.04a19.84 19.84 0 0 0 6.03-3.05v-.03a20.12 20.12 0 0 0-3.57-13.69ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.22 0 2.18 1.1 2.16 2.42 0 1.34-.94 2.42-2.16 2.42Z"/></svg> </a> </div> <site-search class="astro-lia4aqai astro-kydbsa7n" data-translations="{&#34;placeholder&#34;:&#34;搜索&#34;}"> <button data-open-modal disabled aria-label="搜索" aria-keyshortcuts="Control+K" class="astro-kydbsa7n"> <svg aria-hidden="true" class="astro-kydbsa7n astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg> <span class="sl-hidden md:sl-block astro-kydbsa7n" aria-hidden="true">搜索</span> <kbd class="sl-hidden md:sl-flex astro-kydbsa7n" style="display: none;"> <kbd class="astro-kydbsa7n">Ctrl</kbd><kbd class="astro-kydbsa7n">K</kbd> </kbd> </button> <dialog style="padding:0" aria-label="搜索" class="astro-kydbsa7n"> <div class="dialog-frame sl-flex astro-kydbsa7n">  <button data-close-modal class="sl-flex md:sl-hidden astro-kydbsa7n"> 取消 </button> <div class="search-container astro-kydbsa7n"> <div id="starlight__search" class="astro-kydbsa7n"></div> </div> </div> </dialog> </site-search>  <script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script> <script type="module" src="/docs/_astro/Search.astro_astro_type_script_index_0_lang.ol3yM__Y.js"></script>   </div> </div> </header> <nav class="sidebar print:hidden astro-72fyi7w6" aria-label="主要"> <starlight-menu-button class="print:hidden astro-e2itoay4"> <button aria-expanded="false" aria-label="菜单" aria-controls="starlight__sidebar" class="sl-flex md:sl-hidden astro-e2itoay4"> <svg aria-hidden="true" class="open-menu astro-e2itoay4 astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg> <svg aria-hidden="true" class="close-menu astro-e2itoay4 astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg> </button> </starlight-menu-button> <script type="module">class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);</script>   <div id="starlight__sidebar" class="sidebar-pane astro-72fyi7w6"> <div class="sidebar-content sl-flex astro-72fyi7w6"> <sl-sidebar-state-persist data-hash="01vadjb" class="astro-f4kk4iqf"> <script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script>  <ul class="top-level astro-iacrcyqs"> <li class="astro-iacrcyqs"> <a href="/docs/zh-cn/" aria-current="false" class="large astro-iacrcyqs"> <span class="astro-iacrcyqs">简介</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/config/" aria-current="false" class="large astro-iacrcyqs"> <span class="astro-iacrcyqs">配置</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/providers/" aria-current="false" class="large astro-iacrcyqs"> <span class="astro-iacrcyqs">提供商</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/network/" aria-current="false" class="large astro-iacrcyqs"> <span class="astro-iacrcyqs">网络</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/enterprise/" aria-current="false" class="large astro-iacrcyqs"> <span class="astro-iacrcyqs">企业版</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/troubleshooting/" aria-current="false" class="large astro-iacrcyqs"> <span class="astro-iacrcyqs">故障排除</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/windows-wsl" aria-current="false" class="large astro-iacrcyqs"> <span class="astro-iacrcyqs">Windows</span>  </a> </li><li class="astro-iacrcyqs"> <details open class="astro-iacrcyqs"> <sl-sidebar-restore data-index="0"></sl-sidebar-restore> <summary class="astro-iacrcyqs"> <div class="group-label astro-iacrcyqs"> <span class="large astro-iacrcyqs">使用</span>  </div> <svg aria-hidden="true" class="caret astro-iacrcyqs astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <ul class="astro-iacrcyqs"> <li class="astro-iacrcyqs"> <a href="/docs/zh-cn/go/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">Go</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/tui/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">TUI</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/cli/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">CLI</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/web/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">Web</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/ide/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">IDE</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/zen/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">Zen</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/share/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">分享</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/github/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">GitHub</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/gitlab/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">GitLab</span>  </a> </li> </ul>  </details> </li><li class="astro-iacrcyqs"> <details open class="astro-iacrcyqs"> <sl-sidebar-restore data-index="1"></sl-sidebar-restore> <summary class="astro-iacrcyqs"> <div class="group-label astro-iacrcyqs"> <span class="large astro-iacrcyqs">配置</span>  </div> <svg aria-hidden="true" class="caret astro-iacrcyqs astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <ul class="astro-iacrcyqs"> <li class="astro-iacrcyqs"> <a href="/docs/zh-cn/tools/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">工具</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/rules/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">规则</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/agents/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">代理</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/models/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">模型</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/themes/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">主题</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/keybinds/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">快捷键</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/commands/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">命令</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/formatters/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">格式化工具</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/permissions/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">权限</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/lsp/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">LSP 服务器</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/mcp-servers/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">MCP 服务器</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/acp/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">ACP 支持</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/skills/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">代理技能</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/custom-tools/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">自定义工具</span>  </a> </li> </ul>  </details> </li><li class="astro-iacrcyqs"> <details open class="astro-iacrcyqs"> <sl-sidebar-restore data-index="2"></sl-sidebar-restore> <summary class="astro-iacrcyqs"> <div class="group-label astro-iacrcyqs"> <span class="large astro-iacrcyqs">开发</span>  </div> <svg aria-hidden="true" class="caret astro-iacrcyqs astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <ul class="astro-iacrcyqs"> <li class="astro-iacrcyqs"> <a href="/docs/zh-cn/sdk/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">SDK</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/server/" aria-current="page" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">服务器</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/plugins/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">插件</span>  </a> </li><li class="astro-iacrcyqs"> <a href="/docs/zh-cn/ecosystem/" aria-current="false" class="astro-iacrcyqs"> <span class="astro-iacrcyqs">生态系统</span>  </a> </li> </ul>  </details> </li> </ul>   <script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script> </sl-sidebar-state-persist>  <div class="md:sl-hidden"> <div class="mobile-preferences sl-flex astro-yfvbzrmz"> <div class="social-icons astro-yfvbzrmz"> <a href="https://github.com/tribunus-dev/tribunus" rel="me" class="sl-flex astro-7jpwl4wr"><span class="sr-only astro-7jpwl4wr">GitHub</span><svg aria-hidden="true" class="astro-7jpwl4wr astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://tribunus.dev/discord" rel="me" class="sl-flex astro-7jpwl4wr"><span class="sr-only astro-7jpwl4wr">Discord</span><svg aria-hidden="true" class="astro-7jpwl4wr astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.93-1.51 13.78 13.78 0 0 0-.64 1.28 18.27 18.27 0 0 0-5.5 0 12.64 12.64 0 0 0-.64-1.28h-.05A19.74 19.74 0 0 0 3.64 4.4 20.26 20.26 0 0 0 .11 18.09l.02.02a19.9 19.9 0 0 0 6.04 3.03l.04-.02a14.24 14.24 0 0 0 1.23-2.03.08.08 0 0 0-.05-.07 13.1 13.1 0 0 1-1.9-.92.08.08 0 0 1 .02-.1 10.2 10.2 0 0 0 .41-.31h.04a14.2 14.2 0 0 0 12.1 0l.04.01a9.63 9.63 0 0 0 .4.32.08.08 0 0 1-.03.1 12.29 12.29 0 0 1-1.9.91.08.08 0 0 0-.02.1 15.97 15.97 0 0 0 1.27 2.01h.04a19.84 19.84 0 0 0 6.03-3.05v-.03a20.12 20.12 0 0 0-3.57-13.69ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.22 0 2.18 1.1 2.16 2.42 0 1.34-.94 2.42-2.16 2.42Z"/></svg></a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-cql46uwe"> <span class="sr-only astro-cql46uwe">选择主题</span> <svg aria-hidden="true" class="icon label-icon astro-cql46uwe astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select value="auto" autocomplete="off" class="astro-cql46uwe"> <option value="dark" class="astro-cql46uwe">深色</option><option value="light" class="astro-cql46uwe">浅色</option><option value="auto" selected class="astro-cql46uwe">自动</option> </select> <svg aria-hidden="true" class="icon caret astro-cql46uwe astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label>  </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script> <script type="module">const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStorage<"u"&&localStorage.getItem(r));function n(e){typeof localStorage<"u"&&localStorage.setItem(r,e==="light"||e==="dark"?e:"")}const l=()=>matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);</script> <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-cql46uwe"> <span class="sr-only astro-cql46uwe">选择语言</span> <svg aria-hidden="true" class="icon label-icon astro-cql46uwe astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select value="/docs/zh-cn/server/" autocomplete="off" class="astro-cql46uwe"> <option value="/docs/server/" class="astro-cql46uwe">English</option><option value="/docs/ar/server/" class="astro-cql46uwe">العربية</option><option value="/docs/bs/server/" class="astro-cql46uwe">Bosanski</option><option value="/docs/da/server/" class="astro-cql46uwe">Dansk</option><option value="/docs/de/server/" class="astro-cql46uwe">Deutsch</option><option value="/docs/es/server/" class="astro-cql46uwe">Español</option><option value="/docs/fr/server/" class="astro-cql46uwe">Français</option><option value="/docs/it/server/" class="astro-cql46uwe">Italiano</option><option value="/docs/ja/server/" class="astro-cql46uwe">日本語</option><option value="/docs/ko/server/" class="astro-cql46uwe">한국어</option><option value="/docs/nb/server/" class="astro-cql46uwe">Norsk Bokmål</option><option value="/docs/pl/server/" class="astro-cql46uwe">Polski</option><option value="/docs/pt-br/server/" class="astro-cql46uwe">Português (Brasil)</option><option value="/docs/ru/server/" class="astro-cql46uwe">Русский</option><option value="/docs/th/server/" class="astro-cql46uwe">ไทย</option><option value="/docs/tr/server/" class="astro-cql46uwe">Türkçe</option><option value="/docs/zh-cn/server/" selected class="astro-cql46uwe">简体中文</option><option value="/docs/zh-tw/server/" class="astro-cql46uwe">繁體中文</option> </select> <svg aria-hidden="true" class="icon caret astro-cql46uwe astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-lang-select> </div>  </div> </div> </div> </nav> <div class="main-frame astro-72fyi7w6">  <script type="module">const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);</script> <div class="lg:sl-flex astro-77dehot7"> <aside class="right-sidebar-container print:hidden astro-77dehot7"> <div class="right-sidebar astro-77dehot7"> <div class="lg:sl-hidden astro-ljyakb5u"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-vduu3vjm"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-vduu3vjm"><details id="starlight__mobile-toc" class="astro-vduu3vjm"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-vduu3vjm"><div class="toggle sl-flex astro-vduu3vjm">本页内容<svg aria-hidden="true" class="caret astro-vduu3vjm astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></div><span class="display-current astro-vduu3vjm"></span></summary><div class="dropdown astro-vduu3vjm"><ul class="isMobile astro-uwxd45eq" style="--depth: 0;"> <li class="astro-uwxd45eq" style="--depth: 0;"> <a href="#_top" class="astro-uwxd45eq" style="--depth: 0;"> <span class="astro-uwxd45eq" style="--depth: 0;">概述</span> </a> <ul class="isMobile astro-uwxd45eq" style="--depth: 1;"> <li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#用法" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">用法</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#认证" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">认证</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#工作原理" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">工作原理</span> </a>  </li> </ul>  </li><li class="astro-uwxd45eq" style="--depth: 0;"> <a href="#规范" class="astro-uwxd45eq" style="--depth: 0;"> <span class="astro-uwxd45eq" style="--depth: 0;">规范</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 0;"> <a href="#api" class="astro-uwxd45eq" style="--depth: 0;"> <span class="astro-uwxd45eq" style="--depth: 0;">API</span> </a> <ul class="isMobile astro-uwxd45eq" style="--depth: 1;"> <li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#全局" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">全局</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#项目" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">项目</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#路径和-vcs" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">路径和 VCS</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#实例" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">实例</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#配置" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">配置</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#提供商" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">提供商</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#会话" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">会话</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#消息" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">消息</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#命令" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">命令</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#文件" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">文件</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#工具实验性" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">工具（实验性）</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#lsp格式化器和-mcp" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">LSP、格式化器和 MCP</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#代理" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">代理</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#日志" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">日志</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#tui" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">TUI</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#认证-1" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">认证</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#事件" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">事件</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#文档" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">文档</span> </a>  </li> </ul>  </li> </ul> </div></details></nav></mobile-starlight-toc><script type="module" src="/docs/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.C181hMzK.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-ljyakb5u"><div class="sl-container astro-ljyakb5u"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">本页内容</h2><ul class="astro-uwxd45eq" style="--depth: 0;"> <li class="astro-uwxd45eq" style="--depth: 0;"> <a href="#_top" class="astro-uwxd45eq" style="--depth: 0;"> <span class="astro-uwxd45eq" style="--depth: 0;">概述</span> </a> <ul class="astro-uwxd45eq" style="--depth: 1;"> <li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#用法" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">用法</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#认证" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">认证</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#工作原理" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">工作原理</span> </a>  </li> </ul>  </li><li class="astro-uwxd45eq" style="--depth: 0;"> <a href="#规范" class="astro-uwxd45eq" style="--depth: 0;"> <span class="astro-uwxd45eq" style="--depth: 0;">规范</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 0;"> <a href="#api" class="astro-uwxd45eq" style="--depth: 0;"> <span class="astro-uwxd45eq" style="--depth: 0;">API</span> </a> <ul class="astro-uwxd45eq" style="--depth: 1;"> <li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#全局" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">全局</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#项目" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">项目</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#路径和-vcs" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">路径和 VCS</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#实例" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">实例</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#配置" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">配置</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#提供商" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">提供商</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#会话" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">会话</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#消息" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">消息</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#命令" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">命令</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#文件" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">文件</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#工具实验性" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">工具（实验性）</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#lsp格式化器和-mcp" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">LSP、格式化器和 MCP</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#代理" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">代理</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#日志" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">日志</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#tui" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">TUI</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#认证-1" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">认证</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#事件" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">事件</span> </a>  </li><li class="astro-uwxd45eq" style="--depth: 1;"> <a href="#文档" class="astro-uwxd45eq" style="--depth: 1;"> <span class="astro-uwxd45eq" style="--depth: 1;">文档</span> </a>  </li> </ul>  </li> </ul> </nav></starlight-toc><script type="module" src="/docs/_astro/TableOfContents.astro_astro_type_script_index_0_lang.CKWWgpjV.js"></script></div></div> </div> </aside> <div class="main-pane astro-77dehot7">  <main data-pagefind-body class="astro-5lapnycg" lang="zh-CN" dir="ltr">    <div class="content-panel astro-5m27vs6j"> <div class="sl-container astro-5m27vs6j"> <h1 id="_top" class="astro-vmkeshh2">服务器</h1><p class="page-description astro-vmkeshh2">通过 HTTP 与 opencode 服务器交互。</p> </div> </div>  <div class="content-panel astro-5m27vs6j"> <div class="sl-container astro-5m27vs6j"> <div class="sl-markdown-content"> <p><code dir="auto">opencode serve</code> 命令运行一个无界面的 HTTP 服务器，暴露一个 OpenAPI 端点供 opencode 客户端使用。</p>
+<hr>
+<h3 id="用法"><a href="#用法">用法</a></h3>
+<div class="expressive-code"><link rel="stylesheet" href="/docs/_astro/ec.4c0k7.css"><script type="module" src="/docs/_astro/ec.0vx5m.js"></script><figure class="frame is-terminal not-content"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#6F42C1;--1:#B392F0">opencode</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">serve</span><span style="--0:#24292E;--1:#E1E4E8"> [--port </span><span style="--0:#032F62;--1:#9ECBFF">&#x3C;number>]</span><span style="--0:#24292E;--1:#E1E4E8"> [--hostname </span><span style="--0:#032F62;--1:#9ECBFF">&#x3C;string>]</span><span style="--0:#24292E;--1:#E1E4E8"> [--cors </span><span style="--0:#032F62;--1:#9ECBFF">&#x3C;origin>]</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="opencode serve [--port <number>] [--hostname <string>] [--cors <origin>]"><div></div></button></div></figure></div>
+<h4 id="选项"><a href="#选项">选项</a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>标志</th><th>描述</th><th>默认值</th></tr></thead><tbody><tr><td><code dir="auto">--port</code></td><td>监听端口</td><td><code dir="auto">4096</code></td></tr><tr><td><code dir="auto">--hostname</code></td><td>监听的主机名</td><td><code dir="auto">127.0.0.1</code></td></tr><tr><td><code dir="auto">--mdns</code></td><td>启用 mDNS 发现</td><td><code dir="auto">false</code></td></tr><tr><td><code dir="auto">--mdns-domain</code></td><td>mDNS 服务的自定义域名</td><td><code dir="auto">opencode.local</code></td></tr><tr><td><code dir="auto">--cors</code></td><td>额外允许的浏览器来源</td><td><code dir="auto">[]</code></td></tr></tbody></table>
+<p><code dir="auto">--cors</code> 可以多次传递：</p>
+<div class="expressive-code"><figure class="frame is-terminal not-content"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#6F42C1;--1:#B392F0">opencode</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">serve</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">--cors</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">http://localhost:5173</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#005CC5;--1:#79B8FF">--cors</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">https://app.example.com</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="opencode serve --cors http://localhost:5173 --cors https://app.example.com"><div></div></button></div></figure></div>
+<hr>
+<h3 id="认证"><a href="#认证">认证</a></h3>
+<p>设置 <code dir="auto">OPENCODE_SERVER_PASSWORD</code> 以使用 HTTP 基本认证保护服务器。用户名默认为 <code dir="auto">opencode</code>，也可以设置 <code dir="auto">OPENCODE_SERVER_USERNAME</code> 来覆盖它。这适用于 <code dir="auto">opencode serve</code> 和 <code dir="auto">opencode web</code>。</p>
+<div class="expressive-code"><figure class="frame is-terminal not-content"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#24292E;--1:#E1E4E8">OPENCODE_SERVER_PASSWORD</span><span style="--0:#BF3441;--1:#F97583">=</span><span style="--0:#032F62;--1:#9ECBFF">your-password</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#6F42C1;--1:#B392F0">opencode</span><span style="--0:#24292E;--1:#E1E4E8"> </span><span style="--0:#032F62;--1:#9ECBFF">serve</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="OPENCODE_SERVER_PASSWORD=your-password opencode serve"><div></div></button></div></figure></div>
+<hr>
+<h3 id="工作原理"><a href="#工作原理">工作原理</a></h3>
+<p>当你运行 <code dir="auto">opencode</code> 时，它会启动一个 TUI 和一个服务器。TUI 是与服务器通信的客户端。服务器暴露一个 OpenAPI 3.1 规范端点。该端点也用于生成 <a href="/docs/sdk">SDK</a>。</p>
+<aside aria-label="提示" class="starlight-aside starlight-aside--tip"><p class="starlight-aside__title" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="starlight-aside__icon"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.43909 8.85483L1.44039 8.85354L4.96668 5.33815C5.30653 4.99386 5.7685 4.79662 6.2524 4.78972L6.26553 4.78963L12.9014 4.78962L13.8479 3.84308C16.9187 0.772319 20.0546 0.770617 21.4678 0.975145C21.8617 1.02914 22.2271 1.21053 22.5083 1.4917C22.7894 1.77284 22.9708 2.13821 23.0248 2.53199C23.2294 3.94517 23.2278 7.08119 20.1569 10.1521L19.2107 11.0983V17.7338L19.2106 17.7469C19.2037 18.2308 19.0067 18.6933 18.6624 19.0331L15.1456 22.5608C14.9095 22.7966 14.6137 22.964 14.29 23.0449C13.9663 23.1259 13.6267 23.1174 13.3074 23.0204C12.9881 22.9235 12.7011 22.7417 12.4771 22.4944C12.2533 22.2473 12.1006 21.9441 12.0355 21.6171L11.1783 17.3417L6.65869 12.822L4.34847 12.3589L2.38351 11.965C2.05664 11.8998 1.75272 11.747 1.50564 11.5232C1.25835 11.2992 1.07653 11.0122 0.979561 10.6929C0.882595 10.3736 0.874125 10.034 0.955057 9.7103C1.03599 9.38659 1.20328 9.09092 1.43909 8.85483ZM6.8186 10.8724L2.94619 10.096L6.32006 6.73268H10.9583L6.8186 10.8724ZM15.2219 5.21703C17.681 2.75787 20.0783 2.75376 21.1124 2.8876C21.2462 3.92172 21.2421 6.31895 18.783 8.77812L12.0728 15.4883L8.51172 11.9272L15.2219 5.21703ZM13.9042 21.0538L13.1279 17.1811L17.2676 13.0414V17.68L13.9042 21.0538Z"></path><path d="M9.31827 18.3446C9.45046 17.8529 9.17864 17.3369 8.68945 17.1724C8.56178 17.1294 8.43145 17.1145 8.30512 17.1243C8.10513 17.1398 7.91519 17.2172 7.76181 17.3434C7.62613 17.455 7.51905 17.6048 7.45893 17.7835C6.97634 19.2186 5.77062 19.9878 4.52406 20.4029C4.08525 20.549 3.6605 20.644 3.29471 20.7053C3.35607 20.3395 3.45098 19.9148 3.59711 19.476C4.01221 18.2294 4.78141 17.0237 6.21648 16.5411C6.39528 16.481 6.54504 16.3739 6.65665 16.2382C6.85126 16.0016 6.92988 15.678 6.84417 15.3647C6.83922 15.3466 6.83373 15.3286 6.82767 15.3106C6.74106 15.053 6.55701 14.8557 6.33037 14.7459C6.10949 14.6389 5.84816 14.615 5.59715 14.6994C5.47743 14.7397 5.36103 14.7831 5.24786 14.8294C3.22626 15.6569 2.2347 17.4173 1.75357 18.8621C1.49662 19.6337 1.36993 20.3554 1.30679 20.8818C1.27505 21.1464 1.25893 21.3654 1.25072 21.5213C1.24662 21.5993 1.24448 21.6618 1.24337 21.7066L1.243 21.7226L1.24235 21.7605L1.2422 21.7771L1.24217 21.7827L1.24217 21.7856C1.24217 22.3221 1.67703 22.7579 2.2137 22.7579L2.2155 22.7579L2.22337 22.7578L2.23956 22.7577C2.25293 22.7575 2.27096 22.7572 2.29338 22.7567C2.33821 22.7555 2.40073 22.7534 2.47876 22.7493C2.63466 22.7411 2.85361 22.725 3.11822 22.6932C3.64462 22.6301 4.36636 22.5034 5.13797 22.2464C6.58274 21.7653 8.3431 20.7738 9.17063 18.7522C9.21696 18.639 9.26037 18.5226 9.30064 18.4029C9.30716 18.3835 9.31304 18.364 9.31827 18.3446Z"></path></svg>提示</p><div class="starlight-aside__content"><p>使用 opencode 服务器以编程方式与 opencode 交互。</p></div></aside>
+<p>这种架构让 opencode 支持多个客户端，并允许你以编程方式与 opencode 交互。</p>
+<p>你可以运行 <code dir="auto">opencode serve</code> 来启动一个独立的服务器。如果你已经在运行 opencode TUI，<code dir="auto">opencode serve</code> 会启动一个新的服务器。</p>
+<hr>
+<h4 id="连接到现有服务器"><a href="#连接到现有服务器">连接到现有服务器</a></h4>
+<p>当你启动 TUI 时，它会随机分配端口和主机名。你也可以传入 <code dir="auto">--hostname</code> 和 <code dir="auto">--port</code> <a href="/docs/cli">标志</a>，然后用它来连接对应的服务器。</p>
+<p><a href="#tui"><code dir="auto">/tui</code></a> 端点可用于通过服务器驱动 TUI。例如，你可以预填充或运行一个提示词。此方式被 OpenCode <a href="/docs/ide">IDE</a> 插件所使用。</p>
+<hr>
+<h2 id="规范"><a href="#规范">规范</a></h2>
+<p>服务器发布了一个 OpenAPI 3.1 规范，可在以下地址查看：</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#24292e;--1:#e1e4e8">http://&#x3C;hostname>:&#x3C;port>/doc</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="http://<hostname>:<port>/doc"><div></div></button></div></figure></div>
+<p>例如，<code dir="auto">http://localhost:4096/doc</code>。使用该规范可以生成客户端或检查请求和响应类型，也可以在 Swagger 浏览器中查看。</p>
+<hr>
+<h2 id="api"><a href="#api">API</a></h2>
+<p>opencode 服务器暴露以下 API。</p>
+<hr>
+<h3 id="全局"><a href="#全局">全局</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/global/health</code></td><td>获取服务器健康状态和版本</td><td><code dir="auto">{ healthy: true, version: string }</code></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/global/event</code></td><td>获取全局事件（SSE 流）</td><td>事件流</td></tr></tbody></table>
+<hr>
+<h3 id="项目"><a href="#项目">项目</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/project</code></td><td>列出所有项目</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Project[]</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/project/current</code></td><td>获取当前项目</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Project</code></a></td></tr></tbody></table>
+<hr>
+<h3 id="路径和-vcs"><a href="#路径和-vcs">路径和 VCS</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/path</code></td><td>获取当前路径</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Path</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/vcs</code></td><td>获取当前项目的 VCS 信息</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>VcsInfo</code></a></td></tr></tbody></table>
+<hr>
+<h3 id="实例"><a href="#实例">实例</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/instance/dispose</code></td><td>销毁当前实例</td><td><code dir="auto">boolean</code></td></tr></tbody></table>
+<hr>
+<h3 id="配置"><a href="#配置">配置</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/config</code></td><td>获取配置信息</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Config</code></a></td></tr><tr><td><code dir="auto">PATCH</code></td><td><code dir="auto">/config</code></td><td>更新配置</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Config</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/config/providers</code></td><td>列出提供商和默认模型</td><td><code dir="auto">{ providers: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Provider[]</a><code dir="auto">, default: { [key: string]: string } }</code></td></tr></tbody></table>
+<hr>
+<h3 id="提供商"><a href="#提供商">提供商</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/provider</code></td><td>列出所有提供商</td><td><code dir="auto">{ all: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Provider[]</a><code dir="auto">, default: {...}, connected: string[] }</code></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/provider/auth</code></td><td>获取提供商认证方式</td><td><code dir="auto">{ [providerID: string]: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">ProviderAuthMethod[]</a><code dir="auto"> }</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/provider/{id}/oauth/authorize</code></td><td>使用 OAuth 授权提供商</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>ProviderAuthAuthorization</code></a></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/provider/{id}/oauth/callback</code></td><td>处理提供商的 OAuth 回调</td><td><code dir="auto">boolean</code></td></tr></tbody></table>
+<hr>
+<h3 id="会话"><a href="#会话">会话</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>说明</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/session</code></td><td>列出所有会话</td><td>返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session[]</code></a></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session</code></td><td>创建新会话</td><td>请求体：<code dir="auto">{ parentID?, title? }</code>，返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/session/status</code></td><td>获取所有会话的状态</td><td>返回 <code dir="auto">{ [sessionID: string]: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">SessionStatus</a><code dir="auto"> }</code></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/session/:id</code></td><td>获取会话详情</td><td>返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a></td></tr><tr><td><code dir="auto">DELETE</code></td><td><code dir="auto">/session/:id</code></td><td>删除会话及其所有数据</td><td>返回 <code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">PATCH</code></td><td><code dir="auto">/session/:id</code></td><td>更新会话属性</td><td>请求体：<code dir="auto">{ title? }</code>，返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/session/:id/children</code></td><td>获取会话的子会话</td><td>返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session[]</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/session/:id/todo</code></td><td>获取会话的待办事项列表</td><td>返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Todo[]</code></a></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/init</code></td><td>分析应用并创建 <code dir="auto">AGENTS.md</code></td><td>请求体：<code dir="auto">{ messageID, providerID, modelID }</code>，返回 <code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/fork</code></td><td>在某条消息处分叉现有会话</td><td>请求体：<code dir="auto">{ messageID? }</code>，返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/abort</code></td><td>中止正在运行的会话</td><td>返回 <code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/share</code></td><td>分享会话</td><td>返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a></td></tr><tr><td><code dir="auto">DELETE</code></td><td><code dir="auto">/session/:id/share</code></td><td>取消分享会话</td><td>返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Session</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/session/:id/diff</code></td><td>获取本次会话的差异</td><td>查询参数：<code dir="auto">messageID?</code>，返回 <a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>FileDiff[]</code></a></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/summarize</code></td><td>总结会话</td><td>请求体：<code dir="auto">{ providerID, modelID }</code>，返回 <code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/revert</code></td><td>回退消息</td><td>请求体：<code dir="auto">{ messageID, partID? }</code>，返回 <code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/unrevert</code></td><td>恢复所有已回退的消息</td><td>返回 <code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/permissions/:permissionID</code></td><td>响应权限请求</td><td>请求体：<code dir="auto">{ response, remember? }</code>，返回 <code dir="auto">boolean</code></td></tr></tbody></table>
+<hr>
+<h3 id="消息"><a href="#消息">消息</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>说明</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/session/:id/message</code></td><td>列出会话中的消息</td><td>查询参数：<code dir="auto">limit?</code>，返回 <code dir="auto">{ info: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Message</a><code dir="auto">, parts: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Part[]</a><code dir="auto">}[]</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/message</code></td><td>发送消息并等待响应</td><td>请求体：<code dir="auto">{ messageID?, model?, agent?, noReply?, system?, tools?, parts }</code>，返回 <code dir="auto">{ info: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Message</a><code dir="auto">, parts: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Part[]</a><code dir="auto">}</code></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/session/:id/message/:messageID</code></td><td>获取消息详情</td><td>返回 <code dir="auto">{ info: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Message</a><code dir="auto">, parts: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Part[]</a><code dir="auto">}</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/prompt_async</code></td><td>异步发送消息（不等待响应）</td><td>请求体：与 <code dir="auto">/session/:id/message</code> 相同，返回 <code dir="auto">204 No Content</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/command</code></td><td>执行斜杠命令</td><td>请求体：<code dir="auto">{ messageID?, agent?, model?, command, arguments }</code>，返回 <code dir="auto">{ info: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Message</a><code dir="auto">, parts: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Part[]</a><code dir="auto">}</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/session/:id/shell</code></td><td>运行 shell 命令</td><td>请求体：<code dir="auto">{ agent, model?, command }</code>，返回 <code dir="auto">{ info: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Message</a><code dir="auto">, parts: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">Part[]</a><code dir="auto">}</code></td></tr></tbody></table>
+<hr>
+<h3 id="命令"><a href="#命令">命令</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/command</code></td><td>列出所有命令</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Command[]</code></a></td></tr></tbody></table>
+<hr>
+<h3 id="文件"><a href="#文件">文件</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/find?pattern=&lt;pat&gt;</code></td><td>在文件中搜索文本</td><td>包含 <code dir="auto">path</code>、<code dir="auto">lines</code>、<code dir="auto">line_number</code>、<code dir="auto">absolute_offset</code>、<code dir="auto">submatches</code> 的匹配对象数组</td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/find/file?query=&lt;q&gt;</code></td><td>按名称查找文件和目录</td><td><code dir="auto">string[]</code>（路径）</td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/find/symbol?query=&lt;q&gt;</code></td><td>查找工作区符号</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Symbol[]</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/file?path=&lt;path&gt;</code></td><td>列出文件和目录</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>FileNode[]</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/file/content?path=&lt;p&gt;</code></td><td>读取文件</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>FileContent</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/file/status</code></td><td>获取已跟踪文件的状态</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>File[]</code></a></td></tr></tbody></table>
+<h4 id="findfile-查询参数"><a href="#findfile-查询参数"><code dir="auto">/find/file</code> 查询参数</a></h4>
+<ul>
+<li><code dir="auto">query</code>（必需）— 搜索字符串（模糊匹配）</li>
+<li><code dir="auto">type</code>（可选）— 将结果限制为 <code dir="auto">"file"</code> 或 <code dir="auto">"directory"</code></li>
+<li><code dir="auto">directory</code>（可选）— 覆盖搜索的项目根目录</li>
+<li><code dir="auto">limit</code>（可选）— 最大结果数（1–200）</li>
+<li><code dir="auto">dirs</code>（可选）— 旧版标志（<code dir="auto">"false"</code> 仅返回文件）</li>
+</ul>
+<hr>
+<h3 id="工具实验性"><a href="#工具实验性">工具（实验性）</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/experimental/tool/ids</code></td><td>列出所有工具 ID</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>ToolIDs</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/experimental/tool?provider=&lt;p&gt;&amp;model=&lt;m&gt;</code></td><td>列出指定模型的工具及其 JSON Schema</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>ToolList</code></a></td></tr></tbody></table>
+<hr>
+<h3 id="lsp格式化器和-mcp"><a href="#lsp格式化器和-mcp">LSP、格式化器和 MCP</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/lsp</code></td><td>获取 LSP 服务器状态</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>LSPStatus[]</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/formatter</code></td><td>获取格式化器状态</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>FormatterStatus[]</code></a></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/mcp</code></td><td>获取 MCP 服务器状态</td><td><code dir="auto">{ [name: string]: </code><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts">MCPStatus</a><code dir="auto"> }</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/mcp</code></td><td>动态添加 MCP 服务器</td><td>请求体：<code dir="auto">{ name, config }</code>，返回 MCP 状态对象</td></tr></tbody></table>
+<hr>
+<h3 id="代理"><a href="#代理">代理</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/agent</code></td><td>列出所有可用的代理</td><td><a href="https://github.com/tribunus-dev/tribunus/blob/dev/packages/sdk/js/src/gen/types.gen.ts"><code>Agent[]</code></a></td></tr></tbody></table>
+<hr>
+<h3 id="日志"><a href="#日志">日志</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/log</code></td><td>写入日志条目。请求体：<code dir="auto">{ service, level, message, extra? }</code></td><td><code dir="auto">boolean</code></td></tr></tbody></table>
+<hr>
+<h3 id="tui"><a href="#tui">TUI</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/append-prompt</code></td><td>向提示词追加文本</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/open-help</code></td><td>打开帮助对话框</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/open-sessions</code></td><td>打开会话选择器</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/open-themes</code></td><td>打开主题选择器</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/open-models</code></td><td>打开模型选择器</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/submit-prompt</code></td><td>提交当前提示词</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/clear-prompt</code></td><td>清除提示词</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/execute-command</code></td><td>执行命令（<code dir="auto">{ command }</code>）</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/show-toast</code></td><td>显示提示消息（<code dir="auto">{ title?, message, variant }</code>）</td><td><code dir="auto">boolean</code></td></tr><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/tui/control/next</code></td><td>等待下一个控制请求</td><td>控制请求对象</td></tr><tr><td><code dir="auto">POST</code></td><td><code dir="auto">/tui/control/response</code></td><td>响应控制请求（<code dir="auto">{ body }</code>）</td><td><code dir="auto">boolean</code></td></tr></tbody></table>
+<hr>
+<h3 id="认证-1"><a href="#认证-1">认证</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">PUT</code></td><td><code dir="auto">/auth/:id</code></td><td>设置认证凭据。请求体必须匹配提供商的数据结构</td><td><code dir="auto">boolean</code></td></tr></tbody></table>
+<hr>
+<h3 id="事件"><a href="#事件">事件</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/event</code></td><td>服务器发送事件流。第一个事件是 <code dir="auto">server.connected</code>，之后是总线事件</td><td>服务器发送事件流</td></tr></tbody></table>
+<hr>
+<h3 id="文档"><a href="#文档">文档</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方法</th><th>路径</th><th>描述</th><th>响应</th></tr></thead><tbody><tr><td><code dir="auto">GET</code></td><td><code dir="auto">/doc</code></td><td>OpenAPI 3.1 规范</td><td>包含 OpenAPI 规范的 HTML 页面</td></tr></tbody></table> </div> <footer class="doc astro-sz7xmlte"><div class="meta sl-flex astro-sz7xmlte"><div class="astro-sz7xmlte"><a href="https://github.com/tribunus-dev/tribunus/edit/dev/packages/web/src/content/docs/zh-cn/server.mdx" target="_blank" rel="noopener noreferrer" class="sl-flex astro-sz7xmlte"><svg aria-hidden="true" class="astro-sz7xmlte astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-1.1-.22 1 1 0 0 0-.32.22l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8c.1-.1.17-.2.22-.33a1 1 0 0 0 0-.24v-.14l.07-.05ZM6.83 20H4v-2.83l9.93-9.93 2.83 2.83L6.83 20ZM18.17 8.66l-2.83-2.83 1.42-1.41 2.82 2.82-1.41 1.42Z"/></svg>编辑此页</a><a href="https://github.com/tribunus-dev/tribunus/issues/new" target="_blank" rel="noopener noreferrer" class="sl-flex astro-sz7xmlte"><svg aria-hidden="true" class="astro-sz7xmlte astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg>发现问题？提交 issue</a><a href="https://tribunus.dev/discord" target="_blank" rel="noopener noreferrer" class="sl-flex astro-sz7xmlte"><svg aria-hidden="true" class="astro-sz7xmlte astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.93-1.51 13.78 13.78 0 0 0-.64 1.28 18.27 18.27 0 0 0-5.5 0 12.64 12.64 0 0 0-.64-1.28h-.05A19.74 19.74 0 0 0 3.64 4.4 20.26 20.26 0 0 0 .11 18.09l.02.02a19.9 19.9 0 0 0 6.04 3.03l.04-.02a14.24 14.24 0 0 0 1.23-2.03.08.08 0 0 0-.05-.07 13.1 13.1 0 0 1-1.9-.92.08.08 0 0 1 .02-.1 10.2 10.2 0 0 0 .41-.31h.04a14.2 14.2 0 0 0 12.1 0l.04.01a9.63 9.63 0 0 0 .4.32.08.08 0 0 1-.03.1 12.29 12.29 0 0 1-1.9.91.08.08 0 0 0-.02.1 15.97 15.97 0 0 0 1.27 2.01h.04a19.84 19.84 0 0 0 6.03-3.05v-.03a20.12 20.12 0 0 0-3.57-13.69ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.22 0 2.18 1.1 2.16 2.42 0 1.34-.94 2.42-2.16 2.42Z"/></svg>加入我们的 Discord 社区</a><starlight-lang-select><label style="--sl-select-width: 7em" class="astro-cql46uwe"> <span class="sr-only astro-cql46uwe">选择语言</span> <svg aria-hidden="true" class="icon label-icon astro-cql46uwe astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select value="/docs/zh-cn/server/" autocomplete="off" class="astro-cql46uwe"> <option value="/docs/server/" class="astro-cql46uwe">English</option><option value="/docs/ar/server/" class="astro-cql46uwe">العربية</option><option value="/docs/bs/server/" class="astro-cql46uwe">Bosanski</option><option value="/docs/da/server/" class="astro-cql46uwe">Dansk</option><option value="/docs/de/server/" class="astro-cql46uwe">Deutsch</option><option value="/docs/es/server/" class="astro-cql46uwe">Español</option><option value="/docs/fr/server/" class="astro-cql46uwe">Français</option><option value="/docs/it/server/" class="astro-cql46uwe">Italiano</option><option value="/docs/ja/server/" class="astro-cql46uwe">日本語</option><option value="/docs/ko/server/" class="astro-cql46uwe">한국어</option><option value="/docs/nb/server/" class="astro-cql46uwe">Norsk Bokmål</option><option value="/docs/pl/server/" class="astro-cql46uwe">Polski</option><option value="/docs/pt-br/server/" class="astro-cql46uwe">Português (Brasil)</option><option value="/docs/ru/server/" class="astro-cql46uwe">Русский</option><option value="/docs/th/server/" class="astro-cql46uwe">ไทย</option><option value="/docs/tr/server/" class="astro-cql46uwe">Türkçe</option><option value="/docs/zh-cn/server/" selected class="astro-cql46uwe">简体中文</option><option value="/docs/zh-tw/server/" class="astro-cql46uwe">繁體中文</option> </select> <svg aria-hidden="true" class="icon caret astro-cql46uwe astro-363hsjto" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-lang-select><script type="module">class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);</script></div><div class="astro-sz7xmlte"><p class="astro-sz7xmlte">&copy; <a target="_blank" rel="noopener noreferrer" href="https://anoma.ly" class="astro-sz7xmlte">Anomaly</a></p><p title="最近更新：" class="astro-sz7xmlte">最近更新： <time datetime="2026-06-18T21:19:38.000Z" class="astro-sz7xmlte">2026年6月18日</time></p></div></div></footer> </div> </div>   </main> </div> </div>  </div> </div>  </body></html>
