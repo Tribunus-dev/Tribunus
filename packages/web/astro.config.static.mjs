@@ -179,7 +179,14 @@ export default defineConfig({
         {
           label: "Blog",
           translations: { en: "Blog" },
-          items: ["blog/tribunus-thesis"],
+          items: [
+            "blog/tribunus-thesis",
+            "blog/what-tribunus-guarantees",
+            "blog/agentic-system-administration",
+            "blog/negative-results-are-immortal",
+            "blog/agents-as-state-machines",
+            "blog/how-a-model-becomes-a-compute-image",
+          ],
         },
         "config",
         "providers",
