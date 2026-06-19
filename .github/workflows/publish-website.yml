@@ -31,6 +31,12 @@ jobs:
           NODE_ENV: production
           SST_STAGE: production
 
+      - name: Copy standalone pages into dist
+        run: |
+          mkdir -p static/research static/enterprise
+          cp -r static/* packages/web/dist/
+        continue-on-error: true
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
