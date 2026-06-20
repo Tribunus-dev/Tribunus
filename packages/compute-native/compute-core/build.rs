@@ -57,6 +57,11 @@ fn main() {
     #[cfg(target_os = "macos")]
     {
         cc::Build::new()
+            .file("src/bridge/metal_iosurface.mm")
+            .flag("-fobjc-arc")
+            .flag("-std=c++17")
+            .compile("metal_iosurface");
+        cc::Build::new()
             .file("src/bridge/coreml_arena.mm")
             .flag("-fobjc-arc")
             .flag("-std=c++17")

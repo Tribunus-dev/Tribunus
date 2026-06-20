@@ -27,6 +27,9 @@ extern "C" {
     fn tribunus_arena_free_cv_buffer(cv_buffer: *mut std::ffi::c_void);
     fn tribunus_arena_io_surface_id(info: *const crate::arena_info::ArenaInfo) -> i32;
     fn tribunus_cv_pixel_buffer_io_surface_id(cv_buffer: *mut std::ffi::c_void) -> i32;
+    fn tribunus_metal_texture_from_iosurface(cv_pixel_buffer: *mut std::ffi::c_void, device_name: *const i8) -> *mut std::ffi::c_void;
+    fn tribunus_metal_dispatch_copy(texture: *mut std::ffi::c_void, input_data: *const f32, element_count: i32) -> i32;
+    fn tribunus_metal_release_texture(texture: *mut std::ffi::c_void);
 }
 
 // ── Residency / ownership taxonomy ─────────────────────────────────────────
@@ -131,6 +134,24 @@ pub enum CoreMlBufferMode {
     CopyBacked,
     PersistentBufferBacked,
     PersistentIosurfaceBacked,
+    PersistentIosurfaceMetalInterop,
+}
+
+/// Contract describing how a Metal texture binds to an IOSurface-backed buffer.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MetalIosurfaceBindingContract {
+    pub pixel_format: String,      // "R32Float"
+    pub plane: u32,               // 0
+    pub tensor_dtype: String,     // "float32"
+    pub access: String,           // "WriteOnly"
+    pub synchronization_mode: String, // "CommandBuffer"
+}
+
+/// A cached Metal texture wrapping an IOSurface from a CVPixelBuffer.
+pub struct MetalTextureView {
+    pub texture_ptr: *mut std::ffi::c_void, // retained MTLTexture
+    pub contract: MetalIosurfaceBindingContract,
+    pub has_been_validated: bool,
 }
 
 // ── Activation ring ──────────────────────────────────────────────────────
@@ -140,6 +161,7 @@ pub enum CoreMlBufferMode {
 pub enum SlotState {
     Free,
     CpuWriting,
+    MetalWriting,
     ReadyForAne,
     AneInFlight,
     ReadyForConsumer,
@@ -163,6 +185,10 @@ pub struct ActivationSlot {
     pub coreml_borrows: u32,
     pub cpu_borrows: u32,
     pub metal_borrows: u32,
+    /// Cached Metal texture wrapping the IOSurface backing this slot.
+    pub metal_texture: Option<MetalTextureView>,
+    /// Name of the last writer backend (e.g. "Metal", "ANE", "CPU").
+    pub last_writer: Option<String>,
 }
 
 /// A ring of activation slots for ANE-boundary buffer reuse.
@@ -201,6 +227,8 @@ impl ActivationRing {
                 coreml_borrows: 0,
                 cpu_borrows: 0,
                 metal_borrows: 0,
+                metal_texture: None,
+                last_writer: None,
             });
         }
         Ok(ActivationRing { slots, next_slot: 0, num_slots: count })
@@ -285,9 +313,59 @@ impl ActivationRing {
         }
     }
 
+    /// Create Metal texture for a slot and cache it.
+    pub fn ensure_metal_texture(&mut self, slot_id: u32) -> Result<(), String> {
+        if let Some(slot) = self.slots.iter_mut().find(|s| s.slot_id == slot_id) {
+            if slot.metal_texture.is_some() {
+                return Ok(()); // already created
+            }
+            if slot.cv_pixel_buffer.is_null() {
+                return Err("no cv_buffer for slot".into());
+            }
+            let tex = unsafe {
+                tribunus_metal_texture_from_iosurface(slot.cv_pixel_buffer, std::ptr::null())
+            };
+            if tex.is_null() {
+                return Err("metal texture creation failed".into());
+            }
+            slot.metal_texture = Some(MetalTextureView {
+                texture_ptr: tex,
+                contract: MetalIosurfaceBindingContract {
+                    pixel_format: "R32Float".into(),
+                    plane: 0,
+                    tensor_dtype: "float32".into(),
+                    access: "WriteOnly".into(),
+                    synchronization_mode: "CommandBuffer".into(),
+                },
+                has_been_validated: false,
+            });
+            Ok(())
+        } else {
+            Err(format!("slot {} not found", slot_id))
+        }
+    }
+
+    /// Transition a slot from Free to MetalWriting.
+    pub fn mark_metal_writing(&mut self, slot_id: u32) -> Result<(), String> {
+        if let Some(slot) = self.slots.iter_mut().find(|s| s.slot_id == slot_id) {
+            if slot.state != SlotState::Free {
+                return Err(format!("slot {} not Free, state={:?}", slot_id, slot.state));
+            }
+            slot.state = SlotState::MetalWriting;
+            slot.metal_borrows += 1;
+            slot.last_writer = Some("Metal".into());
+            Ok(())
+        } else {
+            Err(format!("slot {} not found", slot_id))
+        }
+    }
+
     /// Destroy the ring — release all CVPixelBufferRefs.
     pub fn destroy(&mut self) {
         for slot in &mut self.slots {
+            if let Some(tex) = slot.metal_texture.take() {
+                unsafe { tribunus_metal_release_texture(tex.texture_ptr); }
+            }
             if !slot.cv_pixel_buffer.is_null() {
                 unsafe { tribunus_arena_free_cv_buffer(slot.cv_pixel_buffer); }
                 slot.cv_pixel_buffer = std::ptr::null_mut();
@@ -896,7 +974,10 @@ impl<'a> GraphInstance<'a> {
 
         // Initialize activation ring if PersistentIosurfaceBacked mode is requested
         // and no ring exists yet.  Falls back to PersistentBufferBacked on failure.
-        if self.coreml_buffer_mode == CoreMlBufferMode::PersistentIosurfaceBacked && self.activation_ring.is_none() {
+        if (self.coreml_buffer_mode == CoreMlBufferMode::PersistentIosurfaceBacked
+            || self.coreml_buffer_mode == CoreMlBufferMode::PersistentIosurfaceMetalInterop)
+            && self.activation_ring.is_none()
+        {
             if let Some(&rid) = region_ids.iter().find(|&&rid| {
                 self.graph.regions.get(rid as usize)
                     .map(|r| r.residency == Residency::CoreMlCompatible)
