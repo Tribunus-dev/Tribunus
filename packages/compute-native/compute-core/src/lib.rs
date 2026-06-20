@@ -98,6 +98,7 @@ pub mod validator;
 pub mod worker_memory;
 pub mod worker_protocol;
 pub mod worker_supervisor;
+pub mod tensix;
 
 pub use crate::session::{
     ControlSessionState, GenerationControlSession, InferenceSession, InferenceSessionState,
