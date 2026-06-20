@@ -1,9 +1,10 @@
+pub mod transformer;
 use crate::compute_image;
 use crate::research_metrics::{InstrumentationMode, MemorySnapshot};
 use crate::research_trace::{ClockDomain, StageId, SubstrateId, TraceBuffer, TraceEvent};
 use parking_lot::Mutex;
-use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
 use std::time::Instant;
 
 pub trait ClockSource: Send + Sync {
@@ -436,10 +437,7 @@ struct NativeTraceCollectorState {
 }
 
 impl NativeTraceCollector {
-    pub fn new(
-        capacity: usize,
-        clock: Arc<dyn ClockSource>,
-    ) -> Self {
+    pub fn new(capacity: usize, clock: Arc<dyn ClockSource>) -> Self {
         Self {
             state: Arc::new(Mutex::new(NativeTraceCollectorState {
                 buffer: TraceBuffer::new(capacity),
@@ -686,10 +684,7 @@ mod tests {
 
     #[test]
     fn native_trace_collector_flushes_batches() {
-        let mut collector = NativeTraceCollector::new(
-            4,
-            Arc::new(WorkerMonotonicClock),
-        );
+        let mut collector = NativeTraceCollector::new(4, Arc::new(WorkerMonotonicClock));
         let event = collector.begin_stage(StageId::WorkerLaunch, SubstrateId::ControlPlane);
         let snapshot = MemorySnapshot {
             mlx_active: 11,
@@ -777,9 +772,7 @@ mod tests {
         assert_eq!(snapshot.materialized, 64);
         assert_eq!(snapshot.file_read, 32);
         assert_eq!(snapshot.kv, 16);
-        runtime
-            .telemetry
-            .record_trace_batch_summary(7, 5, 3);
+        runtime.telemetry.record_trace_batch_summary(7, 5, 3);
         assert_eq!(runtime.telemetry.trace_batch_count(), 1);
 
         runtime
