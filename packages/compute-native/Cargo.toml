@@ -52,6 +52,7 @@ default = ["stub-backend"]
 private-development = []
 stub-backend = ["mlx-rs/stub"]
 mlx-backend = ["mlx-rs/metal", "mlx-rs/accelerate", "mlx-rs/safetensors"]
+tt_metalium = []
 
 [profile.release]
 strip = "symbols"
