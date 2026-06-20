@@ -1,0 +1,24 @@
+<<<<<<< SEARCH
+                    selected_backend: Some("mlx".into()),
+                    fallback_order: vec![],
+                },
+                PhaseEntry {
+=======
+                    selected_backend: Some("mlx".into()),
+                    fallback_order: vec![],
+                    tensix_placement: None,
+                },
+                PhaseEntry {
+>>>>>>> REPLACE
+<<<<<<< SEARCH
+                    selected_backend: Some("mlx".into()),
+                    fallback_order: vec![],
+                }
+            ],
+=======
+                    selected_backend: Some("mlx".into()),
+                    fallback_order: vec![],
+                    tensix_placement: None,
+                }
+            ],
+>>>>>>> REPLACE
