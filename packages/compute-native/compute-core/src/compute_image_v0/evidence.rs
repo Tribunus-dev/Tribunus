@@ -100,13 +100,11 @@ pub fn default_synthetic_fixtures() -> Vec<NormalizedPhaseEvidence> {
             is_kv_phase: true,
             kv_allowed_operations: vec!["append".into(), "mutate".into()],
             kv_qualification: KvEvidenceQualification::ContractOnly,
-            backend_evidence: vec![
-                BackendEvidence {
-                    backend_name: "mlx".into(),
-                    status: BackendStatus::ContractOnly,
-                    raw_status_string: "contract_only".into(),
-                },
-            ],
+            backend_evidence: vec![BackendEvidence {
+                backend_name: "mlx".into(),
+                status: BackendStatus::ContractOnly,
+                raw_status_string: "contract_only".into(),
+            }],
         },
     ]
 }
