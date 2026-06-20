@@ -1,20 +1,26 @@
 use mlx_rs::Array;
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 
 pub type Tensor = Array;
 
 #[derive(Clone)]
 pub enum WeightCodec {
-    Identity,           // fp16/bf16 — no compression, for embedding tables, LM head, routers
-    GroupQuantized {    // INT4/INT8, group_size=128, with optional AWQ scaling
-        bits: u8,            // 4 or 8
-        group_size: usize,   // default 128
+    Identity, // fp16/bf16 — no compression, for embedding tables, LM head, routers
+    GroupQuantized {
+        // INT4/INT8, group_size=128, with optional AWQ scaling
+        bits: u8,          // 4 or 8
+        group_size: usize, // default 128
         symmetric: bool,
         per_channel: bool,
-        awq_scale: Option<Tensor>,  // activation-aware scaling factors
+        awq_scale: Option<Tensor>, // activation-aware scaling factors
     },
-    RotationQuantized { // QuaRot/SpinQuant-style rotation fusing into preceding op
+    Bfp8 {
+        // Block Floating Point 8-bit, typical for TT-Metalium
+        block_size: usize, // typically 16
+    },
+    RotationQuantized {
+        // QuaRot/SpinQuant-style rotation fusing into preceding op
         inner: Box<WeightCodec>,
         rotation_matrix: Option<Tensor>,
     },
@@ -30,20 +36,26 @@ pub enum ScaleLayout {
 #[derive(Clone)]
 pub struct CodecMetadata {
     pub original_shape: Vec<usize>,
-    pub bits_per_element: f32,       // 4.0, 4.5, 8.0
+    pub bits_per_element: f32, // 4.0, 4.5, 8.0
     pub group_size: usize,
     pub scale_layout: ScaleLayout,
     pub zero_point: Option<Tensor>,
     pub scale: Option<Tensor>,
-    pub awq_scales: Option<Tensor>,  // per-channel AWQ scaling factors
-    pub checksum: [u8; 32],          // SHA256 of original fp16 tensor
+    pub awq_scales: Option<Tensor>, // per-channel AWQ scaling factors
+    pub checksum: [u8; 32],         // SHA256 of original fp16 tensor
 }
 
 impl WeightCodec {
     pub fn encode(&self, weights: &Tensor) -> Result<(Vec<u8>, CodecMetadata), String> {
-        let shape = weights.shape().iter().map(|&x| x as usize).collect::<Vec<_>>();
+        let shape = weights
+            .shape()
+            .iter()
+            .map(|&x| x as usize)
+            .collect::<Vec<_>>();
         let mut hasher = Sha256::new();
-        let bytes = weights.as_bytes().map_err(|e| format!("Failed to get bytes: {}", e))?;
+        let bytes = weights
+            .as_bytes()
+            .map_err(|e| format!("Failed to get bytes: {}", e))?;
         hasher.update(bytes);
         let checksum_slice = hasher.finalize();
         let mut checksum = [0u8; 32];
@@ -67,10 +79,15 @@ impl WeightCodec {
                 };
                 Ok((data, meta))
             }
-            WeightCodec::GroupQuantized { bits, group_size, awq_scale, .. } => {
+            WeightCodec::GroupQuantized {
+                bits,
+                group_size,
+                awq_scale,
+                ..
+            } => {
                 let bits = *bits;
                 let group_size = *group_size;
-                
+
                 let dim = shape.last().copied().unwrap_or(1);
                 // Group size must divide hidden dimension evenly; pad if not
                 let padded_dim = if dim % group_size != 0 {
@@ -78,18 +95,18 @@ impl WeightCodec {
                 } else {
                     dim
                 };
-                
+
                 let mut padded_shape = shape.clone();
                 if let Some(last) = padded_shape.last_mut() {
                     *last = padded_dim;
                 }
-                
+
                 let num_elements: usize = padded_shape.iter().copied().product();
                 let packed_elements = num_elements * (bits as usize) / 8;
-                
+
                 // For proper integer quantization, we pack the bytes.
                 let mut data = vec![0u8; packed_elements];
-                
+
                 if bits == 4 {
                     // INT4 uses uint32[8 values packed] layout natively, here represented as byte array.
                     // (Real packing logic requires accessing elements, finding min/max per group, and quantizing).
@@ -113,28 +130,91 @@ impl WeightCodec {
                     bits_per_element: bits as f32,
                     group_size,
                     scale_layout: ScaleLayout::Contiguous,
-                    zero_point: None, 
-                    scale: None,      
+                    zero_point: None,
+                    scale: None,
                     awq_scales: awq_scale.clone(),
                     checksum,
                 };
 
                 Ok((data, meta))
             }
-            WeightCodec::RotationQuantized { inner, rotation_matrix: _ } => {
-                inner.encode(weights)
+            WeightCodec::Bfp8 { block_size } => {
+                let block_size = *block_size;
+                let dim = shape.last().copied().unwrap_or(1);
+
+                // Group size must divide hidden dimension evenly; pad if not
+                let padded_dim = if dim % block_size != 0 {
+                    dim + block_size - (dim % block_size)
+                } else {
+                    dim
+                };
+
+                let mut padded_shape = shape.clone();
+                if let Some(last) = padded_shape.last_mut() {
+                    *last = padded_dim;
+                }
+
+                let num_elements: usize = padded_shape.iter().copied().product();
+                let num_blocks = num_elements / block_size;
+
+                // For BFP8 with block_size=16:
+                // 1 byte shared exponent per block + 1 byte mantissa per element
+                // Total bytes per block = 1 + block_size
+                let bytes_per_block = 1 + block_size;
+                let packed_elements = num_blocks * bytes_per_block;
+
+                let mut data = vec![0u8; packed_elements];
+
+                // CPU Reference Implementation for encoding (mock)
+                for i in 0..data.len() {
+                    data[i] = (i % 256) as u8;
+                }
+
+                // CompressedWeightImage aligned to 64 bytes (AVX512/Vulkan alignment)
+                let pad_len = (64 - (data.len() % 64)) % 64;
+                data.extend(std::iter::repeat(0).take(pad_len));
+
+                // Effective bits per element = (1 + block_size) * 8.0 / block_size
+                let bits_per_element = (bytes_per_block as f32 * 8.0) / (block_size as f32);
+
+                let meta = CodecMetadata {
+                    original_shape: shape,
+                    bits_per_element,
+                    group_size: block_size,
+                    scale_layout: ScaleLayout::Contiguous,
+                    zero_point: None,
+                    scale: None,
+                    awq_scales: None,
+                    checksum,
+                };
+
+                Ok((data, meta))
             }
+            WeightCodec::RotationQuantized {
+                inner,
+                rotation_matrix: _,
+            } => inner.encode(weights),
         }
     }
-    
+
     pub fn decode(&self, data: &[u8], meta: &CodecMetadata) -> Result<Tensor, String> {
         match self {
             WeightCodec::Identity => {
                 // Decode fp16 from bytes
-                let t = Array::from_bytes(data, meta.original_shape.iter().map(|&x| x as i32).collect::<Vec<_>>().as_slice(), mlx_rs::Dtype::Float16)
-                    .map_err(|e| format!("Failed to create Array from bytes: {:?}", e))?;
-                    
-                let bytes = t.as_bytes().map_err(|e| format!("Failed to get bytes: {}", e))?;
+                let t = Array::from_bytes(
+                    data,
+                    meta.original_shape
+                        .iter()
+                        .map(|&x| x as i32)
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                    mlx_rs::Dtype::Float16,
+                )
+                .map_err(|e| format!("Failed to create Array from bytes: {:?}", e))?;
+
+                let bytes = t
+                    .as_bytes()
+                    .map_err(|e| format!("Failed to get bytes: {}", e))?;
                 let mut hasher = Sha256::new();
                 hasher.update(bytes);
                 let checksum_slice = hasher.finalize();
@@ -145,35 +225,64 @@ impl WeightCodec {
             }
             WeightCodec::GroupQuantized { bits, .. } => {
                 let num_elements = meta.original_shape.iter().copied().product::<usize>();
-                let dummy_data = vec![0u16; num_elements]; 
-                
+                let dummy_data = vec![0u16; num_elements];
+
                 // Logic to unpack bits = 4 or 8 from data byte array
-                
-                let t = Array::from_slice(dummy_data.as_slice(), meta.original_shape.iter().map(|&x| x as i32).collect::<Vec<_>>().as_slice());
+
+                let t = Array::from_slice(
+                    dummy_data.as_slice(),
+                    meta.original_shape
+                        .iter()
+                        .map(|&x| x as i32)
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                );
                 Ok(t)
             }
-            WeightCodec::RotationQuantized { inner, .. } => {
-                inner.decode(data, meta)
+            WeightCodec::Bfp8 { block_size: _ } => {
+                let num_elements = meta.original_shape.iter().copied().product::<usize>();
+                let dummy_data = vec![0u16; num_elements];
+
+                // Logic to unpack BFP8
+                // For each block, read 1 byte exponent, then 16 bytes mantissa
+                // and reconstruct the fp16 values.
+
+                let t = Array::from_slice(
+                    dummy_data.as_slice(),
+                    meta.original_shape
+                        .iter()
+                        .map(|&x| x as i32)
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                );
+                Ok(t)
             }
+            WeightCodec::RotationQuantized { inner, .. } => inner.decode(data, meta),
         }
     }
-    
+
     pub fn estimate_size(&self, shape: &[usize]) -> usize {
         let elements: usize = shape.iter().copied().product();
         match self {
             WeightCodec::Identity => elements * 2, // fp16
             WeightCodec::GroupQuantized { bits, .. } => elements * (*bits as usize) / 8,
+            WeightCodec::Bfp8 { block_size } => (elements / block_size) * (1 + block_size),
             WeightCodec::RotationQuantized { inner, .. } => inner.estimate_size(shape),
         }
     }
-    
+
     pub fn name(&self) -> &str {
         match self {
             WeightCodec::Identity => "Identity",
-            WeightCodec::GroupQuantized { bits: 4, awq_scale: Some(_), .. } => "AWQ_INT4",
+            WeightCodec::GroupQuantized {
+                bits: 4,
+                awq_scale: Some(_),
+                ..
+            } => "AWQ_INT4",
             WeightCodec::GroupQuantized { bits: 8, .. } => "INT8",
             WeightCodec::GroupQuantized { bits: 4, .. } => "INT4",
             WeightCodec::GroupQuantized { .. } => "GroupQuantized",
+            WeightCodec::Bfp8 { .. } => "BFP8",
             WeightCodec::RotationQuantized { .. } => "RotationQuantized",
         }
     }
@@ -181,9 +290,9 @@ impl WeightCodec {
 
 pub struct CompressedWeightImage {
     pub codec: WeightCodec,
-    pub data: Vec<u8>,              // packed weight bytes
-    pub metadata: Vec<CodecMetadata>, // per-layer metadata
-    pub index: HashMap<String, (usize, usize)>,  // layer_name -> (offset, length)
+    pub data: Vec<u8>,                          // packed weight bytes
+    pub metadata: Vec<CodecMetadata>,           // per-layer metadata
+    pub index: HashMap<String, (usize, usize)>, // layer_name -> (offset, length)
 }
 
 impl CompressedWeightImage {

@@ -69,9 +69,9 @@ pub fn calibrate_awq(
     // 1. Collect activation statistics: run calibration sequences through the model, record input activations for each layer
     // (Mocked for compilation image build)
     let num_samples = dataset.sequences.len();
-    
+
     let alphas = vec![0.5, 0.25, 0.75, 1.0];
-    
+
     let reference_ppl = 15.0; // Mock FP32 reference perplexity
 
     for alpha in alphas {
@@ -83,22 +83,28 @@ pub fn calibrate_awq(
             // For now, we simulate importance as an array of 1.0s (or random data) of shape `[in_channels]`
             let shape = weight.shape();
             let in_channels = shape.last().unwrap_or(&1);
-            let importance = Array::full::<f32>(&[*in_channels as i32], 1.0f32).map_err(|e| e.to_string())?;
+            let importance =
+                Array::full::<f32>(&[*in_channels as i32], 1.0f32).map_err(|e| e.to_string())?;
 
             // 3. Scale weights: divide weight rows by importance^(alpha)
             let mut scale_factor = importance.power(alpha).map_err(|e| e.to_string())?;
             // avoid division by zero
-            let eps = Array::full::<f32>(&[*in_channels as i32], 1e-5f32).map_err(|e| e.to_string())?;
+            let eps =
+                Array::full::<f32>(&[*in_channels as i32], 1e-5f32).map_err(|e| e.to_string())?;
             scale_factor = scale_factor.maximum(&eps).map_err(|e| e.to_string())?;
-            
+
             // Expand dims for broadcasting if weight is 2D, scale factor is 1D
             let scale_factor_expanded = if shape.len() == 2 {
-                scale_factor.reshape(&[1, *in_channels as i32]).map_err(|e| e.to_string())?
+                scale_factor
+                    .reshape(&[1, *in_channels as i32])
+                    .map_err(|e| e.to_string())?
             } else {
                 scale_factor.clone()
             };
 
-            let scaled_weight = weight.divide(&scale_factor_expanded).map_err(|e| e.to_string())?;
+            let scaled_weight = weight
+                .divide(&scale_factor_expanded)
+                .map_err(|e| e.to_string())?;
 
             // 4. Quantize scaled weights to INT4/INT8 with group size config.group_size
             // Group quantization simulation:
@@ -111,48 +117,70 @@ pub fn calibrate_awq(
             };
 
             let out_channels = if shape.len() == 2 { shape[0] } else { 1 };
-            
+
             let group_size = config.group_size as i32;
             let num_groups = *in_channels as i32 / group_size;
 
             let quantized_weight = if num_groups > 0 && shape.len() == 2 {
-                let reshaped = scaled_weight.reshape(&[out_channels as i32, num_groups, group_size]).map_err(|e| e.to_string())?;
-                
+                let reshaped = scaled_weight
+                    .reshape(&[out_channels as i32, num_groups, group_size])
+                    .map_err(|e| e.to_string())?;
+
                 let (q_scale, q_zero, fake_quantized) = if config.sym {
                     // Symmetric quantization
                     let w_abs = reshaped.abs().map_err(|e| e.to_string())?;
                     let w_max = w_abs.max_axes(&[2], true).map_err(|e| e.to_string())?;
-                    let eps2 = Array::full::<f32>(&[out_channels as i32, num_groups, 1], 1e-5f32).map_err(|e| e.to_string())?;
+                    let eps2 = Array::full::<f32>(&[out_channels as i32, num_groups, 1], 1e-5f32)
+                        .map_err(|e| e.to_string())?;
                     let w_max_clamped = w_max.maximum(&eps2).map_err(|e| e.to_string())?;
-                    
+
                     let q_max = ((1 << (bits - 1)) - 1) as f32; // e.g. 7 for INT4
-                    let scale = w_max_clamped.divide_scalar(q_max).map_err(|e| e.to_string())?;
-                    
-                    let q_w_float = reshaped.divide(&scale).map_err(|e| e.to_string())?.round().map_err(|e| e.to_string())?;
+                    let scale = w_max_clamped
+                        .divide_scalar(q_max)
+                        .map_err(|e| e.to_string())?;
+
+                    let q_w_float = reshaped
+                        .divide(&scale)
+                        .map_err(|e| e.to_string())?
+                        .round()
+                        .map_err(|e| e.to_string())?;
                     let fq = q_w_float.multiply(&scale).map_err(|e| e.to_string())?;
                     (scale, None, fq)
                 } else {
                     // Asymmetric min/max per group
                     let w_max = reshaped.max_axes(&[2], true).map_err(|e| e.to_string())?;
                     let w_min = reshaped.min_axes(&[2], true).map_err(|e| e.to_string())?;
-                    
+
                     let q_max = ((1 << bits) - 1) as f32; // e.g. 15 for INT4
-                    
+
                     let mut range = w_max.subtract(&w_min).map_err(|e| e.to_string())?;
-                    let eps2 = Array::full::<f32>(&[out_channels as i32, num_groups, 1], 1e-5f32).map_err(|e| e.to_string())?;
+                    let eps2 = Array::full::<f32>(&[out_channels as i32, num_groups, 1], 1e-5f32)
+                        .map_err(|e| e.to_string())?;
                     range = range.maximum(&eps2).map_err(|e| e.to_string())?;
-                    
+
                     let scale = range.divide_scalar(q_max).map_err(|e| e.to_string())?;
-                    
+
                     // q_w = round((w - w_min) / scale)
-                    let q_w_float = reshaped.subtract(&w_min).map_err(|e| e.to_string())?.divide(&scale).map_err(|e| e.to_string())?.round().map_err(|e| e.to_string())?;
-                    
-                    let fq = q_w_float.multiply(&scale).map_err(|e| e.to_string())?.add(&w_min).map_err(|e| e.to_string())?;
+                    let q_w_float = reshaped
+                        .subtract(&w_min)
+                        .map_err(|e| e.to_string())?
+                        .divide(&scale)
+                        .map_err(|e| e.to_string())?
+                        .round()
+                        .map_err(|e| e.to_string())?;
+
+                    let fq = q_w_float
+                        .multiply(&scale)
+                        .map_err(|e| e.to_string())?
+                        .add(&w_min)
+                        .map_err(|e| e.to_string())?;
                     (scale, Some(w_min), fq)
                 };
 
                 // In actual execution this would be packed into INT4/8 arrays, but for now we represent the fake-quantized weight
-                fake_quantized.reshape(&[out_channels as i32, *in_channels as i32]).map_err(|e| e.to_string())?
+                fake_quantized
+                    .reshape(&[out_channels as i32, *in_channels as i32])
+                    .map_err(|e| e.to_string())?
             } else {
                 scaled_weight
             };
@@ -193,7 +221,10 @@ mod tests {
     #[test]
     fn test_calibrate_single_layer() {
         let mut layers = HashMap::new();
-        layers.insert("linear1".to_string(), Array::from_slice(&[0.1f32; 128 * 128], &[128, 128]));
+        layers.insert(
+            "linear1".to_string(),
+            Array::from_slice(&[0.1f32; 128 * 128], &[128, 128]),
+        );
         let model = ModelWeights { layers };
 
         let dataset = CalibrationDataset {
@@ -217,8 +248,14 @@ mod tests {
     #[test]
     fn test_calibration_two_layer_model() {
         let mut layers = HashMap::new();
-        layers.insert("layer1".to_string(), Array::from_slice(&[0.1f32; 128 * 128], &[128, 128]));
-        layers.insert("layer2".to_string(), Array::from_slice(&[0.2f32; 128 * 128], &[128, 128]));
+        layers.insert(
+            "layer1".to_string(),
+            Array::from_slice(&[0.1f32; 128 * 128], &[128, 128]),
+        );
+        layers.insert(
+            "layer2".to_string(),
+            Array::from_slice(&[0.2f32; 128 * 128], &[128, 128]),
+        );
         let model = ModelWeights { layers };
 
         let dataset = CalibrationDataset {

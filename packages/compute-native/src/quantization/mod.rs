@@ -24,31 +24,50 @@ pub fn encode_awq(_model: &ModelStub) -> Result<CompressedWeightImage, String> {
 
     // Emulate 7 steps of encoding
     // 1 & 2 & 3. Profiling & load mock
-    let layer_names = vec!["embedding", "trunk.0", "trunk.1", "primary.0", "moe.hot", "moe.cold"];
+    let layer_names = vec![
+        "embedding",
+        "trunk.0",
+        "trunk.1",
+        "primary.0",
+        "moe.hot",
+        "moe.cold",
+    ];
 
     let mut current_offset = 0;
 
     for layer in layer_names {
         let dummy_shape = vec![128, 128]; // dummy
-        // dummy fp16 weights
-        let dummy_weights = mlx_rs::Array::from_slice(&vec![0.5f32; 128*128], &[128, 128]);
+                                          // dummy fp16 weights
+        let dummy_weights = mlx_rs::Array::from_slice(&vec![0.5f32; 128 * 128], &[128, 128]);
 
         let codec = match layer {
             "embedding" => WeightCodec::Identity,
             "trunk.0" | "trunk.1" => WeightCodec::GroupQuantized {
-                bits: 8, group_size: 128, symmetric: true, per_channel: false, awq_scale: None
+                bits: 8,
+                group_size: 128,
+                symmetric: true,
+                per_channel: false,
+                awq_scale: None,
             },
             "primary.0" | "moe.hot" => WeightCodec::GroupQuantized {
-                bits: 4, group_size: 128, symmetric: true, per_channel: false, awq_scale: Some(dummy_weights.clone())
+                bits: 4,
+                group_size: 128,
+                symmetric: true,
+                per_channel: false,
+                awq_scale: Some(dummy_weights.clone()),
             },
             "moe.cold" => WeightCodec::GroupQuantized {
-                bits: 4, group_size: 128, symmetric: true, per_channel: false, awq_scale: None
+                bits: 4,
+                group_size: 128,
+                symmetric: true,
+                per_channel: false,
+                awq_scale: None,
             },
             _ => WeightCodec::Identity,
         };
 
         let (encoded_data, meta) = codec.encode(&dummy_weights)?;
-        
+
         let length = encoded_data.len();
         index.insert(layer.to_string(), (current_offset, length));
         data.extend(encoded_data);
