@@ -1,3 +1,4 @@
+use super::tensix::TensixArtifact;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -69,6 +70,8 @@ pub struct BackendCandidate {
     pub backend_name: String,
     pub status: BackendStatus,
     pub evidence_status: String, // Maps to backend-specific detailed status
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tensix_artifact: Option<TensixArtifact>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
