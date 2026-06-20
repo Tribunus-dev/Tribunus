@@ -60,10 +60,8 @@ mod inner {
                             std::slice::from_raw_parts(in_a.ptr as *const f32, in_a.size / 4);
                         let b_slice =
                             std::slice::from_raw_parts(in_b.ptr as *const f32, in_b.size / 4);
-                        let c_slice = std::slice::from_raw_parts_mut(
-                            out_c.ptr as *mut f32,
-                            out_c.size / 4,
-                        );
+                        let c_slice =
+                            std::slice::from_raw_parts_mut(out_c.ptr as *mut f32, out_c.size / 4);
 
                         let shape = block.shape.as_ref().unwrap();
                         let m = shape[0];
