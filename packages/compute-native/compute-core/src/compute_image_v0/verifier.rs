@@ -14,11 +14,17 @@ impl Default for VerifierOptions {
     }
 }
 
-pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Result<(), Vec<String>> {
+pub fn verify_v0_image(
+    image: &ComputeImageV0,
+    options: VerifierOptions,
+) -> Result<(), Vec<String>> {
     let mut errors = Vec::new();
 
     if image.schema != "tribunus.compute_image.v0" {
-        errors.push(format!("Missing or incorrect schema version: {}", image.schema));
+        errors.push(format!(
+            "Missing or incorrect schema version: {}",
+            image.schema
+        ));
     }
 
     if image.compute_scope_dirty && !options.override_dirty_tree {
@@ -37,7 +43,10 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
     let mut has_kv_phase = false;
 
     for phase in &image.phases {
-        let sig = format!("{}-{}-{}-{}", phase.phase_name, phase.shape_key, phase.dtype, image.target_context.compute_policy);
+        let sig = format!(
+            "{}-{}-{}-{}",
+            phase.phase_name, phase.shape_key, phase.dtype, image.target_context.compute_policy
+        );
         if !phase_signatures.insert(sig.clone()) {
             errors.push(format!("Duplicate phase conflict: {}", sig));
         }
@@ -48,7 +57,11 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
                 // If it claims to be RuntimeQualified but the selected backend evidence is not Pass.
                 if mc.evidence_qualification == KvEvidenceQualification::RuntimeQualified {
                     if let Some(sb) = &phase.selected_backend {
-                        if let Some(cand) = phase.backend_candidates.iter().find(|c| &c.backend_name == sb) {
+                        if let Some(cand) = phase
+                            .backend_candidates
+                            .iter()
+                            .find(|c| &c.backend_name == sb)
+                        {
                             if cand.status != BackendStatus::Pass {
                                 errors.push(format!(
                                     "Phase {} claims runtime qualification but selected backend '{}' only has status {:?}",
@@ -59,33 +72,60 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
                     }
                 }
             } else {
-                 errors.push(format!("Missing mutation contract for KV phase: {}", phase.phase_name));
+                errors.push(format!(
+                    "Missing mutation contract for KV phase: {}",
+                    phase.phase_name
+                ));
             }
         } else {
             has_decode_phase = true;
         }
 
         if let Some(sb) = &phase.selected_backend {
-            if let Some(cand) = phase.backend_candidates.iter().find(|c| &c.backend_name == sb) {
-                if cand.status != BackendStatus::Pass && cand.status != BackendStatus::ContractOnly {
-                    errors.push(format!("Selected backend {} for {} has no passing evidence (status: {:?})", sb, phase.phase_name, cand.status));
+            if let Some(cand) = phase
+                .backend_candidates
+                .iter()
+                .find(|c| &c.backend_name == sb)
+            {
+                if cand.status != BackendStatus::Pass && cand.status != BackendStatus::ContractOnly
+                {
+                    errors.push(format!(
+                        "Selected backend {} for {} has no passing evidence (status: {:?})",
+                        sb, phase.phase_name, cand.status
+                    ));
                 }
 
                 if sb == "coreml" && cand.status != BackendStatus::Pass {
-                    errors.push(format!("Core ML selected for {} but is not fully runtime qualified (status: {:?})", phase.phase_name, cand.status));
+                    errors.push(format!(
+                        "Core ML selected for {} but is not fully runtime qualified (status: {:?})",
+                        phase.phase_name, cand.status
+                    ));
                 }
             } else {
-                 errors.push(format!("Selected backend {} not found in candidates for {}", sb, phase.phase_name));
+                errors.push(format!(
+                    "Selected backend {} not found in candidates for {}",
+                    sb, phase.phase_name
+                ));
             }
         }
 
         for fallback in &phase.fallback_order {
-            if let Some(cand) = phase.backend_candidates.iter().find(|c| &c.backend_name == fallback) {
-                 if cand.status != BackendStatus::Pass {
-                    errors.push(format!("Fallback backend {} for {} has no passing evidence", fallback, phase.phase_name));
-                 }
+            if let Some(cand) = phase
+                .backend_candidates
+                .iter()
+                .find(|c| &c.backend_name == fallback)
+            {
+                if cand.status != BackendStatus::Pass {
+                    errors.push(format!(
+                        "Fallback backend {} for {} has no passing evidence",
+                        fallback, phase.phase_name
+                    ));
+                }
             } else {
-                 errors.push(format!("Fallback backend {} not found in candidates for {}", fallback, phase.phase_name));
+                errors.push(format!(
+                    "Fallback backend {} not found in candidates for {}",
+                    fallback, phase.phase_name
+                ));
             }
         }
     }
@@ -102,7 +142,9 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
     let mut canonical = image.clone();
     canonical.schema_hash = "".into();
     canonical.created_at = "".into();
-    canonical.phases.sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
+    canonical
+        .phases
+        .sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
     canonical.dirty_paths_sample.sort();
     let json = serde_json::to_string(&canonical).unwrap();
     let mut hasher = sha2::Sha256::new();
@@ -110,7 +152,10 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
     let recomputed_hash = format!("{:x}", hasher.finalize());
 
     if recomputed_hash != image.schema_hash {
-        errors.push(format!("Schema hash mismatch. Expected {}, got {}", image.schema_hash, recomputed_hash));
+        errors.push(format!(
+            "Schema hash mismatch. Expected {}, got {}",
+            image.schema_hash, recomputed_hash
+        ));
     }
 
     if errors.is_empty() {
@@ -123,7 +168,10 @@ pub fn verify_v0_image(image: &ComputeImageV0, options: VerifierOptions) -> Resu
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::compute_image_v0::schema::{BackendCandidate, BackendStatus, BackendVersions, KvMutationContract, PhaseEntry, TargetContext};
+    use crate::compute_image_v0::schema::{
+        BackendCandidate, BackendStatus, BackendVersions, KvMutationContract, PhaseEntry,
+        TargetContext,
+    };
 
     fn create_valid_image() -> ComputeImageV0 {
         ComputeImageV0 {
@@ -158,13 +206,11 @@ mod tests {
                     input_contract: vec![],
                     output_contract: vec![],
                     mutation_contract: None,
-                    backend_candidates: vec![
-                        BackendCandidate {
-                            backend_name: "mlx".into(),
-                            status: BackendStatus::Pass,
-                            evidence_status: "pass".into(),
-                        }
-                    ],
+                    backend_candidates: vec![BackendCandidate {
+                        backend_name: "mlx".into(),
+                        status: BackendStatus::Pass,
+                        evidence_status: "pass".into(),
+                    }],
                     selected_backend: Some("mlx".into()),
                     fallback_order: vec![],
                 },
@@ -180,16 +226,14 @@ mod tests {
                         allowed_operations: vec![],
                         evidence_qualification: KvEvidenceQualification::RuntimeQualified,
                     }),
-                    backend_candidates: vec![
-                        BackendCandidate {
-                            backend_name: "mlx".into(),
-                            status: BackendStatus::Pass,
-                            evidence_status: "pass".into(),
-                        }
-                    ],
+                    backend_candidates: vec![BackendCandidate {
+                        backend_name: "mlx".into(),
+                        status: BackendStatus::Pass,
+                        evidence_status: "pass".into(),
+                    }],
                     selected_backend: Some("mlx".into()),
                     fallback_order: vec![],
-                }
+                },
             ],
         }
     }
@@ -201,7 +245,9 @@ mod tests {
         let mut canonical = image.clone();
         canonical.schema_hash = "".into();
         canonical.created_at = "".into();
-        canonical.phases.sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
+        canonical
+            .phases
+            .sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
         canonical.dirty_paths_sample.sort();
         let json = serde_json::to_string(&canonical).unwrap();
         let mut hasher = sha2::Sha256::new();
@@ -223,15 +269,29 @@ mod tests {
         let mut image = create_valid_image();
         image.compute_scope_dirty = true;
         assert!(verify_v0_image(&image, VerifierOptions::default()).is_err());
-        assert!(verify_v0_image(&image, VerifierOptions { override_dirty_tree: true }).is_ok(), "Should pass with override");
+        assert!(
+            verify_v0_image(
+                &image,
+                VerifierOptions {
+                    override_dirty_tree: true
+                }
+            )
+            .is_ok(),
+            "Should pass with override"
+        );
     }
 
     #[test]
     fn test_stale_evidence_path() {
         let mut image = create_valid_image();
-        image.target_context.source_gate_references.push("/does/not/exist/surely.json".into());
+        image
+            .target_context
+            .source_gate_references
+            .push("/does/not/exist/surely.json".into());
         let errs = verify_v0_image(&image, VerifierOptions::default()).unwrap_err();
-        assert!(errs.iter().any(|e| e.contains("Source gate path does not exist")));
+        assert!(errs
+            .iter()
+            .any(|e| e.contains("Source gate path does not exist")));
     }
 
     #[test]
@@ -259,7 +319,9 @@ mod tests {
         cand.status = BackendStatus::ContractOnly;
         image.phases[1].backend_candidates = vec![cand];
         let errs = verify_v0_image(&image, VerifierOptions::default()).unwrap_err();
-        assert!(errs.iter().any(|e| e.contains("claims runtime qualification but selected backend")));
+        assert!(errs
+            .iter()
+            .any(|e| e.contains("claims runtime qualification but selected backend")));
     }
 
     #[test]

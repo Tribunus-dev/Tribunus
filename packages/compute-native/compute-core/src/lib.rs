@@ -1,6 +1,12 @@
 #[cfg(not(all(target_os = "macos", target_arch = "aarch64")))]
-#[cfg(not(any(feature = "mlx-backend", feature = "stub-backend", feature = "storage-adapters")))]
-compile_error!("Compute authority requires Apple Silicon (macOS arm64) or a supported backend feature.");
+#[cfg(not(any(
+    feature = "mlx-backend",
+    feature = "stub-backend",
+    feature = "storage-adapters"
+)))]
+compile_error!(
+    "Compute authority requires Apple Silicon (macOS arm64) or a supported backend feature."
+);
 
 extern crate self as tribunus_compute_core;
 
@@ -82,6 +88,7 @@ pub mod residency;
 pub mod runtime_contract;
 pub mod runtime_orchestration;
 pub mod runtime_trace;
+
 pub mod session;
 pub mod sidecar;
 

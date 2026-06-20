@@ -87,7 +87,9 @@ fn compute_canonical_hash(image: &ComputeImageV0) -> String {
     canonical.created_at = "".into();
 
     // Ensure phases are sorted by name for determinism
-    canonical.phases.sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
+    canonical
+        .phases
+        .sort_by(|a, b| a.phase_name.cmp(&b.phase_name));
 
     // Sort dirty paths
     canonical.dirty_paths_sample.sort();
@@ -102,10 +104,22 @@ fn generate_markdown_summary(image: &ComputeImageV0) -> String {
     let mut md = String::new();
     md.push_str("# Compute Image v0 Summary\n\n");
     md.push_str("## Target Context\n");
-    md.push_str(&format!("- **Device**: {}\n", image.target_context.device_profile));
-    md.push_str(&format!("- **Model**: {}\n", image.target_context.model_profile));
-    md.push_str(&format!("- **Shape Profile**: {}\n", image.target_context.shape_profile));
-    md.push_str(&format!("- **Policy**: {}\n", image.target_context.compute_policy));
+    md.push_str(&format!(
+        "- **Device**: {}\n",
+        image.target_context.device_profile
+    ));
+    md.push_str(&format!(
+        "- **Model**: {}\n",
+        image.target_context.model_profile
+    ));
+    md.push_str(&format!(
+        "- **Shape Profile**: {}\n",
+        image.target_context.shape_profile
+    ));
+    md.push_str(&format!(
+        "- **Policy**: {}\n",
+        image.target_context.compute_policy
+    ));
     md.push_str("\n## Phase Placements\n");
 
     let mut _usable_count = 0;
@@ -121,7 +135,11 @@ fn generate_markdown_summary(image: &ComputeImageV0) -> String {
         let mut is_fallback = false;
 
         if let Some(selected) = &phase.selected_backend {
-            if let Some(cand) = phase.backend_candidates.iter().find(|c| &c.backend_name == selected) {
+            if let Some(cand) = phase
+                .backend_candidates
+                .iter()
+                .find(|c| &c.backend_name == selected)
+            {
                 // If it isn't "pass", it's a degraded fallback (e.g. ContractOnly KV that was selected)
                 if cand.status != super::schema::BackendStatus::Pass {
                     is_fallback = true;
@@ -132,7 +150,11 @@ fn generate_markdown_summary(image: &ComputeImageV0) -> String {
             // since Accelerate is the lower-priority backend.
             if selected != "mlx" && selected != "coreml" {
                 is_fallback = true;
-            } else if selected == "coreml" && phase.backend_candidates.iter().any(|c| c.backend_name == "mlx" && c.status == super::schema::BackendStatus::Pass) {
+            } else if selected == "coreml"
+                && phase.backend_candidates.iter().any(|c| {
+                    c.backend_name == "mlx" && c.status == super::schema::BackendStatus::Pass
+                })
+            {
                 is_fallback = true; // Technically impossible under current default policy, but robust
             }
         }
@@ -142,7 +164,11 @@ fn generate_markdown_summary(image: &ComputeImageV0) -> String {
             blocked_sections.push(phase.phase_name.clone());
         } else if is_fallback {
             fallback_count += 1;
-            fallback_sections.push(format!("{} -> {}", phase.phase_name, phase.selected_backend.as_ref().unwrap()));
+            fallback_sections.push(format!(
+                "{} -> {}",
+                phase.phase_name,
+                phase.selected_backend.as_ref().unwrap()
+            ));
         } else {
             _usable_count += 1;
         }
@@ -151,10 +177,12 @@ fn generate_markdown_summary(image: &ComputeImageV0) -> String {
         for cand in &phase.backend_candidates {
             match cand.status {
                 super::schema::BackendStatus::CompileLimited => {
-                    compile_limited_sections.push(format!("{} ({})", phase.phase_name, cand.backend_name));
+                    compile_limited_sections
+                        .push(format!("{} ({})", phase.phase_name, cand.backend_name));
                 }
                 super::schema::BackendStatus::NumericalDivergence => {
-                    num_divergence_sections.push(format!("{} ({})", phase.phase_name, cand.backend_name));
+                    num_divergence_sections
+                        .push(format!("{} ({})", phase.phase_name, cand.backend_name));
                 }
                 _ => {}
             }

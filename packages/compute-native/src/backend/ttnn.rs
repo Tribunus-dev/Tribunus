@@ -1,11 +1,14 @@
 #![cfg(feature = "ttnn")]
 
+use crate::backend::capability::BackendCapability;
+use crate::backend::realizer::{
+    BackendRealizer, CandidateExecutable, Constraints, ExecutableBinary, Layout,
+    NumericalOracleResult, PhaseClass, RealizerError, SelectionEvidence,
+};
+use crate::backend::{DType, TensorHandle};
+use crate::compute_ir::PhaseIR;
 use std::ffi::c_void;
 use std::time::Duration;
-use crate::backend::{TensorHandle, DType};
-use crate::backend::realizer::{BackendRealizer, Constraints, CandidateExecutable, PhaseClass, RealizerError, Layout, SelectionEvidence, NumericalOracleResult, ExecutableBinary};
-use crate::compute_ir::PhaseIR;
-use crate::backend::capability::BackendCapability;
 
 pub mod ffi {
     use super::*;
@@ -21,9 +24,23 @@ pub mod ffi {
 
     #[link(name = "ttnn")]
     extern "C" {
-        pub fn ttnn_linear(device: u32, input: TensorHandle, weight: TensorHandle, bias: TensorHandle) -> TensorHandle;
-        pub fn ttnn_embedding(device: u32, input: TensorHandle, weight: TensorHandle) -> TensorHandle;
-        pub fn ttnn_layer_norm(device: u32, input: TensorHandle, weight: TensorHandle, bias: TensorHandle) -> TensorHandle;
+        pub fn ttnn_linear(
+            device: u32,
+            input: TensorHandle,
+            weight: TensorHandle,
+            bias: TensorHandle,
+        ) -> TensorHandle;
+        pub fn ttnn_embedding(
+            device: u32,
+            input: TensorHandle,
+            weight: TensorHandle,
+        ) -> TensorHandle;
+        pub fn ttnn_layer_norm(
+            device: u32,
+            input: TensorHandle,
+            weight: TensorHandle,
+            bias: TensorHandle,
+        ) -> TensorHandle;
         pub fn ttnn_silu(device: u32, input: TensorHandle) -> TensorHandle;
         pub fn ttnn_dram_allocate(device: u32, bytes: usize) -> *mut c_void;
         pub fn ttnn_l1_allocate(device: u32, bytes: usize) -> *mut c_void;
@@ -92,8 +109,16 @@ impl BackendRealizer for TtNnRealizer {
         &self.capabilities
     }
 
-    fn realize(&self, phase: &PhaseIR, _constraints: &Constraints) -> Result<CandidateExecutable, RealizerError> {
-        let op_type = phase.ops.first().map(|op| op.kind.clone()).unwrap_or_default();
+    fn realize(
+        &self,
+        phase: &PhaseIR,
+        _constraints: &Constraints,
+    ) -> Result<CandidateExecutable, RealizerError> {
+        let op_type = phase
+            .ops
+            .first()
+            .map(|op| op.kind.clone())
+            .unwrap_or_default();
 
         if op_type != "matmul" && op_type != "embedding" {
             return Err(RealizerError::CompileFailed("Unsupported operation".into()));
@@ -127,7 +152,11 @@ impl BackendRealizer for TtNnRealizer {
     }
 
     fn classify_phase(&self, phase: &PhaseIR) -> PhaseClass {
-        let op_type = phase.ops.first().map(|op| op.kind.clone()).unwrap_or_default();
+        let op_type = phase
+            .ops
+            .first()
+            .map(|op| op.kind.clone())
+            .unwrap_or_default();
         PhaseClass {
             operation: op_type,
             dtype: DType::BF16,
@@ -153,12 +182,14 @@ mod tests {
     #[test]
     fn test_ttnn_device_detection() {
         // Detect Tenstorrent device (skip if none)
-        let device_detected = true; 
+        let device_detected = true;
         if !device_detected {
             return;
         }
 
-        let mut ttnn_realizer = TtNnRealizer { capabilities: BackendCapability::new() };
+        let mut ttnn_realizer = TtNnRealizer {
+            capabilities: BackendCapability::new(),
+        };
         assert_eq!(ttnn_realizer.name(), "TtNn");
     }
 

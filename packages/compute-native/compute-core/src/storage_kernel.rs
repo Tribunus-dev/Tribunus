@@ -77,7 +77,10 @@ impl<'a> StorageReconciler<'a> {
         }
     }
 
-    pub async fn reconcile_work(&self, work_id: &str) -> crate::Result<Vec<StorageReconciliationViolation>> {
+    pub async fn reconcile_work(
+        &self,
+        work_id: &str,
+    ) -> crate::Result<Vec<StorageReconciliationViolation>> {
         let mut violations = Vec::new();
         let receipt = self.durable.get_receipt(work_id).await?;
         let coordination = self.coordination.get_work(work_id).await?;
@@ -85,33 +88,44 @@ impl<'a> StorageReconciler<'a> {
         // Invariant: A Valkey terminal state (acked) without a PGlite receipt is a violation.
         if let Some(ref coord) = coordination {
             if coord.acked && receipt.is_none() {
-                violations.push(StorageReconciliationViolation::AckWithoutReceipt(work_id.to_string()));
+                violations.push(StorageReconciliationViolation::AckWithoutReceipt(
+                    work_id.to_string(),
+                ));
             }
         }
 
         // Invariant: A PGlite active work item with no Valkey visibility requires a recovery receipt.
         // (Simplified for now: if we have a receipt but no coordination record, it's a gap in visibility)
         if receipt.is_some() && coordination.is_none() {
-            violations.push(StorageReconciliationViolation::ActiveWorkWithoutVisibility(work_id.to_string()));
+            violations.push(StorageReconciliationViolation::ActiveWorkWithoutVisibility(
+                work_id.to_string(),
+            ));
         }
 
         Ok(violations)
     }
 
-    pub async fn reconcile_projection(&self, record_id: &str) -> crate::Result<Vec<StorageReconciliationViolation>> {
+    pub async fn reconcile_projection(
+        &self,
+        record_id: &str,
+    ) -> crate::Result<Vec<StorageReconciliationViolation>> {
         let mut violations = Vec::new();
         let projection = self.projection.get_projection(record_id).await?;
 
         if let Some(proj) = projection {
             // Invariant: A DuckDB projection row without a durable receipt reference is a violation.
             if proj.receipt_id.is_none() {
-                violations.push(StorageReconciliationViolation::ProjectionWithoutReceipt(record_id.to_string()));
+                violations.push(StorageReconciliationViolation::ProjectionWithoutReceipt(
+                    record_id.to_string(),
+                ));
             }
-            
+
             // Invariant: A DuckDB projection that claims authority (e.g. by having a record_id that looks like a receipt_id but isn't one)
             // (Mocking this check for now)
             if proj.record_id.starts_with("auth:") {
-                 violations.push(StorageReconciliationViolation::ProjectionClaimingAuthority(record_id.to_string()));
+                violations.push(StorageReconciliationViolation::ProjectionClaimingAuthority(
+                    record_id.to_string(),
+                ));
             }
         }
 
@@ -161,15 +175,22 @@ mod tests {
             projections: HashMap::new(),
         };
 
-        kernel.work.insert("work-1".to_string(), CoordinationWorkRecord {
-            work_id: "work-1".to_string(),
-            state: "acked".to_string(),
-            acked: true,
-        });
+        kernel.work.insert(
+            "work-1".to_string(),
+            CoordinationWorkRecord {
+                work_id: "work-1".to_string(),
+                state: "acked".to_string(),
+                acked: true,
+            },
+        );
 
         let reconciler = StorageReconciler::new(&kernel, &kernel, &kernel);
         let violations = reconciler.reconcile_work("work-1").await.unwrap();
-        assert!(violations.contains(&StorageReconciliationViolation::AckWithoutReceipt("work-1".to_string())));
+        assert!(
+            violations.contains(&StorageReconciliationViolation::AckWithoutReceipt(
+                "work-1".to_string()
+            ))
+        );
     }
 
     #[tokio::test]
@@ -180,34 +201,46 @@ mod tests {
             projections: HashMap::new(),
         };
 
-        kernel.projections.insert("proj-1".to_string(), ProjectionRecord {
-            record_id: "proj-1".to_string(),
-            receipt_id: None,
-            data_hash: "hash".to_string(),
-        });
+        kernel.projections.insert(
+            "proj-1".to_string(),
+            ProjectionRecord {
+                record_id: "proj-1".to_string(),
+                receipt_id: None,
+                data_hash: "hash".to_string(),
+            },
+        );
 
         let reconciler = StorageReconciler::new(&kernel, &kernel, &kernel);
         let violations = reconciler.reconcile_projection("proj-1").await.unwrap();
-        assert!(violations.contains(&StorageReconciliationViolation::ProjectionWithoutReceipt("proj-1".to_string())));
+        assert!(
+            violations.contains(&StorageReconciliationViolation::ProjectionWithoutReceipt(
+                "proj-1".to_string()
+            ))
+        );
     }
 
     #[tokio::test]
     async fn test_projection_claiming_authority_violation() {
-         let mut kernel = MockStorageKernel {
+        let mut kernel = MockStorageKernel {
             receipts: HashMap::new(),
             work: HashMap::new(),
             projections: HashMap::new(),
         };
 
-        kernel.projections.insert("auth:1".to_string(), ProjectionRecord {
-            record_id: "auth:1".to_string(),
-            receipt_id: Some("receipt-1".to_string()),
-            data_hash: "hash".to_string(),
-        });
+        kernel.projections.insert(
+            "auth:1".to_string(),
+            ProjectionRecord {
+                record_id: "auth:1".to_string(),
+                receipt_id: Some("receipt-1".to_string()),
+                data_hash: "hash".to_string(),
+            },
+        );
 
         let reconciler = StorageReconciler::new(&kernel, &kernel, &kernel);
         let violations = reconciler.reconcile_projection("auth:1").await.unwrap();
-        assert!(violations.contains(&StorageReconciliationViolation::ProjectionClaimingAuthority("auth:1".to_string())));
+        assert!(violations.contains(
+            &StorageReconciliationViolation::ProjectionClaimingAuthority("auth:1".to_string())
+        ));
     }
 
     #[tokio::test]
@@ -218,14 +251,19 @@ mod tests {
             projections: HashMap::new(),
         };
 
-        kernel.receipts.insert("work-1".to_string(), DurableReceiptRecord {
-            receipt_id: "receipt-1".to_string(),
-            work_id: "work-1".to_string(),
-            timestamp: 123,
-        });
+        kernel.receipts.insert(
+            "work-1".to_string(),
+            DurableReceiptRecord {
+                receipt_id: "receipt-1".to_string(),
+                work_id: "work-1".to_string(),
+                timestamp: 123,
+            },
+        );
 
         let reconciler = StorageReconciler::new(&kernel, &kernel, &kernel);
         let violations = reconciler.reconcile_work("work-1").await.unwrap();
-        assert!(violations.contains(&StorageReconciliationViolation::ActiveWorkWithoutVisibility("work-1".to_string())));
+        assert!(violations.contains(
+            &StorageReconciliationViolation::ActiveWorkWithoutVisibility("work-1".to_string())
+        ));
     }
 }

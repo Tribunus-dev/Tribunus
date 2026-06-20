@@ -1,7 +1,7 @@
-pub mod schema;
 pub mod backend;
-pub mod executor;
 pub mod backends;
+pub mod executor;
+pub mod schema;
 pub mod violations;
 
 #[cfg(test)]
