@@ -50,7 +50,7 @@ pub struct MemoryRange {
 pub struct BlockDescriptor {
     pub block_id: String,
     pub processor: String, // "cpu" | "gpu" | "npu"
-    pub backend: String, // "accelerate" | "mlx-metal" | "coreml"
+    pub backend: String,   // "accelerate" | "mlx-metal" | "coreml"
     pub kernel_identity: String,
     pub input_offsets: Vec<MemoryRange>,
     pub output_offsets: Vec<MemoryRange>,
