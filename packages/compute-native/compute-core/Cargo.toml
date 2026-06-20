@@ -152,3 +152,7 @@ cc = "1.2"
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
 tribunus_compute_core = { package = "tribunus-compute-core", path = "." }
+
+[[bin]]
+name = "tribunus-tensix-capability-probe"
+path = "src/bin/tribunus-tensix-capability-probe.rs"
