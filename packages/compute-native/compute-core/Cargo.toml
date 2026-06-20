@@ -142,7 +142,7 @@ duckdb = { version = "1.1", features = ["bundled"], optional = true }
 napi = []
 private-development = []
 default = ["stub-backend"]
-stub-backend = []
+stub-backend = ["mlx-rs/stub"]
 mlx-backend = ["mlx-rs/metal", "mlx-rs/accelerate", ]
 storage-adapters = ["dep:tokio-postgres", "dep:redis", "dep:duckdb"]
 
