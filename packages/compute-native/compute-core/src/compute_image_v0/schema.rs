@@ -46,6 +46,8 @@ pub struct PhaseEntry {
     pub backend_candidates: Vec<BackendCandidate>,
     pub selected_backend: Option<String>,
     pub fallback_order: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub tensix_placement: Option<crate::compute_image_v0::tensix::TensixPlacementPlan>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
