@@ -12,8 +12,8 @@ pub struct ArenaInfo {
     pub byte_size: i32,
     pub bytes_per_row: i32,
     pub base_address: *mut c_void,
-    pub(crate) cv_buffer: *mut c_void,
-    pub(crate) io_surface: *mut c_void,
+    pub cv_buffer: *mut c_void,
+    pub io_surface: *mut c_void,
 }
 
 // Safety: ArenaInfo contains raw pointers. It is safe to send between threads

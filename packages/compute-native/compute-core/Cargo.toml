@@ -52,6 +52,12 @@ path = "src/bin/tribunus-decode-attribution-measure.rs"
 [[bin]]
 name = "tribunus-mlx-compatibility-gate"
 path = "src/bin/tribunus-mlx-compatibility-gate.rs"
+[[bin]]
+name = "tribunus-ane-artifact-debug"
+path = "src/bin/tribunus-ane-artifact-debug.rs"
+[[bin]]
+name = "tribunus-coreml-iosurface-qualification"
+path = "src/bin/tribunus-coreml-iosurface-qualification.rs"
 
 [[test]]
 name = "treatment_qualification"
@@ -100,6 +106,9 @@ path = "tests/f32_contract_tests.rs"
 [[test]]
 name = "three_backend_conformance"
 path = "tests/three_backend_conformance.rs"
+[[test]]
+name = "ane_sealed_artifact"
+path = "tests/ane_sealed_artifact.rs"
 
 [[bench]]
 name = "benchmark_placement"

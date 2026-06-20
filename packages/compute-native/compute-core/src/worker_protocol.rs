@@ -51,6 +51,8 @@ pub enum HostCommand {
     Shutdown,
     /// Sent by the watchdog when the worker's RSS crosses the soft ceiling.
     MemoryPressure,
+    /// Prepare ANE segments for inference (load compiled models, warmup).
+    PrepareAne,
 }
 
 /// Events emitted from the worker to the host.
@@ -90,6 +92,8 @@ pub enum WorkerEvent {
     WorkerFatal,
     /// Batch of research trace events from the worker.
     ResearchTraceBatch,
+    /// ANE preparation (load + warmup) completed.
+    AnePrepared,
 }
 
 /// Combined message kind
@@ -244,6 +248,23 @@ pub struct ResearchTraceEventJson {
     pub materialized_bytes: u32,
     pub file_read_bytes: u32,
     pub kv_delta: i32,
+}
+/// Payload for [`HostCommand::PrepareAne`].
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PrepareAnePayload {
+    /// Absolute path to the image directory containing compiled Core ML artifacts.
+    pub image_dir: String,
+    /// Segment IDs of the ANE subgraphs to prepare.
+    pub segment_ids: Vec<String>,
+}
+
+/// Payload for [`WorkerEvent::AnePrepared`].
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AnePreparedPayload {
+    /// Readiness status after ANE preparation.
+    pub readiness: String,
+    /// Per-segment warmup latencies in microseconds (empty if preparation failed).
+    pub warmup_latencies_us: Vec<u64>,
 }
 // ────────────────────────────────────────────────────────────────────────────
 

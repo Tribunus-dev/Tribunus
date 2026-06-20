@@ -4,6 +4,8 @@ compile_error!("Compute authority requires Apple Silicon (macOS arm64) or a supp
 
 extern crate self as tribunus_compute_core;
 
+pub mod accelerate_artifacts;
+pub mod ane_live;
 pub mod analysis;
 pub mod ane_bridge;
 pub mod arena;
@@ -21,6 +23,7 @@ pub mod compile_state;
 pub mod compiler;
 pub mod compute_image;
 pub mod compute_image_v0;
+pub mod compute_graph;
 pub mod compute_ir;
 pub mod compute_lane;
 pub mod compute_service;
@@ -30,6 +33,7 @@ pub mod copy_ledger;
 pub mod coreml_audit;
 pub mod coreml_bridge;
 pub mod coreml_pipeline;
+pub mod coreml_weight_writer;
 pub mod coreml_state;
 pub mod cpu_benchmarks;
 pub mod decode_attribution;
@@ -97,12 +101,14 @@ pub mod treatment;
 pub mod validator;
 pub mod worker_memory;
 pub mod worker_protocol;
+pub mod worker_readiness;
 pub mod worker_supervisor;
 
 pub use crate::session::{
     ControlSessionState, GenerationControlSession, InferenceSession, InferenceSessionState,
     SamplerConfig,
 };
+pub use crate::coreml_pipeline::compile_ane_subgraph;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Status {

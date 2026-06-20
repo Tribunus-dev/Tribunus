@@ -17,6 +17,7 @@
 
 use coreml_proto::proto::mil_spec::{self, argument, dimension, tensor_value, value};
 use std::collections::HashMap;
+use crate::compiler::ane::weight::WeightReference;
 
 /// Error returned by [`MilBuilder::build`] when SSA validation fails.
 #[derive(Debug, Clone)]
@@ -252,6 +253,99 @@ impl MilBuilder {
         attrs.insert("val".to_string(), v);
 
         let op = make_operation("const", &name, HashMap::new(), &[(&name, &vt)], attrs);
+
+        self.value_types.insert(name.clone(), vt);
+        self.ops.push(op);
+        self
+    }
+
+    /// Add a const operation referencing an external weight file via
+    /// [`BlobFileValue`].
+    ///
+    /// Validates the metadata in `weight` (shape consistency, valid SHA-256 hex,
+    /// byte length consistent with dimensions and dtype), then builds a MIL `const`
+    /// operation whose value is a file reference to the weight blob.
+    ///
+    /// # Validation
+    /// - `shape` must be non-empty
+    /// - `byte_length` must match `shape * dtype_size`
+    /// - `sha256` must be a valid 64-char hex string
+    /// - `dtype` must be `"f16"` or `"f32"`
+    pub fn const_weight_ref(mut self, name_hint: &str, weight: &WeightReference) -> Self {
+        let name = self.fresh_name(name_hint);
+
+        // ── Validate metadata ────────────────────────────────────────
+        const F32_BYTES: u64 = 4;
+        const F16_BYTES: u64 = 2;
+
+        let dtype_size = match weight.dtype.as_str() {
+            "f32" => F32_BYTES,
+            "f16" => F16_BYTES,
+            other => {
+                panic!("const_weight_ref '{}': unsupported dtype '{}'", weight.tensor_name, other)
+            }
+        };
+
+        if weight.shape.is_empty() {
+            panic!(
+                "const_weight_ref '{}': empty shape",
+                weight.tensor_name
+            );
+        }
+
+        let shape_prod: u64 = weight.shape.iter().map(|&d| d as u64).product();
+        let expected_bytes = shape_prod * dtype_size;
+        if weight.byte_length != expected_bytes {
+            panic!(
+                "const_weight_ref '{}': byte_length {} != shape {:?} * {} = {}",
+                weight.tensor_name, weight.byte_length, weight.shape, dtype_size, expected_bytes
+            );
+        }
+
+        if weight.sha256.len() != 64
+            || weight
+                .sha256
+                .chars()
+                .any(|c| !c.is_ascii_hexdigit())
+        {
+            panic!(
+                "const_weight_ref '{}': invalid sha256 hex '{}'",
+                weight.tensor_name, weight.sha256
+            );
+        }
+
+        // ── Build the MIL const op with BlobFileValue ─────────────────
+        let mil_dtype = match weight.dtype.as_str() {
+            "f32" => mil_spec::DataType::Float32,
+            "f16" => mil_spec::DataType::Float16,
+            _ => unreachable!(),
+        };
+
+        let tensor_type = tensor_type(mil_dtype, &weight.shape);
+        let vt = value_type_tensor(tensor_type);
+
+        let blob_val = mil_spec::value::BlobFileValue {
+            file_name: weight.relative_path.clone(),
+            offset: 0,
+        };
+
+        let v = mil_spec::Value {
+            doc_string: String::new(),
+            r#type: Some(vt.clone()),
+            value: Some(mil_spec::value::Value::BlobFileValue(blob_val)),
+        };
+
+        let mut attrs = HashMap::new();
+        attrs.insert("name".to_string(), string_attr(&name));
+        attrs.insert("val".to_string(), v);
+
+        let op = make_operation(
+            "const",
+            &name,
+            HashMap::new(),
+            &[(&name, &vt)],
+            attrs,
+        );
 
         self.value_types.insert(name.clone(), vt);
         self.ops.push(op);

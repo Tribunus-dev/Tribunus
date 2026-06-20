@@ -491,6 +491,10 @@ fn command_thread(
                 );
             }
 
+            HostCommand::PrepareAne => {
+                eprintln!("[worker {}] ANE preparation triggered", worker_id);
+            }
+
             HostCommand::Shutdown => {
                 eprintln!("[worker {}] shutdown requested", worker_id);
                 let _ = cmd_tx.send(InferenceCommand::Shutdown);

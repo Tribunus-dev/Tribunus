@@ -15,9 +15,10 @@ use crate::engine_policy::{DeadlineGuard, ExecutionPolicy};
 use crate::streaming::{generation_channel, GenerationEvent, GenerationHandle, GenerationSender};
 use crate::worker_protocol::{
     Frame, HeartbeatPayload, HostCommand, MessageKind, PolicySnapshotPayload, ProtocolValidator,
-    ResearchTraceBatchPayload, StartGenerationPayload, TokenPayload, WorkerEvent,
+    AnePreparedPayload, ResearchTraceBatchPayload, StartGenerationPayload, TokenPayload, WorkerEvent,
     MAX_FRAME_SIZE_BYTES,
 };
+use crate::worker_readiness::WorkerReadiness;
 use parking_lot::Mutex;
 use serde_json::Value;
 use std::collections::HashMap;
@@ -391,6 +392,8 @@ impl WorkerEventReader {
 /// heartbeat timestamp (updated frequently by event reader, read by watchdog).
 pub struct WorkerRuntimeState {
     model_loaded: AtomicBool,
+    ane_prepared: AtomicBool,
+    worker_readiness: Mutex<WorkerReadiness>,
     faulted: AtomicBool,
     last_heartbeat: Mutex<Instant>,
     restart_count: AtomicU32,
@@ -401,6 +404,8 @@ impl WorkerRuntimeState {
     pub fn new(worker_id: String) -> Self {
         Self {
             model_loaded: AtomicBool::new(false),
+            ane_prepared: AtomicBool::new(false),
+            worker_readiness: Mutex::new(WorkerReadiness::Unknown),
             faulted: AtomicBool::new(false),
             last_heartbeat: Mutex::new(Instant::now()),
             restart_count: AtomicU32::new(0),
@@ -451,6 +456,44 @@ impl WorkerRuntimeState {
     /// Increment restart count and return the new value.
     pub fn increment_restart_count(&self) -> u32 {
         self.restart_count.fetch_add(1, Ordering::SeqCst) + 1
+    }
+
+    /// Mark ANE as prepared (models loaded and warmup passed).
+    pub fn set_ane_prepared(&self) {
+        self.ane_prepared.store(true, Ordering::SeqCst);
+    }
+
+    /// Clear ANE prepared flag.
+    pub fn clear_ane_prepared(&self) {
+        self.ane_prepared.store(false, Ordering::SeqCst);
+    }
+
+    /// Return whether ANE preparation has completed.
+    pub fn is_ane_prepared(&self) -> bool {
+        self.ane_prepared.load(Ordering::SeqCst)
+    }
+
+    /// Get the current worker readiness state.
+    pub fn readiness(&self) -> WorkerReadiness {
+        *self.worker_readiness.lock()
+    }
+
+    /// Set the worker readiness state with transition validation.
+    ///
+    /// Returns `Err` if the transition violates the linear progression.
+    pub fn set_readiness(&self, next: WorkerReadiness) -> Result<(), String> {
+        let mut current = self.worker_readiness.lock();
+        if !current.can_transition_to(&next) {
+            // Allow staying at the same state (transition_to is strict).
+            if *current != next {
+                return Err(format!(
+                    "readiness transition failed: {:?} → {:?}",
+                    *current, next
+                ));
+            }
+        }
+        *current = next;
+        Ok(())
     }
 }
 
@@ -1349,6 +1392,36 @@ impl WorkerSupervisor {
                     }
 
                     WorkerEvent::HelloAck | WorkerEvent::ModelLoadStarted => {}
+                    WorkerEvent::AnePrepared => {
+                        runtime.set_ane_prepared();
+                        if let Ok(payload) =
+                            serde_json::from_value::<AnePreparedPayload>(frame.payload.clone())
+                        {
+                            let readiness_str = payload.readiness.as_str();
+                            let next_state = match readiness_str {
+                                "ane-prepared" => WorkerReadiness::AnePrepared,
+                                "model-ready" => WorkerReadiness::ModelReady,
+                                "routes-validated" => WorkerReadiness::RoutesValidated,
+                                _ => {
+                                    diagnostics.append_line(&format!(
+                                        "unknown readiness in AnePrepared payload: {readiness_str}"
+                                    ));
+                                    WorkerReadiness::AnePrepared
+                                }
+                            };
+                            if let Err(e) = runtime.set_readiness(next_state) {
+                                diagnostics.append_line(&format!(
+                                    "readiness transition failed: {e}"
+                                ));
+                            } else {
+                                diagnostics.append_line(&format!(
+                                    "ANE prepared: readiness={}, warmup_latencies={:?}",
+                                    readiness_str, payload.warmup_latencies_us
+                                ));
+                            }
+                        }
+                    }
+
                 },
 
                 _ => {

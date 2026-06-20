@@ -1,36 +1,36 @@
-id = "opencode"
-name = "OpenCode"
-description = "The open source coding agent."
+id = "tribunus"
+name = "Tribunus"
+description = "Local-first control plane for agentic engineering"
 version = "1.15.12"
 schema_version = 1
 authors = ["Anomaly"]
 repository = "https://github.com/tribunus-dev/tribunus"
 
-[agent_servers.opencode]
-name = "OpenCode"
-icon = "./icons/opencode.svg"
+[agent_servers.tribunus]
+name = "Tribunus"
+icon = "./icons/tribunus.svg"
 
-[agent_servers.opencode.targets.darwin-aarch64]
+[agent_servers.tribunus.targets.darwin-aarch64]
 archive = "https://github.com/tribunus-dev/tribunus/releases/download/v1.15.12/opencode-darwin-arm64.zip"
 cmd = "./opencode"
 args = ["acp"]
 
-[agent_servers.opencode.targets.darwin-x86_64]
+[agent_servers.tribunus.targets.darwin-x86_64]
 archive = "https://github.com/tribunus-dev/tribunus/releases/download/v1.15.12/opencode-darwin-x64.zip"
 cmd = "./opencode"
 args = ["acp"]
 
-[agent_servers.opencode.targets.linux-aarch64]
+[agent_servers.tribunus.targets.linux-aarch64]
 archive = "https://github.com/tribunus-dev/tribunus/releases/download/v1.15.12/opencode-linux-arm64.tar.gz"
 cmd = "./opencode"
 args = ["acp"]
 
-[agent_servers.opencode.targets.linux-x86_64]
+[agent_servers.tribunus.targets.linux-x86_64]
 archive = "https://github.com/tribunus-dev/tribunus/releases/download/v1.15.12/opencode-linux-x64.tar.gz"
 cmd = "./opencode"
 args = ["acp"]
 
-[agent_servers.opencode.targets.windows-x86_64]
+[agent_servers.tribunus.targets.windows-x86_64]
 archive = "https://github.com/tribunus-dev/tribunus/releases/download/v1.15.12/opencode-windows-x64.zip"
 cmd = "./opencode.exe"
 args = ["acp"]

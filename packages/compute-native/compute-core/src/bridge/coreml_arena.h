@@ -26,7 +26,15 @@ int tribunus_arena_alloc(TribunusArenaInfo* info,
                           int32_t logical_dim0,
                           int32_t logical_dim1);
 
+int tribunus_arena_alloc_f32(TribunusArenaInfo* info,
+                              int32_t logical_dim0,
+                              int32_t logical_dim1);
+
+int32_t tribunus_cv_pixel_buffer_io_surface_id(void* cv_buffer);
+
 void tribunus_arena_free(TribunusArenaInfo* info);
+
+void tribunus_arena_free_cv_buffer(void* cv_buffer);
 
 int32_t tribunus_arena_io_surface_id(const TribunusArenaInfo* info);
 

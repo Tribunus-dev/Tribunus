@@ -9,13 +9,13 @@ import type { DesktopTheme } from "./types"
 export type ColorScheme = "light" | "dark" | "system"
 
 const STORAGE_KEYS = {
-  THEME_ID: "opencode-theme-id",
-  COLOR_SCHEME: "opencode-color-scheme",
-  THEME_CSS_LIGHT: "opencode-theme-css-light",
-  THEME_CSS_DARK: "opencode-theme-css-dark",
+  THEME_ID: "tribunus-theme-id",
+  COLOR_SCHEME: "tribunus-color-scheme",
+  THEME_CSS_LIGHT: "tribunus-theme-css-light",
+  THEME_CSS_DARK: "tribunus-theme-css-dark",
 } as const
 
-const THEME_STYLE_ID = "oc-theme"
+const THEME_STYLE_ID = "tribunus-theme"
 let files: Record<string, () => Promise<{ default: DesktopTheme }>> | undefined
 let ids: string[] | undefined
 let known: Set<string> | undefined
@@ -66,7 +66,7 @@ const names: Record<string, string> = {
   nord: "Nord",
   "one-dark": "One Dark",
   onedarkpro: "One Dark Pro",
-  opencode: "Tribunus",
+  tribunus: "Tribunus",
   orng: "Orng",
   "osaka-jade": "Osaka Jade",
   palenight: "Palenight",
@@ -82,7 +82,9 @@ const names: Record<string, string> = {
 const oc2Theme = oc2ThemeJson as DesktopTheme
 
 function normalize(id: string | null | undefined) {
-  return id === "oc-1" ? "oc-2" : id
+  if (id === "oc-1") return "oc-2"
+  if (id === "opencode") return "tribunus"
+  return id
 }
 
 function read(key: string) {
@@ -143,7 +145,7 @@ function applyThemeCss(theme: DesktopTheme, themeId: string, mode: "light" | "da
   ${css}
 }`
 
-  document.getElementById("oc-theme-preload")?.remove()
+  document.getElementById("tribunus-theme-preload")?.remove()
   ensureThemeStyleElement().textContent = fullCss
   document.documentElement.dataset.theme = themeId
   document.documentElement.dataset.colorScheme = mode

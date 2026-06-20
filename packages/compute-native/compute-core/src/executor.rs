@@ -8,6 +8,8 @@
 use crate::config::{EpiloguePlan, LayerPlan, ProloguePlan};
 use crate::kv_cache::KvCache;
 use crate::primitives;
+use crate::ane_live::AneLiveRuntime;
+use crate::compute_graph::{ComputeGraph, GraphInstance, ArtifactRegistry};
 use crate::projection_identity::{dtype_to_storage, ProjectionContext, ProjectionFamily};
 use crate::session::SamplerConfig;
 use mlx_rs::error::Result as MlxResult;
@@ -66,9 +68,16 @@ pub fn run_prologue(
 /// The plan determines whether sliding or global attention is used — no
 /// branching on layer index. All weights are passed as resolved MLX Arrays.
 /// The caller MUST eval the result before dropping weight leases.
+///
+/// MLP dispatch priority:
+/// 1. `compute_graph` — evaluate a precompiled compute graph (if present)
+/// 2. `ane_runtime` — legacy ANE hotpatch (if graph absent but ANE loaded)
+/// 3. MLX fallback — standard SwiGLU via qmatmul + silu
 pub fn run_layer(
     hidden: &Array,
     plan: &LayerPlan,
+    ane_runtime: Option<&AneLiveRuntime>,
+    compute_graph: Option<(&ComputeGraph, &ArtifactRegistry)>,
     // Attention norm weights
     attn_norm: &Array,
     ffn_norm: &Array,
@@ -182,44 +191,106 @@ pub fn run_layer(
     let residual = &hidden;
     let normed = primitives::rms_norm(&hidden, ffn_norm, rms_norm_eps)?;
 
-    // --- SwiGLU MLP ---
-    let gate = qmatmul_attributed(
-        &normed,
-        gw,
-        gs,
-        gb,
-        true,
-        64,
-        8,
-        ctx,
-        ProjectionFamily::GateProj,
-        4,
-    )?;
-    let up = qmatmul_attributed(
-        &normed,
-        uw,
-        us,
-        ub,
-        true,
-        64,
-        8,
-        ctx,
-        ProjectionFamily::UpProj,
-        5,
-    )?;
-    let gated = mlx_rs::nn::silu(&gate)?.multiply(&up)?;
-    let ffn_out = qmatmul_attributed(
-        &gated,
-        dw,
-        ds,
-        db,
-        true,
-        64,
-        8,
-        ctx,
-        ProjectionFamily::DownProj,
-        6,
-    )?;
+    // --- SwiGLU MLP (ANE dispatch or MLX fallback) ---
+    let mlx_mlp = || -> MlxResult<Array> {
+        let gate = qmatmul_attributed(
+            &normed,
+            gw,
+            gs,
+            gb,
+            true,
+            64,
+            8,
+            ctx,
+            ProjectionFamily::GateProj,
+            4,
+        )?;
+        let up = qmatmul_attributed(
+            &normed,
+            uw,
+            us,
+            ub,
+            true,
+            64,
+            8,
+            ctx,
+            ProjectionFamily::UpProj,
+            5,
+        )?;
+        let gated = mlx_rs::nn::silu(&gate)?.multiply(&up)?;
+        qmatmul_attributed(
+            &gated,
+            dw,
+            ds,
+            db,
+            true,
+            64,
+            8,
+            ctx,
+            ProjectionFamily::DownProj,
+            6,
+        )
+    };
+
+    // Dispatch priority: compute graph → ANE hotpatch → MLX
+    let ffn_out = if let Some((graph, registry)) = compute_graph {
+        let mlp_seg = format!("{}_mlp", plan.segment_id);
+        let n_tokens = normed.shape()[0];
+        let hidden_size = normed.shape()[1];
+
+        // Build a one-shot graph instance and run it.
+        let mut inst = GraphInstance::new(graph, registry, vec![]);
+
+        // Read normed data.
+        let normed_bytes = normed.as_slice::<f32>();
+        let normed_bytes_u8 = unsafe {
+            std::slice::from_raw_parts(
+                normed_bytes.as_ptr() as *const u8,
+                normed_bytes.len() * 4,
+            )
+        };
+
+        // Allocate input region (region 0) with normed data.
+        if let Err(e) = inst.allocate_region(0, Some(normed_bytes_u8)) {
+            eprintln!("[graph] allocate input failed: {} — falling back to MLX", e);
+            mlx_mlp()?
+        } else if let Err(e) = inst.allocate_region(1, None) {
+            eprintln!("[graph] allocate output failed: {} — falling back to MLX", e);
+            mlx_mlp()?
+        } else if let Err(e) = inst.run() {
+            eprintln!("[graph] evaluate failed for '{}': {} — falling back to MLX", mlp_seg, e);
+            mlx_mlp()?
+        } else {
+            // Read output from region 1.
+            match inst.region_data(1) {
+                Ok(data) => {
+                    let out_f32 = unsafe {
+                        std::slice::from_raw_parts(
+                            data.as_ptr() as *const f32,
+                            data.len() / 4,
+                        )
+                    };
+                    Array::from_slice(out_f32, &[n_tokens, hidden_size])
+                }
+                Err(_) => mlx_mlp()?,
+            }
+        }
+    } else if let Some(ane) = ane_runtime {
+        let n_tokens = normed.shape()[0];
+        let hidden_size = normed.shape()[1];
+        let output_shape = [n_tokens, hidden_size];
+        let mlp_seg = format!("{}_mlp", plan.segment_id);
+        match ane.try_mlp_dispatch(&mlp_seg, &normed, &output_shape) {
+            Ok(Some(arr)) => arr,
+            Ok(None) => mlx_mlp()?,
+            Err(e) => {
+                eprintln!("[ane] dispatch '{}' failed: {} — falling back to MLX", mlp_seg, e);
+                mlx_mlp()?
+            }
+        }
+    } else {
+        mlx_mlp()?
+    };
 
     residual.add(&ffn_out)
 }

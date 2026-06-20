@@ -1,0 +1,18 @@
+{
+  "commitSha": "254c9272dcfb524acd8caffab4d991c6669471d1",
+  "identityManifestVersion": "unknown",
+  "filesScanned": 5711,
+  "occurrencesByClassification": {
+    "UNRESOLVED": 53617
+  },
+  "permanentExceptions": 0,
+  "temporaryExceptions": 0,
+  "unresolvedOccurrences": 53617,
+  "staleExceptions": 0,
+  "verificationDurationMs": 4141,
+  "finalVerdict": "FAIL",
+  "failures": [
+    "Identity manifest not found at schemas/identity/tribunus-identity.v1.json",
+    "Found 53617 unauthorized legacy reference(s) not in legacy-reference-registry"
+  ]
+}

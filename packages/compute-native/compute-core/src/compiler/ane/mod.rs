@@ -5,7 +5,9 @@
 //! rewrite suggestions, and derived artifact plans.
 
 pub mod artifacts;
+pub mod build;
 pub mod legality;
+pub mod weight;
 pub mod rules;
 
 #[cfg(test)]

@@ -9,6 +9,7 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use crate::compute_image::NumericValidationResult;
 
 // ---------------------------------------------------------------------------
 // 1. ModelLoadReceipt
@@ -951,6 +952,120 @@ impl Timeline {
     pub fn clear(&mut self) {
         self.events.clear();
     }
+}
+
+// ---------------------------------------------------------------------------
+// AneDispatchReceipt
+// ---------------------------------------------------------------------------
+
+/// Receipt for a single ANE segment dispatch.
+///
+/// Captures the model identity, feature names, shape key, latency,
+/// and optional numerical validation / fallback information.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AneDispatchReceipt {
+    /// Hash of the compute image that owns this dispatch.
+    pub image_hash: String,
+    /// Subgraph segment identifier.
+    pub segment_id: String,
+    /// Hash of the compiled Core ML artifact.
+    pub artifact_hash: String,
+    /// Path to the compiled `.mlmodelc` directory.
+    pub model_path: String,
+    /// Compute-unit policy used.
+    pub compute_unit_policy: String,
+    /// Input feature names for this dispatch.
+    pub input_feature_names: Vec<String>,
+    /// Output feature names for this dispatch.
+    pub output_feature_names: Vec<String>,
+    /// Shape key identifying the tensor shape contract.
+    pub shape_key: String,
+    /// Input element data type.
+    pub input_dtype: String,
+    /// Output element data type.
+    pub output_dtype: String,
+    /// Dispatch latency in microseconds.
+    pub latency_us: u64,
+    /// Numerical validation result, if checked against a reference.
+    pub numerical_validation: Option<NumericValidationResult>,
+    /// Reason for fallback to CPU/GPU, if applicable.
+    pub fallback_reason: Option<String>,
+}
+
+/// Status of a lane-specific completion event.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum CompletionStatus {
+    Pending,
+    Complete,
+    Failed,
+}
+
+/// A completion token tracking fence state for an asynchronous lane.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompletionToken {
+    pub lane: String,
+    pub epoch: u64,
+    pub status: CompletionStatus,
+}
+
+// ---------------------------------------------------------------------------
+// GraphNodeReceipt
+// ---------------------------------------------------------------------------
+
+/// Receipt for a single graph node dispatch during generation.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GraphNodeReceipt {
+    /// Graph identity.
+    pub graph_id: String,
+    /// Graph variant identity.
+    pub graph_variant_id: String,
+    /// Node index within the graph.
+    pub node_id: u32,
+    /// Artifact ID dispatched by this node.
+    pub artifact_id: String,
+    /// SHA-256 of the compiled artifact, verified before dispatch.
+    pub artifact_hash: String,
+    /// Execution lane: "cpu", "gpu", or "ane".
+    pub lane: String,
+    /// CPU implementation or runtime, e.g. "ScalarReference", "AccelerateVdsp", "CoreML".
+    pub implementation: String,
+    /// Buffer materialization mode, e.g. "CopyBacked", "PersistentBufferBacked".
+    pub buffer_mode: Option<String>,
+    /// Activation ring slot ID, if dispatched from a ring-owned region.
+    pub slot_id: Option<u32>,
+    /// Slot epoch at dispatch time.
+    pub slot_epoch: Option<u64>,
+    /// IOSurface ID for the backing buffer, if available.
+    pub iosurface_id: Option<i32>,
+    /// Whether the slot allocation was reused from a previous step.
+    pub allocation_reused: Option<bool>,
+    /// Input buffer region IDs.
+    pub input_region_ids: Vec<u32>,
+    /// Output buffer region IDs.
+    pub output_region_ids: Vec<u32>,
+    /// Dispatch latency in microseconds.
+    pub latency_us: u64,
+    /// Whether the artifact hash matched at bind time.
+    pub hash_verified: bool,
+    /// Route outcome: "completed", "degraded", or "failed".
+    pub route_outcome: String,
+    /// Whether parity comparison was sampled for this node.
+    pub parity_sampled: bool,
+    /// Maximum absolute error from parity comparison (None if not sampled).
+    pub max_abs_error: Option<f64>,
+    /// Reason for fallback from the preferred allocation strategy (e.g. IOSurface failure).
+    pub allocation_fallback_reason: Option<String>,
+}
+
+/// Emit an ANE dispatch receipt for logging / telemetry.
+///
+/// Serializes the receipt as JSON and writes it to stderr for capture
+/// by the supervisor's diagnostics collector. Returns the JSON string.
+pub fn emit_ane_receipt(receipt: &AneDispatchReceipt) -> String {
+    let json = serde_json::to_string_pretty(receipt)
+        .unwrap_or_else(|_| "<serialization error>".to_string());
+    eprintln!("[ANE_DISPATCH] {}", &json);
+    json
 }
 
 // ---------------------------------------------------------------------------

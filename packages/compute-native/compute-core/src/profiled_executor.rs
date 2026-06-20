@@ -8,6 +8,8 @@
 
 use crate::compute_image::{CompiledImageReader, CopyClassification, TensorEntry};
 use crate::engine_error::{EngineError, EngineErrorCode};
+use crate::ane_live::AneLiveRuntime;
+use crate::compute_graph::{self, ArtifactRegistry, ComputeGraph};
 use crate::kv_cache::KvCache;
 use crate::mapped_image::MappedImage;
 use crate::placement_profile::ExecutionPlacementProfile;
@@ -311,6 +313,12 @@ pub struct LoadedProfiledModel {
     pub mapped_weight_bytes: u64,
     pub copied_weight_bytes: u64,
     pub materialized_bytes: u64,
+    /// Loaded ANE (Core ML) artifact runtime for hardware-accelerated dispatch.
+    pub ane_runtime: Option<AneLiveRuntime>,
+    /// Per-layer compute graphs for ANE-eligible segments. Key = segment_id.
+    pub compute_graphs: HashMap<String, ComputeGraph>,
+    /// Resolved artifact registry (Core ML models, etc.) loaded from the image.
+    pub artifact_registry: Arc<ArtifactRegistry>,
     pub handle_baseline: usize,
 }
 
@@ -507,6 +515,81 @@ impl LoadedProfiledModel {
             }
         }
 
+        // Load ANE artifacts from the ComputeImage manifest.
+        let ane_runtime = {
+            let artifacts = &reader.manifest.coreml_artifacts;
+            if artifacts.is_empty() {
+                None
+            } else {
+                let mut rt = AneLiveRuntime::with_image_hash(
+                    reader.manifest.image_hash.clone(),
+                );
+                for artifact in artifacts {
+                    if let Err(e) = rt.load_artifact(artifact) {
+                        eprintln!(
+                            "[ane] failed to load artifact '{}': {} — skipping",
+                            artifact.segment_id, e
+                        );
+                    }
+                }
+                Some(rt)
+            }
+        };
+
+        // Build compute graphs and artifact registry from Core ML artifacts.
+        let mut artifact_registry = ArtifactRegistry::new();
+        // Load Accelerate CPU artifacts from manifest.
+        for accel in &reader.manifest.accelerate_artifacts {
+            if artifact_registry.accelerate_artifacts.contains_key(&accel.artifact_id) {
+                eprintln!("[graph] duplicate Accelerate artifact '{}' — skipping", accel.artifact_id);
+                continue;
+            }
+            artifact_registry.accelerate_artifacts.insert(accel.artifact_id.clone(), accel.clone());
+        }
+
+        let mut compute_graphs = HashMap::new();
+        for artifact in &reader.manifest.coreml_artifacts {
+            if let Err(e) = artifact_registry.load_coreml_artifact(artifact) {
+                eprintln!(
+                    "[graph] failed to load artifact '{}': {} — skipping",
+                    artifact.segment_id, e
+                );
+                continue;
+            }
+            if let Some(ref graph) = artifact.graph {
+                // Verify every dispatch node's artifact_hash matches the entry.
+                // For Core ML artifact nodes, check against artifact.artifact_hash.
+                // For Accelerate artifact nodes, check against the loaded registry.
+                let all_hashes_match = graph.nodes.iter().all(|node| {
+                    if let compute_graph::GraphNode::Dispatch {
+                        artifact_id: ref aid,
+                        artifact_hash: ref ahash,
+                        ..
+                    } = node {
+                        let coreml_ok = ahash == &artifact.artifact_hash;
+                        let cpu_ok = artifact_registry.accelerate_artifacts.get(aid)
+                                .map(|a| &a.artifact_hash == ahash)
+                                .unwrap_or(false);
+                        coreml_ok || cpu_ok
+                    } else {
+                        true
+                    }
+                });
+                if !all_hashes_match {
+                    eprintln!("[graph] HASH MISMATCH for '{}' — rejecting graph", artifact.segment_id);
+                } else {
+                    compute_graphs.insert(artifact.segment_id.clone(), graph.clone());
+                    eprintln!(
+                        "[graph] deserialized '{}' (graph_id={}, {} nodes, {} regions)",
+                        artifact.segment_id, graph.graph_id, graph.nodes.len(), graph.regions.len()
+                    );
+                }
+            } else {
+                eprintln!("[graph] no compiler-emitted graph for '{}'", artifact.segment_id);
+            }
+        }
+        let artifact_registry = Arc::new(artifact_registry);
+
         Ok(Self {
             image_dir: image_dir.to_path_buf(),
             reader,
@@ -523,6 +606,9 @@ impl LoadedProfiledModel {
             mapped_weight_bytes,
             copied_weight_bytes,
             materialized_bytes,
+            ane_runtime,
+            compute_graphs,
+            artifact_registry,
             handle_baseline,
         })
     }
@@ -647,6 +733,9 @@ impl ProfiledInferenceSession {
             hidden = crate::executor::run_layer(
                 &hidden,
                 layer_plan,
+                model.ane_runtime.as_ref(),
+                model.compute_graphs.get(&format!("{}_mlp", layer_plan.segment_id))
+                    .map(|g| (g, &*model.artifact_registry)),
                 &lw.input_layernorm,
                 &lw.post_attention_layernorm,
                 &lw.q_proj_w,
@@ -869,6 +958,9 @@ impl ProfiledInferenceSession {
             hidden = crate::executor::run_layer(
                 &hidden,
                 layer_plan,
+                model.ane_runtime.as_ref(),
+                model.compute_graphs.get(&format!("{}_mlp", layer_plan.segment_id))
+                    .map(|g| (g, &*model.artifact_registry)),
                 &lw.input_layernorm,
                 &lw.post_attention_layernorm,
                 &lw.q_proj_w,

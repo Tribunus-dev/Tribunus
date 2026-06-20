@@ -21,6 +21,7 @@ pub fn is_valid_storage_abi(abi: &str) -> bool {
 use crate::projection_identity;
 use crate::quantized::QuantizedLinearBinding;
 use mlx_rs::Array;
+use crate::compiler::ane::weight::WeightReference;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sha2::{Digest, Sha256};
@@ -207,6 +208,16 @@ pub struct Manifest {
     /// Execution plan emitted by the compiler (prologue, layers, epilogue).
     #[serde(default)]
     pub execution_plan: crate::config::ModelExecutionPlan,
+    /// Core ML artifact entries for ANE-compiled subgraphs.
+    #[serde(default)]
+    pub coreml_artifacts: Vec<CoreMlArtifactEntry>,
+    /// Precompiled compute graphs for artifact dispatch. Keyed by graph ID
+    /// (e.g. "layer_00_mlp.decode_1"). Immutable — authored by the compiler.
+    #[serde(default)]
+    pub graphs: Vec<crate::compute_graph::ComputeGraph>,
+    /// Accelerate CPU execution recipes (RMSNorm, add, etc.) — sealed by hash.
+    #[serde(default)]
+    pub accelerate_artifacts: Vec<crate::accelerate_artifacts::AccelerateArtifact>,
 }
 
 fn default_storage_abi() -> String {
@@ -654,6 +665,80 @@ pub struct TensorProvenance {
     pub preserved_byte_for_byte: bool,
 }
 
+/// Provenance linking a Core ML artifact entry back to canonical tensors.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CoreMlProvenance {
+    /// Canonical tensor ids that produced this artifact.
+    pub source_tensor_ids: Vec<String>,
+    /// ComputeImage hash from which these tensors originate.
+    pub image_hash: String,
+}
+
+/// Describes one Core ML artifact produced by ANE compilation.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CoreMlArtifactEntry {
+    /// Subgraph segment identifier (e.g. `"layer_00_mlp"`).
+    pub segment_id: String,
+    /// SHA-256 of the compiled .mlmodelc directory.
+    pub artifact_hash: String,
+    /// Path to the `.mlpackage` directory.
+    pub package_path: String,
+    /// Path to the compiled `.mlmodelc` directory.
+    pub compiled_path: String,
+    /// Core ML compiler version string.
+    pub compiler_version: String,
+    /// Compute-unit policy used during compilation.
+    pub compute_unit_policy: String,
+    /// Input feature names for the Core ML model.
+    pub input_feature_names: Vec<String>,
+    /// Output feature names for the Core ML model.
+    pub output_feature_names: Vec<String>,
+    /// Input shapes (one per input feature).
+    pub input_shapes: Vec<Vec<i64>>,
+    /// Output shapes (one per output feature).
+    pub output_shapes: Vec<Vec<i64>>,
+    /// Input data types (one per input feature).
+    pub input_dtypes: Vec<String>,
+    /// Output data types (one per output feature).
+    pub output_dtypes: Vec<String>,
+    /// Weight references for this artifact.
+    pub weight_references: Vec<WeightReference>,
+    /// Canonical provenance linking back to compute-image tensors.
+    pub canonical_provenance: CoreMlProvenance,
+    /// Validation receipt after load/warmup/parity checks.
+    pub validation_receipt: CoreMlArtifactReceipt,
+    /// Precompiled compute graph for this artifact, authored by the compiler.
+    /// The worker deserializes and verifies against artifact_hash at bind time.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub graph: Option<crate::compute_graph::ComputeGraph>,
+}
+
+/// Receipt for a single Core ML artifact's lifecycle validation.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CoreMlArtifactReceipt {
+    /// Whether the artifact compiled successfully.
+    pub compiled: bool,
+    /// Whether the compiled model was loaded into the runtime.
+    pub loaded: bool,
+    /// Whether ANE warmup prediction passed.
+    pub warmup_passed: bool,
+    /// Numerical parity result, if checked.
+    pub numerical_parity: Option<NumericValidationResult>,
+}
+
+/// Numerical comparison result between reference and ANE output.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NumericValidationResult {
+    /// Maximum absolute element-wise error.
+    pub max_abs_error: f64,
+    /// Root-mean-square error across all elements.
+    pub rms_error: f64,
+    /// Cosine similarity between reference and output.
+    pub cosine_similarity: f64,
+    /// Tolerance used for the comparison.
+    pub tolerance: f64,
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 pub struct IgnoredTensorClassification {
     pub name: String,
@@ -862,6 +947,9 @@ impl ImageBuilder {
                 required_capabilities: Vec::new(),
                 prepacked_layout: "none".into(),
                 execution_plan: crate::config::ModelExecutionPlan::default(),
+                coreml_artifacts: Vec::new(),
+                graphs: vec![],
+                            accelerate_artifacts: vec![],
             },
             next_tensor_id: 0,
             current_segment: None,
@@ -3221,6 +3309,8 @@ impl ImageRuntime {
             hidden = crate::executor::run_layer(
                 &hidden,
                 layer_plan,
+                None, // ane_runtime: disabled in test path
+                None, // compute_graph: disabled in test path
                 &attn_norm,
                 &ffn_norm,
                 &qw,
@@ -4719,6 +4809,9 @@ mod tests {
             required_capabilities: vec![],
             prepacked_layout: "none".into(),
             execution_plan: crate::config::ModelExecutionPlan::default(),
+            coreml_artifacts: vec![],
+            graphs: vec![],
+                        accelerate_artifacts: vec![],
         };
 
         assert!(defaults.storage_abi_matches(&StorageBackend::Copied));
@@ -4815,6 +4908,9 @@ mod tests {
             required_capabilities: vec![],
             prepacked_layout: "none".into(),
             execution_plan: crate::config::ModelExecutionPlan::default(),
+            coreml_artifacts: vec![],
+            graphs: vec![],
+                        accelerate_artifacts: vec![],
         };
 
         assert!(manifest.storage_abi_matches(&StorageBackend::MappedNoCopy));

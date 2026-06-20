@@ -1,0 +1,83 @@
+=== Tribunus Identity Verification Report ===
+Generated:       2026-06-19T22:10:59.520Z
+Commit:          254c9272dcfb524acd8caffab4d991c6669471d1
+Identity Version: unknown
+Verdict:         FAIL
+
+--- Scan Statistics ---
+  Files scanned:             5711
+  Total occurrences:         53617
+  Files with occurrences:    2643
+  Mixed-identity lines:      785
+
+--- Occurrence Classification ---
+  UNRESOLVED: 53617
+
+--- Registry Status ---
+  Permanent exceptions:        0
+  Temporary exceptions:        0
+  Unresolved occurrences:      53617
+  Stale registry entries:      0
+
+--- Unresolved Occurrences (Unauthorized) ---
+  BRANDING.md:1  matched="OpenCode"
+  BRANDING.md:3  matched="OpenCode"
+  BRANDING.md:10  matched="OpenCode"
+  BRANDING.md:16  matched="opencode"
+  BRANDING.md:16  matched="OpenCode"
+  BRANDING.md:20  matched="opencode"
+  BRANDING.md:20  matched="opencode"
+  BRANDING.md:21  matched="OPENCODE"
+  BRANDING.md:32  matched="opencode"
+  BRANDING.md:34  matched="OpenCode"
+  BRANDING.md:37  matched="opencode"
+  BRANDING.md:37  matched="opencode"
+  BRANDING.md:41  matched="OpenCode"
+  BRANDING.md:43  matched="opencode"
+  BRANDING.md:44  matched="opencode"
+  BRANDING.md:45  matched="OPENCODE"
+  BRANDING.md:46  matched="opencode"
+  BRANDING.md:46  matched=".opencode"
+  BRANDING.md:47  matched="opencode"
+  CONTRIBUTING.md:53  matched="opencode"
+  LEAFS.md:3  matched="opencode"
+  LEAFS.md:3  matched=".opencode"
+  LEAFS.md:9  matched="opencode"
+  LEAFS.md:9  matched="opencode"
+  LEAFS.md:9  matched=".opencode"
+  LEAFS.md:9  matched=".opencode"
+  LEAFS.md:10  matched="opencode"
+  LEAFS.md:10  matched="opencode"
+  LEAFS.md:10  matched=".opencode"
+  LEAFS.md:10  matched=".opencode"
+  LEAFS.md:11  matched="opencode"
+  LEAFS.md:11  matched="opencode"
+  LEAFS.md:11  matched=".opencode"
+  LEAFS.md:11  matched=".opencode"
+  LEAFS.md:12  matched="opencode"
+  LEAFS.md:12  matched="opencode"
+  LEAFS.md:12  matched=".opencode"
+  LEAFS.md:12  matched=".opencode"
+  LEAFS.md:18  matched="opencode"
+  LEAFS.md:18  matched="opencode"
+  LEAFS.md:18  matched=".opencode"
+  LEAFS.md:18  matched=".opencode"
+  LEAFS.md:19  matched="opencode"
+  LEAFS.md:19  matched="opencode"
+  LEAFS.md:19  matched=".opencode"
+  LEAFS.md:19  matched=".opencode"
+  LEAFS.md:20  matched="opencode"
+  LEAFS.md:20  matched="opencode"
+  LEAFS.md:20  matched=".opencode"
+  LEAFS.md:20  matched=".opencode"
+  ... and 53567 more
+
+--- Failure Reasons ---
+  FAIL: Identity manifest not found at schemas/identity/tribunus-identity.v1.json
+  FAIL: Found 53617 unauthorized legacy reference(s) not in legacy-reference-registry
+
+--- Verification Artifacts ---
+  Scan JSON:      /Users/user/Developer/GitHub/Tribunus/artifacts/identity/identity-inventory.before.json
+  Scan Summary:   /Users/user/Developer/GitHub/Tribunus/artifacts/identity/identity-inventory.before.summary.txt
+  Receipt:        /Users/user/Developer/GitHub/Tribunus/artifacts/identity/identity-verification.receipt.json
+  Report:         /Users/user/Developer/GitHub/Tribunus/artifacts/identity/identity-verification.report.txt

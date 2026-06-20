@@ -10,6 +10,11 @@ use std::process::Command;
 
 use crate::mil_builder::MilBuilder;
 use crate::mlpackage::{self, ModelMeta};
+use crate::coreml_weight_writer::write_external_weights;
+use crate::compute_graph::{self, build_mlp_graph};
+use crate::accelerate_artifacts::{build_rmsnorm_artifact, build_residual_add_artifact, CpuImplementation};
+use crate::compiler::ane::build::AneSubgraphBuild;
+use crate::compute_image::{CoreMlArtifactEntry, CoreMlArtifactReceipt, CoreMlProvenance};
 use crate::toolchain_attest::ToolchainAttestation;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -210,6 +215,343 @@ pub fn build_and_compile(
     let tmp = tempfile::tempdir().map_err(|e| format!("tempdir: {}", e))?;
     let pkg_path = mlpackage::write_mlpackage(program, tmp.path(), meta)?;
     compile_mlpackage(&pkg_path, output_dir, region_id, compute_units, "CoreML9")
+}
+
+/// write .mlpackage, compile via `coremlcompiler`, and return the sealed
+/// artifact entry.
+///
+/// The output directory layout is:
+/// ```text
+/// output/<segment_id>/
+///   model.mlpackage/
+///     Manifest.json
+///     Data/com.apple.CoreML/
+///       model.mlmodel
+///       weights/  (external weight files)
+///   compiled.mlmodelc/
+///   artifact.json
+/// ```
+pub fn compile_ane_subgraph(
+    build: &AneSubgraphBuild,
+    output_dir: &Path,
+) -> Result<CoreMlArtifactEntry, String> {
+    let segment_dir = output_dir.join(&build.segment_id);
+    fs::create_dir_all(&segment_dir)
+        .map_err(|e| format!("mkdir {}: {}", segment_dir.display(), e))?;
+
+    // ── 1. Build MIL program ────────────────────────────────────────
+    let input_name = build
+        .canonical_input_ids
+        .first()
+        .cloned()
+        .unwrap_or_else(|| "x".to_string());
+    let output_name = build
+        .canonical_output_ids
+        .first()
+        .cloned()
+        .unwrap_or_else(|| "out".to_string());
+
+    // Build MIL: input → const_weight_ref (for each weight) → matmul → output
+    // For a standard x @ W matmul, x shape is [M, K], W shape is [K, N].
+    let mut builder = MilBuilder::new("main");
+    builder = builder.set_opset(&build.opset);
+
+    // Register input with f32 dtype (ANE input convention).
+    let input_dtype = mil_spec::DataType::Float32;
+    builder = builder.input(&input_name, input_dtype, &build.shape_contract);
+
+    // Register each weight as a const op referencing its external file.
+    let mut weight_ssa_names: Vec<String> = Vec::new();
+    for w in &build.weight_references {
+        builder = builder.const_weight_ref(&w.tensor_name, w);
+        weight_ssa_names.push(format!("{}_0", w.tensor_name));
+    }
+
+    // Add matmul: main_input × weight[0].
+    if let Some(w_name) = weight_ssa_names.first() {
+        builder = builder.matmul(&input_name, w_name);
+        builder = builder.output("matmul_1");
+    } else {
+        // No weights, pass-through.
+        builder = builder.output(&input_name);
+    }
+
+    let output_shape = if let Some(w) = build.weight_references.first() {
+        let n = w.shape.last().copied().unwrap_or(256);
+        let m = build.shape_contract.first().copied().unwrap_or(1);
+        vec![m, n]
+    } else {
+        build.shape_contract.clone()
+    };
+
+    let program = builder
+        .build()
+        .map_err(|e| format!("MilBuilder::build: {}", e))?;
+
+    // ── 2. Write .mlpackage ──────────────────────────────────────────
+    let mut input_features: Vec<(String, Vec<i64>)> = build
+        .canonical_input_ids
+        .iter()
+        .map(|n| (n.clone(), build.shape_contract.clone()))
+        .collect();
+    if input_features.is_empty() {
+        input_features = vec![(input_name.clone(), build.shape_contract.clone())];
+    }
+
+    let mut output_features: Vec<(String, Vec<i64>)> = vec![(
+        output_name.clone(),
+        output_shape.clone(),
+    )];
+
+    let meta = ModelMeta {
+        model_name: build.segment_id.clone(),
+        function_name: "main".into(),
+        inputs: input_features.clone(),
+        outputs: output_features.clone(),
+        output_name: output_name.clone(),
+        ..Default::default()
+    };
+
+    let pkg_path = mlpackage::write_mlpackage(program, &segment_dir, &meta)?;
+
+    // ── 3. Write external weight files into the package ──────────────
+    let pkg_weights_dir = pkg_path.join("Data/com.apple.CoreML");
+    write_external_weights(&pkg_weights_dir, &build.weight_references, &*build.weight_provider)?;
+
+    // ── 4. Compile via coremlcompiler ────────────────────────────────
+    let receipt = compile_mlpackage(
+        &pkg_path,
+        &segment_dir,
+        &build.segment_id,
+        &build.compute_units,
+        &build.opset,
+    )?;
+
+    let compiled_path = Path::new(&receipt.compiled_modelc_path)
+        .parent()
+        .map(|p| p.to_path_buf())
+        .unwrap_or_else(|| segment_dir.join(format!("{}.modelc", &build.segment_id)));
+
+    // ── 5. Write artifact.json ───────────────────────────────────────
+    let input_dtypes: Vec<String> = build
+        .canonical_input_ids
+        .iter()
+        .map(|_| "float32".to_string())
+        .collect();
+    let output_dtypes: Vec<String> = vec!["float32".to_string()];
+
+    // Build compute graph before constructing entry.
+    let graph_entry = CoreMlArtifactEntry {
+        segment_id: build.segment_id.clone(),
+        artifact_hash: receipt.compiled_hash.clone(),
+        package_path: pkg_path.to_string_lossy().to_string(),
+        compiled_path: compiled_path.to_string_lossy().to_string(),
+        compiler_version: receipt.toolchain.coremlcompiler_version.clone(),
+        compute_unit_policy: build.compute_units.clone(),
+        input_feature_names: build.canonical_input_ids.clone(),
+        output_feature_names: vec![output_name.clone()],
+        input_shapes: vec![build.shape_contract.clone()],
+        output_shapes: vec![output_shape.clone()],
+        input_dtypes: vec!["float32".to_string()],
+        output_dtypes: vec!["float32".to_string()],
+        weight_references: build.weight_references.clone(),
+        canonical_provenance: CoreMlProvenance {
+            source_tensor_ids: build.canonical_input_ids.clone(),
+            image_hash: receipt.model_hash.clone(),
+        },
+        validation_receipt: CoreMlArtifactReceipt {
+            compiled: true, loaded: false, warmup_passed: false, numerical_parity: None,
+        },
+        graph: None,
+    };
+    let graph = build_mlp_graph(&graph_entry, "decode_1");
+
+    let entry = CoreMlArtifactEntry {
+        segment_id: build.segment_id.clone(),
+        artifact_hash: receipt.compiled_hash.clone(),
+        package_path: pkg_path.to_string_lossy().to_string(),
+        compiled_path: compiled_path.to_string_lossy().to_string(),
+        compiler_version: receipt.toolchain.coremlcompiler_version.clone(),
+        compute_unit_policy: build.compute_units.clone(),
+        input_feature_names: build.canonical_input_ids.clone(),
+        output_feature_names: vec![output_name.clone()],
+        input_shapes: vec![build.shape_contract.clone()],
+        output_shapes: vec![output_shape.clone()],
+        input_dtypes,
+        output_dtypes,
+        weight_references: build.weight_references.clone(),
+        canonical_provenance: CoreMlProvenance {
+            source_tensor_ids: build.canonical_input_ids.clone(),
+            image_hash: receipt.model_hash.clone(),
+        },
+        validation_receipt: CoreMlArtifactReceipt {
+            compiled: true,
+            loaded: false,
+            warmup_passed: false,
+            numerical_parity: None,
+        },
+        graph: Some(graph),
+    };
+
+    let artifact_path = segment_dir.join("artifact.json");
+    fs::write(
+        &artifact_path,
+        serde_json::to_string_pretty(&entry).map_err(|e| format!("serde: {}", e))?,
+    )
+    .map_err(|e| format!("write {}: {}", artifact_path.display(), e))?;
+
+    Ok(entry)
+}
+
+/// Emit a three-node heterogeneous layer MLP graph:
+///   Accelerate RMSNorm → Core ML MLP → Accelerate residual-add
+///
+/// Returns the two CPU artifacts (with content hashes) and the compute graph.
+/// The MLP artifact is already compiled and present in `mlp_entry`.
+/// The caller is responsible for embedding artifacts and graph into the manifest.
+pub fn emit_layer_mlp_graph(
+    mlp_entry: &CoreMlArtifactEntry,
+    hidden_size: i64,
+) -> (Vec<crate::accelerate_artifacts::AccelerateArtifact>, crate::compute_graph::ComputeGraph) {
+    use crate::accelerate_artifacts::AccelerateArtifact;
+    use crate::compute_graph::{
+        BufferRegion, GraphNode, LaneAffinity, FailurePolicy, Residency, Ownership,
+    };
+
+    // Build RMSNorm artifact with content hash.
+    let mut rmsnorm = build_rmsnorm_artifact(
+        &format!("cpu:{}:rmsnorm", mlp_entry.segment_id),
+        hidden_size,
+    );
+    let rmsnorm_json = serde_json::to_string(&rmsnorm).unwrap_or_default();
+    rmsnorm.artifact_hash = format!("{:x}", Sha256::digest(rmsnorm_json.as_bytes()));
+
+    // Build residual-add artifact with content hash.
+    let mut residual_add = build_residual_add_artifact(
+        &format!("cpu:{}:residual_add", mlp_entry.segment_id),
+        hidden_size,
+    );
+    let add_json = serde_json::to_string(&residual_add).unwrap_or_default();
+    residual_add.artifact_hash = format!("{:x}", Sha256::digest(add_json.as_bytes()));
+
+    // Upgrade to vDSP implementation.
+    rmsnorm.implementation = CpuImplementation::AccelerateVdsp;
+    rmsnorm.framework_contract.routine = "vdsp".into();
+    rmsnorm.framework_contract.vectorization_policy = "contract".into();
+
+    residual_add.implementation = CpuImplementation::AccelerateVdsp;
+    residual_add.framework_contract.routine = "vdsp".into();
+    residual_add.framework_contract.vectorization_policy = "contract".into();
+
+    // Graph variant ID uses copy variant (persistent variant requires qualification).
+    let graph_id = format!("mlp:{}:{}:copy:v1", mlp_entry.segment_id, "decode_1");
+
+    // Region map:
+    //   0 — hidden activation (input)
+    //   1 — norm weight (image-owned, persistent)
+    //   2 — normed activation
+    //   3 — MLP output
+    //   4 — residual output
+    //
+    // Nodes:
+    //   0 — Dispatch { artifact: RMSNorm, lane: Cpu, deps: [] }
+    //   1 — Dispatch { artifact: MLP, lane: Ane, deps: [0] }
+    //   2 — Dispatch { artifact: residual-add, lane: Cpu, deps: [0, 1] }
+    let graph = crate::compute_graph::ComputeGraph {
+        graph_id: graph_id.clone(),
+        graph_version: "0.1.0".to_string(),
+        shape_key: "decode_1".to_string(),
+        nodes: vec![
+            GraphNode::Dispatch {
+                node_id: 0,
+                artifact_id: rmsnorm.artifact_id.clone(),
+                artifact_hash: rmsnorm.artifact_hash.clone(),
+                input_bindings: vec![("x".into(), 0), ("w".into(), 1)],
+                output_bindings: vec![("out".into(), 2)],
+                dependency_ids: vec![],
+                lane: LaneAffinity::Cpu,
+                failure_policy: FailurePolicy::Degrade,
+            },
+            GraphNode::Dispatch {
+                node_id: 1,
+                artifact_id: mlp_entry.segment_id.clone(),
+                artifact_hash: mlp_entry.artifact_hash.clone(),
+                input_bindings: vec![(
+                    mlp_entry.input_feature_names.first().cloned().unwrap_or_else(|| "x".into()), 2)],
+                output_bindings: vec![(
+                    mlp_entry.output_feature_names.first().cloned().unwrap_or_else(|| "out".into()), 3)],
+                dependency_ids: vec![0],
+                lane: LaneAffinity::Ane,
+                failure_policy: FailurePolicy::Degrade,
+            },
+            GraphNode::Dispatch {
+                node_id: 2,
+                artifact_id: residual_add.artifact_id.clone(),
+                artifact_hash: residual_add.artifact_hash.clone(),
+                input_bindings: vec![("a".into(), 3), ("b".into(), 0)],
+                output_bindings: vec![("out".into(), 4)],
+                dependency_ids: vec![1],
+                lane: LaneAffinity::Cpu,
+                failure_policy: FailurePolicy::Degrade,
+            },
+        ],
+        regions: vec![
+            BufferRegion {
+                region_id: 0,
+                logical_dtype: "float32".into(),
+                logical_shape: vec![1, hidden_size],
+                byte_length: (hidden_size as u64) * 4,
+                alignment: 64,
+                residency: Residency::Host,
+                ownership: Ownership::Request,
+                alias_group: None,
+            },
+            BufferRegion {
+                region_id: 1,
+                logical_dtype: "float32".into(),
+                logical_shape: vec![hidden_size],
+                byte_length: (hidden_size as u64) * 4,
+                alignment: 64,
+                residency: Residency::Shared,
+                ownership: Ownership::Image,
+                alias_group: None,
+            },
+            BufferRegion {
+                region_id: 2,
+                logical_dtype: "float32".into(),
+                logical_shape: vec![1, hidden_size],
+                byte_length: (hidden_size as u64) * 4,
+                alignment: 64,
+                residency: Residency::Host,
+                ownership: Ownership::Request,
+                alias_group: None,
+            },
+            BufferRegion {
+                region_id: 3,
+                logical_dtype: "float32".into(),
+                logical_shape: vec![1, hidden_size],
+                byte_length: (hidden_size as u64) * 4,
+                alignment: 64,
+                residency: Residency::CoreMlCompatible,
+                ownership: Ownership::Request,
+                alias_group: None,
+            },
+            BufferRegion {
+                region_id: 4,
+                logical_dtype: "float32".into(),
+                logical_shape: vec![1, hidden_size],
+                byte_length: (hidden_size as u64) * 4,
+                alignment: 64,
+                residency: Residency::Host,
+                ownership: Ownership::Request,
+                alias_group: None,
+            },
+        ],
+        entry_node_ids: vec![0],
+        output_node_ids: vec![2],
+    };
+
+    (vec![rmsnorm, residual_add], graph)
 }
 
 #[cfg(test)]

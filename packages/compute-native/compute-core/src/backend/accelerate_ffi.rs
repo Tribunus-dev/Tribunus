@@ -1,7 +1,10 @@
-//! Direct FFI bindings to Accelerate BLAS (cblas_sgemm).
+//! Direct FFI bindings to Accelerate BLAS (cblas_sgemm) and vDSP.
 //!
 //! Accelerate is a system framework on macOS only.
 //! The entire extern block is gated behind #[cfg(target_os = "macos")].
+
+#[cfg(target_os = "macos")]
+use core::ffi::c_void;
 
 #[cfg(target_os = "macos")]
 #[link(name = "Accelerate", kind = "framework")]
@@ -38,6 +41,94 @@ extern "C" {
         beta: f32,
         c: *mut f32,
         ldc: i32,
+    );
+
+    // ── vDSP ─────────────────────────────────────────────────────────────
+
+    /// Vector square: C[i] = A[i]^2
+    pub fn vDSP_vsq(
+        a: *const f32,
+        ia: isize,
+        c: *mut f32,
+        ic: isize,
+        n: usize,
+    );
+
+    /// Vector sum: *C = sum(A[i])
+    pub fn vDSP_sve(
+        a: *const f32,
+        ia: isize,
+        c: *mut f32,
+        n: usize,
+    );
+
+    /// Vector square root: A[i] = sqrt(B[i])
+    pub fn vvsqrt(
+        a: *mut f32,
+        b: *const f32,
+        n: *const i32,
+    );
+
+    /// Vector divide: C[i] = B[i] / A[i]
+    pub fn vDSP_vdiv(
+        a: *const f32,
+        ia: isize,
+        b: *const f32,
+        ib: isize,
+        c: *mut f32,
+        ic: isize,
+        n: usize,
+    );
+
+    /// Vector multiply: C[i] = A[i] * B[i]
+    pub fn vDSP_vmul(
+        a: *const f32,
+        ia: isize,
+        b: *const f32,
+        ib: isize,
+        c: *mut f32,
+        ic: isize,
+        n: usize,
+    );
+
+    /// Vector add: C[i] = A[i] + B[i]
+    pub fn vDSP_vadd(
+        a: *const f32,
+        ia: isize,
+        b: *const f32,
+        ib: isize,
+        c: *mut f32,
+        ic: isize,
+        n: usize,
+    );
+
+    /// Vector scalar multiply: C[i] = A[i] * B
+    pub fn vDSP_vsmul(
+        a: *const f32,
+        ia: isize,
+        b: *const f32,
+        c: *mut f32,
+        ic: isize,
+        n: usize,
+    );
+
+    /// Vector exponential: A[i] = exp(B[i])
+    pub fn vvexp(
+        a: *mut f32,
+        b: *const f32,
+        n: *const i32,
+    );
+
+    /// Create an FFT setup object (opaque).
+    /// Log2n: log2 of max FFT length; Radix: 0=kFFTRadix2, 1=kFFTRadix3, 2=kFFTRadix5.
+    pub fn vDSP_create_fftsetup(
+        log2n: usize,
+        radix: u32,
+    ) -> *mut c_void;
+
+    /// Destroy an FFT setup object.
+    pub fn vDSP_destroy_fftsetup(
+        setup: *mut c_void,
     );
 }
 

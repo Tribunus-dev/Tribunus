@@ -175,12 +175,16 @@ int tribunus_coreml_predict(
             return -12;
         }
 
+        void* input_cv = input_arena->cv_buffer;
+        if (input_cv) CFRetain(input_cv);
         MLMultiArray* input_ma = [[MLMultiArray alloc]
             initWithDataPointer:input_arena->base_address
                           shape:shape
                        dataType:MLMultiArrayDataTypeFloat32
                         strides:@[@(input_arena->logical_dim1), @1]
-                    deallocator:^(void* p) { (void)p; }
+                    deallocator:^(void* p) {
+                        if (input_cv) CFRelease(input_cv);
+                    }
                           error:&error];
         if (!input_ma) {
             fprintf(stderr, "coreml_predict: input MLMultiArray failed: %s\n",
@@ -188,12 +192,16 @@ int tribunus_coreml_predict(
             return -2;
         }
 
+        void* output_cv = output_arena->cv_buffer;
+        if (output_cv) CFRetain(output_cv);
         MLMultiArray* output_ma = [[MLMultiArray alloc]
             initWithDataPointer:output_arena->base_address
                           shape:@[@(output_arena->logical_dim0), @(output_arena->logical_dim1)]
                        dataType:MLMultiArrayDataTypeFloat32
                         strides:@[@(output_arena->logical_dim1), @1]
-                    deallocator:^(void* p) { (void)p; }
+                    deallocator:^(void* p) {
+                        if (output_cv) CFRelease(output_cv);
+                    }
                           error:&error];
         if (!output_ma) {
             fprintf(stderr, "coreml_predict: output MLMultiArray failed: %s\n",
