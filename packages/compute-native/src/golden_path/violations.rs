@@ -59,6 +59,12 @@ mod tests {
                 output_checksum: None,
                 tolerance_met: None,
                 error: None,
+                artifact_hash: None,
+                device_profile_hash: None,
+                region_bindings: None,
+                core_range: None,
+                queue: None,
+                elapsed_time_ns: None,
             })
         }
         fn identity(&self) -> BackendIdentity {

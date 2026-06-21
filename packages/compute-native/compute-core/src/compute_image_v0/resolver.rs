@@ -64,6 +64,7 @@ impl Resolver {
             backend_candidates: candidates,
             selected_backend,
             fallback_order,
+            tensix_placement: None,
         }
     }
 

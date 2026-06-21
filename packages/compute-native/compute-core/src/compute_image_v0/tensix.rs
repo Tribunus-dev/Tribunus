@@ -23,3 +23,19 @@ pub struct TensixArtifactCacheKey {
     pub tt_metalium_version: String,
     pub compiler_flags: Vec<String>,
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum PlacementPolicy {
+    SingleDevice,
+    MultiDeviceMesh,
+    MultiDevicePipeline,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TensixPlacementPlan {
+    pub policy: PlacementPolicy,
+    pub core_range: String,
+    pub tile_shape: String,
+    pub cb_config: Vec<String>,
+    pub mesh_topology: Vec<Vec<u32>>,
+}
