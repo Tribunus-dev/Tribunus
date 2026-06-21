@@ -1,0 +1,3 @@
+[submodule "packages/mlx-rs-fork"]
+	path = packages/mlx-rs-fork
+	url = https://github.com/oxideai/mlx-rs.git
