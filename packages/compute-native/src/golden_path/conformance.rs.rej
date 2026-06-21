@@ -1,0 +1,156 @@
+diff a/packages/compute-native/src/golden_path/conformance.rs b/packages/compute-native/src/golden_path/conformance.rs	(rejected hunks)
+@@ -1,7 +1,7 @@
+-use crate::golden_path::executor::GoldenPathExecutor;
+-use crate::golden_path::schema::*;
+ use crate::golden_path::backends::accelerate::AccelerateBackend;
+ use crate::golden_path::backends::mlx_metal::MlxMetalBackend;
++use crate::golden_path::executor::GoldenPathExecutor;
++use crate::golden_path::schema::*;
+ 
+ // Computes Mean Absolute Error
+ fn mae(a: &[f32], b: &[f32]) -> f32 {
+@@ -17,7 +17,7 @@ fn test_conformance_tiny_transformer() {
+     let size_a = m * k * 4;
+     let size_b = k * n * 4;
+     let size_c = m * n * 4;
+-    
++
+     let plan = GoldenPathPlan {
+         machine_profile: MachineProfile {
+             observed_hardware: HardwareProfile {
+@@ -47,35 +47,38 @@ fn test_conformance_tiny_transformer() {
+             scratch: 1024,
+             total_size: size_a + size_b + size_c,
+         },
+-        dispatch_table: vec![
+-            BlockDescriptor {
+-                block_id: "matmul_qkv".to_string(),
+-                processor: "gpu".to_string(),
+-                backend: "accelerate".to_string(),
+-                kernel_identity: "hash123".to_string(),
+-                input_offsets: vec![
+-                    MemoryRange { offset: 0, size: size_a },
+-                    MemoryRange { offset: size_a, size: size_b },
+-                ],
+-                output_offsets: vec![
+-                    MemoryRange { offset: size_a + size_b, size: size_c },
+-                ],
+-                expected_tolerance: 1e-5,
+-                sync_mask: 0,
+-                shape: Some(vec![m, k, n]),
+-            }
+-        ],
+-        evidence_ledger: vec![
+-            EvidenceLedger {
+-                block_id: "matmul_qkv".to_string(),
+-                kernel_source_hash: "hash_src".to_string(),
+-                compiled_artifact_hash: "hash123".to_string(),
+-                backend_version: "v0".to_string(),
+-                metal_feature_set: Some("Apple7".to_string()),
+-                mlx_version: Some("0.0.1".to_string()),
+-                qualification_report: None,
+-            }
+-        ],
++        dispatch_table: vec![BlockDescriptor {
++            block_id: "matmul_qkv".to_string(),
++            processor: "gpu".to_string(),
++            backend: "accelerate".to_string(),
++            kernel_identity: "hash123".to_string(),
++            input_offsets: vec![
++                MemoryRange {
++                    offset: 0,
++                    size: size_a,
++                },
++                MemoryRange {
++                    offset: size_a,
++                    size: size_b,
++                },
++            ],
++            output_offsets: vec![MemoryRange {
++                offset: size_a + size_b,
++                size: size_c,
++            }],
++            expected_tolerance: 1e-5,
++            sync_mask: 0,
++            shape: Some(vec![m, k, n]),
++        }],
++        evidence_ledger: vec![EvidenceLedger {
++            block_id: "matmul_qkv".to_string(),
++            kernel_source_hash: "hash_src".to_string(),
++            compiled_artifact_hash: "hash123".to_string(),
++            backend_version: "v0".to_string(),
++            metal_feature_set: Some("Apple7".to_string()),
++            mlx_version: Some("0.0.1".to_string()),
++            qualification_report: None,
++        }],
+         signature: "valid_sig".to_string(),
+     };
+ 
+@@ -86,10 +89,13 @@ fn test_conformance_tiny_transformer() {
+ 
+     // Populate island with deterministic pseudo-random float data
+     let accel_island = exe_accel.island_mut().unwrap();
+-    
++
+     // Safety: memory is properly u32 aligned via IslandRegion struct definition
+     unsafe {
+-        let floats = std::slice::from_raw_parts_mut(accel_island.memory.as_mut_ptr() as *mut f32, accel_island.memory.len());
++        let floats = std::slice::from_raw_parts_mut(
++            accel_island.memory.as_mut_ptr() as *mut f32,
++            accel_island.memory.len(),
++        );
+         for (i, v) in floats.iter_mut().enumerate() {
+             *v = (i as f32 * 0.1).sin();
+         }
+@@ -98,7 +104,7 @@ fn test_conformance_tiny_transformer() {
+     for block in &plan.dispatch_table {
+         exe_accel.execute(block).unwrap();
+     }
+-    
++
+     let audit_accel = exe_accel.finalize();
+ 
+     // Do same for MLX metal
+@@ -113,7 +119,10 @@ fn test_conformance_tiny_transformer() {
+     // Populate same data
+     let mlx_island = exe_mlx.island_mut().unwrap();
+     unsafe {
+-        let floats = std::slice::from_raw_parts_mut(mlx_island.memory.as_mut_ptr() as *mut f32, mlx_island.memory.len());
++        let floats = std::slice::from_raw_parts_mut(
++            mlx_island.memory.as_mut_ptr() as *mut f32,
++            mlx_island.memory.len(),
++        );
+         for (i, v) in floats.iter_mut().enumerate() {
+             *v = (i as f32 * 0.1).sin();
+         }
+@@ -122,19 +131,25 @@ fn test_conformance_tiny_transformer() {
+     for block in &mlx_plan.dispatch_table {
+         exe_mlx.execute(block).unwrap();
+     }
+-    
++
+     let audit_mlx = exe_mlx.finalize();
+ 
+     // Retrieve computed output
+     let accel_out_mem = &exe_accel.island().unwrap().memory;
+     let mlx_out_mem = &exe_mlx.island().unwrap().memory;
+-    
++
+     unsafe {
+         let out_offset = size_a + size_b;
+         let out_words = out_offset / 4;
+-        let accel_floats = std::slice::from_raw_parts(accel_out_mem.as_ptr().add(out_words) as *const f32, size_c / 4);
+-        let mlx_floats = std::slice::from_raw_parts(mlx_out_mem.as_ptr().add(out_words) as *const f32, size_c / 4);
+-        
++        let accel_floats = std::slice::from_raw_parts(
++            accel_out_mem.as_ptr().add(out_words) as *const f32,
++            size_c / 4,
++        );
++        let mlx_floats = std::slice::from_raw_parts(
++            mlx_out_mem.as_ptr().add(out_words) as *const f32,
++            size_c / 4,
++        );
++
+         let error = mae(accel_floats, mlx_floats);
+         assert!(error < 1e-5, "MAE {} exceeds 1e-5", error);
+     }

@@ -1,0 +1,98 @@
+diff a/packages/compute-native/src/golden_path/violations.rs b/packages/compute-native/src/golden_path/violations.rs	(rejected hunks)
+@@ -35,14 +35,20 @@ pub struct GoldenPathViolation {
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+-    use crate::golden_path::schema::*;
++    use crate::golden_path::backend::{BackendIdentity, GoldenPathBackend, MemoryView};
+     use crate::golden_path::executor::GoldenPathExecutor;
+-    use crate::golden_path::backend::{GoldenPathBackend, BackendIdentity, MemoryView};
++    use crate::golden_path::schema::*;
+ 
+     struct DummyBackend;
+     impl GoldenPathBackend for DummyBackend {
+-        fn initialize(&mut self, _plan: &GoldenPathPlan, _views: Vec<MemoryView>) -> Result<(), String> { Ok(()) }
+-        fn execute(&mut self, _block: &BlockDescriptor) -> Result<AuditEvent, String> { 
++        fn initialize(
++            &mut self,
++            _plan: &GoldenPathPlan,
++            _views: Vec<MemoryView>,
++        ) -> Result<(), String> {
++            Ok(())
++        }
++        fn execute(&mut self, _block: &BlockDescriptor) -> Result<AuditEvent, String> {
+             Ok(AuditEvent {
+                 block_id: "dummy".to_string(),
+                 backend: "dummy".to_string(),
+@@ -56,7 +62,10 @@ mod tests {
+             })
+         }
+         fn identity(&self) -> BackendIdentity {
+-            BackendIdentity { name: "dummy".to_string(), version: "1.0".to_string() }
++            BackendIdentity {
++                name: "dummy".to_string(),
++                version: "1.0".to_string(),
++            }
+         }
+     }
+ 
+@@ -66,7 +75,10 @@ mod tests {
+             processor: "cpu".to_string(),
+             backend: "dummy".to_string(),
+             kernel_identity: "hash123".to_string(),
+-            input_offsets: vec![MemoryRange { offset: 0, size: 100 }],
++            input_offsets: vec![MemoryRange {
++                offset: 0,
++                size: 100,
++            }],
+             output_offsets: vec![],
+             expected_tolerance: 1e-5,
+             sync_mask: 0,
+@@ -173,7 +185,10 @@ mod tests {
+         exe.initialize().unwrap();
+ 
+         let mut bad_block = plan.dispatch_table[0].clone();
+-        bad_block.input_offsets = vec![MemoryRange { offset: 100, size: 100 }];
++        bad_block.input_offsets = vec![MemoryRange {
++            offset: 100,
++            size: 100,
++        }];
+ 
+         let res = exe.execute(&bad_block);
+         assert!(res.is_err());
+@@ -184,22 +199,28 @@ mod tests {
+     fn test_memory_offset_oob() {
+         let mut exe = GoldenPathExecutor::new();
+         let plan = create_dummy_plan();
+-        
+-        // Pass a valid plan but fail when executing a bad block with limits beyond island 
++
++        // Pass a valid plan but fail when executing a bad block with limits beyond island
+         // We will execute a block that is declared but we will pretend to pass one out of bounds in execute directly
+         let mut bad_block = plan.dispatch_table[0].clone();
+-        bad_block.input_offsets = vec![MemoryRange { offset: 4000, size: 100 }];
++        bad_block.input_offsets = vec![MemoryRange {
++            offset: 4000,
++            size: 100,
++        }];
+         // Notice we don't modify the plan here. We modify the block we are attempting to execute.
+         // Wait, execute() checks if block.input_offsets != declared_block.input_offsets.
+         // If we modify it, it fails with MemoryOffsetOob because it changed from the plan.
+-        // To specifically test the "out of bounds for island size" check, we should have a plan 
++        // To specifically test the "out of bounds for island size" check, we should have a plan
+         // that has an OOB block and expect `initialize` to fail.
+         let mut bad_plan = plan.clone();
+-        bad_plan.dispatch_table[0].input_offsets = vec![MemoryRange { offset: 4000, size: 100 }];
+-        
++        bad_plan.dispatch_table[0].input_offsets = vec![MemoryRange {
++            offset: 4000,
++            size: 100,
++        }];
++
+         exe.register_backend("dummy".to_string(), Box::new(DummyBackend));
+         exe.load(bad_plan).unwrap();
+-        
++
+         let res = exe.initialize();
+         assert!(res.is_err());
+         assert_eq!(res.unwrap_err().code, ViolationCode::MemoryOffsetOob);
