@@ -1,0 +1,270 @@
+architecture_index:
+  domain: Tensix Backend
+  description: Checked-in, machine-readable architecture index of the Tensix backend.
+  modules:
+    src/model/lane.rs:
+      description: Defines dispatch table schemas and selection policies (execution variants).
+      types:
+        - MlxDecode
+        - TensixDecode1
+    src/model/compute_graph.rs:
+      description: Housed related ComputeGraph structures.
+      types:
+        - ComputeGraph
+    src/model/decode.rs:
+      description: Housed related DecodeVariantManifest structures.
+      types:
+        - DecodeVariantManifest
+    src/scheduler/mod.rs:
+      description: Single-chip serving scheduler architecture and interfaces (Session 22).
+      types:
+        - CapabilityProbe
+        - MemoryPlanner
+        - ExecutionLifecycle
+        - EvidenceStore
+    src/contracts/transformer/mod.rs:
+      description: Backend-neutral transformer operator contracts (RMSNorm, RoPE, QKV projection, attention decode, etc.) with explicit TensixAffordances.
+      types:
+        - TensixAffordance
+    src/backend/tt_metalium/bridge.rs:
+      description: TT-Metalium host bridge providing a narrow Rust FFI boundary linked to tt_metalium_bridge.
+      types:
+        - TensixDispatchReceipt
+    src/model/execution.rs:
+      description: Defines hardware dispatch targets.
+      types:
+        - ExecuteOn
+    compute-core/src/transformer_slice/:
+      description: Deterministic transformer slice reference harness with pure-Rust CPU reference implementations.
+      types:
+        - StageFixture
+        - TolerancePolicy
+    src/compiler/lowering/tensix/pass.rs:
+      description: Encapsulates architecture differences (like vector sizes and SFPU iterations) between Wormhole and Blackhole devices.
+      types:
+        - TensixHardwareProfile
+    compute-core/src/tensix_worker.rs:
+      description: Hardware placement validation.
+      types:
+        - PlacementPolicy
+    src/compiler/tensix_weight_lowering.rs:
+      description: Tensix weight lowering compilation pass.
+      types:
+        - TensixWeightLayout
+    compute-core/src/tensix/memory.rs:
+      description: Tensix memory mapping and static feasibility checks.
+      types:
+        - TensixRegionMaterialization
+        - TensixMemoryPlanner
+        - ConstraintViolation
+        - PlacementMap
+    quantization/weight_codec.rs:
+      description: Weight quantization system supporting BFP8 format.
+      types:
+        - Bfp8
+    src/lifecycle/pipeline.rs:
+      description: Artifact lifecycle pipeline implemented as a strict state machine.
+      types:
+        - AdmittedExecutionPlan
+    tribunus_compute_core::inference_profile::evidence:
+      description: TAIP evidence layer defining immutable proof of backend execution.
+      types:
+        - PhaseEvidenceReceipt
+        - PhaseMetrics
+    src/tensix/runtime.rs:
+      description: TT-Metalium runtime wrapper enforcing fault boundaries.
+      types:
+        - TensixDispatchReceipt
+        - FailureEvidence
+    src/compiler/lowering/tensix/ir.rs:
+      description: Target-lowering layer representing Tensix hardware concepts.
+      types:
+        - TensixScheduleIR
+    src/tensix/attention.rs:
+      description: Tensix attention decode primitive (Session 1) for fixed-shape, batch-one, single-chip attention algorithms.
+      types:
+        - AttentionArtifact
+        - KvBlockTable
+    src/tensix/artifact.rs:
+      description: Unified, serializable JSON package format for Tenstorrent kernel-provider sessions.
+      types:
+        - TensixComputeArtifact
+    compute-core/tests/tensix_conformance.rs:
+      description: Tensix backend conformance suite and Device CI harness.
+    src/tensix/kv_cache.rs:
+      description: Tensix KV cache runtime implementing a 7-state machine extended with a KvScheduler and PagePool.
+      types:
+        - KvScheduler
+        - PagePool
+    src/tensix/:
+      description: Tensix weight binding contract using DeviceWeightResidency and MatmulProvider.
+      types:
+        - DeviceWeightResidency
+        - MatmulProvider
+        - ResidencyHandle
+    compute-core/src/tensix/parallel.rs:
+      description: Tensix tensor-parallel matmul execution plans.
+      types:
+        - TensixParallelMatmulPlan
+        - ShardSpec
+        - AllGather
+        - ReduceScatter
+        - TensixMeshTopology
+    compute-core/src/compute_image_v0/tensix.rs:
+      description: Tensix artifact caching, numerical admission data structures, and compiler-level placement planning.
+      types:
+        - TensixAdmissionState
+        - TensixPlacementPlan
+  lifecycle_states:
+    kv_cache_runtime:
+      states:
+        - Unallocated
+        - Allocated
+        - Primed
+        - Decoding
+        - Synchronized
+        - Invalidated
+        - Released
+      transitions:
+        Unallocated:
+          - Allocated
+        Allocated:
+          - Primed
+          - Invalidated
+          - Released
+        Primed:
+          - Decoding
+          - Invalidated
+          - Released
+        Decoding:
+          - Synchronized
+          - Invalidated
+          - Released
+        Synchronized:
+          - Decoding
+          - Invalidated
+          - Released
+        Invalidated:
+          - Released
+      description: 7-state machine for KV cache runtime.
+    artifact_lifecycle:
+      states:
+        - Pending
+        - ValidationFailed
+        - AdmittedExecutionPlan
+      transitions:
+        Pending:
+          - AdmittedExecutionPlan
+          - ValidationFailed
+      description: Strict state machine invalidating raw artifacts that fail compatibility, residency, or validation checks.
+    inference_pipeline:
+      states:
+        - Load
+        - Initialize
+        - Execute
+        - Finalize
+      transitions:
+        Load:
+          - Initialize
+        Initialize:
+          - Execute
+        Execute:
+          - Finalize
+      description: 4-phase static dispatch executor.
+  artifact_kinds:
+    TensixComputeArtifact:
+      description: Unified, serializable JSON package format embedding hardware-specific contracts and calculating deterministic hash fingerprint.
+      fields:
+        - capability_signatures
+        - cb_abi_versions
+        - tensor_layouts
+        - runtime_schemas
+        - fingerprint
+    AttentionArtifact:
+      description: Artifact for fixed-shape, batch-one, single-chip attention algorithms.
+      fields:
+        - geometry
+        - sequence_length
+        - head_dim
+    TensixArtifact:
+      description: Backend-neutral Tensix contract modeling a sealed executable artifact.
+      fields:
+        - grid_placement
+        - core_placement
+        - memory_layout
+        - cb_abi
+  sessions:
+    Session 22:
+      description: Defined single-chip serving scheduler architecture and interfaces.
+      contributions:
+        - CapabilityProbe
+        - MemoryPlanner
+        - ExecutionLifecycle
+        - EvidenceStore
+    Session 1:
+      description: Implemented Tensix attention decode primitive.
+      contributions:
+        - AttentionArtifact
+        - KvBlockTable
+  test_suites:
+    tensix_conformance.rs:
+      description: Tensix backend conformance suite and Device CI harness. Provides hardware-absent and hardware-required lanes.
+      validates:
+        - manifests
+        - cache keys
+        - admission states
+        - memory planner
+        - decode plans
+    e2e_smoke.rs:
+      description: End-to-end smoke tests mocking execution backend and dispatch.
+  provider_routes:
+    TT-Metalium Host Bridge:
+      description: Narrow Rust FFI boundary linked to tt_metalium_bridge.
+      artifacts:
+        - TensixDispatchReceipt
+    Golden Path v0 Architecture:
+      description: Deterministic, single-backend attested inference pipeline using a 4-phase static dispatch executor.
+      artifacts:
+        - .tribunus-plan
+  key_type_definitions:
+    MlxDecode: Dispatch table schema/selection policy.
+    TensixDecode1: Dispatch table schema/selection policy.
+    ComputeGraph: Compute graph structure.
+    DecodeVariantManifest: Manifest structure.
+    CapabilityProbe: Hardware capability probing contract.
+    MemoryPlanner: Memory planning contract.
+    ExecutionLifecycle: Execution lifecycle contract.
+    EvidenceStore: Evidence storing contract.
+    TensixAffordance: Backend-neutral transformer operator affordance.
+    TensixDispatchReceipt: Structured receipt returned by TT-Metalium host bridge.
+    ExecuteOn: Enum defining hardware dispatch targets like Tensix.
+    StageFixture: Structured fixture for pure-Rust CPU reference implementations.
+    TolerancePolicy: Tolerance policy for CPU reference implementations.
+    TensixHardwareProfile: Encapsulates architecture differences (vector sizes, SFPU iterations).
+    PlacementPolicy: Hardware placement validation policy.
+    TensixWeightLayout: Receipt from Tensix weight lowering compilation pass.
+    TensixRegionMaterialization: Tensix memory mapping handler.
+    TensixMemoryPlanner: Tensix static feasibility checks handler.
+    ConstraintViolation: Report returned on memory planning failure.
+    PlacementMap: Returned on successful memory planning.
+    Bfp8: Weight quantization system codec variant.
+    AdmittedExecutionPlan: Execution plan received by scheduler after validation.
+    PhaseEvidenceReceipt: Immutable proof of backend execution.
+    PhaseMetrics: Metrics stored within PhaseEvidenceReceipt.
+    FailureEvidence: Structured evidence in TensixDispatchReceipt on timeout/reset.
+    TensixScheduleIR: Target-lowering layer representing Tensix hardware concepts.
+    AttentionArtifact: Attention decode primitive artifact.
+    KvBlockTable: KV cache blocks hardware metadata contract.
+    TensixComputeArtifact: Unified, serializable JSON package format.
+    KvScheduler: Multi-sequence per-request page management scheduler.
+    PagePool: Multi-sequence per-request page management pool.
+    DeviceWeightResidency: Weight residency device contract.
+    MatmulProvider: Matmul provision contract.
+    ResidencyHandle: Opaque handle for resolved weight tensor IDs.
+    TensixParallelMatmulPlan: Tensor-parallel matmul execution plan.
+    ShardSpec: Output channel sharding spec.
+    AllGather: Collective communication schedule.
+    ReduceScatter: Collective communication schedule.
+    TensixMeshTopology: Topology defining required device counts.
+    TensixAdmissionState: Numerical admission data structure.
+    TensixPlacementPlan: Compiler-level multi-core/multi-chip placement plan.
