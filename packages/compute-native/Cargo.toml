@@ -119,3 +119,7 @@ lto = "fat"
 codegen-units = 1
 incremental = false
 
+
+[[test]]
+name = "tensix_matmul_validation"
+path = "tests/tensix_matmul_validation.rs"
