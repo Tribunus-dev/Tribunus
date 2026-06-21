@@ -66,6 +66,24 @@ pub struct PhaseMetrics {
     pub eval_calls: Option<u32>,
     /// Phase wall-time in milliseconds.
     pub wall_time_ms: Option<u64>,
+    /// Compilation time in milliseconds.
+    pub compile_time_ms: Option<u64>,
+    /// Upload time in milliseconds.
+    pub upload_time_ms: Option<u64>,
+    /// Dispatch latency in milliseconds.
+    pub dispatch_latency_ms: Option<u64>,
+    /// Reader time in milliseconds.
+    pub reader_time_ms: Option<u64>,
+    /// Compute time in milliseconds.
+    pub compute_time_ms: Option<u64>,
+    /// Writer time in milliseconds.
+    pub writer_time_ms: Option<u64>,
+    /// Estimated DRAM transfer bytes.
+    pub dram_transfer_bytes: Option<u64>,
+    /// Core utilization for multi-core artifacts (percentage 0.0 - 100.0).
+    pub core_utilization_percent: Option<f64>,
+    /// Indicates whether this run was cold or warm.
+    pub is_cold_run: Option<bool>,
 }
 
 // ── FailureClassification ─────────────────────────────────────────────────
@@ -286,6 +304,89 @@ pub fn status_reducer(receipts: &[PhaseEvidenceReceipt]) -> EvidenceStatus {
     max_status
 }
 
+// ── Performance Regression Detection ──────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PerformanceRegressionWarning {
+    pub latency_increase_percent: f64,
+    pub numerical_error_increase_percent: Option<f64>,
+    pub new_allocation_failures: bool,
+    pub message: String,
+}
+
+impl PhaseEvidenceReceipt {
+    /// Compares this receipt (the new run) against a baseline receipt to detect regressions.
+    /// Returns a warning if material regressions are found.
+    pub fn check_performance_regression(
+        &self,
+        baseline: &PhaseEvidenceReceipt,
+    ) -> Result<(), PerformanceRegressionWarning> {
+        let mut warnings = Vec::new();
+        let mut lat_inc = 0.0;
+        let mut err_inc = None;
+        let mut alloc_fail = false;
+
+        // 1. Latency Regression (>20% increase)
+        if let (Some(new_ms), Some(base_ms)) =
+            (self.metrics.wall_time_ms, baseline.metrics.wall_time_ms)
+        {
+            if base_ms > 0 {
+                let increase = (new_ms.saturating_sub(base_ms)) as f64 / base_ms as f64 * 100.0;
+                if increase > 20.0 {
+                    warnings.push(format!(
+                        "Latency increased by {:.1}% ({}ms vs {}ms)",
+                        increase, new_ms, base_ms
+                    ));
+                    lat_inc = increase;
+                }
+            }
+        } else if let (Some(new_ns), Some(base_ns)) =
+            (self.metrics.p50_token_ns, baseline.metrics.p50_token_ns)
+        {
+            if base_ns > 0 {
+                let increase = (new_ns.saturating_sub(base_ns)) as f64 / base_ns as f64 * 100.0;
+                if increase > 20.0 {
+                    warnings.push(format!(
+                        "p50 latency increased by {:.1}% ({}ns vs {}ns)",
+                        increase, new_ns, base_ns
+                    ));
+                    lat_inc = increase;
+                }
+            }
+        }
+
+        // 2. New Allocation Failures
+        if self.failure == Some(FailureClassification::OomKilled)
+            && baseline.failure != Some(FailureClassification::OomKilled)
+        {
+            warnings.push("New allocation failure (OomKilled) detected".to_string());
+            alloc_fail = true;
+        }
+
+        // 3. Numerical Error Increase (>10% increase)
+        // Since PhaseEvidenceReceipt currently doesn't store direct numerical error in `PhaseMetrics`,
+        // this might be represented by ParityFailed failure, or if we extend metrics later.
+        // For now, if ParityFailed happens in new run but not baseline:
+        if self.failure == Some(FailureClassification::ParityFailed)
+            && baseline.failure != Some(FailureClassification::ParityFailed)
+        {
+            warnings.push("Numerical error regression (ParityFailed) detected".to_string());
+            err_inc = Some(100.0);
+        }
+
+        if !warnings.is_empty() {
+            Err(PerformanceRegressionWarning {
+                latency_increase_percent: lat_inc,
+                numerical_error_increase_percent: err_inc,
+                new_allocation_failures: alloc_fail,
+                message: warnings.join("; "),
+            })
+        } else {
+            Ok(())
+        }
+    }
+}
+
 // ── EvidenceLedger trait ──────────────────────────────────────────────────
 
 /// Append-only store of `PhaseEvidenceReceipt`s.
@@ -463,6 +564,65 @@ mod tests {
             failure: None,
             notes: None,
         }
+    }
+
+    #[test]
+    fn performance_regression_comparable_runs() {
+        let mut baseline = make_receipt(
+            PhaseKind::Decode,
+            BackendKind::MLX,
+            EvidenceStatus::RuntimeSmokePassed,
+        );
+        baseline.metrics.wall_time_ms = Some(100);
+
+        let mut run2 = baseline.clone();
+        run2.metrics.wall_time_ms = Some(102); // 2% variance
+
+        let res = run2.check_performance_regression(&baseline);
+        assert!(
+            res.is_ok(),
+            "Comparable runs should not produce a regression warning"
+        );
+    }
+
+    #[test]
+    fn performance_regression_latency_increase() {
+        let mut baseline = make_receipt(
+            PhaseKind::Decode,
+            BackendKind::MLX,
+            EvidenceStatus::RuntimeSmokePassed,
+        );
+        baseline.metrics.wall_time_ms = Some(100);
+
+        let mut degraded = baseline.clone();
+        degraded.metrics.wall_time_ms = Some(125); // 25% increase
+
+        let res = degraded.check_performance_regression(&baseline);
+        assert!(
+            res.is_err(),
+            "25% latency increase should trigger a warning"
+        );
+        let warning = res.unwrap_err();
+        assert!(warning.latency_increase_percent > 20.0);
+        assert!(warning.message.contains("Latency increased"));
+    }
+
+    #[test]
+    fn performance_regression_new_allocation_failure() {
+        let baseline = make_receipt(
+            PhaseKind::Decode,
+            BackendKind::MLX,
+            EvidenceStatus::RuntimeSmokePassed,
+        );
+
+        let mut oom_run = baseline.clone();
+        oom_run.failure = Some(FailureClassification::OomKilled);
+
+        let res = oom_run.check_performance_regression(&baseline);
+        assert!(res.is_err());
+        let warning = res.unwrap_err();
+        assert!(warning.new_allocation_failures);
+        assert!(warning.message.contains("New allocation failure"));
     }
 
     #[test]

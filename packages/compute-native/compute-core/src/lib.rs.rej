@@ -3,4 +3,4 @@ diff a/packages/compute-native/compute-core/src/lib.rs b/packages/compute-native
  impl std::error::Error for Error {}
  
  pub type Result<T, E = Error> = std::result::Result<T, E>;
-+pub mod tensix;
++pub mod transformer_slice;

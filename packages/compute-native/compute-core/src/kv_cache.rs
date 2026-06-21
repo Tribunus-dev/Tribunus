@@ -494,7 +494,6 @@ impl KvCache {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mlx_rs::ops;
 
     fn make_cache(is_sliding: bool) -> KvCache {
         KvCache::new(4, 8, 256, is_sliding)
@@ -502,16 +501,16 @@ mod tests {
 
     fn make_kv(seq: u32) -> (Array, Array) {
         let shape = &[seq as i32, 8, 256];
-        let k = ops::ones::<f32>(shape).unwrap();
-        let v = ops::ones::<f32>(shape).unwrap();
+        let k = Array::ones::<f32>(shape).unwrap();
+        let v = Array::ones::<f32>(shape).unwrap();
         (k, v)
     }
 
     fn make_kv_filled(seq: u32, val: f32) -> (Array, Array) {
         let shape = &[seq as i32, 8, 256];
         let fill = Array::from_slice(&[val], &[1]);
-        let k = ops::full::<f32>(shape, &fill).unwrap();
-        let v = ops::full::<f32>(shape, &fill).unwrap();
+        let k = Array::full::<f32>(shape, &fill).unwrap();
+        let v = Array::full::<f32>(shape, &fill).unwrap();
         (k, v)
     }
 

@@ -2,5 +2,5 @@ pub mod emitter;
 pub mod evidence;
 pub mod resolver;
 pub mod schema;
-pub mod verifier;
 pub mod tensix;
+pub mod verifier;

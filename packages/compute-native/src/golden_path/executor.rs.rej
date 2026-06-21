@@ -102,7 +102,7 @@ diff a/packages/compute-native/src/golden_path/executor.rs b/packages/compute-na
 +                    block_id: None,
 +                    backend: None,
 +                    timestamp: current_time_ns(),
-+                })
++                });
 +            }
          };
  
@@ -245,7 +245,7 @@ diff a/packages/compute-native/src/golden_path/executor.rs b/packages/compute-na
 +                    block_id: Some(block.block_id.clone()),
 +                    backend: Some(block.backend.clone()),
 +                    timestamp: current_time_ns(),
-+                })
++                });
 +            }
          };
  

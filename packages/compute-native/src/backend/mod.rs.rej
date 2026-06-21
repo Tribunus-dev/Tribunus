@@ -1,12 +1,12 @@
 diff a/packages/compute-native/src/backend/mod.rs b/packages/compute-native/src/backend/mod.rs	(rejected hunks)
 @@ -1,6 +1,7 @@
- #[cfg(feature = "rocm")]
--pub mod rocm;
 -#[cfg(feature = "rocm")]
+-pub mod rocm;
++pub mod admission_gate;
+ #[cfg(feature = "rocm")]
  pub mod hip_triton;
 +#[cfg(feature = "rocm")]
 +pub mod rocm;
-+pub mod tensix;
  #[cfg(feature = "ttnn")]
 -pub mod ttnn;
 \ No newline at end of file

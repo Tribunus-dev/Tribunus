@@ -1,0 +1,44 @@
+diff a/packages/compute-native/compute-core/src/storage_adapters/valkey.rs b/packages/compute-native/compute-core/src/storage_adapters/valkey.rs	(rejected hunks)
+@@ -1,7 +1,7 @@
+-use async_trait::async_trait;
+-use redis::AsyncCommands;
+ use crate::storage_kernel::{CoordinationPort, CoordinationWorkRecord};
+ use crate::Result;
++use async_trait::async_trait;
++use redis::AsyncCommands;
+ 
+ pub struct ValkeyAdapter {
+     client: redis::Client,
+@@ -18,12 +18,15 @@ impl ValkeyAdapter {
+ #[async_trait]
+ impl CoordinationPort for ValkeyAdapter {
+     async fn get_work(&self, work_id: &str) -> Result<Option<CoordinationWorkRecord>> {
+-        let mut conn = self.client.get_multiplexed_tokio_connection()
++        let mut conn = self
++            .client
++            .get_multiplexed_tokio_connection()
+             .await
+             .map_err(|e| crate::Error::new(crate::Status::InternalError, e.to_string()))?;
+ 
+         let key = format!("work:{}", work_id);
+-        let exists: bool = conn.exists(&key)
++        let exists: bool = conn
++            .exists(&key)
+             .await
+             .map_err(|e| crate::Error::new(crate::Status::InternalError, e.to_string()))?;
+ 
+@@ -31,10 +34,12 @@ impl CoordinationPort for ValkeyAdapter {
+             return Ok(None);
+         }
+ 
+-        let state: String = conn.hget(&key, "state")
++        let state: String = conn
++            .hget(&key, "state")
+             .await
+             .map_err(|e| crate::Error::new(crate::Status::InternalError, e.to_string()))?;
+-        let acked: bool = conn.hget(&key, "acked")
++        let acked: bool = conn
++            .hget(&key, "acked")
+             .await
+             .map_err(|e| crate::Error::new(crate::Status::InternalError, e.to_string()))?;
+ 

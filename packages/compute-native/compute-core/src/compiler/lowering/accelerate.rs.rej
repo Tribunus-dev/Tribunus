@@ -1,0 +1,12 @@
+diff a/packages/compute-native/compute-core/src/compiler/lowering/accelerate.rs b/packages/compute-native/compute-core/src/compiler/lowering/accelerate.rs	(rejected hunks)
+@@ -6,9 +6,9 @@ use std::time::Instant;
+ use super::dataset::F32MatmulDataset;
+ #[cfg(target_os = "macos")]
+ use crate::backend::accelerate::AccelerateBackend;
++use crate::backend::routing::EvidenceDigest;
+ #[cfg(target_os = "macos")]
+ use crate::backend::routing::{BackendArtifactId, BackendId};
+-use crate::backend::routing::EvidenceDigest;
+ #[cfg(target_os = "macos")]
+ use crate::backend::{MatmulOp, TensorBackend};
+ use crate::compiler::LoweringReceipt;

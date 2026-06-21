@@ -404,6 +404,8 @@ pub enum EvidenceRequirement {
     MemoryPressure,
     /// Phase latency is within the declared budget.
     Latency,
+    /// Phase does not exhibit a material performance regression against the baseline.
+    PerformanceRegression,
 }
 
 /// Returns the required evidence gates for the given `PhaseKind`.
@@ -418,6 +420,7 @@ pub fn required_gates(kind: PhaseKind) -> &'static [EvidenceRequirement] {
             EvidenceRequirement::Parity,
             EvidenceRequirement::Latency,
             EvidenceRequirement::MemoryPressure,
+            EvidenceRequirement::PerformanceRegression,
         ],
         PhaseKind::KvWrite | PhaseKind::KvAppend => &[
             EvidenceRequirement::Load,
