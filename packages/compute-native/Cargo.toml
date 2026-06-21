@@ -120,3 +120,8 @@ lto = "fat"
 codegen-units = 1
 incremental = false
 
+
+
+[[test]]
+name = "tensix_bridge_integration_test"
+path = "tests/tensix_bridge_integration_test.rs"

@@ -11,6 +11,7 @@ pub mod evaluation;
 pub mod graph;
 pub mod routing;
 pub mod tensor_registry;
+pub mod tt_metalium;
 
 use mlx_rs::ops;
 use mlx_rs::Array;
