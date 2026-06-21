@@ -1,6 +1,7 @@
 diff a/packages/compute-native/compute-core/src/lib.rs b/packages/compute-native/compute-core/src/lib.rs	(rejected hunks)
-@@ -143,3 +143,4 @@ impl std::fmt::Display for Error {
+@@ -143,3 +143,5 @@ impl std::fmt::Display for Error {
  impl std::error::Error for Error {}
  
  pub type Result<T, E = Error> = std::result::Result<T, E>;
++
 +pub mod tensix;

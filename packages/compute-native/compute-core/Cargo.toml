@@ -112,6 +112,9 @@ path = "tests/three_backend_conformance.rs"
 [[test]]
 name = "ane_sealed_artifact"
 path = "tests/ane_sealed_artifact.rs"
+[[test]]
+name = "no_direct_accelerate_bypass"
+path = "tests/no_direct_accelerate_bypass.rs"
 
 [[bench]]
 name = "benchmark_placement"
