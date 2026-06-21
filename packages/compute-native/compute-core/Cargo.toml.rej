@@ -5,5 +5,5 @@ diff a/packages/compute-native/compute-core/Cargo.toml b/packages/compute-native
  tribunus_compute_core = { package = "tribunus-compute-core", path = "." }
 +
 +[[test]]
-+name = "tensix_simulator_test"
-+path = "tests/tensix_simulator_test.rs"
++name = "tensix_weight_cache_reuse"
++path = "tests/tensix_weight_cache_reuse.rs"
