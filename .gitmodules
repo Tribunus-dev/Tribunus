@@ -1,0 +1,4 @@
+[submodule "packages/mlx-rs-fork"]
+	path = packages/mlx-rs-fork
+	url = https://github.com/Tribunus-dev/mlx-rs-fork.git
+	branch = main
