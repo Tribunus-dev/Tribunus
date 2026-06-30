@@ -568,3 +568,52 @@ export {
   DharmaSessionParallelWorkPolicyTable,
   DHARMA_MULTI_PEER_SCHEMA,
 } from "./multi-peer/multi-peer-schema.pg.sql"
+
+// Compute
+export type {
+  ComputeBackendKind,
+  ComputeWorkloadClass,
+  InputDisclosureClass,
+  OutputDisclosureClass,
+  LocalPrismComputeLease,
+  ArtifactAdmissionState,
+  WeightFormat,
+  QuantizationScheme,
+  PrismArtifactAdmission,
+  ComputeImagePolicy,
+  ComputeBudget,
+  PrismExecutionDescriptor,
+  KvNamespaceState,
+  LocalKvNamespace,
+  FailureClass,
+  PrismUsageReceipt,
+  ComputeEventType,
+  ComputeCapability,
+  SessionComputeSummary,
+} from "../compute/compute-types"
+export {
+  COMPUTE_EVENT_TYPES,
+  COMPUTE_CAPABILITIES,
+} from "../compute/compute-types"
+export {
+  ComputeError,
+  LeaseError,
+  BudgetExceededError,
+  PrismAdapterError,
+  TargetIncompatibleError,
+  ComputeCancelledError,
+} from "../compute/compute-errors"
+export { ComputeApi } from "../compute/compute-api"
+export {
+  DharmaComputePolicyTable,
+  DharmaComputeLeaseTable,
+  DharmaComputeExecutionTable,
+  DharmaPrismArtifactTable,
+  DharmaPrismComputeImageTable,
+  DharmaPrismUsageReceiptTable,
+  DharmaPrismKvNamespaceTable,
+  DharmaComputeBudgetViolationTable,
+  DharmaComputeCancellationTable,
+  DharmaComputeRecoveryStateTable,
+  DHARMA_COMPUTE_SCHEMA,
+} from "../compute/compute-schema.pg.sql"
