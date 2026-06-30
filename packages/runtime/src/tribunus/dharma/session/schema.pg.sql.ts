@@ -486,6 +486,7 @@ import { DHARMA_LIVE_SANDBOX_SCHEMA } from "./live/live-schema.pg.sql"
 import { DHARMA_CONTAINMENT_SCHEMA } from "./containment/containment-schema.pg.sql"
 import { DHARMA_MULTI_PEER_SCHEMA } from "./multi-peer/multi-peer-schema.pg.sql"
 import { DHARMA_COMPUTE_SCHEMA } from "../compute/compute-schema.pg.sql"
+import { DHARMA_TRUSTED_LAN_SCHEMA } from "../compute/trusted-lan/trusted-lan-schema.pg.sql"
 
 export const DHARMA_SESSION_SCHEMA = [
   DharmaSessionTable,
@@ -510,4 +511,5 @@ export const DHARMA_SESSION_SCHEMA = [
   ...DHARMA_CONTAINMENT_SCHEMA,
   ...DHARMA_MULTI_PEER_SCHEMA,
   ...DHARMA_COMPUTE_SCHEMA,
+  ...DHARMA_TRUSTED_LAN_SCHEMA,
 ] as const
