@@ -459,3 +459,112 @@ export {
 } from "./containment/containment-schema.pg.sql"
 export { MacOSSeatbeltCompatibilityBackend } from "./containment/macos/macos-seatbelt-backend"
 export { LinuxNamespaceBackend } from "./containment/linux/linux-backend"
+
+// Multi-Peer Result Convergence
+export type {
+  TaskKind,
+  TaskParallelism,
+  TaskStatus,
+  DharmaTaskContract,
+  AcceptancePolicyLevel,
+  ClaimStatus,
+  DharmaTaskClaim,
+  DisclosureClass,
+  SourceDisclosurePackage,
+  SessionResultBundle,
+  ResultValidationState,
+  ResultValidation,
+  CanonicalSessionOutcome,
+  ConflictKind,
+  ConflictResolutionState,
+  SessionResultConflict,
+  ArtifactAccessRequest,
+  ArtifactAccessDecision,
+  VerificationPolicy,
+  MultiPeerEventType,
+  MultiPeerCapability,
+} from "./multi-peer/multi-peer-types"
+export type {
+  ExtendedTaskStatus,
+  TaskAction,
+  CreateTaskConfig,
+} from "./multi-peer/multi-peer-tasks"
+export type {
+  ClaimAction,
+  CreateClaimConfig,
+} from "./multi-peer/multi-peer-claims"
+export {
+  MULTI_PEER_EVENT_TYPES,
+  MULTI_PEER_CAPABILITIES,
+} from "./multi-peer/multi-peer-types"
+export {
+  MultiPeerError,
+  TaskError,
+  ClaimError,
+  SourcePackageError,
+  ResultValidationError,
+  ConflictError,
+  ArtifactAccessError,
+  CanonicalOutcomeError,
+} from "./multi-peer/multi-peer-errors"
+export {
+  VALID_TASK_TRANSITIONS,
+  applyTaskAction,
+  createTask,
+  isTaskClaimable,
+  isTaskCompleted,
+} from "./multi-peer/multi-peer-tasks"
+export {
+  VALID_CLAIM_TRANSITIONS,
+  applyClaimAction,
+  createClaim,
+  isClaimActive,
+  canClaimTask,
+} from "./multi-peer/multi-peer-claims"
+export {
+  validateResultBundle,
+  checkSourceBasis,
+  checkPathScope,
+  checkContainmentProfile,
+  checkVerificationPolicy,
+} from "./multi-peer/multi-peer-validation"
+export {
+  createSourcePackage,
+  isPackageAuthorizedForMember,
+  getPackageScope,
+  isPackageExpired,
+} from "./multi-peer/multi-peer-source"
+export {
+  createAccessRequest,
+  createAccessDecision,
+  isAccessGranted,
+  isAccessExpired,
+} from "./multi-peer/multi-peer-artifact"
+export {
+  createFirstOutcome,
+  createNextOutcome,
+  getOutcomeChain,
+  verifyOutcomeChain,
+} from "./multi-peer/multi-peer-outcome"
+export {
+  detectConflict,
+  checkStaleBasis,
+  checkPathOverlap,
+  checkClaimViolation,
+  createConflictRecord,
+  resolveConflict,
+} from "./multi-peer/multi-peer-conflict"
+export { MultiPeerApi } from "./multi-peer/multi-peer-api"
+export {
+  DharmaSessionTaskTable,
+  DharmaSessionTaskClaimTable,
+  DharmaSessionSourcePackageTable,
+  DharmaSessionSourcePackageRecipientTable,
+  DharmaSessionResultBundleTable,
+  DharmaSessionCanonicalOutcomeTable,
+  DharmaSessionResultConflictTable,
+  DharmaSessionArtifactAccessRequestTable,
+  DharmaSessionArtifactAccessDecisionTable,
+  DharmaSessionParallelWorkPolicyTable,
+  DHARMA_MULTI_PEER_SCHEMA,
+} from "./multi-peer/multi-peer-schema.pg.sql"
