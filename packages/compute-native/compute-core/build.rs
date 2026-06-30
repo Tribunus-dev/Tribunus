@@ -85,6 +85,7 @@ fn main() {
             .flag("-std=c++17")
             .compile("ane_private");
         println!("cargo:rustc-link-lib=framework=CoreML");
+        println!("cargo:rustc-link-lib=framework=Metal");
         println!("cargo:rustc-link-lib=framework=CoreVideo");
         println!("cargo:rustc-link-lib=framework=IOSurface");
     }

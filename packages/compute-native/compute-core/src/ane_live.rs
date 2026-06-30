@@ -73,10 +73,7 @@ impl AneLiveRuntime {
         let segment_id = &artifact.segment_id;
 
         if self.models.contains_key(segment_id) {
-            return Err(format!(
-                "segment '{}' is already loaded",
-                segment_id
-            ));
+            return Err(format!("segment '{}' is already loaded", segment_id));
         }
 
         let compute_units = parse_compute_unit_policy(&artifact.compute_unit_policy)?;
@@ -170,13 +167,18 @@ impl AneLiveRuntime {
             return Ok(None);
         }
 
-        let artifact = self.artifacts.get(segment_id).ok_or_else(|| {
-            format!("segment '{}' has no artifact metadata", segment_id)
-        })?;
+        let artifact = self
+            .artifacts
+            .get(segment_id)
+            .ok_or_else(|| format!("segment '{}' has no artifact metadata", segment_id))?;
 
-        let input_name = artifact.input_feature_names.first()
+        let input_name = artifact
+            .input_feature_names
+            .first()
             .ok_or_else(|| format!("segment '{}' has no input features", segment_id))?;
-        let output_name = artifact.output_feature_names.first()
+        let output_name = artifact
+            .output_feature_names
+            .first()
             .ok_or_else(|| format!("segment '{}' has no output features", segment_id))?;
 
         // Read evaluated MLX array data as f32 slice. Panics if not evaluated.
@@ -192,18 +194,20 @@ impl AneLiveRuntime {
             return Err("ANE dispatch: failed to allocate input arena".to_string());
         }
         unsafe {
-            std::ptr::copy_nonoverlapping(
-                input_slice.as_ptr() as *const u8,
-                inp_base,
-                input_bytes,
-            );
+            std::ptr::copy_nonoverlapping(input_slice.as_ptr() as *const u8, inp_base, input_bytes);
         }
 
         let input_arena = ArenaInfo {
-            width: output_shape.get(1).copied().unwrap_or(input_slice.len() as i32),
+            width: output_shape
+                .get(1)
+                .copied()
+                .unwrap_or(input_slice.len() as i32),
             height: output_shape.first().copied().unwrap_or(1),
             logical_dim0: output_shape.first().copied().unwrap_or(1),
-            logical_dim1: output_shape.get(1).copied().unwrap_or(input_slice.len() as i32),
+            logical_dim1: output_shape
+                .get(1)
+                .copied()
+                .unwrap_or(input_slice.len() as i32),
             pixel_format: 0,
             byte_size: input_size as i32,
             bytes_per_row: input_size as i32,
@@ -219,7 +223,9 @@ impl AneLiveRuntime {
             .map_err(|e| format!("output layout: {}", e))?;
         let out_base = unsafe { std::alloc::alloc_zeroed(out_layout) };
         if out_base.is_null() {
-            unsafe { std::alloc::dealloc(inp_base, inp_layout); }
+            unsafe {
+                std::alloc::dealloc(inp_base, inp_layout);
+            }
             return Err("ANE dispatch: failed to allocate output arena".to_string());
         }
 
@@ -236,22 +242,25 @@ impl AneLiveRuntime {
             io_surface: std::ptr::null_mut(),
         };
 
-        let result = self.models[segment_id].predict(
-            &input_name,
-            &input_arena,
-            &output_name,
-            &output_arena,
-        );
+        let result =
+            self.models[segment_id].predict(&input_name, &input_arena, &output_name, &output_arena);
 
         // Read output back regardless of result — need to clean up.
         let out_slice = if output_bytes > 0 {
-            unsafe { std::slice::from_raw_parts(out_base as *const f32, output_elements as usize).to_vec() }
+            unsafe {
+                std::slice::from_raw_parts(out_base as *const f32, output_elements as usize)
+                    .to_vec()
+            }
         } else {
             vec![]
         };
 
-        unsafe { std::alloc::dealloc(inp_base, inp_layout); }
-        unsafe { std::alloc::dealloc(out_base, out_layout); }
+        unsafe {
+            std::alloc::dealloc(inp_base, inp_layout);
+        }
+        unsafe {
+            std::alloc::dealloc(out_base, out_layout);
+        }
 
         result.map_err(|e| format!("ANE dispatch '{}': {}", segment_id, e))?;
 
@@ -266,11 +275,7 @@ impl AneLiveRuntime {
     /// bytes read back from the output arena.
     ///
     /// On failure returns `Err` — the caller handles fallback (e.g. CPU path).
-    pub fn dispatch(
-        &self,
-        segment_id: &str,
-        input_arena: &ArenaInfo,
-    ) -> Result<Vec<u8>, String> {
+    pub fn dispatch(&self, segment_id: &str, input_arena: &ArenaInfo) -> Result<Vec<u8>, String> {
         let model = self.models.get(segment_id).ok_or_else(|| {
             format!(
                 "segment '{}' not loaded — call load_artifact first",
@@ -278,12 +283,10 @@ impl AneLiveRuntime {
             )
         })?;
 
-        let artifact = self.artifacts.get(segment_id).ok_or_else(|| {
-            format!(
-                "segment '{}' has no artifact metadata",
-                segment_id
-            )
-        })?;
+        let artifact = self
+            .artifacts
+            .get(segment_id)
+            .ok_or_else(|| format!("segment '{}' has no artifact metadata", segment_id))?;
 
         let input_name = artifact
             .input_feature_names
@@ -296,11 +299,8 @@ impl AneLiveRuntime {
 
         // Allocate output buffer.
         let output_byte_size = input_arena.byte_size.max(1024);
-        let output_layout = std::alloc::Layout::from_size_align(
-            output_byte_size as usize,
-            64,
-        )
-        .map_err(|e| format!("output layout error: {}", e))?;
+        let output_layout = std::alloc::Layout::from_size_align(output_byte_size as usize, 64)
+            .map_err(|e| format!("output layout error: {}", e))?;
         let output_base = unsafe { std::alloc::alloc_zeroed(output_layout) };
         if output_base.is_null() {
             return Err("failed to allocate output arena".to_string());
@@ -326,21 +326,14 @@ impl AneLiveRuntime {
                 unsafe {
                     std::alloc::dealloc(output_base, output_layout);
                 }
-                format!(
-                    "ANE dispatch failed for segment '{}': {}",
-                    segment_id, e
-                )
+                format!("ANE dispatch failed for segment '{}': {}", segment_id, e)
             })?;
 
         // Read back output bytes from the output arena.
-        let output_bytes = if output_byte_size > 0 && !output_base.is_null()
-        {
+        let output_bytes = if output_byte_size > 0 && !output_base.is_null() {
             unsafe {
-                std::slice::from_raw_parts(
-                    output_base as *const u8,
-                    output_byte_size as usize,
-                )
-                .to_vec()
+                std::slice::from_raw_parts(output_base as *const u8, output_byte_size as usize)
+                    .to_vec()
             }
         } else {
             Vec::new()
@@ -363,12 +356,10 @@ impl AneLiveRuntime {
         segment_id: &str,
         input_arena: &ArenaInfo,
     ) -> Result<AneDispatchReceipt, String> {
-        let artifact = self.artifacts.get(segment_id).ok_or_else(|| {
-            format!(
-                "segment '{}' has no artifact metadata",
-                segment_id
-            )
-        })?;
+        let artifact = self
+            .artifacts
+            .get(segment_id)
+            .ok_or_else(|| format!("segment '{}' has no artifact metadata", segment_id))?;
 
         let start = Instant::now();
         let result = self.dispatch(segment_id, input_arena);
@@ -419,12 +410,10 @@ impl AneLiveRuntime {
                     fallback_reason: None,
                 })
             }
-            Err(e) => {
-                Err(format!(
-                    "ANE dispatch failed for segment '{}': {}",
-                    segment_id, e
-                ))
-            }
+            Err(e) => Err(format!(
+                "ANE dispatch failed for segment '{}': {}",
+                segment_id, e
+            )),
         }
     }
 }

@@ -18,9 +18,9 @@
 //!   4. Qualification receipt (JSON)
 
 use std::ffi::c_void;
-use std::path::PathBuf;
-use std::path::Path;
 use std::fs;
+use std::path::Path;
+use std::path::PathBuf;
 use std::time::Instant;
 
 use sha2::{Digest, Sha256};
@@ -156,9 +156,7 @@ fn generate_input(size: usize) -> Vec<f32> {
 // ── Hashing ─────────────────────────────────────────────────────────────
 
 fn hash_output(data: &[f32]) -> String {
-    let bytes = unsafe {
-        std::slice::from_raw_parts(data.as_ptr() as *const u8, data.len() * 4)
-    };
+    let bytes = unsafe { std::slice::from_raw_parts(data.as_ptr() as *const u8, data.len() * 4) };
     let hash = Sha256::digest(bytes);
     hex_encode(&hash)
 }
@@ -195,7 +193,8 @@ extern "C" {
     // CoreVideo
     fn CVPixelBufferCreate(
         allocator: *const c_void,
-        width: usize, height: usize,
+        width: usize,
+        height: usize,
         pixel_format: u32,
         pixel_buffer_attributes: *const c_void,
         pixel_buffer: *mut *mut c_void,
@@ -236,18 +235,21 @@ const K_CV_PIXEL_FORMAT_TYPE_KEY: &str = "PixelFormatType";
 /// This is the correct float pixel format for CVPixelBufferCreate on macOS.
 #[cfg(target_os = "macos")]
 fn create_iosurface_for_predict(
-    width: u32, height: u32, _alloc_size: u32,
+    width: u32,
+    height: u32,
+    _alloc_size: u32,
 ) -> Result<(*mut c_void, *mut c_void, *mut c_void), String> {
     // Create IOSurface directly via the working create_iosurface_pixelbuffer function.
     let alloc_sz = (width * height * 4) as u32;
     let bpr = width * 4;
-    let (iosurface, _pb, base) = create_iosurface_pixelbuffer(
-        width, height, 4, bpr, alloc_sz,
-    )?;
+    let (iosurface, _pb, base) = create_iosurface_pixelbuffer(width, height, 4, bpr, alloc_sz)?;
     if base.is_null() {
         return Err("IOSurface base address is null".into());
     }
-    eprintln!("  Raw IOSurface: ptr={:p}, base={:p}, size={}", iosurface, base, alloc_sz);
+    eprintln!(
+        "  Raw IOSurface: ptr={:p}, base={:p}, size={}",
+        iosurface, base, alloc_sz
+    );
     // Write input data directly to IOSurface base address.
     // Return pixelbuffer=null so caller uses predict() with base_address (initWithDataPointer:).
     Ok((iosurface, std::ptr::null_mut(), base))
@@ -343,7 +345,11 @@ fn create_iosurface_pixelbuffer(
 
     let fmt_val: u32 = K_CV_PIXEL_FORMAT_TYPE_32_FLOAT;
     let fmt_val_cf = unsafe {
-        CFNumberCreate(K_CF_ALLOCATOR_DEFAULT, K_CF_NUMBER_SINT32, &fmt_val as *const u32 as *const c_void)
+        CFNumberCreate(
+            K_CF_ALLOCATOR_DEFAULT,
+            K_CF_NUMBER_SINT32,
+            &fmt_val as *const u32 as *const c_void,
+        )
     };
     if fmt_val_cf.is_null() {
         unsafe { CFRelease(fmt_key) };
@@ -372,12 +378,7 @@ fn create_iosurface_pixelbuffer(
 
     let mut pixelbuffer: *mut c_void = std::ptr::null_mut();
     let cv_ret = unsafe {
-        CVPixelBufferCreateWithIOSurface(
-            K_CF_ALLOCATOR_DEFAULT,
-            iosurface,
-            attrs,
-            &mut pixelbuffer,
-        )
+        CVPixelBufferCreateWithIOSurface(K_CF_ALLOCATOR_DEFAULT, iosurface, attrs, &mut pixelbuffer)
     };
 
     unsafe {
@@ -387,7 +388,10 @@ fn create_iosurface_pixelbuffer(
     }
 
     if cv_ret != 0 {
-        eprintln!("  CVPixelBuffer wrapping failed: {} - using raw IOSurface via predict()", cv_ret);
+        eprintln!(
+            "  CVPixelBuffer wrapping failed: {} - using raw IOSurface via predict()",
+            cv_ret
+        );
         return Ok((iosurface, std::ptr::null_mut(), base_addr));
     }
 
@@ -401,7 +405,11 @@ fn create_iosurface_pixelbuffer(
 fn c_str_to_cfstring(s: &str) -> Result<*mut c_void, String> {
     let cs = std::ffi::CString::new(s).map_err(|e| format!("CString: {}", e))?;
     let cf = unsafe {
-        CFStringCreateWithCString(K_CF_ALLOCATOR_DEFAULT, cs.as_ptr(), K_CF_STRING_ENCODING_UTF8)
+        CFStringCreateWithCString(
+            K_CF_ALLOCATOR_DEFAULT,
+            cs.as_ptr(),
+            K_CF_STRING_ENCODING_UTF8,
+        )
     };
     if cf.is_null() {
         return Err("CFStringCreateWithCString failed".to_string());
@@ -412,7 +420,11 @@ fn c_str_to_cfstring(s: &str) -> Result<*mut c_void, String> {
 #[cfg(target_os = "macos")]
 fn u32_to_cfnumber(val: u32) -> Result<*mut c_void, String> {
     let cf = unsafe {
-        CFNumberCreate(K_CF_ALLOCATOR_DEFAULT, K_CF_NUMBER_SINT32, &val as *const u32 as *const c_void)
+        CFNumberCreate(
+            K_CF_ALLOCATOR_DEFAULT,
+            K_CF_NUMBER_SINT32,
+            &val as *const u32 as *const c_void,
+        )
     };
     if cf.is_null() {
         return Err("CFNumberCreate failed".to_string());
@@ -499,10 +511,10 @@ fn find_modelc_dir(path: &Path) -> Option<PathBuf> {
 
 /// Compile a test projection model using MIL builder + coremlcompiler.
 fn compile_test_model() -> (PathBuf, tempfile::TempDir) {
-    use std::path::PathBuf;
     use coreml_proto::proto::mil_spec;
-    use tribunus_compute_core::mil_builder::MilBuilder;
+    use std::path::PathBuf;
     use tribunus_compute_core::coreml_pipeline;
+    use tribunus_compute_core::mil_builder::MilBuilder;
     use tribunus_compute_core::mlpackage::ModelMeta;
 
     let hidden_dim: i64 = 128;
@@ -534,8 +546,14 @@ fn compile_test_model() -> (PathBuf, tempfile::TempDir) {
     let output_dir = tmp.path().join("output");
     fs::create_dir_all(&output_dir).unwrap();
 
-    let receipt = coreml_pipeline::build_and_compile(prog, &meta, &output_dir, "iosurface_probe", "cpuAndGPU")
-        .expect("coremlcompiler compile");
+    let receipt = coreml_pipeline::build_and_compile(
+        prog,
+        &meta,
+        &output_dir,
+        "iosurface_probe",
+        "cpuAndGPU",
+    )
+    .expect("coremlcompiler compile");
     eprintln!("Compiled test model: {:?}", receipt.compiled_modelc_path);
     (PathBuf::from(&receipt.compiled_modelc_path), tmp)
 }
@@ -596,26 +614,52 @@ fn run() -> Result<(), String> {
     let mut copy_output = vec![0.0f32; output_len];
 
     let in_arena_copy = ArenaInfo {
-        width: config.input_shape.get(1).copied().unwrap_or(element_count as i32),
+        width: config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32),
         height: config.input_shape.first().copied().unwrap_or(1),
         logical_dim0: config.input_shape.first().copied().unwrap_or(1),
-        logical_dim1: config.input_shape.get(1).copied().unwrap_or(element_count as i32),
+        logical_dim1: config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32),
         pixel_format: 0,
         byte_size: (element_count * 4) as i32,
-        bytes_per_row: (config.input_shape.get(1).copied().unwrap_or(element_count as i32) * 4) as i32,
+        bytes_per_row: (config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32)
+            * 4) as i32,
         base_address: copy_input.as_mut_ptr() as *mut c_void,
         cv_buffer: std::ptr::null_mut(),
         io_surface: std::ptr::null_mut(),
     };
 
     let out_arena_copy = ArenaInfo {
-        width: config.input_shape.get(1).copied().unwrap_or(element_count as i32),
+        width: config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32),
         height: config.input_shape.first().copied().unwrap_or(1),
         logical_dim0: config.input_shape.first().copied().unwrap_or(1),
-        logical_dim1: config.input_shape.get(1).copied().unwrap_or(element_count as i32),
+        logical_dim1: config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32),
         pixel_format: 0,
         byte_size: (output_len * 4) as i32,
-        bytes_per_row: (config.input_shape.get(1).copied().unwrap_or(element_count as i32) * 4) as i32,
+        bytes_per_row: (config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32)
+            * 4) as i32,
         base_address: copy_output.as_mut_ptr() as *mut c_void,
         cv_buffer: std::ptr::null_mut(),
         io_surface: std::ptr::null_mut(),
@@ -623,7 +667,12 @@ fn run() -> Result<(), String> {
 
     let start = Instant::now();
     model
-        .predict(&input_name, &in_arena_copy, &config.output_name, &out_arena_copy)
+        .predict(
+            &input_name,
+            &in_arena_copy,
+            &config.output_name,
+            &out_arena_copy,
+        )
         .map_err(|e| format!("copy-backed predict failed: {}", e))?;
     let copy_elapsed = start.elapsed();
     let copy_latency_us = copy_elapsed.as_micros() as u64;
@@ -637,7 +686,14 @@ fn run() -> Result<(), String> {
     // ── Phase 3: IOSurface-backed test ──────────────────────────────────
     eprintln!("\n── Phase 3: IOSurface-backed test ──");
 
-    let (iosurface_latency_us, iosurface_hash, _iosurface_output, max_abs_error, rms_error, classification) = match create_iosurface_test(
+    let (
+        iosurface_latency_us,
+        iosurface_hash,
+        _iosurface_output,
+        max_abs_error,
+        rms_error,
+        classification,
+    ) = match create_iosurface_test(
         &model,
         &input_data,
         &config,
@@ -653,7 +709,8 @@ fn run() -> Result<(), String> {
             eprintln!("  RMS error:     {:.6e}", comp.rms_error);
 
             // Classify.
-            let within_tolerance = comp.max_abs_error <= config.tolerance && comp.rms_error <= config.tolerance;
+            let within_tolerance =
+                comp.max_abs_error <= config.tolerance && comp.rms_error <= config.tolerance;
 
             let cls = if !within_tolerance {
                 "Unsupported"
@@ -675,12 +732,26 @@ fn run() -> Result<(), String> {
                 );
             }
 
-            (result.latency_us, result.hash, result.output, comp.max_abs_error, comp.rms_error, cls)
+            (
+                result.latency_us,
+                result.hash,
+                result.output,
+                comp.max_abs_error,
+                comp.rms_error,
+                cls,
+            )
         }
         Err(e) => {
             eprintln!("  IOSurface path failed: {}", e);
             eprintln!("  Classification: Unsupported");
-            (0, String::new(), Vec::new(), f64::INFINITY, f64::INFINITY, "Unsupported")
+            (
+                0,
+                String::new(),
+                Vec::new(),
+                f64::INFINITY,
+                f64::INFINITY,
+                "Unsupported",
+            )
         }
     };
 
@@ -735,37 +806,53 @@ fn create_iosurface_test(
     output_len: usize,
 ) -> Result<IosurfaceTestResult, String> {
     let element_count = input_data.len();
-    let width = config.input_shape.get(1).copied().unwrap_or(element_count as i32) as u32;
+    let width = config
+        .input_shape
+        .get(1)
+        .copied()
+        .unwrap_or(element_count as i32) as u32;
     let height = config.input_shape.first().copied().unwrap_or(1) as u32;
     let bytes_per_element: u32 = 4; // f32
     let bytes_per_row = round_up_to_page((width * bytes_per_element) as usize) as u32;
     let alloc_size = round_up_to_page((height as usize * bytes_per_row as usize) as usize) as u32;
 
-    eprintln!("  Creating IOSurface: {}x{}, {} B/row, {} total", width, height, bytes_per_row, alloc_size);
+    eprintln!(
+        "  Creating IOSurface: {}x{}, {} B/row, {} total",
+        width, height, bytes_per_row, alloc_size
+    );
 
     // Try direct CVPixelBufferCreate first (accepts 32Float).
-    let (iosurface, pixelbuffer, iosurface_base) = match create_iosurface_for_predict(
-        width,
-        height,
-        alloc_size,
-    ) {
-        Ok(r) => r,
-        Err(e) => {
-            eprintln!("  Direct CVPixelBufferCreate failed ({}), falling back to IOSurface path", e);
-            create_iosurface_pixelbuffer(
-                width, height, bytes_per_element, bytes_per_row, alloc_size,
-            )?
-        }
-    };
+    let (iosurface, pixelbuffer, iosurface_base) =
+        match create_iosurface_for_predict(width, height, alloc_size) {
+            Ok(r) => r,
+            Err(e) => {
+                eprintln!(
+                    "  Direct CVPixelBufferCreate failed ({}), falling back to IOSurface path",
+                    e
+                );
+                create_iosurface_pixelbuffer(
+                    width,
+                    height,
+                    bytes_per_element,
+                    bytes_per_row,
+                    alloc_size,
+                )?
+            }
+        };
 
     // Lock the pixel buffer and write input data.
     // When pixelbuffer is null, we have a raw IOSurface with pre-allocated memory.
     let actual_bpr: u32 = width * bytes_per_element;
     if pixelbuffer.is_null() {
-        eprintln!("  Using raw IOSurface: base={:p}, bpr={}", iosurface_base, actual_bpr);
+        eprintln!(
+            "  Using raw IOSurface: base={:p}, bpr={}",
+            iosurface_base, actual_bpr
+        );
     } else {
         let lr = unsafe { CVPixelBufferLockBaseAddress(pixelbuffer, 0) };
-        if lr != 0 { return Err(format!("lock failed: {}", lr)); }
+        if lr != 0 {
+            return Err(format!("lock failed: {}", lr));
+        }
         let iosurface_base = unsafe { CVPixelBufferGetBaseAddress(pixelbuffer) };
     }
     // Write input data (same path regardless of pixelbuffer)
@@ -783,7 +870,9 @@ fn create_iosurface_test(
     }
     // Unlock if we had a pixelbuffer.
     if !pixelbuffer.is_null() {
-        unsafe { CVPixelBufferUnlockBaseAddress(pixelbuffer, 0); }
+        unsafe {
+            CVPixelBufferUnlockBaseAddress(pixelbuffer, 0);
+        }
     }
 
     // Build input arena with CVPixelBuffer.
@@ -803,13 +892,26 @@ fn create_iosurface_test(
     // Output arena: CPU-backed buffer (the predict_pixelbuffer needs output_arena->base_address set).
     let mut output_raw = vec![0.0f32; output_len];
     let mut out_arena_iosurface = ArenaInfo {
-        width: config.input_shape.get(1).copied().unwrap_or(element_count as i32),
+        width: config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32),
         height: config.input_shape.first().copied().unwrap_or(1),
         logical_dim0: config.input_shape.first().copied().unwrap_or(1),
-        logical_dim1: config.input_shape.get(1).copied().unwrap_or(element_count as i32),
+        logical_dim1: config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32),
         pixel_format: 0,
         byte_size: (output_len * 4) as i32,
-        bytes_per_row: (config.input_shape.get(1).copied().unwrap_or(element_count as i32) * 4) as i32,
+        bytes_per_row: (config
+            .input_shape
+            .get(1)
+            .copied()
+            .unwrap_or(element_count as i32)
+            * 4) as i32,
         base_address: output_raw.as_mut_ptr() as *mut c_void,
         cv_buffer: std::ptr::null_mut(),
         io_surface: std::ptr::null_mut(),
@@ -822,9 +924,8 @@ fn create_iosurface_test(
     // We call predict_pixelbuffer through the raw extern C function since
     // CoreMlModel::predict_pixelbuffer takes &mut ArenaInfo for output.
     unsafe {
-
-        let c_in_name = std::ffi::CString::new(input_name)
-            .map_err(|e| format!("CString: {}", e))?;
+        let c_in_name =
+            std::ffi::CString::new(input_name).map_err(|e| format!("CString: {}", e))?;
         let c_out_name = std::ffi::CString::new(config.output_name.as_str())
             .map_err(|e| format!("CString: {}", e))?;
 
@@ -840,7 +941,8 @@ fn create_iosurface_test(
                 ) -> i32;
             }
             tribunus_coreml_predict(
-                model.raw_ptr(), c_in_name.as_ptr(),
+                model.raw_ptr(),
+                c_in_name.as_ptr(),
                 &in_arena_iosurface as *const ArenaInfo,
                 c_out_name.as_ptr(),
                 &out_arena_iosurface as *const ArenaInfo,
@@ -856,7 +958,8 @@ fn create_iosurface_test(
                 ) -> i32;
             }
             tribunus_coreml_predict_pixelbuffer(
-                model.raw_ptr(), c_in_name.as_ptr(),
+                model.raw_ptr(),
+                c_in_name.as_ptr(),
                 &in_arena_iosurface as *const ArenaInfo,
                 c_out_name.as_ptr(),
                 &mut out_arena_iosurface as *mut ArenaInfo,
@@ -864,11 +967,12 @@ fn create_iosurface_test(
         };
 
         if status != 0 {
-            let fn_name = if pixelbuffer.is_null() { "predict" } else { "predict_pixelbuffer" };
-            return Err(format!(
-                "tribunus_coreml_{} failed: {}",
-                fn_name, status
-            ));
+            let fn_name = if pixelbuffer.is_null() {
+                "predict"
+            } else {
+                "predict_pixelbuffer"
+            };
+            return Err(format!("tribunus_coreml_{} failed: {}", fn_name, status));
         }
     }
 

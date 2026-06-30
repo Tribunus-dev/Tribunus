@@ -8,3 +8,6 @@ export { DataMigrationTable } from "../data-migration.pg.sql"
 export { EventTable, EventSequenceTable } from "../sync/event.pg.sql"
 export { CoordinationClaimTable, CoordinationReservationTable, CoordinationFanOutTable } from "../tool/coordination.pg.sql"
 export { CapabilityAuthorityReceiptTable } from "../capability/receipts.pg.sql"
+
+// Dharma Federation Runtime Tables
+export { DHARMA_ALL_SCHEMA } from "../tribunus/dharma/schema.pg.sql"

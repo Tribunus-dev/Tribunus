@@ -14,21 +14,32 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Instant;
 
+use crate::accelerate_artifacts::{dispatch_accelerate_artifact, AccelerateArtifact};
 use crate::arena_info::ArenaInfo;
-use crate::kv_cache::KvCache;
 use crate::compute_image::CoreMlArtifactEntry;
 use crate::coreml_bridge::{CoreMlComputeUnits, CoreMlModel};
 use crate::engine_receipts::AneDispatchReceipt;
 use crate::engine_receipts::GraphNodeReceipt;
-use crate::accelerate_artifacts::{AccelerateArtifact, dispatch_accelerate_artifact};
+use crate::kv_cache::KvCache;
 
 extern "C" {
-    fn tribunus_arena_alloc_f32(info: *mut crate::arena_info::ArenaInfo, dim0: i32, dim1: i32) -> i32;
+    fn tribunus_arena_alloc_f32(
+        info: *mut crate::arena_info::ArenaInfo,
+        dim0: i32,
+        dim1: i32,
+    ) -> i32;
     fn tribunus_arena_free_cv_buffer(cv_buffer: *mut std::ffi::c_void);
     fn tribunus_arena_io_surface_id(info: *const crate::arena_info::ArenaInfo) -> i32;
     fn tribunus_cv_pixel_buffer_io_surface_id(cv_buffer: *mut std::ffi::c_void) -> i32;
-    fn tribunus_metal_texture_from_iosurface(cv_pixel_buffer: *mut std::ffi::c_void, device_name: *const i8) -> *mut std::ffi::c_void;
-    fn tribunus_metal_dispatch_copy(texture: *mut std::ffi::c_void, input_data: *const f32, element_count: i32) -> i32;
+    fn tribunus_metal_texture_from_iosurface(
+        cv_pixel_buffer: *mut std::ffi::c_void,
+        device_name: *const i8,
+    ) -> *mut std::ffi::c_void;
+    fn tribunus_metal_dispatch_copy(
+        texture: *mut std::ffi::c_void,
+        input_data: *const f32,
+        element_count: i32,
+    ) -> i32;
     fn tribunus_metal_release_texture(texture: *mut std::ffi::c_void);
 }
 
@@ -99,10 +110,7 @@ pub enum ResolvedBuffer {
         byte_length: u64,
     },
     /// Allocation backed by the graph instance's arena.
-    Arena {
-        ptr: *mut u8,
-        byte_length: u64,
-    },
+    Arena { ptr: *mut u8, byte_length: u64 },
     /// An IOSurface handle for ANE dispatch.
     IoSurface {
         ptr: *mut u8,
@@ -140,10 +148,10 @@ pub enum CoreMlBufferMode {
 /// Contract describing how a Metal texture binds to an IOSurface-backed buffer.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MetalIosurfaceBindingContract {
-    pub pixel_format: String,      // "R32Float"
-    pub plane: u32,               // 0
-    pub tensor_dtype: String,     // "float32"
-    pub access: String,           // "WriteOnly"
+    pub pixel_format: String,         // "R32Float"
+    pub plane: u32,                   // 0
+    pub tensor_dtype: String,         // "float32"
+    pub access: String,               // "WriteOnly"
     pub synchronization_mode: String, // "CommandBuffer"
 }
 
@@ -209,11 +217,12 @@ impl ActivationRing {
             let mut arena_info = unsafe {
                 std::mem::MaybeUninit::<crate::arena_info::ArenaInfo>::zeroed().assume_init()
             };
-            let rc = unsafe {
-                tribunus_arena_alloc_f32(&mut arena_info, height, width)
-            };
+            let rc = unsafe { tribunus_arena_alloc_f32(&mut arena_info, height, width) };
             if rc != 0 {
-                return Err(format!("ActivationRing: tribunus_arena_alloc_f32 failed: {} for slot {}", rc, i));
+                return Err(format!(
+                    "ActivationRing: tribunus_arena_alloc_f32 failed: {} for slot {}",
+                    rc, i
+                ));
             }
             slots.push(ActivationSlot {
                 slot_id: i as u32,
@@ -231,7 +240,11 @@ impl ActivationRing {
                 last_writer: None,
             });
         }
-        Ok(ActivationRing { slots, next_slot: 0, num_slots: count })
+        Ok(ActivationRing {
+            slots,
+            next_slot: 0,
+            num_slots: count,
+        })
     }
 
     /// Allocate the next free slot for writing.
@@ -267,7 +280,10 @@ impl ActivationRing {
     pub fn release_ane_borrow(&mut self, slot_id: u32, completed_epoch: u64) -> Result<(), String> {
         if let Some(slot) = self.slots.iter_mut().find(|s| s.slot_id == slot_id) {
             if slot.epoch != completed_epoch {
-                return Err(format!("stale completion: slot {} epoch {} != completed {}", slot_id, slot.epoch, completed_epoch));
+                return Err(format!(
+                    "stale completion: slot {} epoch {} != completed {}",
+                    slot_id, slot.epoch, completed_epoch
+                ));
             }
             slot.coreml_borrows = slot.coreml_borrows.saturating_sub(1);
             if slot.coreml_borrows == 0 && slot.state == SlotState::AneInFlight {
@@ -292,10 +308,17 @@ impl ActivationRing {
 
     /// Epoch-safe recycle: only frees slot if epoch matches.
     /// If outstanding borrows exist, transitions to ReclaimPending.
-    pub fn recycle_slot_checked(&mut self, slot_id: u32, completed_epoch: u64) -> Result<(), String> {
+    pub fn recycle_slot_checked(
+        &mut self,
+        slot_id: u32,
+        completed_epoch: u64,
+    ) -> Result<(), String> {
         if let Some(slot) = self.slots.iter_mut().find(|s| s.slot_id == slot_id) {
             if slot.epoch != completed_epoch {
-                return Err(format!("stale completion: slot {} epoch {} != completed {}", slot_id, slot.epoch, completed_epoch));
+                return Err(format!(
+                    "stale completion: slot {} epoch {} != completed {}",
+                    slot_id, slot.epoch, completed_epoch
+                ));
             }
             if slot.coreml_borrows == 0 && slot.cpu_borrows == 0 && slot.metal_borrows == 0 {
                 slot.epoch += 1;
@@ -306,7 +329,10 @@ impl ActivationRing {
                 Ok(())
             } else {
                 slot.state = SlotState::ReclaimPending;
-                Err(format!("slot {} has outstanding borrows: coreml={} cpu={} metal={}", slot_id, slot.coreml_borrows, slot.cpu_borrows, slot.metal_borrows))
+                Err(format!(
+                    "slot {} has outstanding borrows: coreml={} cpu={} metal={}",
+                    slot_id, slot.coreml_borrows, slot.cpu_borrows, slot.metal_borrows
+                ))
             }
         } else {
             Err(format!("slot {} not found", slot_id))
@@ -364,10 +390,14 @@ impl ActivationRing {
     pub fn destroy(&mut self) {
         for slot in &mut self.slots {
             if let Some(tex) = slot.metal_texture.take() {
-                unsafe { tribunus_metal_release_texture(tex.texture_ptr); }
+                unsafe {
+                    tribunus_metal_release_texture(tex.texture_ptr);
+                }
             }
             if !slot.cv_pixel_buffer.is_null() {
-                unsafe { tribunus_arena_free_cv_buffer(slot.cv_pixel_buffer); }
+                unsafe {
+                    tribunus_arena_free_cv_buffer(slot.cv_pixel_buffer);
+                }
                 slot.cv_pixel_buffer = std::ptr::null_mut();
                 slot.base_ptr = std::ptr::null_mut();
             }
@@ -387,8 +417,7 @@ unsafe impl Sync for ActivationRing {}
 
 /// Which execution lane should process this node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum LaneAffinity
-{
+pub enum LaneAffinity {
     Cpu,
     Gpu,
     Ane,
@@ -488,7 +517,8 @@ impl ArtifactRegistry {
                 _ => CoreMlComputeUnits::CpuAndNeuralEngine,
             },
         )?;
-        self.coreml_models.insert(artifact.segment_id.clone(), model);
+        self.coreml_models
+            .insert(artifact.segment_id.clone(), model);
         Ok(())
     }
 
@@ -559,9 +589,7 @@ impl<'a> GraphInstance<'a> {
             deps_remaining.iter_mut().for_each(|d| *d = 0);
         }
         for node in &graph.nodes {
-            deps_remaining
-                .iter_mut()
-                .for_each(|d| *d = 0);
+            deps_remaining.iter_mut().for_each(|d| *d = 0);
         }
 
         // Count inbound edges.
@@ -596,7 +624,10 @@ impl<'a> GraphInstance<'a> {
 
     /// Allocate a region for use during dispatch.
     pub fn allocate_region(&mut self, region_id: u32, data: Option<&[u8]>) -> Result<(), String> {
-        let spec = self.graph.regions.get(region_id as usize)
+        let spec = self
+            .graph
+            .regions
+            .get(region_id as usize)
             .ok_or_else(|| format!("region {} not found in graph", region_id))?;
         let byte_len = spec.byte_length as usize;
 
@@ -609,9 +640,22 @@ impl<'a> GraphInstance<'a> {
                 }
                 // Clone the persistent buffer reference into regions[] for this dispatch.
                 let buf = match persistent_buf {
-                    ResolvedBuffer::Arena { ptr, byte_length } => ResolvedBuffer::Arena { ptr: *ptr, byte_length: *byte_length },
-                    ResolvedBuffer::IoSurface { ptr, byte_length, cv_buffer } => ResolvedBuffer::IoSurface { ptr: *ptr, byte_length: *byte_length, cv_buffer: *cv_buffer },
-                    ResolvedBuffer::WeightSlice { .. } => return Err("cannot dispatch from weight slice".into()),
+                    ResolvedBuffer::Arena { ptr, byte_length } => ResolvedBuffer::Arena {
+                        ptr: *ptr,
+                        byte_length: *byte_length,
+                    },
+                    ResolvedBuffer::IoSurface {
+                        ptr,
+                        byte_length,
+                        cv_buffer,
+                    } => ResolvedBuffer::IoSurface {
+                        ptr: *ptr,
+                        byte_length: *byte_length,
+                        cv_buffer: *cv_buffer,
+                    },
+                    ResolvedBuffer::WeightSlice { .. } => {
+                        return Err("cannot dispatch from weight slice".into())
+                    }
                 };
                 self.regions[region_id as usize] = Some(buf);
                 return Ok(());
@@ -620,9 +664,14 @@ impl<'a> GraphInstance<'a> {
 
         let buf = match spec.residency {
             Residency::CoreMlCompatible => {
-                if self.coreml_buffer_mode == CoreMlBufferMode::PersistentIosurfaceBacked {
+                if self.coreml_buffer_mode == CoreMlBufferMode::PersistentIosurfaceBacked
+                    || self.coreml_buffer_mode == CoreMlBufferMode::PersistentIosurfaceMetalInterop
+                {
                     // Allocate from activation ring if available, otherwise fall back to direct allocation.
-                    let slot = self.activation_ring.as_mut().and_then(|ring| ring.alloc_write());
+                    let slot = self
+                        .activation_ring
+                        .as_mut()
+                        .and_then(|ring| ring.alloc_write());
                     let (ptr, cv_buf) = if let Some(slot) = slot {
                         if let Some(src) = data {
                             let copy_len = byte_len.min(slot.byte_len);
@@ -638,16 +687,22 @@ impl<'a> GraphInstance<'a> {
                     } else {
                         // No ring or no free slot — allocate directly.
                         let logical_dim0 = spec.logical_shape.first().copied().unwrap_or(1) as i32;
-                        let logical_dim1 = spec.logical_shape.get(1).copied().unwrap_or(logical_dim0 as i64) as i32;
+                        let logical_dim1 =
+                            spec.logical_shape
+                                .get(1)
+                                .copied()
+                                .unwrap_or(logical_dim0 as i64) as i32;
                         let mut arena_info = unsafe {
-                            std::mem::MaybeUninit::<crate::arena_info::ArenaInfo>::zeroed().assume_init()
+                            std::mem::MaybeUninit::<crate::arena_info::ArenaInfo>::zeroed()
+                                .assume_init()
                         };
                         let rc = unsafe {
                             tribunus_arena_alloc_f32(&mut arena_info, logical_dim0, logical_dim1)
                         };
                         if rc != 0 {
                             return Err(format!(
-                                "tribunus_arena_alloc_f32 failed: {} for region {}", rc, region_id
+                                "tribunus_arena_alloc_f32 failed: {} for region {}",
+                                rc, region_id
                             ));
                         }
                         if let Some(src) = data {
@@ -669,14 +724,24 @@ impl<'a> GraphInstance<'a> {
                     }
                 } else {
                     // Existing heap-allocated path.
-                    let layout = std::alloc::Layout::from_size_align(byte_len, spec.alignment as usize)
-                        .map_err(|e| format!("layout: {}", e))?;
+                    let layout =
+                        std::alloc::Layout::from_size_align(byte_len, spec.alignment as usize)
+                            .map_err(|e| format!("layout: {}", e))?;
                     let ptr = unsafe { std::alloc::alloc_zeroed(layout) };
                     if ptr.is_null() {
-                        return Err(format!("failed to allocate CoreMlCompatible region {}", region_id));
+                        return Err(format!(
+                            "failed to allocate CoreMlCompatible region {}",
+                            region_id
+                        ));
                     }
                     if let Some(src) = data {
-                        unsafe { std::ptr::copy_nonoverlapping(src.as_ptr(), ptr, byte_len.min(src.len())); }
+                        unsafe {
+                            std::ptr::copy_nonoverlapping(
+                                src.as_ptr(),
+                                ptr,
+                                byte_len.min(src.len()),
+                            );
+                        }
                     }
                     ResolvedBuffer::IoSurface {
                         ptr,
@@ -693,9 +758,14 @@ impl<'a> GraphInstance<'a> {
                     return Err(format!("failed to allocate region {}", region_id));
                 }
                 if let Some(src) = data {
-                    unsafe { std::ptr::copy_nonoverlapping(src.as_ptr(), ptr, byte_len.min(src.len())); }
+                    unsafe {
+                        std::ptr::copy_nonoverlapping(src.as_ptr(), ptr, byte_len.min(src.len()));
+                    }
                 }
-                ResolvedBuffer::Arena { ptr, byte_length: spec.byte_length }
+                ResolvedBuffer::Arena {
+                    ptr,
+                    byte_length: spec.byte_length,
+                }
             }
         };
 
@@ -709,16 +779,18 @@ impl<'a> GraphInstance<'a> {
 
     /// Read a region's data as a byte slice.
     pub fn region_data(&self, region_id: u32) -> Result<&[u8], String> {
-        let buf = self.regions.get(region_id as usize)
+        let buf = self
+            .regions
+            .get(region_id as usize)
             .and_then(|b| b.as_ref())
             .ok_or_else(|| format!("region {} not allocated", region_id))?;
         match buf {
             ResolvedBuffer::Arena { ptr, byte_length } => {
                 Ok(unsafe { std::slice::from_raw_parts(*ptr, *byte_length as usize) })
             }
-            ResolvedBuffer::IoSurface { ptr, byte_length, .. } => {
-                Ok(unsafe { std::slice::from_raw_parts(*ptr, *byte_length as usize) })
-            }
+            ResolvedBuffer::IoSurface {
+                ptr, byte_length, ..
+            } => Ok(unsafe { std::slice::from_raw_parts(*ptr, *byte_length as usize) }),
             ResolvedBuffer::WeightSlice { data, .. } => Ok(data),
         }
     }
@@ -728,17 +800,25 @@ impl<'a> GraphInstance<'a> {
             ResolvedBuffer::Arena { ptr, byte_length } => {
                 let layout = std::alloc::Layout::from_size_align(byte_length as usize, 64).ok();
                 if let Some(l) = layout {
-                    unsafe { std::alloc::dealloc(ptr, l); }
+                    unsafe {
+                        std::alloc::dealloc(ptr, l);
+                    }
                 }
             }
-            ResolvedBuffer::IoSurface { ptr, byte_length, cv_buffer } => {
+            ResolvedBuffer::IoSurface {
+                ptr,
+                byte_length,
+                cv_buffer,
+            } => {
                 if !cv_buffer.is_null() {
                     // Ring-owned IOSurface-backed region — the activation ring owns the
                     // CVPixelBuffer lifetime.  Do NOT free here; ring::destroy() handles it.
                 } else {
                     let layout = std::alloc::Layout::from_size_align(byte_length as usize, 64).ok();
                     if let Some(l) = layout {
-                        unsafe { std::alloc::dealloc(ptr, l); }
+                        unsafe {
+                            std::alloc::dealloc(ptr, l);
+                        }
                     }
                 }
             }
@@ -781,18 +861,21 @@ impl<'a> GraphInstance<'a> {
             } => {
                 let dispatch_result = match lane {
                     LaneAffinity::Ane => {
-                        let model = self.registry.get_coreml(artifact_id)
+                        let model = self
+                            .registry
+                            .get_coreml(artifact_id)
                             .ok_or_else(|| format!("ANE artifact '{}' not loaded", artifact_id))?;
 
                         // Resolve input/output ArenaInfo from regions.
-                        let (in_name, in_rid) = input_bindings.first()
-                            .ok_or("no input binding")?;
-                        let (out_name, out_rid) = output_bindings.first()
-                            .ok_or("no output binding")?;
+                        let (in_name, in_rid) = input_bindings.first().ok_or("no input binding")?;
+                        let (out_name, out_rid) =
+                            output_bindings.first().ok_or("no output binding")?;
 
-                        let in_buf = self.regions[*in_rid as usize].as_ref()
+                        let in_buf = self.regions[*in_rid as usize]
+                            .as_ref()
                             .ok_or_else(|| format!("input region {} not allocated", in_rid))?;
-                        let out_buf = self.regions[*out_rid as usize].as_ref()
+                        let out_buf = self.regions[*out_rid as usize]
+                            .as_ref()
                             .ok_or_else(|| format!("output region {} not allocated", out_rid))?;
 
                         let (in_ptr, in_len) = Self::resolve_buffer_ptr(in_buf)?;
@@ -813,8 +896,10 @@ impl<'a> GraphInstance<'a> {
                         let input_arena = ArenaInfo {
                             width: in_region.logical_shape.get(1).copied().unwrap_or(1) as i32,
                             height: in_region.logical_shape.first().copied().unwrap_or(1) as i32,
-                            logical_dim0: in_region.logical_shape.first().copied().unwrap_or(1) as i32,
-                            logical_dim1: in_region.logical_shape.get(1).copied().unwrap_or(1) as i32,
+                            logical_dim0: in_region.logical_shape.first().copied().unwrap_or(1)
+                                as i32,
+                            logical_dim1: in_region.logical_shape.get(1).copied().unwrap_or(1)
+                                as i32,
                             pixel_format: 0,
                             byte_size: in_len as i32,
                             bytes_per_row: in_len as i32,
@@ -825,8 +910,10 @@ impl<'a> GraphInstance<'a> {
                         let output_arena = ArenaInfo {
                             width: out_region.logical_shape.get(1).copied().unwrap_or(1) as i32,
                             height: out_region.logical_shape.first().copied().unwrap_or(1) as i32,
-                            logical_dim0: out_region.logical_shape.first().copied().unwrap_or(1) as i32,
-                            logical_dim1: out_region.logical_shape.get(1).copied().unwrap_or(1) as i32,
+                            logical_dim0: out_region.logical_shape.first().copied().unwrap_or(1)
+                                as i32,
+                            logical_dim1: out_region.logical_shape.get(1).copied().unwrap_or(1)
+                                as i32,
                             pixel_format: 0,
                             byte_size: out_len as i32,
                             bytes_per_row: out_len as i32,
@@ -835,17 +922,23 @@ impl<'a> GraphInstance<'a> {
                             io_surface: std::ptr::null_mut(),
                         };
 
-                        model.predict(in_name, &input_arena, out_name, &output_arena)
+                        model
+                            .predict(in_name, &input_arena, out_name, &output_arena)
                             .map_err(|e| format!("graph dispatch '{}': {}", artifact_id, e))
                             .map(|_| ())
                     }
                     LaneAffinity::Cpu => {
-                        let artifact = self.registry.accelerate_artifacts.get(artifact_id)
-                            .ok_or_else(|| format!("Accelerate artifact '{}' not loaded", artifact_id))?;
+                        let artifact = self
+                            .registry
+                            .accelerate_artifacts
+                            .get(artifact_id)
+                            .ok_or_else(|| {
+                                format!("Accelerate artifact '{}' not loaded", artifact_id)
+                            })?;
 
                         // Resolve input bindings.
-                        let (_in_name, in_rid) = input_bindings.first()
-                            .ok_or("no input binding")?;
+                        let (_in_name, in_rid) =
+                            input_bindings.first().ok_or("no input binding")?;
                         let in_data = self.region_data(*in_rid)?;
 
                         // For RMSNorm, the second binding is weight.
@@ -869,9 +962,10 @@ impl<'a> GraphInstance<'a> {
                         let out_data = dispatch_accelerate_artifact(artifact, in_f32, weight_f32)?;
 
                         // Write output to the output region.
-                        let (_out_name, out_rid) = output_bindings.first()
-                            .ok_or("no output binding")?;
-                        let out_buf = self.regions[*out_rid as usize].as_mut()
+                        let (_out_name, out_rid) =
+                            output_bindings.first().ok_or("no output binding")?;
+                        let out_buf = self.regions[*out_rid as usize]
+                            .as_mut()
                             .ok_or_else(|| format!("output region {} not allocated", out_rid))?;
                         let (out_ptr, out_capacity) = Self::resolve_buffer_mut_ptr(out_buf)?;
                         let out_len = (out_data.len() * 4).min(out_capacity as usize);
@@ -885,14 +979,98 @@ impl<'a> GraphInstance<'a> {
                         Ok(())
                     }
                     LaneAffinity::Gpu => {
-                        Err(format!("GPU lane not yet implemented for '{}'", artifact_id))
+                        // Metal dispatch: write input data to IOSurface-backed output slot.
+                        // Read input data first (before mutable borrow on activation_ring).
+                        let (_in_name, in_rid) = input_bindings
+                            .first()
+                            .ok_or("no input binding for GPU dispatch")?;
+                        let in_data = self.region_data(*in_rid)?;
+                        let in_ptr: *const f32 = in_data.as_ptr() as *const f32;
+                        let in_len: usize = in_data.len() / 4;
+                        // Resolve output region for the slot.
+                        let (_out_name, out_rid) = output_bindings
+                            .first()
+                            .ok_or("no output binding for GPU dispatch")?;
+                        let out_buf = self.regions[*out_rid as usize]
+                            .as_ref()
+                            .ok_or_else(|| format!("output region {} not allocated", out_rid))?;
+
+                        // Find which slot backs this output region.
+                        let out_slot = self
+                            .activation_ring
+                            .as_mut()
+                            .and_then(|ring| {
+                                ring.slots.iter_mut().find(|s| {
+                                    // Match slot to output region by checking if this IoSurface region
+                                    // references the slot's cv_buffer.
+                                    if let ResolvedBuffer::IoSurface { cv_buffer, .. } = out_buf {
+                                        s.cv_pixel_buffer == *cv_buffer
+                                    } else {
+                                        false
+                                    }
+                                })
+                            })
+                            .ok_or_else(|| {
+                                "GPU dispatch: output region not backed by activation ring slot"
+                                    .to_string()
+                            })?;
+
+                        // Ensure Metal texture exists for this slot.
+                        if out_slot.metal_texture.is_none() {
+                            // Create it inline (same as ensure_metal_texture logic).
+                            if out_slot.cv_pixel_buffer.is_null() {
+                                return Err("GPU dispatch: slot has no cv_buffer".into());
+                            }
+                            let tex = unsafe {
+                                tribunus_metal_texture_from_iosurface(
+                                    out_slot.cv_pixel_buffer,
+                                    std::ptr::null(),
+                                )
+                            };
+                            if tex.is_null() {
+                                return Err("GPU dispatch: metal texture creation failed".into());
+                            }
+                            out_slot.metal_texture = Some(MetalTextureView {
+                                texture_ptr: tex,
+                                contract: MetalIosurfaceBindingContract {
+                                    pixel_format: "R32Float".into(),
+                                    plane: 0,
+                                    tensor_dtype: "float32".into(),
+                                    access: "WriteOnly".into(),
+                                    synchronization_mode: "CommandBuffer".into(),
+                                },
+                                has_been_validated: false,
+                            });
+                        }
+
+                        // Mark slot as MetalWriting and increment borrow.
+                        out_slot.state = SlotState::MetalWriting;
+                        out_slot.metal_borrows += 1;
+                        out_slot.last_writer = Some("Metal".into());
+
+                        // Dispatch Metal blit copy.
+                        let tex_ptr = out_slot.metal_texture.as_ref().unwrap().texture_ptr;
+                        let rc =
+                            unsafe { tribunus_metal_dispatch_copy(tex_ptr, in_ptr, in_len as i32) };
+                        if rc != 0 {
+                            return Err(format!("Metal blit copy failed: {}", rc));
+                        }
+
+                        // Transition slot: MetalWriting → ReadyForAne (blit is synchronous, completes immediately).
+                        out_slot.metal_borrows = out_slot.metal_borrows.saturating_sub(1);
+                        out_slot.state = SlotState::ReadyForAne;
+
+                        Ok(())
                     }
                 };
                 let latency_us = start.elapsed().as_micros() as u64;
 
                 let lane_str = format!("{:?}", lane).to_lowercase();
                 let implementation = match lane {
-                    LaneAffinity::Cpu => self.registry.accelerate_artifacts.get(artifact_id)
+                    LaneAffinity::Cpu => self
+                        .registry
+                        .accelerate_artifacts
+                        .get(artifact_id)
                         .map(|a| format!("{:?}", a.implementation))
                         .unwrap_or_else(|| "Unknown".to_string()),
                     LaneAffinity::Ane => "CoreML".to_string(),
@@ -902,29 +1080,38 @@ impl<'a> GraphInstance<'a> {
                     LaneAffinity::Ane => Some(format!("{:?}", self.coreml_buffer_mode)),
                     _ => None,
                 };
-                let input_region_ids: Vec<u32> = input_bindings.iter().map(|(_, rid)| *rid).collect();
-                let output_region_ids: Vec<u32> = output_bindings.iter().map(|(_, rid)| *rid).collect();
+                let input_region_ids: Vec<u32> =
+                    input_bindings.iter().map(|(_, rid)| *rid).collect();
+                let output_region_ids: Vec<u32> =
+                    output_bindings.iter().map(|(_, rid)| *rid).collect();
                 // Extract activation ring metadata for ANE lane dispatches.
-                let (slot_id, slot_epoch, iosurface_id, allocation_reused) = if *lane == LaneAffinity::Ane {
-                    // Find which activation ring slot backs the first input region.
-                    let rid = output_region_ids.first().copied().unwrap_or(u32::MAX);
-                    let slot_info = self.activation_ring.as_ref().and_then(|ring|
-                        ring.slots.iter().find(|s| s.slot_id == rid % 3) // approximate match
-                    );
-                    match slot_info {
-                        Some(slot) => {
-                            let sid = Some(slot.slot_id);
-                            let ep = Some(slot.epoch);
-                            let iosid = if !slot.cv_pixel_buffer.is_null() {
-                                unsafe { Some(tribunus_cv_pixel_buffer_io_surface_id(slot.cv_pixel_buffer)) }
-                            } else { None };
-                            (sid, ep, iosid, None) // allocation_reused filled later
+                let (slot_id, slot_epoch, iosurface_id, allocation_reused) =
+                    if *lane == LaneAffinity::Ane {
+                        // Find which activation ring slot backs the first input region.
+                        let rid = output_region_ids.first().copied().unwrap_or(u32::MAX);
+                        let slot_info = self.activation_ring.as_ref().and_then(
+                            |ring| ring.slots.iter().find(|s| s.slot_id == rid % 3), // approximate match
+                        );
+                        match slot_info {
+                            Some(slot) => {
+                                let sid = Some(slot.slot_id);
+                                let ep = Some(slot.epoch);
+                                let iosid = if !slot.cv_pixel_buffer.is_null() {
+                                    unsafe {
+                                        Some(tribunus_cv_pixel_buffer_io_surface_id(
+                                            slot.cv_pixel_buffer,
+                                        ))
+                                    }
+                                } else {
+                                    None
+                                };
+                                (sid, ep, iosid, None) // allocation_reused filled later
+                            }
+                            None => (None, None, None, None),
                         }
-                        None => (None, None, None, None),
-                    }
-                } else {
-                    (None, None, None, None)
-                };
+                    } else {
+                        (None, None, None, None)
+                    };
                 let route_outcome = if dispatch_result.is_ok() {
                     "completed".to_string()
                 } else {
@@ -969,7 +1156,11 @@ impl<'a> GraphInstance<'a> {
 
     /// Initialize persistent regions for the specified region IDs.
     /// These are allocated once and reused across repeated `run()` calls.
-    pub fn init_persistent_regions(&mut self, region_ids: &[u32], buffer_mode: Option<CoreMlBufferMode>) -> Result<(), String> {
+    pub fn init_persistent_regions(
+        &mut self,
+        region_ids: &[u32],
+        buffer_mode: Option<CoreMlBufferMode>,
+    ) -> Result<(), String> {
         self.coreml_buffer_mode = buffer_mode.unwrap_or(CoreMlBufferMode::PersistentBufferBacked);
 
         // Initialize activation ring if PersistentIosurfaceBacked mode is requested
@@ -979,7 +1170,9 @@ impl<'a> GraphInstance<'a> {
             && self.activation_ring.is_none()
         {
             if let Some(&rid) = region_ids.iter().find(|&&rid| {
-                self.graph.regions.get(rid as usize)
+                self.graph
+                    .regions
+                    .get(rid as usize)
                     .map(|r| r.residency == Residency::CoreMlCompatible)
                     .unwrap_or(false)
             }) {
@@ -1002,7 +1195,8 @@ impl<'a> GraphInstance<'a> {
 
         for &rid in region_ids {
             // Skip regions already allocated persistently.
-            if self.persistent_regions
+            if self
+                .persistent_regions
                 .get(rid as usize)
                 .and_then(|r| r.as_ref())
                 .is_some()
@@ -1023,7 +1217,8 @@ impl<'a> GraphInstance<'a> {
     pub fn reset_request_regions(&mut self) -> Result<(), String> {
         for (i, buf) in self.regions.iter_mut().enumerate() {
             if let Some(b) = buf.take() {
-                let is_persistent = self.persistent_regions
+                let is_persistent = self
+                    .persistent_regions
                     .get(i)
                     .and_then(|r| r.as_ref())
                     .is_some();
@@ -1047,11 +1242,18 @@ impl<'a> GraphInstance<'a> {
     pub fn reset_graph_state(&mut self) {
         let n_nodes = self.graph.nodes.len();
         // Reset dependency counters.
-        self.deps_remaining = self.graph.nodes.iter()
+        self.deps_remaining = self
+            .graph
+            .nodes
+            .iter()
             .map(|n| n.dependency_ids().len() as u32)
             .collect();
         // Re-seed the ready queue with zero-dependency nodes.
-        self.ready = self.graph.nodes.iter().enumerate()
+        self.ready = self
+            .graph
+            .nodes
+            .iter()
+            .enumerate()
             .filter(|(_, n)| n.dependency_ids().is_empty())
             .map(|(pos, _)| pos)
             .collect();
@@ -1065,7 +1267,9 @@ impl<'a> GraphInstance<'a> {
     fn resolve_buffer_ptr(buf: &ResolvedBuffer) -> Result<(*mut u8, u32), String> {
         match buf {
             ResolvedBuffer::Arena { ptr, byte_length } => Ok((*ptr, *byte_length as u32)),
-            ResolvedBuffer::IoSurface { ptr, byte_length, .. } => Ok((*ptr, *byte_length as u32)),
+            ResolvedBuffer::IoSurface {
+                ptr, byte_length, ..
+            } => Ok((*ptr, *byte_length as u32)),
             ResolvedBuffer::WeightSlice { .. } => Err("cannot dispatch from weight slice".into()),
         }
     }
@@ -1073,7 +1277,9 @@ impl<'a> GraphInstance<'a> {
     fn resolve_buffer_mut_ptr(buf: &mut ResolvedBuffer) -> Result<(*mut u8, u32), String> {
         match buf {
             ResolvedBuffer::Arena { ptr, byte_length } => Ok((*ptr, *byte_length as u32)),
-            ResolvedBuffer::IoSurface { ptr, byte_length, .. } => Ok((*ptr, *byte_length as u32)),
+            ResolvedBuffer::IoSurface {
+                ptr, byte_length, ..
+            } => Ok((*ptr, *byte_length as u32)),
             ResolvedBuffer::WeightSlice { .. } => Err("cannot write to weight slice".into()),
         }
     }
@@ -1095,7 +1301,7 @@ impl<'a> GraphInstance<'a> {
                 Err(e) => {
                     // Check failure policy.
                     let policy = match &self.graph.nodes[*pos] {
-                    GraphNode::Dispatch { failure_policy, .. } => failure_policy.clone(),
+                        GraphNode::Dispatch { failure_policy, .. } => failure_policy.clone(),
                         _ => FailurePolicy::Fatal,
                     };
                     match policy {
@@ -1136,11 +1342,19 @@ impl<'a> GraphInstance<'a> {
             self.step()?;
         }
         // Verify all nodes completed.
-        let incomplete: Vec<usize> = self.completed.iter().enumerate()
-            .filter(|(_, &c)| !c).map(|(i, _)| i).collect();
+        let incomplete: Vec<usize> = self
+            .completed
+            .iter()
+            .enumerate()
+            .filter(|(_, &c)| !c)
+            .map(|(i, _)| i)
+            .collect();
         if !incomplete.is_empty() {
-            return Err(format!("graph incomplete: {} nodes never executed: {:?}",
-                               incomplete.len(), incomplete));
+            return Err(format!(
+                "graph incomplete: {} nodes never executed: {:?}",
+                incomplete.len(),
+                incomplete
+            ));
         }
         Ok(())
     }
@@ -1180,17 +1394,18 @@ impl Drop for GraphInstance<'_> {
 ///
 /// During the transition, the caller (executor::run_layer or a wrapper)
 /// evaluates this graph in place of the MLX MLP + `if ane_runtime` check.
-pub fn build_mlp_graph(
-    artifact_entry: &CoreMlArtifactEntry,
-    shape_key: &str,
-) -> ComputeGraph {
-    let hidden_size = artifact_entry.input_shapes.first()
+pub fn build_mlp_graph(artifact_entry: &CoreMlArtifactEntry, shape_key: &str) -> ComputeGraph {
+    let hidden_size = artifact_entry
+        .input_shapes
+        .first()
         .and_then(|s| s.get(1))
         .copied()
         .unwrap_or(4096);
     let n_tokens = 1; // decode shape
 
-    let dtype = artifact_entry.input_dtypes.first()
+    let dtype = artifact_entry
+        .input_dtypes
+        .first()
         .map(|s| s.as_str())
         .unwrap_or("f16");
     let element_bytes: u64 = match dtype {
@@ -1205,26 +1420,30 @@ pub fn build_mlp_graph(
         graph_id: format!("mlp:{}:{}", artifact_entry.segment_id, shape_key),
         graph_version: "0.1.0".to_string(),
         shape_key: shape_key.to_string(),
-        nodes: vec![
-            GraphNode::Dispatch {
-                node_id: 0,
-                artifact_id: artifact_entry.segment_id.clone(),
-                artifact_hash: artifact_entry.artifact_hash.clone(),
-                input_bindings: vec![(
-                    artifact_entry.input_feature_names.first()
-                        .cloned().unwrap_or_else(|| "x".into()),
-                    0,
-                )],
-                output_bindings: vec![(
-                    artifact_entry.output_feature_names.first()
-                        .cloned().unwrap_or_else(|| "out".into()),
-                    1,
-                )],
-                dependency_ids: vec![],
-                lane: LaneAffinity::Ane,
-                failure_policy: FailurePolicy::Degrade,
-            },
-        ],
+        nodes: vec![GraphNode::Dispatch {
+            node_id: 0,
+            artifact_id: artifact_entry.segment_id.clone(),
+            artifact_hash: artifact_entry.artifact_hash.clone(),
+            input_bindings: vec![(
+                artifact_entry
+                    .input_feature_names
+                    .first()
+                    .cloned()
+                    .unwrap_or_else(|| "x".into()),
+                0,
+            )],
+            output_bindings: vec![(
+                artifact_entry
+                    .output_feature_names
+                    .first()
+                    .cloned()
+                    .unwrap_or_else(|| "out".into()),
+                1,
+            )],
+            dependency_ids: vec![],
+            lane: LaneAffinity::Ane,
+            failure_policy: FailurePolicy::Degrade,
+        }],
         regions: vec![
             BufferRegion {
                 region_id: 0,
@@ -1297,7 +1516,9 @@ mod tests {
         assert_eq!(g.entry_node_ids, vec![0]);
         assert_eq!(g.output_node_ids, vec![1]);
         match &g.nodes[0] {
-            GraphNode::Dispatch { artifact_id, lane, .. } => {
+            GraphNode::Dispatch {
+                artifact_id, lane, ..
+            } => {
                 assert_eq!(artifact_id, "layer_0_mlp");
                 assert_eq!(*lane, LaneAffinity::Ane);
             }
@@ -1314,18 +1535,24 @@ mod tests {
             shape_key: "test".into(),
             nodes: vec![
                 GraphNode::Dispatch {
-                    node_id: 0, artifact_id: "a".into(),
+                    node_id: 0,
+                    artifact_id: "a".into(),
                     artifact_hash: "hash-a".into(),
-                    input_bindings: vec![], output_bindings: vec![],
+                    input_bindings: vec![],
+                    output_bindings: vec![],
                     dependency_ids: vec![],
-                    lane: LaneAffinity::Ane, failure_policy: FailurePolicy::Degrade,
+                    lane: LaneAffinity::Ane,
+                    failure_policy: FailurePolicy::Degrade,
                 },
                 GraphNode::Dispatch {
-                    node_id: 1, artifact_id: "b".into(),
+                    node_id: 1,
+                    artifact_id: "b".into(),
                     artifact_hash: "hash-b".into(),
-                    input_bindings: vec![], output_bindings: vec![],
+                    input_bindings: vec![],
+                    output_bindings: vec![],
                     dependency_ids: vec![0],
-                    lane: LaneAffinity::Ane, failure_policy: FailurePolicy::Degrade,
+                    lane: LaneAffinity::Ane,
+                    failure_policy: FailurePolicy::Degrade,
                 },
             ],
             regions: vec![],

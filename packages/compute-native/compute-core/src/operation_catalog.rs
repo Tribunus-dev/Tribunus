@@ -512,6 +512,7 @@ mod tests {
                     pre_ffw_layernorm_tensor_id: None,
                     post_ffw_layernorm_tensor_id: None,
                     layer_scalar_ids: Vec::new(),
+                    rmsnorm_route: None,
                     quantization_ids: Vec::new(),
                 },
                 // Layer 1: full attention
@@ -545,6 +546,7 @@ mod tests {
                     pre_ffw_layernorm_tensor_id: None,
                     post_ffw_layernorm_tensor_id: None,
                     layer_scalar_ids: Vec::new(),
+                    rmsnorm_route: None,
                     quantization_ids: Vec::new(),
                 },
             ],

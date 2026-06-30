@@ -81,12 +81,13 @@ impl ReadinessTransitions {
     /// Create a new transition record, validating the state change.
     ///
     /// Returns `Err` if `from → to` is not a legal transition.
-    pub fn new(from: WorkerReadiness, to: WorkerReadiness, timestamp_secs: u64) -> Result<Self, String> {
+    pub fn new(
+        from: WorkerReadiness,
+        to: WorkerReadiness,
+        timestamp_secs: u64,
+    ) -> Result<Self, String> {
         if !from.can_transition_to(&to) {
-            return Err(format!(
-                "Illegal readiness transition: {} → {}",
-                from, to
-            ));
+            return Err(format!("Illegal readiness transition: {} → {}", from, to));
         }
         Ok(Self {
             from,

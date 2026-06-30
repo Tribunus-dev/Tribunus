@@ -46,28 +46,13 @@ extern "C" {
     // ── vDSP ─────────────────────────────────────────────────────────────
 
     /// Vector square: C[i] = A[i]^2
-    pub fn vDSP_vsq(
-        a: *const f32,
-        ia: isize,
-        c: *mut f32,
-        ic: isize,
-        n: usize,
-    );
+    pub fn vDSP_vsq(a: *const f32, ia: isize, c: *mut f32, ic: isize, n: usize);
 
     /// Vector sum: *C = sum(A[i])
-    pub fn vDSP_sve(
-        a: *const f32,
-        ia: isize,
-        c: *mut f32,
-        n: usize,
-    );
+    pub fn vDSP_sve(a: *const f32, ia: isize, c: *mut f32, n: usize);
 
     /// Vector square root: A[i] = sqrt(B[i])
-    pub fn vvsqrt(
-        a: *mut f32,
-        b: *const f32,
-        n: *const i32,
-    );
+    pub fn vvsqrt(a: *mut f32, b: *const f32, n: *const i32);
 
     /// Vector divide: C[i] = B[i] / A[i]
     pub fn vDSP_vdiv(
@@ -103,33 +88,17 @@ extern "C" {
     );
 
     /// Vector scalar multiply: C[i] = A[i] * B
-    pub fn vDSP_vsmul(
-        a: *const f32,
-        ia: isize,
-        b: *const f32,
-        c: *mut f32,
-        ic: isize,
-        n: usize,
-    );
+    pub fn vDSP_vsmul(a: *const f32, ia: isize, b: *const f32, c: *mut f32, ic: isize, n: usize);
 
     /// Vector exponential: A[i] = exp(B[i])
-    pub fn vvexp(
-        a: *mut f32,
-        b: *const f32,
-        n: *const i32,
-    );
+    pub fn vvexp(a: *mut f32, b: *const f32, n: *const i32);
 
     /// Create an FFT setup object (opaque).
     /// Log2n: log2 of max FFT length; Radix: 0=kFFTRadix2, 1=kFFTRadix3, 2=kFFTRadix5.
-    pub fn vDSP_create_fftsetup(
-        log2n: usize,
-        radix: u32,
-    ) -> *mut c_void;
+    pub fn vDSP_create_fftsetup(log2n: usize, radix: u32) -> *mut c_void;
 
     /// Destroy an FFT setup object.
-    pub fn vDSP_destroy_fftsetup(
-        setup: *mut c_void,
-    );
+    pub fn vDSP_destroy_fftsetup(setup: *mut c_void);
 }
 
 // BLAS constants

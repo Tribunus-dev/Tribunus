@@ -15,9 +15,9 @@
 //!     .build();
 //! ```
 
+use crate::compiler::ane::weight::WeightReference;
 use coreml_proto::proto::mil_spec::{self, argument, dimension, tensor_value, value};
 use std::collections::HashMap;
-use crate::compiler::ane::weight::WeightReference;
 
 /// Error returned by [`MilBuilder::build`] when SSA validation fails.
 #[derive(Debug, Clone)]
@@ -282,15 +282,15 @@ impl MilBuilder {
             "f32" => F32_BYTES,
             "f16" => F16_BYTES,
             other => {
-                panic!("const_weight_ref '{}': unsupported dtype '{}'", weight.tensor_name, other)
+                panic!(
+                    "const_weight_ref '{}': unsupported dtype '{}'",
+                    weight.tensor_name, other
+                )
             }
         };
 
         if weight.shape.is_empty() {
-            panic!(
-                "const_weight_ref '{}': empty shape",
-                weight.tensor_name
-            );
+            panic!("const_weight_ref '{}': empty shape", weight.tensor_name);
         }
 
         let shape_prod: u64 = weight.shape.iter().map(|&d| d as u64).product();
@@ -302,12 +302,7 @@ impl MilBuilder {
             );
         }
 
-        if weight.sha256.len() != 64
-            || weight
-                .sha256
-                .chars()
-                .any(|c| !c.is_ascii_hexdigit())
-        {
+        if weight.sha256.len() != 64 || weight.sha256.chars().any(|c| !c.is_ascii_hexdigit()) {
             panic!(
                 "const_weight_ref '{}': invalid sha256 hex '{}'",
                 weight.tensor_name, weight.sha256
@@ -339,13 +334,7 @@ impl MilBuilder {
         attrs.insert("name".to_string(), string_attr(&name));
         attrs.insert("val".to_string(), v);
 
-        let op = make_operation(
-            "const",
-            &name,
-            HashMap::new(),
-            &[(&name, &vt)],
-            attrs,
-        );
+        let op = make_operation("const", &name, HashMap::new(), &[(&name, &vt)], attrs);
 
         self.value_types.insert(name.clone(), vt);
         self.ops.push(op);

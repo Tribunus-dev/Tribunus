@@ -6,10 +6,10 @@
 //! Per-generation state lives in ProfiledInferenceSession (owns KV caches,
 //! cancellation flag, token buffer, and timeline).
 
-use crate::compute_image::{CompiledImageReader, CopyClassification, TensorEntry};
-use crate::engine_error::{EngineError, EngineErrorCode};
 use crate::ane_live::AneLiveRuntime;
 use crate::compute_graph::{self, ArtifactRegistry, ComputeGraph};
+use crate::compute_image::{CompiledImageReader, CopyClassification, TensorEntry};
+use crate::engine_error::{EngineError, EngineErrorCode};
 use crate::kv_cache::KvCache;
 use crate::mapped_image::MappedImage;
 use crate::placement_profile::ExecutionPlacementProfile;
@@ -521,9 +521,7 @@ impl LoadedProfiledModel {
             if artifacts.is_empty() {
                 None
             } else {
-                let mut rt = AneLiveRuntime::with_image_hash(
-                    reader.manifest.image_hash.clone(),
-                );
+                let mut rt = AneLiveRuntime::with_image_hash(reader.manifest.image_hash.clone());
                 for artifact in artifacts {
                     if let Err(e) = rt.load_artifact(artifact) {
                         eprintln!(
@@ -540,11 +538,19 @@ impl LoadedProfiledModel {
         let mut artifact_registry = ArtifactRegistry::new();
         // Load Accelerate CPU artifacts from manifest.
         for accel in &reader.manifest.accelerate_artifacts {
-            if artifact_registry.accelerate_artifacts.contains_key(&accel.artifact_id) {
-                eprintln!("[graph] duplicate Accelerate artifact '{}' — skipping", accel.artifact_id);
+            if artifact_registry
+                .accelerate_artifacts
+                .contains_key(&accel.artifact_id)
+            {
+                eprintln!(
+                    "[graph] duplicate Accelerate artifact '{}' — skipping",
+                    accel.artifact_id
+                );
                 continue;
             }
-            artifact_registry.accelerate_artifacts.insert(accel.artifact_id.clone(), accel.clone());
+            artifact_registry
+                .accelerate_artifacts
+                .insert(accel.artifact_id.clone(), accel.clone());
         }
 
         let mut compute_graphs = HashMap::new();
@@ -565,27 +571,39 @@ impl LoadedProfiledModel {
                         artifact_id: ref aid,
                         artifact_hash: ref ahash,
                         ..
-                    } = node {
+                    } = node
+                    {
                         let coreml_ok = ahash == &artifact.artifact_hash;
-                        let cpu_ok = artifact_registry.accelerate_artifacts.get(aid)
-                                .map(|a| &a.artifact_hash == ahash)
-                                .unwrap_or(false);
+                        let cpu_ok = artifact_registry
+                            .accelerate_artifacts
+                            .get(aid)
+                            .map(|a| &a.artifact_hash == ahash)
+                            .unwrap_or(false);
                         coreml_ok || cpu_ok
                     } else {
                         true
                     }
                 });
                 if !all_hashes_match {
-                    eprintln!("[graph] HASH MISMATCH for '{}' — rejecting graph", artifact.segment_id);
+                    eprintln!(
+                        "[graph] HASH MISMATCH for '{}' — rejecting graph",
+                        artifact.segment_id
+                    );
                 } else {
                     compute_graphs.insert(artifact.segment_id.clone(), graph.clone());
                     eprintln!(
                         "[graph] deserialized '{}' (graph_id={}, {} nodes, {} regions)",
-                        artifact.segment_id, graph.graph_id, graph.nodes.len(), graph.regions.len()
+                        artifact.segment_id,
+                        graph.graph_id,
+                        graph.nodes.len(),
+                        graph.regions.len()
                     );
                 }
             } else {
-                eprintln!("[graph] no compiler-emitted graph for '{}'", artifact.segment_id);
+                eprintln!(
+                    "[graph] no compiler-emitted graph for '{}'",
+                    artifact.segment_id
+                );
             }
         }
         let artifact_registry = Arc::new(artifact_registry);
@@ -734,7 +752,9 @@ impl ProfiledInferenceSession {
                 &hidden,
                 layer_plan,
                 model.ane_runtime.as_ref(),
-                model.compute_graphs.get(&format!("{}_mlp", layer_plan.segment_id))
+                model
+                    .compute_graphs
+                    .get(&format!("{}_mlp", layer_plan.segment_id))
                     .map(|g| (g, &*model.artifact_registry)),
                 &lw.input_layernorm,
                 &lw.post_attention_layernorm,
@@ -959,7 +979,9 @@ impl ProfiledInferenceSession {
                 &hidden,
                 layer_plan,
                 model.ane_runtime.as_ref(),
-                model.compute_graphs.get(&format!("{}_mlp", layer_plan.segment_id))
+                model
+                    .compute_graphs
+                    .get(&format!("{}_mlp", layer_plan.segment_id))
                     .map(|g| (g, &*model.artifact_registry)),
                 &lw.input_layernorm,
                 &lw.post_attention_layernorm,

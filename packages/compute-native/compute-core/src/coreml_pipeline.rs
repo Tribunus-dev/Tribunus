@@ -8,13 +8,15 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use crate::accelerate_artifacts::{
+    build_residual_add_artifact, build_rmsnorm_artifact, CpuImplementation,
+};
+use crate::compiler::ane::build::AneSubgraphBuild;
+use crate::compute_graph::{self, build_mlp_graph};
+use crate::compute_image::{CoreMlArtifactEntry, CoreMlArtifactReceipt, CoreMlProvenance};
+use crate::coreml_weight_writer::write_external_weights;
 use crate::mil_builder::MilBuilder;
 use crate::mlpackage::{self, ModelMeta};
-use crate::coreml_weight_writer::write_external_weights;
-use crate::compute_graph::{self, build_mlp_graph};
-use crate::accelerate_artifacts::{build_rmsnorm_artifact, build_residual_add_artifact, CpuImplementation};
-use crate::compiler::ane::build::AneSubgraphBuild;
-use crate::compute_image::{CoreMlArtifactEntry, CoreMlArtifactReceipt, CoreMlProvenance};
 use crate::toolchain_attest::ToolchainAttestation;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -298,10 +300,8 @@ pub fn compile_ane_subgraph(
         input_features = vec![(input_name.clone(), build.shape_contract.clone())];
     }
 
-    let mut output_features: Vec<(String, Vec<i64>)> = vec![(
-        output_name.clone(),
-        output_shape.clone(),
-    )];
+    let mut output_features: Vec<(String, Vec<i64>)> =
+        vec![(output_name.clone(), output_shape.clone())];
 
     let meta = ModelMeta {
         model_name: build.segment_id.clone(),
@@ -316,7 +316,11 @@ pub fn compile_ane_subgraph(
 
     // ── 3. Write external weight files into the package ──────────────
     let pkg_weights_dir = pkg_path.join("Data/com.apple.CoreML");
-    write_external_weights(&pkg_weights_dir, &build.weight_references, &*build.weight_provider)?;
+    write_external_weights(
+        &pkg_weights_dir,
+        &build.weight_references,
+        &*build.weight_provider,
+    )?;
 
     // ── 4. Compile via coremlcompiler ────────────────────────────────
     let receipt = compile_mlpackage(
@@ -360,7 +364,10 @@ pub fn compile_ane_subgraph(
             image_hash: receipt.model_hash.clone(),
         },
         validation_receipt: CoreMlArtifactReceipt {
-            compiled: true, loaded: false, warmup_passed: false, numerical_parity: None,
+            compiled: true,
+            loaded: false,
+            warmup_passed: false,
+            numerical_parity: None,
         },
         graph: None,
     };
@@ -412,10 +419,13 @@ pub fn compile_ane_subgraph(
 pub fn emit_layer_mlp_graph(
     mlp_entry: &CoreMlArtifactEntry,
     hidden_size: i64,
-) -> (Vec<crate::accelerate_artifacts::AccelerateArtifact>, crate::compute_graph::ComputeGraph) {
+) -> (
+    Vec<crate::accelerate_artifacts::AccelerateArtifact>,
+    crate::compute_graph::ComputeGraph,
+) {
     use crate::accelerate_artifacts::AccelerateArtifact;
     use crate::compute_graph::{
-        BufferRegion, GraphNode, LaneAffinity, FailurePolicy, Residency, Ownership,
+        BufferRegion, FailurePolicy, GraphNode, LaneAffinity, Ownership, Residency,
     };
 
     // Build RMSNorm artifact with content hash.
@@ -477,9 +487,21 @@ pub fn emit_layer_mlp_graph(
                 artifact_id: mlp_entry.segment_id.clone(),
                 artifact_hash: mlp_entry.artifact_hash.clone(),
                 input_bindings: vec![(
-                    mlp_entry.input_feature_names.first().cloned().unwrap_or_else(|| "x".into()), 2)],
+                    mlp_entry
+                        .input_feature_names
+                        .first()
+                        .cloned()
+                        .unwrap_or_else(|| "x".into()),
+                    2,
+                )],
                 output_bindings: vec![(
-                    mlp_entry.output_feature_names.first().cloned().unwrap_or_else(|| "out".into()), 3)],
+                    mlp_entry
+                        .output_feature_names
+                        .first()
+                        .cloned()
+                        .unwrap_or_else(|| "out".into()),
+                    3,
+                )],
                 dependency_ids: vec![0],
                 lane: LaneAffinity::Ane,
                 failure_policy: FailurePolicy::Degrade,

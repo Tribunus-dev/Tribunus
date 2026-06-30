@@ -14,9 +14,9 @@ use crate::engine_error::{EngineError, EngineErrorCode};
 use crate::engine_policy::{DeadlineGuard, ExecutionPolicy};
 use crate::streaming::{generation_channel, GenerationEvent, GenerationHandle, GenerationSender};
 use crate::worker_protocol::{
-    Frame, HeartbeatPayload, HostCommand, MessageKind, PolicySnapshotPayload, ProtocolValidator,
-    AnePreparedPayload, ResearchTraceBatchPayload, StartGenerationPayload, TokenPayload, WorkerEvent,
-    MAX_FRAME_SIZE_BYTES,
+    AnePreparedPayload, Frame, HeartbeatPayload, HostCommand, MessageKind, PolicySnapshotPayload,
+    ProtocolValidator, ResearchTraceBatchPayload, StartGenerationPayload, TokenPayload,
+    WorkerEvent, MAX_FRAME_SIZE_BYTES,
 };
 use crate::worker_readiness::WorkerReadiness;
 use parking_lot::Mutex;
@@ -1410,9 +1410,8 @@ impl WorkerSupervisor {
                                 }
                             };
                             if let Err(e) = runtime.set_readiness(next_state) {
-                                diagnostics.append_line(&format!(
-                                    "readiness transition failed: {e}"
-                                ));
+                                diagnostics
+                                    .append_line(&format!("readiness transition failed: {e}"));
                             } else {
                                 diagnostics.append_line(&format!(
                                     "ANE prepared: readiness={}, warmup_latencies={:?}",
@@ -1421,7 +1420,6 @@ impl WorkerSupervisor {
                             }
                         }
                     }
-
                 },
 
                 _ => {

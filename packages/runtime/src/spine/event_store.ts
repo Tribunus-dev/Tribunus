@@ -41,8 +41,9 @@ export class EventStore {
     `);
     
     const result = await this.db.query('SELECT MAX(sequence_number) as max_seq FROM events;');
-    if (result.rows.length > 0 && result.rows[0].max_seq !== null) {
-      this.currentSequence = Number(result.rows[0].max_seq);
+    const row = result.rows[0] as { max_seq: number | null } | undefined;
+    if (result.rows.length > 0 && row?.max_seq !== null && row?.max_seq !== undefined) {
+      this.currentSequence = Number(row.max_seq);
     }
   }
 
