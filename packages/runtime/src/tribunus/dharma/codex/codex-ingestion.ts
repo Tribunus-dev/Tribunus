@@ -24,6 +24,7 @@ import type {
 } from "./codex-types"
 import { createCodexEntry } from "./codex-types"
 import { corroborateEntry, type CorroborationChange } from "./codex-corroboration"
+import { ensurePatternClaims } from "./codex-pattern-filter"
 
 // ── Ingestion Result ─────────────────────────────────────────────────────────
 
@@ -208,7 +209,7 @@ export function extractClaims(
     }
   }
 
-  return claims
+  return ensurePatternClaims(claims)
 }
 
 // ── Create Candidate ─────────────────────────────────────────────────────────
