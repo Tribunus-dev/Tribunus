@@ -5,12 +5,14 @@
 //! segments, mapped storage, or test fixtures. The caller is responsible for
 //! calling `eval()` on the result before dropping the weight leases.
 
+use crate::ane_live::AneLiveRuntime;
+use crate::compute_graph::{ArtifactRegistry, ComputeGraph, GraphInstance};
 use crate::config::{EpiloguePlan, LayerPlan, ProloguePlan};
+use crate::config::{RmsNormRouteKind, RmsNormSite};
 use crate::kv_cache::KvCache;
 use crate::primitives;
-use crate::ane_live::AneLiveRuntime;
-use crate::compute_graph::{ComputeGraph, GraphInstance, ArtifactRegistry};
 use crate::projection_identity::{dtype_to_storage, ProjectionContext, ProjectionFamily};
+use crate::rmsnorm_artifact_dispatch;
 use crate::session::SamplerConfig;
 use mlx_rs::error::Result as MlxResult;
 use mlx_rs::ops;
@@ -127,7 +129,44 @@ pub fn run_layer(
 
     // --- Attention norm ---
     let residual = hidden;
-    let normed = primitives::rms_norm(hidden, attn_norm, rms_norm_eps)?;
+    // Prefer Accelerate artifact dispatch when configured.
+    let n_tokens = _n_tokens;
+    let normed = if let Some(rmsnorm_route) = &plan.rmsnorm_route {
+        if let RmsNormRouteKind::AccelerateComputeImageArtifact { .. } =
+            &rmsnorm_route.primary_route
+        {
+            if rmsnorm_route.norm_site == RmsNormSite::PreAttention {
+                let hidden_size = plan.hidden_size as usize;
+                let activation = hidden.as_slice::<f32>();
+                let gamma = attn_norm.as_slice::<f32>();
+                let (result, _receipt) = rmsnorm_artifact_dispatch::execute_rmsnorm_artifact(
+                    &rmsnorm_artifact_dispatch::RmsNormDispatchContext {
+                        layer_index: plan.layer_index,
+                        norm_site: RmsNormSite::PreAttention,
+                        strict_accelerate: true,
+                    },
+                    rmsnorm_route,
+                    activation,
+                    gamma,
+                    plan.hidden_size,
+                    rms_norm_eps,
+                )
+                .map_err(|e| {
+                    mlx_rs::error::Exception::custom(format!(
+                        "[rmsnorm-artifact] layer {}: {}",
+                        plan.layer_index, e
+                    ))
+                })?;
+                Array::from_slice(&result, &[n_tokens, hidden_size as i32])
+            } else {
+                primitives::rms_norm(hidden, attn_norm, rms_norm_eps)?
+            }
+        } else {
+            primitives::rms_norm(hidden, attn_norm, rms_norm_eps)?
+        }
+    } else {
+        primitives::rms_norm(hidden, attn_norm, rms_norm_eps)?
+    };
 
     // --- Attention ---
     let attn_out = match plan.attention_kind.as_str() {
@@ -244,10 +283,7 @@ pub fn run_layer(
         // Read normed data.
         let normed_bytes = normed.as_slice::<f32>();
         let normed_bytes_u8 = unsafe {
-            std::slice::from_raw_parts(
-                normed_bytes.as_ptr() as *const u8,
-                normed_bytes.len() * 4,
-            )
+            std::slice::from_raw_parts(normed_bytes.as_ptr() as *const u8, normed_bytes.len() * 4)
         };
 
         // Allocate input region (region 0) with normed data.
@@ -255,20 +291,23 @@ pub fn run_layer(
             eprintln!("[graph] allocate input failed: {} — falling back to MLX", e);
             mlx_mlp()?
         } else if let Err(e) = inst.allocate_region(1, None) {
-            eprintln!("[graph] allocate output failed: {} — falling back to MLX", e);
+            eprintln!(
+                "[graph] allocate output failed: {} — falling back to MLX",
+                e
+            );
             mlx_mlp()?
         } else if let Err(e) = inst.run() {
-            eprintln!("[graph] evaluate failed for '{}': {} — falling back to MLX", mlp_seg, e);
+            eprintln!(
+                "[graph] evaluate failed for '{}': {} — falling back to MLX",
+                mlp_seg, e
+            );
             mlx_mlp()?
         } else {
             // Read output from region 1.
             match inst.region_data(1) {
                 Ok(data) => {
                     let out_f32 = unsafe {
-                        std::slice::from_raw_parts(
-                            data.as_ptr() as *const f32,
-                            data.len() / 4,
-                        )
+                        std::slice::from_raw_parts(data.as_ptr() as *const f32, data.len() / 4)
                     };
                     Array::from_slice(out_f32, &[n_tokens, hidden_size])
                 }
@@ -284,7 +323,10 @@ pub fn run_layer(
             Ok(Some(arr)) => arr,
             Ok(None) => mlx_mlp()?,
             Err(e) => {
-                eprintln!("[ane] dispatch '{}' failed: {} — falling back to MLX", mlp_seg, e);
+                eprintln!(
+                    "[ane] dispatch '{}' failed: {} — falling back to MLX",
+                    mlp_seg, e
+                );
                 mlx_mlp()?
             }
         }

@@ -1,0 +1,4 @@
+diff a/packages/compute-native/src/lib.rs b/packages/compute-native/src/lib.rs	(rejected hunks)
+@@ -1 +1,2 @@
+ pub mod golden_path;
++pub mod tensix;

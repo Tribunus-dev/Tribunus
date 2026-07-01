@@ -1,4 +1,5 @@
-import { EventStore, SpineEvent } from './event_store';
+import { EventStore } from './event_store';
+import type { SpineEvent } from './event_store';
 import { HealthProjector } from './projector';
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';

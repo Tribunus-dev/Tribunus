@@ -1,4 +1,8 @@
+import yargs from "yargs"
+import { hideBin } from "yargs/helpers"
 import { loadConfig, generateDefaultConfig } from "./server/config"
+
+const cli = yargs(hideBin(process.argv))
   .scriptName("tribunus")
   .command("init", "Initialize tribunus.jsonc configuration", {}, async () => {
     generateDefaultConfig()

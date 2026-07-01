@@ -42,7 +42,10 @@ pub struct RuntimeOrchestrationRecord {
 
 #[async_trait]
 pub trait CoordinationFabric {
-    async fn admit(&mut self, work_item: RuntimeWorkItem) -> crate::Result<RuntimeOrchestrationRecord>;
+    async fn admit(
+        &mut self,
+        work_item: RuntimeWorkItem,
+    ) -> crate::Result<RuntimeOrchestrationRecord>;
     async fn claim(&mut self, work_id: &str) -> crate::Result<RuntimeOrchestrationRecord>;
     async fn heartbeat(&mut self, work_id: &str) -> crate::Result<()>;
     async fn ack(&mut self, work_id: &str) -> crate::Result<()>;
@@ -98,7 +101,10 @@ impl InMemoryCoordinationFabric {
 
 #[async_trait]
 impl CoordinationFabric for InMemoryCoordinationFabric {
-    async fn admit(&mut self, work_item: RuntimeWorkItem) -> crate::Result<RuntimeOrchestrationRecord> {
+    async fn admit(
+        &mut self,
+        work_item: RuntimeWorkItem,
+    ) -> crate::Result<RuntimeOrchestrationRecord> {
         work_item.receipt_before_ack_guard()?;
         let phase_scope = Self::open_phase_scope(&work_item);
         phase_scope.authority_guard()?;
@@ -108,7 +114,8 @@ impl CoordinationFabric for InMemoryCoordinationFabric {
             state: CoordinationState::Admitted,
             receipt: None,
         };
-        self.records.insert(work_item.work_id.clone(), record.clone());
+        self.records
+            .insert(work_item.work_id.clone(), record.clone());
         Ok(record)
     }
 
@@ -118,7 +125,9 @@ impl CoordinationFabric for InMemoryCoordinationFabric {
             .get_mut(work_id)
             .ok_or_else(|| crate::Error::from_reason("work item not admitted"))?;
         if matches!(record.state, CoordinationState::DeadLetter) {
-            return Err(crate::Error::from_reason("dead-lettered work cannot be claimed"));
+            return Err(crate::Error::from_reason(
+                "dead-lettered work cannot be claimed",
+            ));
         }
         record.state = CoordinationState::Claimed;
         Ok(record.clone())
@@ -155,7 +164,10 @@ impl CoordinationFabric for InMemoryCoordinationFabric {
             .iter()
             .filter(|(work_id, record)| {
                 !self.heartbeats.contains(work_id.as_str())
-                    && !matches!(record.state, CoordinationState::Acked | CoordinationState::DeadLetter)
+                    && !matches!(
+                        record.state,
+                        CoordinationState::Acked | CoordinationState::DeadLetter
+                    )
             })
             .map(|(work_id, _)| work_id.clone())
             .collect()
@@ -172,12 +184,18 @@ impl CoordinationFabric for InMemoryCoordinationFabric {
 }
 
 impl InMemoryCoordinationFabric {
-    pub async fn execute_backend(&mut self, work_id: &str) -> crate::Result<RuntimeOrchestrationRecord> {
+    pub async fn execute_backend(
+        &mut self,
+        work_id: &str,
+    ) -> crate::Result<RuntimeOrchestrationRecord> {
         let record = self
             .records
             .get_mut(work_id)
             .ok_or_else(|| crate::Error::from_reason("work item not admitted"))?;
-        if !matches!(record.state, CoordinationState::Claimed | CoordinationState::PhaseOpened) {
+        if !matches!(
+            record.state,
+            CoordinationState::Claimed | CoordinationState::PhaseOpened
+        ) {
             return Err(crate::Error::from_reason(
                 "backend execution requires a claimed or opened phase",
             ));
@@ -186,7 +204,10 @@ impl InMemoryCoordinationFabric {
         Ok(record.clone())
     }
 
-    pub async fn commit_receipt(&mut self, work_id: &str) -> crate::Result<RuntimeOrchestrationRecord> {
+    pub async fn commit_receipt(
+        &mut self,
+        work_id: &str,
+    ) -> crate::Result<RuntimeOrchestrationRecord> {
         let record = self
             .records
             .get_mut(work_id)
@@ -213,7 +234,10 @@ impl InMemoryCoordinationFabric {
         Ok(record.clone())
     }
 
-    pub async fn mark_ack_eligible(&mut self, work_id: &str) -> crate::Result<RuntimeOrchestrationRecord> {
+    pub async fn mark_ack_eligible(
+        &mut self,
+        work_id: &str,
+    ) -> crate::Result<RuntimeOrchestrationRecord> {
         let record = self
             .records
             .get_mut(work_id)
@@ -267,14 +291,23 @@ mod tests {
         assert!(matches!(opened.state, CoordinationState::PhaseOpened));
 
         let provisional = fabric.execute_backend("work_001").await.expect("backend");
-        assert!(matches!(provisional.state, CoordinationState::BackendProvisional));
+        assert!(matches!(
+            provisional.state,
+            CoordinationState::BackendProvisional
+        ));
 
         assert!(fabric.ack("work_001").await.is_err());
 
         let committed = fabric.commit_receipt("work_001").await.expect("commit");
-        assert!(matches!(committed.state, CoordinationState::ReceiptCommitted));
+        assert!(matches!(
+            committed.state,
+            CoordinationState::ReceiptCommitted
+        ));
 
-        let eligible = fabric.mark_ack_eligible("work_001").await.expect("eligible");
+        let eligible = fabric
+            .mark_ack_eligible("work_001")
+            .await
+            .expect("eligible");
         assert!(matches!(eligible.state, CoordinationState::AckEligible));
 
         fabric.ack("work_001").await.expect("ack");

@@ -1,0 +1,9 @@
+{
+  "name": "@tribunus/export-host",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@tribunus/runtime": "workspace:*"
+  }
+}

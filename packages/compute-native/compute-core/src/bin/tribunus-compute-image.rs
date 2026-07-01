@@ -632,7 +632,8 @@ fn cmd_infer(args: &[String]) -> Result<(), String> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 fn cmd_emit_v0(args: &[String]) -> Result<(), String> {
-    let output_dir = get_opt(args, "--output-dir").ok_or_else(|| "--output-dir is required".to_string())?;
+    let output_dir =
+        get_opt(args, "--output-dir").ok_or_else(|| "--output-dir is required".to_string())?;
     let allow_contract_only_kv = has_flag(args, "--allow-contract-only-kv");
 
     let out_path = Path::new(output_dir);
@@ -645,12 +646,14 @@ fn cmd_emit_v0(args: &[String]) -> Result<(), String> {
     let mut options = tribunus_compute_core::compute_image_v0::emitter::EmitterOptions::default();
     options.allow_contract_only_kv = allow_contract_only_kv;
 
-    let (image, md) = tribunus_compute_core::compute_image_v0::emitter::emit_v0_image(&adapter, options)?;
+    let (image, md) =
+        tribunus_compute_core::compute_image_v0::emitter::emit_v0_image(&adapter, options)?;
 
     let json_path = out_path.join("compute_image_v0.json");
     let md_path = out_path.join("compute_image_v0.md");
 
-    let json_str = serde_json::to_string_pretty(&image).map_err(|e| format!("json serialize: {}", e))?;
+    let json_str =
+        serde_json::to_string_pretty(&image).map_err(|e| format!("json serialize: {}", e))?;
     fs::write(&json_path, json_str).map_err(|e| format!("write json: {}", e))?;
     fs::write(&md_path, md).map_err(|e| format!("write md: {}", e))?;
 
@@ -667,7 +670,8 @@ fn cmd_verify_v0(args: &[String]) -> Result<(), String> {
     }
 
     let json_str = fs::read_to_string(&json_path).map_err(|e| format!("read json: {}", e))?;
-    let image: tribunus_compute_core::compute_image_v0::schema::ComputeImageV0 = serde_json::from_str(&json_str).map_err(|e| format!("parse json: {}", e))?;
+    let image: tribunus_compute_core::compute_image_v0::schema::ComputeImageV0 =
+        serde_json::from_str(&json_str).map_err(|e| format!("parse json: {}", e))?;
 
     let override_dirty = has_flag(args, "--override-dirty");
     let options = tribunus_compute_core::compute_image_v0::verifier::VerifierOptions {
@@ -679,8 +683,9 @@ fn cmd_verify_v0(args: &[String]) -> Result<(), String> {
             println!("ComputeImageV0 validation passed.");
             Ok(())
         }
-        Err(errors) => {
-            Err(format!("ComputeImageV0 verification failed:\n  - {}", errors.join("\n  - ")))
-        }
+        Err(errors) => Err(format!(
+            "ComputeImageV0 verification failed:\n  - {}",
+            errors.join("\n  - ")
+        )),
     }
 }

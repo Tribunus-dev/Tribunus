@@ -1,13 +1,19 @@
 #[cfg(not(all(target_os = "macos", target_arch = "aarch64")))]
-#[cfg(not(any(feature = "mlx-backend", feature = "stub-backend", feature = "storage-adapters")))]
-compile_error!("Compute authority requires Apple Silicon (macOS arm64) or a supported backend feature.");
+#[cfg(not(any(
+    feature = "mlx-backend",
+    feature = "stub-backend",
+    feature = "storage-adapters"
+)))]
+compile_error!(
+    "Compute authority requires Apple Silicon (macOS arm64) or a supported backend feature."
+);
 
 extern crate self as tribunus_compute_core;
 
 pub mod accelerate_artifacts;
-pub mod ane_live;
 pub mod analysis;
 pub mod ane_bridge;
+pub mod ane_live;
 pub mod arena;
 pub mod arena_info;
 pub mod arena_lifecycle;
@@ -21,9 +27,9 @@ pub mod compile_pipeline;
 pub mod compile_progress;
 pub mod compile_state;
 pub mod compiler;
+pub mod compute_graph;
 pub mod compute_image;
 pub mod compute_image_v0;
-pub mod compute_graph;
 pub mod compute_ir;
 pub mod compute_lane;
 pub mod compute_service;
@@ -33,8 +39,8 @@ pub mod copy_ledger;
 pub mod coreml_audit;
 pub mod coreml_bridge;
 pub mod coreml_pipeline;
-pub mod coreml_weight_writer;
 pub mod coreml_state;
+pub mod coreml_weight_writer;
 pub mod cpu_benchmarks;
 pub mod decode_attribution;
 pub mod engine;
@@ -83,9 +89,11 @@ pub mod research_contracts;
 pub mod research_metrics;
 pub mod research_trace;
 pub mod residency;
+pub mod rmsnorm_artifact_dispatch;
 pub mod runtime_contract;
 pub mod runtime_orchestration;
 pub mod runtime_trace;
+
 pub mod session;
 pub mod sidecar;
 
@@ -104,11 +112,11 @@ pub mod worker_protocol;
 pub mod worker_readiness;
 pub mod worker_supervisor;
 
+pub use crate::coreml_pipeline::compile_ane_subgraph;
 pub use crate::session::{
     ControlSessionState, GenerationControlSession, InferenceSession, InferenceSessionState,
     SamplerConfig,
 };
-pub use crate::coreml_pipeline::compile_ane_subgraph;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Status {
@@ -149,3 +157,4 @@ impl std::fmt::Display for Error {
 impl std::error::Error for Error {}
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub mod tensix_worker;

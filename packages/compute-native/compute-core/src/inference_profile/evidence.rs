@@ -66,6 +66,24 @@ pub struct PhaseMetrics {
     pub eval_calls: Option<u32>,
     /// Phase wall-time in milliseconds.
     pub wall_time_ms: Option<u64>,
+    /// Compilation time in milliseconds.
+    pub compile_time_ms: Option<u64>,
+    /// Upload time in milliseconds.
+    pub upload_time_ms: Option<u64>,
+    /// Dispatch latency in milliseconds.
+    pub dispatch_latency_ms: Option<u64>,
+    /// Reader time in milliseconds.
+    pub reader_time_ms: Option<u64>,
+    /// Compute time in milliseconds.
+    pub compute_time_ms: Option<u64>,
+    /// Writer time in milliseconds.
+    pub writer_time_ms: Option<u64>,
+    /// Estimated DRAM transfer bytes.
+    pub dram_transfer_bytes: Option<u64>,
+    /// Core utilization for multi-core artifacts (percentage 0.0 - 100.0).
+    pub core_utilization_percent: Option<f64>,
+    /// Indicates whether this run was cold or warm.
+    pub is_cold_run: Option<bool>,
 }
 
 // ── FailureClassification ─────────────────────────────────────────────────
@@ -130,6 +148,13 @@ pub struct EvidenceArtifactRef {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PhaseEvidenceReceipt {
     /// Unique receipt ID.
+    // TENSIX-PERFORMANCE-BUDGET-0001
+    pub artifact_identity: Option<String>,
+    pub capability_signature: Option<String>,
+    pub topology_hash: Option<String>,
+    pub shape_class: Option<String>,
+    pub data_format: Option<String>,
+    pub core_count: Option<u32>,
     pub receipt_id: ReceiptId,
     /// The phase this receipt covers.
     pub phase_id: PhaseId,
@@ -180,6 +205,12 @@ impl PhaseEvidenceReceipt {
     ) -> Self {
         let now = TimestampMs::now();
         Self {
+            artifact_identity: None,
+            capability_signature: None,
+            topology_hash: None,
+            shape_class: None,
+            data_format: None,
+            core_count: None,
             receipt_id: ReceiptId::new_random(),
             phase_id,
             phase_kind,
@@ -217,6 +248,12 @@ impl PhaseEvidenceReceipt {
     ) -> Self {
         let now = TimestampMs::now();
         Self {
+            artifact_identity: None,
+            capability_signature: None,
+            topology_hash: None,
+            shape_class: None,
+            data_format: None,
+            core_count: None,
             receipt_id: ReceiptId::new_random(),
             phase_id,
             phase_kind,
@@ -234,6 +271,145 @@ impl PhaseEvidenceReceipt {
             gate_results: vec![],
             failure: Some(failure),
             notes: Some(notes.into()),
+        }
+    }
+
+    pub fn check_performance_regression(
+        &self,
+        baseline: &PhaseEvidenceReceipt,
+    ) -> Result<(), Vec<String>> {
+        let mut warnings = Vec::new();
+
+        let mut check_latency = |name: &str, current: Option<u64>, base: Option<u64>| {
+            if let (Some(c), Some(b)) = (current, base) {
+                if b > 0 && c > b {
+                    let increase = (c - b) as f64 / b as f64;
+                    if increase > 0.20 {
+                        warnings.push(format!(
+                            "{} increased by {:.1}% (>20% threshold)",
+                            name,
+                            increase * 100.0
+                        ));
+                    }
+                }
+            }
+        };
+
+        check_latency(
+            "wall_time_ms",
+            self.metrics.wall_time_ms,
+            baseline.metrics.wall_time_ms,
+        );
+        check_latency(
+            "first_token_ns",
+            self.metrics.first_token_ns,
+            baseline.metrics.first_token_ns,
+        );
+        check_latency(
+            "p50_token_ns",
+            self.metrics.p50_token_ns,
+            baseline.metrics.p50_token_ns,
+        );
+        check_latency(
+            "p95_token_ns",
+            self.metrics.p95_token_ns,
+            baseline.metrics.p95_token_ns,
+        );
+        check_latency(
+            "p99_token_ns",
+            self.metrics.p99_token_ns,
+            baseline.metrics.p99_token_ns,
+        );
+
+        // Fine-grained checks
+        check_latency(
+            "compilation_time_ns",
+            self.metrics.compilation_time_ns,
+            baseline.metrics.compilation_time_ns,
+        );
+        check_latency(
+            "artifact_loading_ns",
+            self.metrics.artifact_loading_ns,
+            baseline.metrics.artifact_loading_ns,
+        );
+        check_latency(
+            "weight_upload_ns",
+            self.metrics.weight_upload_ns,
+            baseline.metrics.weight_upload_ns,
+        );
+        check_latency(
+            "first_dispatch_cold_ns",
+            self.metrics.first_dispatch_cold_ns,
+            baseline.metrics.first_dispatch_cold_ns,
+        );
+        check_latency(
+            "warm_dispatch_ns",
+            self.metrics.warm_dispatch_ns,
+            baseline.metrics.warm_dispatch_ns,
+        );
+        check_latency(
+            "kv_append_ns",
+            self.metrics.kv_append_ns,
+            baseline.metrics.kv_append_ns,
+        );
+        check_latency(
+            "rms_norm_ns",
+            self.metrics.rms_norm_ns,
+            baseline.metrics.rms_norm_ns,
+        );
+        check_latency("rope_ns", self.metrics.rope_ns, baseline.metrics.rope_ns);
+        check_latency(
+            "qkv_projection_per_core_ns",
+            self.metrics.qkv_projection_per_core_ns,
+            baseline.metrics.qkv_projection_per_core_ns,
+        );
+        check_latency(
+            "attention_ns",
+            self.metrics.attention_ns,
+            baseline.metrics.attention_ns,
+        );
+        check_latency(
+            "output_projection_ns",
+            self.metrics.output_projection_ns,
+            baseline.metrics.output_projection_ns,
+        );
+        check_latency(
+            "residual_add_ns",
+            self.metrics.residual_add_ns,
+            baseline.metrics.residual_add_ns,
+        );
+        check_latency(
+            "teardown_ns",
+            self.metrics.teardown_ns,
+            baseline.metrics.teardown_ns,
+        );
+
+        if self.failure == Some(FailureClassification::OomKilled)
+            && baseline.failure != Some(FailureClassification::OomKilled)
+        {
+            warnings.push("New allocation failure detected compared to baseline".to_string());
+        }
+
+        // Numerical error check
+        if let (Some(c), Some(b)) = (
+            self.metrics.max_numerical_error,
+            baseline.metrics.max_numerical_error,
+        ) {
+            if b > 0.0 && c > b {
+                let increase = (c - b) / b;
+                if increase > 0.10 {
+                    warnings.push(format!(
+                        "numerical error increased by {:.1}% (>10% threshold)",
+                        increase * 100.0
+                    ));
+                }
+            }
+        }
+
+        if warnings.is_empty() {
+            Ok(())
+        } else {
+            Err(warnings)
         }
     }
 }
@@ -284,6 +460,89 @@ pub fn status_reducer(receipts: &[PhaseEvidenceReceipt]) -> EvidenceStatus {
         .unwrap_or(EvidenceStatus::Unqualified);
 
     max_status
+}
+
+// ── Performance Regression Detection ──────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PerformanceRegressionWarning {
+    pub latency_increase_percent: f64,
+    pub numerical_error_increase_percent: Option<f64>,
+    pub new_allocation_failures: bool,
+    pub message: String,
+}
+
+impl PhaseEvidenceReceipt {
+    /// Compares this receipt (the new run) against a baseline receipt to detect regressions.
+    /// Returns a warning if material regressions are found.
+    pub fn check_performance_regression(
+        &self,
+        baseline: &PhaseEvidenceReceipt,
+    ) -> Result<(), PerformanceRegressionWarning> {
+        let mut warnings = Vec::new();
+        let mut lat_inc = 0.0;
+        let mut err_inc = None;
+        let mut alloc_fail = false;
+
+        // 1. Latency Regression (>20% increase)
+        if let (Some(new_ms), Some(base_ms)) =
+            (self.metrics.wall_time_ms, baseline.metrics.wall_time_ms)
+        {
+            if base_ms > 0 {
+                let increase = (new_ms.saturating_sub(base_ms)) as f64 / base_ms as f64 * 100.0;
+                if increase > 20.0 {
+                    warnings.push(format!(
+                        "Latency increased by {:.1}% ({}ms vs {}ms)",
+                        increase, new_ms, base_ms
+                    ));
+                    lat_inc = increase;
+                }
+            }
+        } else if let (Some(new_ns), Some(base_ns)) =
+            (self.metrics.p50_token_ns, baseline.metrics.p50_token_ns)
+        {
+            if base_ns > 0 {
+                let increase = (new_ns.saturating_sub(base_ns)) as f64 / base_ns as f64 * 100.0;
+                if increase > 20.0 {
+                    warnings.push(format!(
+                        "p50 latency increased by {:.1}% ({}ns vs {}ns)",
+                        increase, new_ns, base_ns
+                    ));
+                    lat_inc = increase;
+                }
+            }
+        }
+
+        // 2. New Allocation Failures
+        if self.failure == Some(FailureClassification::OomKilled)
+            && baseline.failure != Some(FailureClassification::OomKilled)
+        {
+            warnings.push("New allocation failure (OomKilled) detected".to_string());
+            alloc_fail = true;
+        }
+
+        // 3. Numerical Error Increase (>10% increase)
+        // Since PhaseEvidenceReceipt currently doesn't store direct numerical error in `PhaseMetrics`,
+        // this might be represented by ParityFailed failure, or if we extend metrics later.
+        // For now, if ParityFailed happens in new run but not baseline:
+        if self.failure == Some(FailureClassification::ParityFailed)
+            && baseline.failure != Some(FailureClassification::ParityFailed)
+        {
+            warnings.push("Numerical error regression (ParityFailed) detected".to_string());
+            err_inc = Some(100.0);
+        }
+
+        if !warnings.is_empty() {
+            Err(PerformanceRegressionWarning {
+                latency_increase_percent: lat_inc,
+                numerical_error_increase_percent: err_inc,
+                new_allocation_failures: alloc_fail,
+                message: warnings.join("; "),
+            })
+        } else {
+            Ok(())
+        }
+    }
 }
 
 // ── EvidenceLedger trait ──────────────────────────────────────────────────
@@ -445,6 +704,12 @@ mod tests {
         let profile_id = ProfileId::new_random();
         let now = TimestampMs::now();
         PhaseEvidenceReceipt {
+            artifact_identity: None,
+            capability_signature: None,
+            topology_hash: None,
+            shape_class: None,
+            data_format: None,
+            core_count: None,
             receipt_id: ReceiptId::new_random(),
             phase_id,
             phase_kind,
@@ -463,6 +728,65 @@ mod tests {
             failure: None,
             notes: None,
         }
+    }
+
+    #[test]
+    fn performance_regression_comparable_runs() {
+        let mut baseline = make_receipt(
+            PhaseKind::Decode,
+            BackendKind::MLX,
+            EvidenceStatus::RuntimeSmokePassed,
+        );
+        baseline.metrics.wall_time_ms = Some(100);
+
+        let mut run2 = baseline.clone();
+        run2.metrics.wall_time_ms = Some(102); // 2% variance
+
+        let res = run2.check_performance_regression(&baseline);
+        assert!(
+            res.is_ok(),
+            "Comparable runs should not produce a regression warning"
+        );
+    }
+
+    #[test]
+    fn performance_regression_latency_increase() {
+        let mut baseline = make_receipt(
+            PhaseKind::Decode,
+            BackendKind::MLX,
+            EvidenceStatus::RuntimeSmokePassed,
+        );
+        baseline.metrics.wall_time_ms = Some(100);
+
+        let mut degraded = baseline.clone();
+        degraded.metrics.wall_time_ms = Some(125); // 25% increase
+
+        let res = degraded.check_performance_regression(&baseline);
+        assert!(
+            res.is_err(),
+            "25% latency increase should trigger a warning"
+        );
+        let warning = res.unwrap_err();
+        assert!(warning.latency_increase_percent > 20.0);
+        assert!(warning.message.contains("Latency increased"));
+    }
+
+    #[test]
+    fn performance_regression_new_allocation_failure() {
+        let baseline = make_receipt(
+            PhaseKind::Decode,
+            BackendKind::MLX,
+            EvidenceStatus::RuntimeSmokePassed,
+        );
+
+        let mut oom_run = baseline.clone();
+        oom_run.failure = Some(FailureClassification::OomKilled);
+
+        let res = oom_run.check_performance_regression(&baseline);
+        assert!(res.is_err());
+        let warning = res.unwrap_err();
+        assert!(warning.new_allocation_failures);
+        assert!(warning.message.contains("New allocation failure"));
     }
 
     #[test]
@@ -641,5 +965,46 @@ mod tests {
         assert_eq!(back.receipt_id, r.receipt_id);
         assert_eq!(back.status, r.status);
         assert_eq!(back.backend, r.backend);
+    }
+
+    #[test]
+    fn test_check_performance_regression_comprehensive() {
+        let mut base = make_receipt(
+            PhaseKind::Decode,
+            BackendKind::MLX,
+            EvidenceStatus::RuntimeSmokePassed,
+        );
+        base.metrics.wall_time_ms = Some(100);
+        base.metrics.warm_dispatch_ns = Some(1000);
+        base.metrics.max_numerical_error = Some(0.1);
+        base.failure = None;
+
+        let mut current = base.clone();
+
+        // 1. No regression
+        current.metrics.wall_time_ms = Some(110);
+        current.metrics.warm_dispatch_ns = Some(1040); // 4% variance
+        current.metrics.max_numerical_error = Some(0.105); // 5% variance
+        assert!(current.check_performance_regression(&base).is_ok());
+
+        // 2. >20% latency regression
+        current.metrics.warm_dispatch_ns = Some(1250); // 25% increase
+        let res = current.check_performance_regression(&base);
+        assert!(res.is_err());
+        assert!(res.unwrap_err()[0].contains("warm_dispatch_ns"));
+
+        // 3. >10% numerical error regression
+        current.metrics.warm_dispatch_ns = Some(1040);
+        current.metrics.max_numerical_error = Some(0.12); // 20% increase
+        let res2 = current.check_performance_regression(&base);
+        assert!(res2.is_err());
+        assert!(res2.unwrap_err()[0].contains("numerical error"));
+
+        // 4. New allocation failure
+        current.metrics.max_numerical_error = Some(0.105);
+        current.failure = Some(FailureClassification::OomKilled);
+        let res3 = current.check_performance_regression(&base);
+        assert!(res3.is_err());
+        assert!(res3.unwrap_err()[0].contains("allocation failure"));
     }
 }

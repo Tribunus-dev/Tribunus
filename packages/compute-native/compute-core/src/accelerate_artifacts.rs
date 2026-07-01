@@ -8,9 +8,9 @@
 //! The graph dispatches Accelerate artifacts exactly like Core ML or
 //! Metal artifacts — through a Dispatch node with artifact_id and hash.
 
-use serde::{Deserialize, Serialize};
 #[cfg(target_os = "macos")]
 use crate::backend::accelerate_ffi;
+use serde::{Deserialize, Serialize};
 
 /// Which CPU library backs this artifact's execution.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -111,25 +111,24 @@ pub struct AccelerateArtifact {
 ///
 /// out[i] = x[i] / sqrt(mean(x^2) + eps) * w[i / stride]
 /// where stride = hidden_size (weight is per-element, reshaped).
-pub fn rms_norm_f32(
-    x: &[f32],
-    weight: &[f32],
-    eps: f64,
-) -> Result<Vec<f32>, String> {
+pub fn rms_norm_f32(x: &[f32], weight: &[f32], eps: f64) -> Result<Vec<f32>, String> {
     let n = x.len();
     if n == 0 {
         return Err("rms_norm: empty input".into());
     }
     if weight.len() != n {
         return Err(format!(
-            "rms_norm: x len {} != weight len {}", n, weight.len()
+            "rms_norm: x len {} != weight len {}",
+            n,
+            weight.len()
         ));
     }
 
     let mean_sq: f32 = x.iter().map(|&v| v * v).sum::<f32>() / n as f32;
     let rstd = (1.0 / (mean_sq as f64 + eps).sqrt()) as f32;
 
-    let out: Vec<f32> = x.iter()
+    let out: Vec<f32> = x
+        .iter()
         .zip(weight.iter())
         .map(|(&xi, &wi)| xi * rstd * wi)
         .collect();
@@ -163,18 +162,16 @@ pub fn silu_f32(x: &[f32]) -> Vec<f32> {
 ///
 /// out[i] = x[i] / sqrt(mean(x^2) + eps) * w[i]
 /// On non-macOS platforms this falls back to the scalar reference.
-pub fn vdsp_rms_norm_f32(
-    x: &[f32],
-    weight: &[f32],
-    eps: f64,
-) -> Result<Vec<f32>, String> {
+pub fn vdsp_rms_norm_f32(x: &[f32], weight: &[f32], eps: f64) -> Result<Vec<f32>, String> {
     let n = x.len();
     if n == 0 {
         return Err("rms_norm: empty input".into());
     }
     if weight.len() != n {
         return Err(format!(
-            "rms_norm: x len {} != weight len {}", n, weight.len()
+            "rms_norm: x len {} != weight len {}",
+            n,
+            weight.len()
         ));
     }
 
@@ -202,7 +199,15 @@ pub fn vdsp_rms_norm_f32(
             accelerate_ffi::vDSP_vsmul(x.as_ptr(), 1, &rstd, scaled.as_mut_ptr(), 1, n);
 
             // out[i] = scaled[i] * weight[i]
-            accelerate_ffi::vDSP_vmul(scaled.as_ptr(), 1, weight.as_ptr(), 1, out.as_mut_ptr(), 1, n);
+            accelerate_ffi::vDSP_vmul(
+                scaled.as_ptr(),
+                1,
+                weight.as_ptr(),
+                1,
+                out.as_mut_ptr(),
+                1,
+                n,
+            );
         }
 
         Ok(out)
@@ -312,49 +317,42 @@ pub fn dispatch_accelerate_artifact(
     weight_data: Option<&[f32]>,
 ) -> Result<Vec<f32>, String> {
     match artifact.implementation {
-        CpuImplementation::AccelerateVdsp => {
-            match artifact.op {
-                AccelerateOp::RmsNorm { eps } => {
-                    let w = weight_data.ok_or_else(|| "RMSNorm requires weight data".to_string())?;
-                    vdsp_rms_norm_f32(input_data, w, eps)
-                }
-                AccelerateOp::Add => {
-                    let b = weight_data.ok_or_else(|| "Add requires second operand".to_string())?;
-                    vdsp_add_f32(input_data, b)
-                }
-                AccelerateOp::Mul => {
-                    let b = weight_data.ok_or_else(|| "Mul requires second operand".to_string())?;
-                    vdsp_mul_f32(input_data, b)
-                }
-                AccelerateOp::Silu => Ok(vdsp_silu_f32(input_data)),
+        CpuImplementation::AccelerateVdsp => match artifact.op {
+            AccelerateOp::RmsNorm { eps } => {
+                let w = weight_data.ok_or_else(|| "RMSNorm requires weight data".to_string())?;
+                vdsp_rms_norm_f32(input_data, w, eps)
             }
-        }
-        _ => {
-            match artifact.op {
-                AccelerateOp::RmsNorm { eps } => {
-                    let w = weight_data.ok_or_else(|| "RMSNorm requires weight data".to_string())?;
-                    rms_norm_f32(input_data, w, eps)
-                }
-                AccelerateOp::Add => {
-                    let b = weight_data.ok_or_else(|| "Add requires second operand".to_string())?;
-                    add_f32(input_data, b)
-                }
-                AccelerateOp::Mul => {
-                    let b = weight_data.ok_or_else(|| "Mul requires second operand".to_string())?;
-                    mul_f32(input_data, b)
-                }
-                AccelerateOp::Silu => Ok(silu_f32(input_data)),
+            AccelerateOp::Add => {
+                let b = weight_data.ok_or_else(|| "Add requires second operand".to_string())?;
+                vdsp_add_f32(input_data, b)
             }
-        }
+            AccelerateOp::Mul => {
+                let b = weight_data.ok_or_else(|| "Mul requires second operand".to_string())?;
+                vdsp_mul_f32(input_data, b)
+            }
+            AccelerateOp::Silu => Ok(vdsp_silu_f32(input_data)),
+        },
+        _ => match artifact.op {
+            AccelerateOp::RmsNorm { eps } => {
+                let w = weight_data.ok_or_else(|| "RMSNorm requires weight data".to_string())?;
+                rms_norm_f32(input_data, w, eps)
+            }
+            AccelerateOp::Add => {
+                let b = weight_data.ok_or_else(|| "Add requires second operand".to_string())?;
+                add_f32(input_data, b)
+            }
+            AccelerateOp::Mul => {
+                let b = weight_data.ok_or_else(|| "Mul requires second operand".to_string())?;
+                mul_f32(input_data, b)
+            }
+            AccelerateOp::Silu => Ok(silu_f32(input_data)),
+        },
     }
 }
 // ── Artifact factory ──────────────────────────────────────────────────────
 
 /// Build an Accelerate RMSNorm artifact.
-pub fn build_rmsnorm_artifact(
-    artifact_id: &str,
-    hidden_size: i64,
-) -> AccelerateArtifact {
+pub fn build_rmsnorm_artifact(artifact_id: &str, hidden_size: i64) -> AccelerateArtifact {
     let mut scalar_params = std::collections::BTreeMap::new();
     scalar_params.insert("epsilon".into(), ScalarValue::F64(1e-6));
     AccelerateArtifact {
@@ -369,9 +367,9 @@ pub fn build_rmsnorm_artifact(
             cols: hidden_size as u64,
             dims: vec![1, hidden_size as u64],
         },
-       layout_contract: CpuLayoutContract {
-           row_major: true,
-           contiguous: true,
+        layout_contract: CpuLayoutContract {
+            row_major: true,
+            contiguous: true,
             alignment: 64,
         },
         scalar_params,
@@ -392,10 +390,7 @@ pub fn build_rmsnorm_artifact(
 }
 
 /// Build an Accelerate residual-add artifact.
-pub fn build_residual_add_artifact(
-   artifact_id: &str,
-   hidden_size: i64,
-) -> AccelerateArtifact {
+pub fn build_residual_add_artifact(artifact_id: &str, hidden_size: i64) -> AccelerateArtifact {
     AccelerateArtifact {
         artifact_id: artifact_id.to_string(),
         artifact_hash: String::new(),
@@ -445,7 +440,12 @@ mod tests {
         let rstd = (1.0f64 / (mean_sq + 1e-6).sqrt()) as f32;
         for i in 0..4 {
             let expected = x[i] * rstd * 0.5f32;
-            assert!((result[i] - expected).abs() < 1e-5, "mismatch at {i}: got {}, expected {}", result[i], expected);
+            assert!(
+                (result[i] - expected).abs() < 1e-5,
+                "mismatch at {i}: got {}, expected {}",
+                result[i],
+                expected
+            );
         }
     }
 

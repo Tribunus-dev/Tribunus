@@ -24,7 +24,7 @@ import { createEffect, createResource, onCleanup, onMount, Show } from "solid-js
 import { render } from "solid-js/web"
 import pkg from "../../package.json"
 import "./design-tokens.css"
-
+import { ChatView } from "./components/chat-view"
 import { initI18n, t } from "./i18n"
 import { resetZoom, setPinchZoomEnabled, webviewZoom, zoomIn, zoomOut } from "./webview-zoom"
 import { DesktopPluginProvider } from "./plugin-context"
@@ -385,6 +385,7 @@ render(() => {
   function Inner() {
     const cmd = useCommand()
     const dialog = useDialog()
+    const theme = useTheme()
     menuTrigger = (id) => {
       if (id === "open-plugin-manager") {
         void import("./dialog-manage-plugins").then((x) => {
@@ -397,8 +398,6 @@ render(() => {
       cmd.trigger(id)
     }
 
-    const theme = useTheme()
-
     createEffect(() => {
       theme.themeId()
       theme.mode()
@@ -408,7 +407,7 @@ render(() => {
       }
     })
 
-    return null
+    return <ChatView />
   }
 
   onMount(() => {

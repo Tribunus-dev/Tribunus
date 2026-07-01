@@ -90,6 +90,9 @@ path = "tests/accelerate_qualification.rs"
 [[test]]
 name = "mlx_accelerate_smoke"
 path = "tests/mlx_accelerate_smoke.rs"
+[[test]]
+name = "coreml_operation_coverage"
+path = "tests/coreml_operation_coverage.rs"
 
 [[test]]
 name = "coreml_lifecycle"
@@ -109,6 +112,9 @@ path = "tests/three_backend_conformance.rs"
 [[test]]
 name = "ane_sealed_artifact"
 path = "tests/ane_sealed_artifact.rs"
+[[test]]
+name = "no_direct_accelerate_bypass"
+path = "tests/no_direct_accelerate_bypass.rs"
 
 [[bench]]
 name = "benchmark_placement"
@@ -142,7 +148,7 @@ duckdb = { version = "1.1", features = ["bundled"], optional = true }
 napi = []
 private-development = []
 default = ["stub-backend"]
-stub-backend = []
+stub-backend = ["mlx-rs/stub"]
 mlx-backend = ["mlx-rs/metal", "mlx-rs/accelerate", ]
 storage-adapters = ["dep:tokio-postgres", "dep:redis", "dep:duckdb"]
 
@@ -152,3 +158,7 @@ cc = "1.2"
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
 tribunus_compute_core = { package = "tribunus-compute-core", path = "." }
+
+[[bin]]
+name = "tribunus-tensix-capability-probe"
+path = "src/bin/tribunus-tensix-capability-probe.rs"

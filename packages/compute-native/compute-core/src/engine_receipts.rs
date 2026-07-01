@@ -7,9 +7,9 @@
 //!
 //! No mlx-rs imports — pure serde/serde_json.
 
+use crate::compute_image::NumericValidationResult;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use crate::compute_image::NumericValidationResult;
 
 // ---------------------------------------------------------------------------
 // 1. ModelLoadReceipt
@@ -1066,6 +1066,28 @@ pub fn emit_ane_receipt(receipt: &AneDispatchReceipt) -> String {
         .unwrap_or_else(|_| "<serialization error>".to_string());
     eprintln!("[ANE_DISPATCH] {}", &json);
     json
+}
+
+// ── RMSNorm Production Execution Receipt ────────────────────────────────────
+
+/// Receipt for a production RMSNorm execution routed through an Accelerate artifact.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RmsNormProductionExecutionReceipt {
+    pub layer_index: u32,
+    pub norm_site: String,
+    pub selected_route: String,
+    pub actual_route: String,
+    pub selected_lane: String,
+    pub actual_lane: String,
+    pub artifact_id: Option<String>,
+    pub artifact_hash: Option<String>,
+    pub hidden_size: u32,
+    pub rows: u32,
+    pub alignment_verified: bool,
+    pub dispatch_latency_us: Option<u64>,
+    pub scalar_reference_used: bool,
+    pub fallback_used: bool,
+    pub fallback_reason: Option<String>,
 }
 
 // ---------------------------------------------------------------------------

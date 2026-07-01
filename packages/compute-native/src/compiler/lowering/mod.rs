@@ -11,6 +11,7 @@ pub mod accelerate;
 pub mod coreml;
 pub mod params;
 pub mod receipts;
+pub mod tensix;
 
 #[cfg(test)]
 mod tests;

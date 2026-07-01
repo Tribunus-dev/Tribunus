@@ -1,4 +1,4 @@
-import { SpineEvent } from './event_store';
+import type { SpineEvent } from './event_store';
 
 export interface ModelProjectorState {
   models: {

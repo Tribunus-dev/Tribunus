@@ -1,0 +1,27 @@
+diff a/packages/compute-native/compute-core/src/decode_attribution/backend_adapters/accelerate_adapter.rs b/packages/compute-native/compute-core/src/decode_attribution/backend_adapters/accelerate_adapter.rs	(rejected hunks)
+@@ -608,7 +608,11 @@ pub fn vector_add(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
+ 
+ #[cfg(not(target_os = "macos"))]
+ pub fn vector_add(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
+-    Err(format!("Accelerate vector_add: not available on this platform (lengths {} and {})", a.len(), b.len()))
++    Err(format!(
++        "Accelerate vector_add: not available on this platform (lengths {} and {})",
++        a.len(),
++        b.len()
++    ))
+ }
+ 
+ /// Vector multiply via `vDSP_vmul`. Primitive validation — NOT a lattice row.
+@@ -638,7 +642,11 @@ pub fn vector_mul(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
+ 
+ #[cfg(not(target_os = "macos"))]
+ pub fn vector_mul(a: &[f32], b: &[f32]) -> Result<Vec<f32>, String> {
+-    Err(format!("Accelerate vector_mul: not available on this platform (lengths {} and {})", a.len(), b.len()))
++    Err(format!(
++        "Accelerate vector_mul: not available on this platform (lengths {} and {})",
++        a.len(),
++        b.len()
++    ))
+ }
+ // ── Legacy API (backward compat) ──────────────────────────────────────────
+ 

@@ -1,0 +1,88 @@
+diff a/packages/compute-native/compute-core/src/compute_image_v0/resolver.rs b/packages/compute-native/compute-core/src/compute_image_v0/resolver.rs	(rejected hunks)
+@@ -1,5 +1,7 @@
+ use super::evidence::NormalizedPhaseEvidence;
+-use super::schema::{BackendCandidate, BackendStatus, KvEvidenceQualification, KvMutationContract, PhaseEntry};
++use super::schema::{
++    BackendCandidate, BackendStatus, KvEvidenceQualification, KvMutationContract, PhaseEntry,
++};
+ 
+ pub struct Resolver {
+     pub allow_contract_only_kv: bool,
+@@ -22,13 +24,18 @@ impl Resolver {
+             });
+         }
+ 
+-        let selected_backend = self.select_backend(&candidates, ev.is_kv_phase, &ev.kv_qualification);
++        let selected_backend =
++            self.select_backend(&candidates, ev.is_kv_phase, &ev.kv_qualification);
+ 
+         let mut fallback_order = Vec::new();
+         // MLX -> CoreML -> Accelerate is the default order for truth and debuggability.
+         for preferred in &["mlx", "coreml", "accelerate"] {
+             if let Some(c) = candidates.iter().find(|c| c.backend_name == *preferred) {
+-                if c.status == BackendStatus::Pass || (ev.is_kv_phase && self.allow_contract_only_kv && c.status == BackendStatus::ContractOnly) {
++                if c.status == BackendStatus::Pass
++                    || (ev.is_kv_phase
++                        && self.allow_contract_only_kv
++                        && c.status == BackendStatus::ContractOnly)
++                {
+                     if Some(c.backend_name.clone()) != selected_backend {
+                         fallback_order.push(c.backend_name.clone());
+                     }
+@@ -67,14 +74,20 @@ impl Resolver {
+         kv_qualification: &KvEvidenceQualification,
+     ) -> Option<String> {
+         if is_kv_phase {
+-            if *kv_qualification == KvEvidenceQualification::ContractOnly && !self.allow_contract_only_kv {
++            if *kv_qualification == KvEvidenceQualification::ContractOnly
++                && !self.allow_contract_only_kv
++            {
+                 return None; // Blocked unless explicitly allowed
+             }
+         }
+ 
+         // 1. MLX first if passing
+         if let Some(c) = candidates.iter().find(|c| c.backend_name == "mlx") {
+-            if c.status == BackendStatus::Pass || (is_kv_phase && self.allow_contract_only_kv && c.status == BackendStatus::ContractOnly) {
++            if c.status == BackendStatus::Pass
++                || (is_kv_phase
++                    && self.allow_contract_only_kv
++                    && c.status == BackendStatus::ContractOnly)
++            {
+                 return Some("mlx".into());
+             }
+         }
+@@ -117,8 +130,16 @@ mod tests {
+             kv_allowed_operations: vec![],
+             kv_qualification: KvEvidenceQualification::Unqualified,
+             backend_evidence: vec![
+-                BackendEvidence { backend_name: "coreml".into(), status: BackendStatus::Pass, raw_status_string: "pass".into() },
+-                BackendEvidence { backend_name: "mlx".into(), status: BackendStatus::Pass, raw_status_string: "pass".into() },
++                BackendEvidence {
++                    backend_name: "coreml".into(),
++                    status: BackendStatus::Pass,
++                    raw_status_string: "pass".into(),
++                },
++                BackendEvidence {
++                    backend_name: "mlx".into(),
++                    status: BackendStatus::Pass,
++                    raw_status_string: "pass".into(),
++                },
+             ],
+         };
+ 
+@@ -140,9 +161,11 @@ mod tests {
+             is_kv_phase: false,
+             kv_allowed_operations: vec![],
+             kv_qualification: KvEvidenceQualification::Unqualified,
+-            backend_evidence: vec![
+-                BackendEvidence { backend_name: "coreml".into(), status: BackendStatus::CompileLimited, raw_status_string: "compile_limited".into() },
+-            ],
++            backend_evidence: vec![BackendEvidence {
++                backend_name: "coreml".into(),
++                status: BackendStatus::CompileLimited,
++                raw_status_string: "compile_limited".into(),
++            }],
+         };
+ 
+         let resolved = resolver.resolve_phase(&ev);

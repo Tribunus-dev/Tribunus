@@ -1,0 +1,9 @@
+diff a/packages/compute-native/compute-core/Cargo.toml b/packages/compute-native/compute-core/Cargo.toml	(rejected hunks)
+@@ -143,3 +143,7 @@ cc = "1.2"
+ [dev-dependencies]
+ criterion = { version = "0.5", features = ["html_reports"] }
+ tribunus_compute_core = { package = "tribunus-compute-core", path = "." }
++
++[[test]]
++name = "tensix_weight_cache_reuse"
++path = "tests/tensix_weight_cache_reuse.rs"

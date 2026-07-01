@@ -1,0 +1,13 @@
+<<<<<<< SEARCH
+    pub fallback_order: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+=======
+    pub fallback_order: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tensix_placement: Option<crate::compute_image_v0::tensix::TensixPlacementPlan>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+>>>>>>> REPLACE

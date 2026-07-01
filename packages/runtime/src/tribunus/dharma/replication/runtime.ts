@@ -1,0 +1,601 @@
+/**
+ * Dharma Replication — Runtime Orchestrator
+ *
+ * DharmaReplicationRuntime is the lifecycle owner for all replication
+ * concerns within a single Tribunus profile. It owns one Corestore,
+ * one Hyperswarm instance, and one Autobase session per active federation.
+ *
+ * The runtime does not expose Corestore, Hypercore, Autobase, raw
+ * transport streams, or peer addresses to renderer processes.
+ */
+
+import { randomUUID } from "node:crypto"
+import * as path from "node:path"
+import * as os from "node:os"
+import { DharmaCorestore } from "./corestore"
+import type { CorestoreConfig } from "./corestore"
+import { FederationBase, createDefaultApply } from "./federation-base"
+import type { FederationBaseConfig } from "./federation-base"
+import { FederationStore } from "./federation-store"
+import { DharmaSwarm, deriveSwarmTopic } from "./swarm"
+import type { SwarmConfig } from "./swarm"
+import { PeerTracker } from "./peer"
+import { OutboxManager } from "./outbox"
+import { recoverOutbox } from "./outbox-recovery"
+import { recoverFromCheckpoint, isRecoveryNeeded, getRecoverySummary } from "./checkpoint-recovery"
+import { ensureIdentityCore } from "./identity-core"
+import { FederationEventImporter } from "./importer"
+import { collectDiagnostics, deriveUserStatus } from "./diagnostics"
+import type { DiagnosticsSource } from "./diagnostics"
+import type {
+  FederationBootstrapRecord,
+  DharmaInvitationBundle,
+  DharmaReplicationDiagnostics,
+  ReplicationLimits,
+  SwarmLifecycleState,
+  FederationUserStatus,
+  WriterAdmission,
+  ReplicatedDharmaEvent,
+  PeerHandshakeResult,
+  OutboxEntryState,
+} from "./protocol"
+import {
+  DEFAULT_REPLICATION_LIMITS,
+  DHARMA_REPLICATION_PROTOCOL_VERSION,
+  MAX_PEERS_PER_FEDERATION,
+  MAX_GLOBAL_PEERS,
+} from "./protocol"
+import { createHello, respondToHello, verifyWelcome, createHandshakeResult, isProtocolCompatible } from "./handshake"
+import type { HandshakeConfig } from "./handshake"
+import { ReplicationError, CorestoreError, SwarmError } from "./errors"
+import type { DharmaEventEnvelope, DharmaIdentity } from "../types"
+import { canonicalJson } from "../types"
+import type { IdentityVault } from "../identity"
+import type { PGliteClient, PGliteFederationStore } from "./trifecta/pglite-store"
+import type { ValkeyCacheConfig, ReplicationValkeyCache } from "./trifecta/valkey-cache"
+import type { DuckDbClient, ReplicationDuckDbLogger } from "./trifecta/duckdb-logger"
+import { createTrifectaAdapters } from "./trifecta/create-trifecta"
+import type { TrifectaAdapters } from "./trifecta/create-trifecta"
+
+// ── Runtime Configuration ---------------------------------------------------
+
+export interface RuntimeConfig {
+  /** Profile-level storage root. Default: <os.homedir()>/.tribunus/dharma/ */
+  storageRoot?: string
+  /** Limits for replication. Default: DEFAULT_REPLICATION_LIMITS */
+  limits?: ReplicationLimits
+  /** Node instance ID (persistent across restarts). Auto-generated if absent. */
+  nodeInstanceId?: string
+  /** Identity vault managing device identities. */
+  identityVault: IdentityVault
+  /** Optional PGlite client for durable relational storage. */
+  pglite?: PGliteClient
+  /** Optional Valkey config or pre-initialised cache for fast ephemeral state. */
+  valkey?: ValkeyCacheConfig | ReplicationValkeyCache
+  /** Optional DuckDB raw client for analytics logging. */
+  duckdb?: DuckDbClient
+}
+
+// ── Federation Runtime State -------------------------------------------------
+
+interface FederationRuntimeState {
+  federationBase: FederationBase
+  federationStore: FederationStore
+  swarm: DharmaSwarm
+  peerTracker: PeerTracker
+  outbox: OutboxManager
+  importer: FederationEventImporter
+  lifecycleState: SwarmLifecycleState
+  bootstrapRecord: FederationBootstrapRecord | null
+  successfulHandshakes: number
+  failedHandshakes: number
+  lastError: string | null
+  lastSuccessfulReplicationAt: string | null
+}
+
+// ── DharmaReplicationRuntime -------------------------------------------------
+
+/**
+ * DharmaReplicationRuntime is the main orchestrator for Phase 2 replication.
+ *
+ * Lifecycle:
+ *   new Runtime(config) → start() → joinFederation(id) → ... → stop()
+ */
+export class DharmaReplicationRuntime implements DiagnosticsSource {
+  private corestore: DharmaCorestore | null = null
+  private federations: Map<string, FederationRuntimeState> = new Map()
+  private config: RuntimeConfig
+  private started: boolean = false
+  private activeIdentity: DharmaIdentity | null = null
+  private trifectaAdapters: TrifectaAdapters = {
+    pgliteStore: null,
+    valkeyCache: null,
+    duckdbLogger: null,
+  }
+
+  constructor(config: RuntimeConfig) {
+    const activeIdentity = config.identityVault.getActiveIdentity()
+    if (!activeIdentity) {
+      throw new Error("No active identity in vault")
+    }
+    this.activeIdentity = activeIdentity
+
+    this.config = {
+      ...config,
+      storageRoot: config.storageRoot ?? path.join(os.homedir(), ".tribunus", "dharma"),
+      limits: config.limits ?? DEFAULT_REPLICATION_LIMITS,
+      nodeInstanceId: config.nodeInstanceId ?? randomUUID(),
+    }
+  }
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
+
+  /**
+   * Start the replication runtime. Opens the Corestore and prepares
+   * for federation activity.
+   */
+  async start(): Promise<void> {
+    if (this.started) return
+    const storeConfig: CorestoreConfig = {
+      storagePath: path.join(this.config.storageRoot!, "corestore"),
+      limits: this.config.limits!,
+    }
+    this.corestore = new DharmaCorestore(storeConfig)
+    await this.corestore.open()
+
+    // Wire identity: ensure the active identity is persisted to the system core.
+    // The identity was already validated in the constructor; this step
+    // makes it durable in the Corestore so recovery can access it.
+    await ensureIdentityCore(this.corestore, this.config.identityVault)
+    // Wire optional trifecta adapters (PGlite, Valkey, DuckDB)
+    this.trifectaAdapters = createTrifectaAdapters(this.config)
+
+    this.started = true
+  }
+
+  /**
+   * Stop the runtime. Closes all federations, then the Corestore.
+   */
+  async stop(): Promise<void> {
+    if (!this.started) return
+    for (const fedId of this.federations.keys()) {
+      await this.leaveFederation(fedId)
+    }
+    if (this.corestore) {
+      await this.corestore.close()
+      this.corestore = null
+    }
+    // Disconnect active trifecta adapters
+    if (this.trifectaAdapters.valkeyCache) {
+      await this.trifectaAdapters.valkeyCache.disconnect()
+    }
+    this.started = false
+  }
+
+  // ── Federation Management ─────────────────────────────────────────────────
+
+  /**
+   * Create a new federation locally with an Autobase bootstrap.
+   * Returns the generated bootstrap record.
+   */
+  async createFederation(
+    federationId: string,
+    genesisEventId: string,
+    rootPublicKey: string,
+    autobaseKey: string,
+    autobaseDiscoveryKey: string,
+  ): Promise<FederationBootstrapRecord> {
+    if (this.federations.has(federationId)) {
+      throw new ReplicationError("FEDERATION_EXISTS", `Federation ${federationId} is already active`)
+    }
+
+    const writerCore = await this.corestore!.getWriterCore(federationId, "genesis")
+    const viewCore = await this.corestore!.getViewCore(federationId)
+    const checkpointCore = await this.corestore!.getCheckpointCore(federationId)
+
+    const apply = createDefaultApply()
+    const baseConfig: FederationBaseConfig = {
+      federationId,
+      autobaseKey,
+      writerCore,
+      viewCore,
+      checkpointCore,
+      apply,
+    }
+    const federationBase = new FederationBase(baseConfig)
+    await federationBase.open()
+
+    // Recover from any stored checkpoint
+    const checkpointRecovery = await recoverFromCheckpoint(federationBase)
+    if (isRecoveryNeeded(checkpointRecovery)) {
+      console.log(
+        `[dharma] ${federationId}: checkpoint recovery — resumed at order index ${checkpointRecovery.lastOrderIndex}`,
+      )
+    }
+
+    const federationStore = new FederationStore(this.corestore!, federationId, "genesis")
+    const swarm = new DharmaSwarm({
+      federationId,
+      autobaseDiscoveryKey,
+      limits: this.config.limits!,
+      keyPair: null,
+      onConnection: () => {},
+    })
+    const peerTracker = new PeerTracker(federationId)
+    const outbox = new OutboxManager(federationId)
+    // Recover any unconfirmed outbox entries from a prior crash
+    const recoveryResult = recoverOutbox(outbox)
+    if (recoveryResult.recovered) {
+      console.log(
+        `[dharma] ${federationId}: outbox recovery — ${recoveryResult.pendingEntries} pending, ` +
+        `${recoveryResult.retriedEntries} retried, ${recoveryResult.failedEntries} failed`,
+      )
+    }
+    const importer = new FederationEventImporter(federationId)
+
+    const bootstrapRecord: FederationBootstrapRecord = {
+      protocolVersion: DHARMA_REPLICATION_PROTOCOL_VERSION,
+      federationId,
+      federationGenesisEventId: genesisEventId,
+      federationRootPublicKey: rootPublicKey,
+      autobaseKey,
+      autobaseDiscoveryKey,
+      initialPolicyDigest: "",
+      genesisWriterKey: "",
+      createdAt: new Date().toISOString(),
+      bootstrapSignature: "",
+    }
+
+    await federationStore.storeBootstrap(bootstrapRecord)
+    // Mirror bootstrap record into PGlite when the optional adapter is available
+    if (this.trifectaAdapters.pgliteStore) {
+      await this.trifectaAdapters.pgliteStore.storeFederation(bootstrapRecord)
+    }
+
+    // Register federation in the system core for startup discovery
+    await this.registerFederationInSystemCore(federationId)
+
+    this.federations.set(federationId, {
+      federationBase,
+      federationStore,
+      swarm,
+      peerTracker,
+      outbox,
+      importer,
+      lifecycleState: "stopped",
+      bootstrapRecord,
+      successfulHandshakes: 0,
+      failedHandshakes: 0,
+      lastError: null,
+      lastSuccessfulReplicationAt: null,
+    })
+
+    return bootstrapRecord
+  }
+
+  /**
+   * Join an existing federation from an invitation bundle.
+   */
+  async joinFederation(invitation: DharmaInvitationBundle): Promise<void> {
+    const { bootstrap } = invitation
+    const fedId = bootstrap.federationId
+
+    if (this.federations.has(fedId)) {
+      throw new ReplicationError("ALREADY_JOINED", `Already participating in federation ${fedId}`)
+    }
+
+    const writerCore = await this.corestore!.getWriterCore(fedId, "local")
+    const viewCore = await this.corestore!.getViewCore(fedId)
+    const checkpointCore = await this.corestore!.getCheckpointCore(fedId)
+
+    const apply = createDefaultApply()
+    const baseConfig: FederationBaseConfig = {
+      federationId: fedId,
+      autobaseKey: bootstrap.autobaseKey,
+      writerCore,
+      viewCore,
+      checkpointCore,
+      apply,
+    }
+    const federationBase = new FederationBase(baseConfig)
+    await federationBase.open()
+
+    // Recover from any stored checkpoint
+    const checkpointRecovery = await recoverFromCheckpoint(federationBase)
+    if (isRecoveryNeeded(checkpointRecovery)) {
+      console.log(
+        `[dharma] ${fedId}: checkpoint recovery — resumed at order index ${checkpointRecovery.lastOrderIndex}`,
+      )
+    }
+
+    const federationStore = new FederationStore(this.corestore!, fedId, "local")
+    const swarm = new DharmaSwarm({
+      federationId: fedId,
+      autobaseDiscoveryKey: bootstrap.autobaseDiscoveryKey,
+      limits: this.config.limits!,
+      keyPair: null,
+      onConnection: (conn, info) => this.handleConnection(fedId, conn, info),
+    })
+    const peerTracker = new PeerTracker(fedId)
+    const outbox = new OutboxManager(fedId)
+    // Recover any unconfirmed outbox entries from a prior crash
+    const recoveryResult = recoverOutbox(outbox)
+    if (recoveryResult.recovered) {
+      console.log(
+        `[dharma] ${fedId}: outbox recovery — ${recoveryResult.pendingEntries} pending, ` +
+        `${recoveryResult.retriedEntries} retried, ${recoveryResult.failedEntries} failed`,
+      )
+    }
+    const importer = new FederationEventImporter(fedId)
+
+    // Register federation in the system core for startup discovery
+    await this.registerFederationInSystemCore(fedId)
+
+    this.federations.set(fedId, {
+      federationBase,
+      federationStore,
+      swarm,
+      peerTracker,
+      outbox,
+      importer,
+      lifecycleState: "stopped",
+      bootstrapRecord: bootstrap,
+      successfulHandshakes: 0,
+      failedHandshakes: 0,
+      lastError: null,
+      lastSuccessfulReplicationAt: null,
+    })
+
+    // Start the swarm to begin peer discovery for this federation
+    const state = this.federations.get(fedId)!
+    await state.swarm.start()
+    state.lifecycleState = "connected"
+  }
+
+  /**
+   * Leave a federation. Stops the swarm and closes the Autobase.
+   */
+  async leaveFederation(federationId: string): Promise<void> {
+    const state = this.federations.get(federationId)
+    if (!state) return
+
+    await state.swarm.stop()
+    await state.federationBase.close()
+    this.federations.delete(federationId)
+  }
+
+  // ── Pause / Resume ────────────────────────────────────────────────────────
+
+  /**
+   * Pause a federation. Stops discovery and outbound replication
+   * but preserves replicated data and projections.
+   */
+  async pauseFederation(federationId: string): Promise<void> {
+    const state = this.federations.get(federationId)
+    if (!state) return
+    state.swarm.pause()
+    state.lifecycleState = "paused"
+  }
+
+  /**
+   * Resume a paused federation.
+   */
+  async resumeFederation(federationId: string): Promise<void> {
+    const state = this.federations.get(federationId)
+    if (!state) return
+    state.swarm.resume()
+    state.lifecycleState = "connected"
+  }
+
+  // ── Event Publication ─────────────────────────────────────────────────────
+
+  /**
+   * Publish a signed Dharma event to a federation.
+   * The event enters the durable outbox first, then is appended
+   * to the local writer core and propagated via Autobase.
+   */
+  async publishEvent(federationId: string, event: DharmaEventEnvelope): Promise<void> {
+    const state = this.federations.get(federationId)
+    if (!state) throw new ReplicationError("FEDERATION_NOT_FOUND", `Federation ${federationId} not active`)
+
+    // Step 1: Create outbox entry
+    const entry = state.outbox.createEntry(event)
+    state.outbox.markReady(entry.outboxId)
+
+    // Step 2: Encode event envelope to bytes
+    const encoded = new TextEncoder().encode(canonicalJson(event))
+
+    // Step 3: Append to writer core via federation-store
+    state.outbox.markAppending(entry.outboxId)
+    try {
+      const writerCore = await this.corestore!.getWriterCore(federationId, "local")
+      const seq = await writerCore.append(encoded)
+      state.outbox.markAppended(entry.outboxId, seq, "")
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      state.outbox.scheduleRetry(entry.outboxId, msg)
+      state.lastError = msg
+      throw err
+    }
+  }
+
+  // ── Status / Diagnostics ──────────────────────────────────────────────────
+
+  /**
+   * Get replication status for a federation.
+   */
+  getStatus(federationId: string): FederationUserStatus {
+    const state = this.federations.get(federationId)
+    if (!state) return "offline"
+    const diag = this.collectFederationDiagnostics(federationId)!
+    return deriveUserStatus(diag)
+  }
+
+  /**
+   * Get detailed diagnostics for a federation.
+   */
+  getDiagnostics(federationId: string): DharmaReplicationDiagnostics | null {
+    return this.collectFederationDiagnostics(federationId)
+  }
+
+  /**
+   * Get diagnostics for all active federations.
+   */
+  getAllDiagnostics(): Map<string, DharmaReplicationDiagnostics> {
+    const result = new Map<string, DharmaReplicationDiagnostics>()
+    for (const fedId of this.federations.keys()) {
+      const diag = this.collectFederationDiagnostics(fedId)
+      if (diag) result.set(fedId, diag)
+    }
+    return result
+  }
+
+  /**
+   * Get active federation IDs.
+   */
+  getActiveFederationIds(): string[] {
+    return [...this.federations.keys()]
+  }
+
+  /**
+   * Check if the runtime is started.
+   */
+  isStarted(): boolean {
+    return this.started
+  }
+
+  /**
+   * Get the underlying Corestore instance.
+   * Returns null if the runtime has not been started.
+   */
+  getCorestore(): DharmaCorestore | null {
+    return this.corestore
+  }
+
+  /**
+   * Get the active identity persisted for this device.
+   * Set during construction from the identity vault.
+   * Returns null if no identity was active.
+   */
+  getActiveIdentity(): DharmaIdentity | null {
+    return this.activeIdentity
+  }
+  /**
+   * Get the active trifecta adapters (PGlite, Valkey, DuckDB).
+   * Created during start() when the corresponding config fields are set.
+   */
+  getTrifectaAdapters(): TrifectaAdapters {
+    return this.trifectaAdapters
+  }
+
+  // ── DiagnosticsSource Implementation ──────────────────────────────────────
+
+  getLifecycleState(): SwarmLifecycleState | "inactive" {
+    return this.started ? "connected" : "inactive"
+  }
+  isSwarmJoined(): boolean { return this.started }
+  getActivePeerCount(): number { return 0 }
+  getSuccessfulHandshakes(): number { return 0 }
+  getFailedHandshakes(): number { return 0 }
+  getWriterCount(): number { return this.federations.size }
+  getAutobaseLength(): number { return 0 }
+  getAutobaseSignedLength(): number { return 0 }
+  getImporterProvisionalCursor(): number { return 0 }
+  getImporterFinalizedCursor(): number { return 0 }
+  getPendingOutboxCount(): number {
+    let count = 0
+    for (const state of this.federations.values()) {
+      count += state.outbox.getPendingCount()
+    }
+    return count
+  }
+  getPendingDependencyCount(): number { return 0 }
+  getQuarantineCount(): number { return 0 }
+  getLastSuccessfulReplicationAt(): string | null { return null }
+  getLastError(): string | null { return null }
+
+  // ── Private Helpers ───────────────────────────────────────────────────────
+
+  private collectFederationDiagnostics(federationId: string): DharmaReplicationDiagnostics | null {
+    const state = this.federations.get(federationId)
+    if (!state) return null
+
+    const source: DiagnosticsSource = {
+      getLifecycleState: () => state.lifecycleState,
+      isSwarmJoined: () => state.swarm.getState() !== "stopped",
+      getActivePeerCount: () => state.peerTracker.getActivePeers().length,
+      getSuccessfulHandshakes: () => state.successfulHandshakes,
+      getFailedHandshakes: () => state.failedHandshakes,
+      getWriterCount: () => {
+        // Count unique writers from the federation base view
+        return state.bootstrapRecord ? 1 : 0
+      },
+      getAutobaseLength: () => 0,
+      getAutobaseSignedLength: () => 0,
+      getImporterProvisionalCursor: () => state.importer.getCursor("provisional").autobaseLength,
+      getImporterFinalizedCursor: () => state.importer.getCursor("finalized").autobaseLength,
+      getPendingOutboxCount: () => state.outbox.getPendingCount(),
+      getPendingDependencyCount: () => state.importer.getPendingDependencyCount(),
+      getQuarantineCount: () => 0,
+      getLastSuccessfulReplicationAt: () => state.lastSuccessfulReplicationAt,
+      getLastError: () => state.lastError,
+    }
+
+    return collectDiagnostics(federationId, source)
+  }
+
+  // ── Federation Discovery ────────────────────────────────────────────────
+
+  /**
+   * List federation IDs that have been persisted to storage.
+   *
+   * Scans the system core for federation-registration blocks written by
+   * createFederation and joinFederation. Returns an empty array if the
+   * system core is uninitialised or no federations have been registered.
+   */
+  async listStoredFederationIds(): Promise<string[]> {
+    if (!this.corestore) {
+      return []
+    }
+    const systemCore = await this.corestore.getSystemCore()
+    const ids = new Set<string>()
+    for (let i = 0; i < systemCore.length; i++) {
+      const block = await systemCore.get(i)
+      if (block) {
+        try {
+          const decoded = new TextDecoder().decode(block as Uint8Array)
+          const parsed = JSON.parse(decoded)
+          if (parsed?.type === "federation-registration") {
+            ids.add(parsed.federationId)
+          }
+        } catch {
+          // Skip non-JSON or malformed blocks silently
+        }
+      }
+    }
+    return [...ids]
+  }
+
+  // ── Private: System Core Helpers ─────────────────────────────────────────
+
+  /**
+   * Write a federation-registration block to the system core so that
+   * listStoredFederationIds() can discover it on subsequent starts.
+   */
+  private async registerFederationInSystemCore(federationId: string): Promise<void> {
+    if (!this.corestore) return
+    const systemCore = await this.corestore.getSystemCore()
+    const entry = new TextEncoder().encode(
+      JSON.stringify({
+        type: "federation-registration",
+        federationId,
+        registeredAt: new Date().toISOString(),
+      }),
+    )
+    await systemCore.append(entry)
+  }
+
+  private handleConnection(federationId: string, _connection: unknown, _info: unknown): void {
+    // Future: full Corestore replication stream setup with handshake
+  }
+}

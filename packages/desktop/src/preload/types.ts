@@ -1,5 +1,8 @@
 import type { DesktopMenuAction } from "@tribunus/app/desktop-menu"
 import type { AutoUpdateStatus } from "../main/auto-updater"
+import type { NapiServerConfig } from "../../../compute-native"
+import type { SocialProfileParams, SocialProfileUpdateParams, SocialFollowParams, SocialUnfollowParams, SocialGetFeedParams, SocialEndorseParams, SocialGetEndorsementsParams, SocialBlockParams, SocialUnblockParams, SocialGetScoreParams } from "../main/ipc-contract"
+import type { SocialProfile, SocialProfileUpdate, FollowRecord, FeedItem, Endorsement, BlockEntry, DharmaSocialScore } from "@tribunus/runtime/tribunus/dharma/codex/codex-social"
 
 export type InitStep =
   | { phase: "server_waiting" }
@@ -221,6 +224,10 @@ export type ElectronAPI = {
 
   /** Internal map for pluginOff() to look up the IPC listener by channel+handler key. */
   _pluginListeners: Map<string, (event: unknown, payload: { channel: string; data: unknown }) => void>
+  /** Call the inference engine to generate a response. Streams tokens via onConversationStreamToken. */
+  conversationEngineGenerate: (sessionId: string, prompt: string, maxTokens: number) => Promise<{ ok: boolean; error?: string }>
+  /** Listen for streamed tokens from an active engine generation. Returns unsubscribe. */
+  onConversationStreamToken: (cb: (token: string) => void) => () => void
   /** Plugin transport — fire-and-forget message to main process */
   pluginSend: (channel: string, data?: unknown) => void
   /** Plugin transport — subscribe to push messages from main process */
@@ -229,4 +236,20 @@ export type ElectronAPI = {
   pluginOff: (channel: string, handler: (data: unknown) => void) => void
   /** Plugin transport — request/response RPC to main process */
   pluginInvoke: (channel: string, data?: unknown) => Promise<unknown>
+  getPrismConfig: () => Promise<NapiServerConfig>
+  loadPrismConfigFrom: (path: string) => Promise<NapiServerConfig>
+  getPrismConfigJson: () => Promise<string>
+  socialGetProfile: (params: SocialProfileParams) => Promise<SocialProfile | null>
+  socialUpdateProfile: (params: SocialProfileUpdateParams) => Promise<SocialProfile>
+  socialFollow: (params: SocialFollowParams) => Promise<void>
+  socialUnfollow: (params: SocialUnfollowParams) => Promise<void>
+  socialGetFollowers: (params: SocialProfileParams) => Promise<FollowRecord[]>
+  socialGetFollowing: (params: SocialProfileParams) => Promise<FollowRecord[]>
+  socialGetFeed: (params: SocialGetFeedParams) => Promise<FeedItem[]>
+  socialEndorse: (params: SocialEndorseParams) => Promise<void>
+  socialGetEndorsements: (params: SocialGetEndorsementsParams) => Promise<Endorsement[]>
+  socialGetBlocked: (params: SocialProfileParams) => Promise<BlockEntry[]>
+  socialBlockUser: (params: SocialBlockParams) => Promise<void>
+  socialUnblockUser: (params: SocialUnblockParams) => Promise<void>
+  socialGetScore: (params: SocialGetScoreParams) => Promise<DharmaSocialScore | null>
 }

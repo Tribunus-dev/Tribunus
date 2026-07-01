@@ -1,0 +1,36 @@
+diff a/packages/compute-native/compute-core/src/storage_adapters/pg.rs b/packages/compute-native/compute-core/src/storage_adapters/pg.rs	(rejected hunks)
+@@ -1,7 +1,7 @@
+-use async_trait::async_trait;
+-use tokio_postgres::{Client, NoTls};
+ use crate::storage_kernel::{DurableAuthorityPort, DurableReceiptRecord};
+ use crate::Result;
++use async_trait::async_trait;
++use tokio_postgres::{Client, NoTls};
+ 
+ pub struct PgAdapter {
+     client: Client,
+@@ -26,8 +26,12 @@ impl PgAdapter {
+ #[async_trait]
+ impl DurableAuthorityPort for PgAdapter {
+     async fn get_receipt(&self, work_id: &str) -> Result<Option<DurableReceiptRecord>> {
+-        let row = self.client
+-            .query_opt("SELECT receipt_id, work_id, timestamp FROM durable_receipts WHERE work_id = $1", &[&work_id])
++        let row = self
++            .client
++            .query_opt(
++                "SELECT receipt_id, work_id, timestamp FROM durable_receipts WHERE work_id = $1",
++                &[&work_id],
++            )
+             .await
+             .map_err(|e| crate::Error::new(crate::Status::InternalError, e.to_string()))?;
+ 
+@@ -40,7 +44,8 @@ impl DurableAuthorityPort for PgAdapter {
+ 
+     async fn commit_receipt(&self, record: DurableReceiptRecord) -> Result<()> {
+         let ts = record.timestamp as i64;
+-        let params: &[&(dyn tokio_postgres::types::ToSql + Sync)] = &[&record.receipt_id, &record.work_id, &ts];
++        let params: &[&(dyn tokio_postgres::types::ToSql + Sync)] =
++            &[&record.receipt_id, &record.work_id, &ts];
+         self.client
+             .execute(
+                 "INSERT INTO durable_receipts (receipt_id, work_id, timestamp) VALUES ($1, $2, $3)",

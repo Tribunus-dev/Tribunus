@@ -1,0 +1,14 @@
+diff a/packages/compute-native/src/golden_path/backend.rs b/packages/compute-native/src/golden_path/backend.rs	(rejected hunks)
+@@ -17,11 +17,7 @@ unsafe impl Send for MemoryView {}
+ unsafe impl Sync for MemoryView {}
+ 
+ pub trait GoldenPathBackend: Send + Sync {
+-    fn initialize(
+-        &mut self,
+-        plan: &GoldenPathPlan,
+-        views: Vec<MemoryView>,
+-    ) -> Result<(), String>;
++    fn initialize(&mut self, plan: &GoldenPathPlan, views: Vec<MemoryView>) -> Result<(), String>;
+ 
+     fn execute(&mut self, block: &BlockDescriptor) -> Result<AuditEvent, String>;
+ 

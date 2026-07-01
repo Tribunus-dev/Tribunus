@@ -1,0 +1,11 @@
+diff a/packages/compute-native/src/golden_path/mod.rs b/packages/compute-native/src/golden_path/mod.rs	(rejected hunks)
+@@ -1,7 +1,7 @@
+-pub mod schema;
+ pub mod backend;
+-pub mod executor;
+ pub mod backends;
++pub mod executor;
++pub mod schema;
+ pub mod violations;
+ 
+ #[cfg(test)]

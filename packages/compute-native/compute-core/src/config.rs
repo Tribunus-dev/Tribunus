@@ -239,6 +239,9 @@ pub struct LayerPlan {
     pub layer_scalar_ids: Vec<u32>,
     /// Quantization descriptor IDs for packed weight groups.
     pub quantization_ids: Vec<String>,
+    /// Optional RMSNorm execution route selected at compile time.
+    #[serde(default)]
+    pub rmsnorm_route: Option<RmsNormExecutionRoute>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -422,6 +425,7 @@ pub fn build_execution_plan(
             pre_ffw_layernorm_tensor_id: None,
             post_ffw_layernorm_tensor_id: None,
             layer_scalar_ids: Vec::new(),
+            rmsnorm_route: None,
             quantization_ids: Vec::new(),
         });
     }
@@ -1024,6 +1028,35 @@ pub struct CompilationPlan {
     pub total_image_bytes: u64,
 }
 
+// ── RMSNorm Execution Route ─────────────────────────────────────────────────
+
+/// Route for RMSNorm execution — chosen at compile time from the manifest.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RmsNormExecutionRoute {
+    pub layer_index: u32,
+    pub norm_site: RmsNormSite,
+    pub primary_route: RmsNormRouteKind,
+}
+
+// Note: no Copy derive — String fields in AccelerateComputeImageArtifact break it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum RmsNormRouteKind {
+    LegacyTensorBackend,
+    AccelerateComputeImageArtifact {
+        artifact_id: String,
+        artifact_hash: String,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum RmsNormSite {
+    PreAttention,
+    PostAttention,
+    PreMlp,
+    PostMlp,
+    FinalNorm,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1059,6 +1092,7 @@ mod tests {
             pre_ffw_layernorm_tensor_id: None,
             post_ffw_layernorm_tensor_id: None,
             layer_scalar_ids: Vec::new(),
+            rmsnorm_route: None,
             quantization_ids: Vec::new(),
         }
     }

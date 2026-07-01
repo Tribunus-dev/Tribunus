@@ -16,6 +16,7 @@ pub mod lowering;
 pub mod ane;
 pub mod pipeline_spec;
 pub mod pipeline_sparse;
+pub mod tensix_weight_lowering;
 
 #[cfg(test)]
 mod pipeline_tests;

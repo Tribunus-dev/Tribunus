@@ -50,7 +50,7 @@ pub struct MemoryRange {
 pub struct BlockDescriptor {
     pub block_id: String,
     pub processor: String, // "cpu" | "gpu" | "npu"
-    pub backend: String, // "accelerate" | "mlx-metal" | "coreml"
+    pub backend: String,   // "accelerate" | "mlx-metal" | "coreml"
     pub kernel_identity: String,
     pub input_offsets: Vec<MemoryRange>,
     pub output_offsets: Vec<MemoryRange>,
@@ -91,4 +91,10 @@ pub struct AuditEvent {
     pub output_checksum: Option<[u8; 32]>,
     pub tolerance_met: Option<bool>,
     pub error: Option<String>,
+    pub artifact_hash: Option<String>,
+    pub device_profile_hash: Option<String>,
+    pub region_bindings: Option<Vec<MemoryRange>>,
+    pub core_range: Option<String>,
+    pub queue: Option<String>,
+    pub elapsed_time_ns: Option<u64>,
 }

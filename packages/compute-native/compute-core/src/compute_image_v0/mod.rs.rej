@@ -1,0 +1,6 @@
+diff a/packages/compute-native/compute-core/src/compute_image_v0/mod.rs b/packages/compute-native/compute-core/src/compute_image_v0/mod.rs	(rejected hunks)
+@@ -3,3 +3,4 @@ pub mod evidence;
+ pub mod resolver;
+ pub mod schema;
+ pub mod verifier;
++pub mod tensix;

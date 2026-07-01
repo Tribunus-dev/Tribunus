@@ -26,5 +26,8 @@ jobs:
       - name: Verify compute contracts
         run: bun run packages/compute-native/scripts/verify-compute-contracts.ts
 
+      - name: Verify Tensix TT-Metalium pin
+        run: bun run packages/compute-native/scripts/verify-tensix-pin.ts
+
       - name: Cargo metadata check
         run: cd packages/compute-native && cargo metadata --format-version 1 > /dev/null

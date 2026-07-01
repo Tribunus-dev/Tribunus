@@ -7,8 +7,8 @@
 pub mod artifacts;
 pub mod build;
 pub mod legality;
-pub mod weight;
 pub mod rules;
+pub mod weight;
 
 #[cfg(test)]
 mod tests;

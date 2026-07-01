@@ -49,6 +49,7 @@ impl WeightStagingRing {
 
 pub enum BatchFamily {
     B1,
+    B2,
     B4,
     B8,
     B16,
@@ -59,6 +60,7 @@ impl BatchFamily {
     pub fn from_size(size: usize) -> Option<Self> {
         match size {
             1 => Some(BatchFamily::B1),
+            2 => Some(BatchFamily::B2),
             4 => Some(BatchFamily::B4),
             8 => Some(BatchFamily::B8),
             16 => Some(BatchFamily::B16),
@@ -88,6 +90,28 @@ impl BatchScheduler {
     pub fn find_free_slot(&self) -> Option<usize> {
         self.slots.iter().position(|s| s.is_none())
     }
+    
+    pub fn schedule_batch(&mut self, tokens: Vec<u32>) -> Result<Vec<usize>> {
+        let mut allocated_slots = Vec::new();
+        for &token in &tokens {
+            if let Some(slot) = self.find_free_slot() {
+                self.slots[slot] = Some(token);
+                allocated_slots.push(slot);
+            } else {
+                for slot in allocated_slots {
+                    self.slots[slot] = None;
+                }
+                return Err(anyhow::anyhow!("No free batch slots available"));
+            }
+        }
+        Ok(allocated_slots)
+    }
+
+    pub fn free_slot(&mut self, slot: usize) {
+        if slot < self.slots.len() {
+            self.slots[slot] = None;
+        }
+    }
 }
 
 fn mock_execute_graph(batch_size: usize) -> Result<Tensor> {
@@ -95,16 +119,19 @@ fn mock_execute_graph(batch_size: usize) -> Result<Tensor> {
     mlx_rs::zeros::<f32>(&[batch_size as i32, 32000]).map_err(|e| anyhow::anyhow!("Mock error: {:?}", e))
 }
 
-pub fn decode_step(
-    token: u32,
+
+pub fn decode_step_batch(
+    tokens: &[u32],
     _compute_image: &CompiledImage,
-    _kv_cache: &mut KVCache,
+    _kv_caches: &mut [&mut KVCache],
+    scheduler: &mut BatchScheduler,
     _arena: &mut Arena,
-) -> Result<(DecodeResult, DecodeReceipt)> {
+) -> Result<Vec<(DecodeResult, DecodeReceipt)>> {
     let start_total = Instant::now();
+    let batch_size = tokens.len();
     
-    // Determine batch size and backend properties
-    let batch_size = 1; // Example fixed batch size
+    let allocated_slots = scheduler.schedule_batch(tokens.to_vec())?;
+    
     let batch_family = BatchFamily::from_size(batch_size)
         .unwrap_or(BatchFamily::B1);
         
@@ -125,55 +152,75 @@ pub fn decode_step(
     
     let layers = 32; // Standard 32 layers
     for layer in 0..layers {
-        // 1. Gather KV (paged block table)
         let t_kv = Instant::now();
-        // mock gather...
         kv_gather_us += t_kv.elapsed().as_micros() as u64;
         
-        // 2. Weight-staging ring prefetch overlapped with compute
         staging_ring.prefetch_next_layer(layer);
         
-        // 3. Attention
         let t_att = Instant::now();
-        // mock attention...
         attention_us += t_att.elapsed().as_micros() as u64;
         
-        // 4. MLP
         let t_mlp = Instant::now();
-        // mock mlp...
         mlp_us += t_mlp.elapsed().as_micros() as u64;
     }
     
-    // 5. Logits
     let t_logits = Instant::now();
-    let logits = mock_execute_graph(batch_size)?;
+    // Simulate batch execution
+    let _logits = mock_execute_graph(batch_size)?;
     let logits_us = t_logits.elapsed().as_micros() as u64;
     
     let total_us = start_total.elapsed().as_micros() as u64;
     
-    let receipt = DecodeReceipt {
-        decode_step: 0,
-        tokens_per_step: 1,
-        kv_gather_us,
-        attention_us,
-        mlp_us,
-        logits_us,
-        total_us,
-        batch_slot: 0,
-        batch_size,
-    };
+    let mut results = Vec::new();
     
-    let result = DecodeResult {
-        logits,
-        token,
-        kv_pages_written: vec![],
-        decode_time_us: total_us,
-        backend: backend_name.to_string(),
-    };
+    for (i, (&token, &slot)) in tokens.iter().zip(allocated_slots.iter()).enumerate() {
+        let mut kv_pages_written = Vec::new();
+        if let Some(cache) = _kv_caches.get_mut(i) {
+            // Mock appending to per-sequence cache
+            kv_pages_written.push(cache.required_blocks.len() as u64);
+        }
+
+        let receipt = DecodeReceipt {
+            decode_step: 0,
+            tokens_per_step: 1,
+            kv_gather_us,
+            attention_us,
+            mlp_us,
+            logits_us,
+            total_us,
+            batch_slot: slot,
+            batch_size,
+        };
+        
+        let result = DecodeResult {
+            logits: mock_execute_graph(1)?,
+            token,
+            kv_pages_written,
+            decode_time_us: total_us,
+            backend: backend_name.to_string(),
+        };
+        
+        results.push((result, receipt));
+        // Do not free slots immediately; let the caller manage sequence completion
+    }
     
-    Ok((result, receipt))
+    Ok(results)
 }
 
+
+pub fn decode_step(
+    token: u32,
+    _compute_image: &CompiledImage,
+    _kv_cache: &mut KVCache,
+    _arena: &mut Arena,
+) -> Result<(DecodeResult, DecodeReceipt)> {
+    let mut scheduler = BatchScheduler::new(1);
+    let mut kv_caches = vec![_kv_cache];
+    let mut results = decode_step_batch(&[token], _compute_image, &mut kv_caches, &mut scheduler, _arena)?;
+    let result = results.remove(0);
+    scheduler.free_slot(result.1.batch_slot);
+    Ok(result)
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -212,5 +259,49 @@ mod tests {
             assert!(res.decode_time_us < 50_000, "Decode time exceeded 50ms for token {}", i);
             assert!(receipt.total_us < 50_000);
         }
+    }
+
+    #[test]
+    fn test_decode_step_batch() {
+        let manifest = Manifest {
+            architecture: "Mock".to_string(),
+            version: 1,
+            tensor_entries: std::collections::HashMap::new(),
+            aliases: std::collections::HashMap::new(),
+            residency_plan: None,
+        };
+        let image = CompiledImage {
+            manifest,
+            segments: vec![],
+        };
+        let mut kv_caches = vec![KVCache { required_blocks: vec![] }, KVCache { required_blocks: vec![] }];
+        let mut kv_cache_refs: Vec<&mut KVCache> = kv_caches.iter_mut().collect();
+        let mut scheduler = BatchScheduler::new(4);
+        let mut arena = Arena::new(ArenaConfig::default(), Box::new(MockLane));
+        
+        // Batch 2
+        let tokens = vec![1, 2];
+        let results = decode_step_batch(&tokens, &image, &mut kv_cache_refs, &mut scheduler, &mut arena).unwrap();
+        assert_eq!(results.len(), 2);
+        assert_eq!(results[0].0.token, 1);
+        assert_eq!(results[1].0.token, 2);
+        assert_eq!(results[0].1.batch_size, 2);
+        
+        // Free slots to run second test
+        scheduler.free_slot(0);
+        scheduler.free_slot(1);
+
+        // Batch 4
+        let tokens = vec![3, 4, 5, 6];
+        let mut kv_caches_4 = vec![
+            KVCache { required_blocks: vec![] }, 
+            KVCache { required_blocks: vec![] },
+            KVCache { required_blocks: vec![] },
+            KVCache { required_blocks: vec![] }
+        ];
+        let mut kv_cache_refs_4: Vec<&mut KVCache> = kv_caches_4.iter_mut().collect();
+        let results = decode_step_batch(&tokens, &image, &mut kv_cache_refs_4, &mut scheduler, &mut arena).unwrap();
+        assert_eq!(results.len(), 4);
+        assert_eq!(results[0].1.batch_size, 4);
     }
 }
