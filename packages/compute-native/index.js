@@ -1,35 +1,54 @@
 // Prism Engine napi bindings
-// Loads the platform-specific native addon.
+import { existsSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const { existsSync } = require('node:fs')
-const { join } = require('node:path')
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const require = createRequire(import.meta.url)
 
-function getPlatformTriple() {
-  const arch = process.arch
-  const platform = process.platform
-  if (platform === 'darwin' && arch === 'arm64') return 'darwin-arm64'
-  if (platform === 'darwin' && arch === 'x64') return 'darwin-x64'
-  if (platform === 'linux' && arch === 'arm64') return 'linux-arm64'
-  if (platform === 'linux' && arch === 'x64') return 'linux-x64'
+const t = (() => {
+  const a = process.arch, p = process.platform
+  if (p === 'darwin' && a === 'arm64') return 'darwin-arm64'
+  if (p === 'darwin' && a === 'x64') return 'darwin-x64'
+  if (p === 'linux' && a === 'arm64') return 'linux-arm64'
+  if (p === 'linux' && a === 'x64') return 'linux-x64'
   return null
-}
+})()
 
-const triple = getPlatformTriple()
-if (!triple) {
-  throw new Error(
-    `Unsupported platform: ${process.platform} ${process.arch}. ` +
-    'Prism Engine currently supports: darwin-arm64, darwin-x64, linux-arm64, linux-x64'
-  )
-}
+if (!t) throw new Error(`unsupported: ${process.platform} ${process.arch}`)
 
-const addonPath = join(__dirname, `prism-engine.${triple}.node`)
+const ps = [
+  join(__dirname, `prism-engine.${t}.node`),
+  join(__dirname, `tribunus-compute-native.${t}.node`),
+]
 
-if (!existsSync(addonPath)) {
-  throw new Error(
-    `Prism Engine native addon not found at ${addonPath}. ` +
-    'Build it with: cargo build -p prism-napi --release && cp target/release/libprism_napi.dylib packages/compute-native/prism-engine.darwin-arm64.node'
-  )
-}
+let mod = null
+for (const p of ps) { if (existsSync(p)) { mod = require(p); break } }
+if (!mod) throw new Error(`No addon found (tried ${ps.join(', ')})`)
 
-const native = require(addonPath)
-module.exports = native
+export default mod
+export const {
+  PrismInferenceServer,
+  ComputeEngine,
+  engineGenerate,
+  engineCancelGeneration,
+  engineInstallModel,
+  nativeCapabilityReport,
+  generationChannel,
+  GenerationSender,
+  GenerationStream,
+  compileImage,
+  readCompiledImage,
+  verifyCompiledImage,
+  inspectSafetensors,
+  loadSafetensors,
+  detectDefaultDevice,
+  mlxActiveMemory,
+  mlxClearCache,
+  gemmaForward,
+  gemma412BConfig,
+  gemmaSampleGreedy,
+  runFullModelFromImage,
+  validateEventSequence,
+} = mod

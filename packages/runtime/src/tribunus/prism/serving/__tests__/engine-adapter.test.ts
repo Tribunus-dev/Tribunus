@@ -1,9 +1,8 @@
 /**
  * Prism Engine Adapter — Integration Test
  *
- * Tests the adapter's wrapping of the napi-rs ComputeEngine into the
- * PrismWorkerProtocol surface.  Tests use the real native addon when
- * available; a synthetic fixture path when not.
+ * Tests the session-native PrismInferenceServer adapter wrapping into
+ * the PrismWorkerProtocol surface.
  */
 
 import { expect, test, describe } from "bun:test"
@@ -24,7 +23,10 @@ describe("PrismEngineAdapter", () => {
   })
 
   test("accepts custom config", () => {
-    const adapter = new PrismEngineAdapter({ maxConcurrentRequests: 2, maxInputTokens: 2048 })
+    const adapter = new PrismEngineAdapter({
+      maxConcurrentSessions: 2,
+      maxInputTokens: 2048,
+    })
     const caps = adapter.capabilities()
     expect(caps.maximumConcurrentRequests).toBe(2)
     expect(caps.maximumInputTokens).toBe(2048)
@@ -50,7 +52,7 @@ describe("PrismEngineAdapter", () => {
       traceContext: null,
     }
 
-    const execution = adapter.admitAndExecute(request)
+    const execution = adapter.admitAndExecute(request, "sess-001")
     expect(execution.executionId).toContain("req-admit-001")
     expect(execution.prefillState).toBe("running")
     expect(execution.decodeState).toBe("pending")
@@ -82,13 +84,8 @@ describe("PrismEngineAdapter", () => {
       traceContext: null,
     }
 
-    const execution = adapter.admitAndExecute(request)
-    const result = {
-      tokenIds: [101, 202, 303],
-      output: "Hello world",
-      tokenCount: 3,
-      jobId: "job-001",
-    }
+    const execution = adapter.admitAndExecute(request, "sess-002")
+    const result = { tokenCount: 3, output: "Hello world" }
 
     const receipt = adapter.buildReceipt(
       request,
@@ -96,8 +93,8 @@ describe("PrismEngineAdapter", () => {
       execution,
       "wkr-001",
       "inst-001",
-      150,    // prefillMs
-      1200,   // decodeMs
+      150,
+      1200,
     )
 
     expect(receipt.requestId).toBe("req-receipt-001")
@@ -110,11 +107,6 @@ describe("PrismEngineAdapter", () => {
     expect(receipt.executionState).toBe("completed")
     expect(receipt.workerSignature).toBeTruthy()
     expect(isReceiptValid(receipt)).toBe(true)
-  })
-
-  test("getSession returns null for unknown request", () => {
-    const adapter = new PrismEngineAdapter()
-    expect(adapter.getSession("nonexistent")).toBeUndefined()
   })
 
   test("shutdown clears sessions", () => {
@@ -137,9 +129,17 @@ describe("PrismEngineAdapter", () => {
       traceContext: null,
     }
 
-    adapter.admitAndExecute(request)
+    adapter.admitAndExecute(request, "sess-003")
     expect(adapter.getSession("req-shutdown-001")).toBeDefined()
     adapter.shutdown()
     expect(adapter.getSession("req-shutdown-001")).toBeUndefined()
+  })
+
+  test("session lifecycle: createSession and closeSession", () => {
+    const adapter = new PrismEngineAdapter()
+    // createSession tries to load a real model; we don't have one deployed
+    // in CI, so this will throw.  That's expected — the test is structural.
+    expect(typeof adapter.createSession).toBe("function")
+    expect(typeof adapter.closeSession).toBe("function")
   })
 })

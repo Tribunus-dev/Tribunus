@@ -1,26 +1,27 @@
 /**
  * Prism Engine Adapter
  *
- * Wraps the napi-rs Prism Engine (`ComputeEngine`) into the existing
- * PrismWorkerProtocol interface, replacing fixture-based execution with
- * real model inference.
- *
- * The adapter manages:
- * - engine process/model lifecycle via ComputeEngine
- * - request → generation → receipt flow
- * - KV namespace lifecycle tracking on the engine side
- * - cancellation propagation to the engine
- * - Dharma lease correlation for receipts
+ * Wraps PrismInferenceServer (session-native napi bindings) into the existing
+ * PrismWorkerProtocol interface, providing createSession → generate →
+ * cancel → closeSession with real model execution, KV tracking, timing,
+ * and receipt correlation.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { ComputeEngine } = require("../../../../../compute-native") as typeof import("../../../../../compute-native")
-type NapiEngineCapabilities = import("../../../../../compute-native").NapiEngineCapabilities
-type NapiGenerationResult = import("../../../../../compute-native").NapiGenerationResult
+const native = require("../../../../../compute-native") as {
+  PrismInferenceServer: new (config: {
+    modelStorePath: string
+    maxConcurrentSessions: number
+    maxInputTokens: number
+    maxOutputTokens: number
+  }) => InstanceType<typeof import("../../../../../compute-native").PrismInferenceServer>
+  NapiEngineCapabilities: unknown
+  NapiGenerationResult: unknown
+  NapiUsageReceipt: unknown
+}
 
 import type {
   PrismWorkerCapabilities,
-  PrismWorkerModel,
   PrismWorkerRequest,
   PrismWorkerUsageReceipt,
   PrismRequestExecution,
@@ -28,57 +29,56 @@ import type {
 } from "./worker-types"
 
 import { createWorkerReceipt, isReceiptValid } from "./worker-receipts"
-import { createExecution, startExecution, completeExecution, failExecution, cancelExecution } from "./worker-request-store"
+import { createExecution, startExecution, completeExecution, cancelExecution } from "./worker-request-store"
 
 // ── Types ───────────────────────────────────────────────────────────────
 
 export interface EngineAdapterConfig {
-  /** Path to the model store root directory */
   modelStorePath?: string
-  /** Maximum concurrent requests */
-  maxConcurrentRequests: number
-  /** Maximum input tokens per request */
-  maxInputTokens: number
-  /** Maximum output tokens per request */
-  maxOutputTokens: number
-}
-
-export interface EngineSession {
-  execution: PrismRequestExecution
-  request: PrismWorkerRequest
-  result: NapiGenerationResult | null
-  startedAt: string
+  maxConcurrentSessions?: number
+  maxInputTokens?: number
+  maxOutputTokens?: number
 }
 
 // ── Engine Adapter ──────────────────────────────────────────────────────
 
 export class PrismEngineAdapter {
-  private engine: ComputeEngine
-  private config: EngineAdapterConfig
-  private sessions: Map<string, EngineSession> = new Map()
-  private loadedModelDigest: string | null = null
+  private server: InstanceType<typeof native.PrismInferenceServer>
+  private config: Required<EngineAdapterConfig>
+  private sessions: Map<string, {
+    execution: PrismRequestExecution
+    request: PrismWorkerRequest
+    startedAt: string
+  }> = new Map()
 
-  constructor(config?: Partial<EngineAdapterConfig>) {
-    this.engine = new ComputeEngine()
+  constructor(config?: EngineAdapterConfig) {
     this.config = {
-      maxConcurrentRequests: 4,
+      modelStorePath: "",
+      maxConcurrentSessions: 4,
       maxInputTokens: 4096,
       maxOutputTokens: 2048,
       ...config,
     }
+
+    this.server = new native.PrismInferenceServer({
+      modelStorePath: this.config.modelStorePath,
+      maxConcurrentSessions: this.config.maxConcurrentSessions,
+      maxInputTokens: this.config.maxInputTokens,
+      maxOutputTokens: this.config.maxOutputTokens,
+    })
   }
 
   // ── Capabilities ──────────────────────────────────────────────────────
 
   capabilities(): PrismWorkerCapabilities {
-    const engineCaps: NapiEngineCapabilities = this.engine.capabilities()
+    const caps = this.server.capabilities()
     return {
       protocolVersion: 1,
       supportedWorkloadClasses: ["chat_completion", "completion"],
       supportedStreamModes: ["sse"],
       supportedArtifactFormats: ["gguf"],
-      supportedComputeTargets: engineCaps.supportsGpu ? ["metal", "cpu"] : ["cpu"],
-      maximumConcurrentRequests: this.config.maxConcurrentRequests,
+      supportedComputeTargets: caps.supportsGpu ? ["metal", "cpu"] : ["cpu"],
+      maximumConcurrentRequests: this.config.maxConcurrentSessions,
       maximumInputTokens: this.config.maxInputTokens,
       maximumOutputTokens: this.config.maxOutputTokens,
       supportsCancellation: true,
@@ -89,34 +89,26 @@ export class PrismEngineAdapter {
     }
   }
 
-  // ── Model Actions ─────────────────────────────────────────────────────
+  // ── Session Lifecycle ─────────────────────────────────────────────────
 
-  /** Load a model by its compute-image digest. */
-  loadModel(imageHash: string): void {
-    this.engine.loadModel(imageHash)
-    this.loadedModelDigest = imageHash
+  /** Create a session and load a model. Returns the session ID. */
+  createSession(modelDigest: string): string {
+    return this.server.createSession(modelDigest)
   }
 
-  /** Unload the currently loaded model. */
-  unloadModel(): void {
-    this.engine.unloadModel()
-    this.loadedModelDigest = null
-  }
-
-  /** Returns the loaded model digest, or null if nothing is loaded. */
-  getLoadedModelDigest(): string | null {
-    return this.loadedModelDigest
+  /** Close a session and release all native resources. */
+  closeSession(sessionId: string): void {
+    this.server.closeSession(sessionId)
+    this.sessions.delete(sessionId)
   }
 
   // ── Request Actions ──────────────────────────────────────────────────
 
   /**
    * Admit and execute a request against the real engine.
-   *
-   * Returns the execution record with real prefill/decode state, or throws
-   * if the engine rejects the request.
+   * Creates an execution record; actual generation happens in `generate()`.
    */
-  admitAndExecute(request: PrismWorkerRequest): PrismRequestExecution {
+  admitAndExecute(request: PrismWorkerRequest, sessionId: string): PrismRequestExecution {
     const execution = createExecution(
       `exec-${request.requestId}`,
       request.requestId,
@@ -127,7 +119,6 @@ export class PrismEngineAdapter {
     this.sessions.set(request.requestId, {
       execution: started,
       request,
-      result: null,
       startedAt: new Date().toISOString(),
     })
 
@@ -135,60 +126,48 @@ export class PrismEngineAdapter {
   }
 
   /**
-   * Run generation on the engine.
+   * Run generation in a session.
    *
-   * Tokenizes the prompt via the engine, calls generate(), and returns
-   * the result with timing. Updates the execution state.
+   * Calls the native session's generate() which runs prefill + decode,
+   * collects timing, and returns the result with token IDs and output text.
    */
   generate(
+    sessionId: string,
     requestId: string,
     inputIds: number[],
     maxTokens: number,
-  ): NapiGenerationResult {
+  ) {
     const session = this.sessions.get(requestId)
     if (!session) {
       throw new Error(`no session for request ${requestId}`)
     }
 
-    const result = this.engine.generate(inputIds, maxTokens)
-
-    const completed = completeExecution(session.execution)
-    session.execution = completed
-    session.result = result
+    const result = this.server.generate(sessionId, inputIds, maxTokens)
+    session.execution = completeExecution(session.execution)
 
     return result
   }
 
   /**
    * Cancel an in-flight generation.
+   * Returns a usage receipt from the session.
    */
-  cancelRequest(requestId: string): void {
+  cancelRequest(requestId: string, sessionId: string) {
     const session = this.sessions.get(requestId)
     if (!session) return
 
-    if (session.result) {
-      // Already completed — nothing to cancel.
-      return
-    }
-
-    // The engine currently supports cancellation by the job_id returned from
-    // generate().  If no result exists yet, cancel using the request's
-    // execution ID as a proxy.
-    try {
-      this.engine.cancel(requestId)
-    } catch {
-      // Engine may not have a generation running under this id.
-    }
-
+    const receipt = this.server.cancel(sessionId)
     session.execution = cancelExecution(session.execution)
+
+    return receipt
   }
 
   /**
-   * Build a usage receipt from a completed engine generation.
+   * Build a PrismWorkerUsageReceipt from engine output.
    */
   buildReceipt(
     request: PrismWorkerRequest,
-    result: NapiGenerationResult,
+    result: { tokenCount: number; output: string },
     execution: PrismRequestExecution,
     workerId: string,
     instanceId: string,
@@ -197,10 +176,7 @@ export class PrismEngineAdapter {
   ): PrismWorkerUsageReceipt {
     return createWorkerReceipt({
       request,
-      worker: {
-        workerId,
-        workerInstanceId: instanceId,
-      } as any,
+      worker: { workerId, workerInstanceId: instanceId } as any,
       execution,
       inputTokens: request.maxInputTokens,
       outputTokens: result.tokenCount,
@@ -214,26 +190,34 @@ export class PrismEngineAdapter {
 
   // ── Session Queries ──────────────────────────────────────────────────
 
-  getSession(requestId: string): EngineSession | undefined {
+  getSession(requestId: string) {
     return this.sessions.get(requestId)
-  }
-
-  removeSession(requestId: string): void {
-    this.sessions.delete(requestId)
   }
 
   // ── Health ────────────────────────────────────────────────────────────
 
   isHealthy(): boolean {
-    return this.engine.capabilities() !== null
+    try {
+      this.server.capabilities()
+      return true
+    } catch {
+      return false
+    }
   }
 
   // ── Cleanup ───────────────────────────────────────────────────────────
 
   shutdown(): void {
-    if (this.loadedModelDigest) {
-      this.engine.unloadModel()
+    for (const [, session] of this.sessions) {
+      // Native sessions are created separately via createSession().
+      // In-memory sessions (from admitAndExecute) don't have native
+      // session handles unless createSession was also called.
     }
     this.sessions.clear()
   }
 }
+
+/**
+ * Type guard for native session handles.
+ */
+export type NativeSessionHandle = string
