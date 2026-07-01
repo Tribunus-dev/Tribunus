@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron"
+import { join } from "node:path"
 import type { StorageMigrationProgress } from "../preload/types"
 import { IPC } from "./ipc-channels"
 import { registerConfigIpcHandlers } from "./ipc-config"
@@ -16,6 +17,7 @@ import { registerGitIpcHandlers } from "./ipc-git"
 import { registerSecretIpcHandlers } from "./desktop-secret-store"
 import { registerNotificationIpcHandlers } from "./desktop-notification-service"
 import { validateRegisteredIpcHandlers } from "./ipc-registration"
+import { registerConversationHandlers } from "./ipc/conversation-handlers"
 let registered = false
 
 export function registerIpcHandlers(deps: InitDeps) {
@@ -35,6 +37,11 @@ export function registerIpcHandlers(deps: InitDeps) {
   registerGitIpcHandlers()
   registerSecretIpcHandlers()
   registerNotificationIpcHandlers()
+
+  registerConversationHandlers({
+    journalDir: join(app.getPath("userData"), "state", "conversations"),
+    valkey: null,
+  })
 
   const issues = validateRegisteredIpcHandlers()
   if (issues.length > 0) {

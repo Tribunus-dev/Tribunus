@@ -87,6 +87,12 @@ export const IPC = {
     NOTIFICATIONS_NOTIFY: "tribunus:notifications-notify",
     NOTIFICATIONS_STATUS: "tribunus:notifications-status",
     NOTIFICATIONS_SET_PREFERENCES: "tribunus:notifications-set-preferences",
+    // ── Conversation (PGlite + Valkey) ──────────────────────
+    CONVERSATION_APPEND: "tribunus:conversation:append",
+    CONVERSATION_FETCH_HISTORY: "tribunus:conversation:fetch-history",
+    CONVERSATION_CACHE_APPEND: "tribunus:conversation:cache-append",
+    CONVERSATION_INIT_SESSION: "tribunus:conversation:init-session",
+    CONVERSATION_SUBSCRIBE_STREAM: "tribunus:conversation:subscribe-stream",
   } as const,
 
   send: {

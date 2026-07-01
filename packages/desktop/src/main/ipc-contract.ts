@@ -146,6 +146,13 @@ export const CHANNELS = {
     export: IPC.handle.SESSION_EXPORT_DATA,
     import: IPC.handle.SESSION_IMPORT_FILE,
   },
+  conversation: {
+    initSession: IPC.handle.CONVERSATION_INIT_SESSION,
+    appendMessage: IPC.handle.CONVERSATION_APPEND,
+    cacheAppend: IPC.handle.CONVERSATION_CACHE_APPEND,
+    fetchHistory: IPC.handle.CONVERSATION_FETCH_HISTORY,
+    subscribeStream: IPC.handle.CONVERSATION_SUBSCRIBE_STREAM,
+  },
   window: {
     getCount: IPC.handle.GET_WINDOW_COUNT,
     getFocused: IPC.handle.GET_WINDOW_FOCUSED,
@@ -450,6 +457,12 @@ interface BridgeHandleMap {
   notificationsNotify: typeof IPC.handle.NOTIFICATIONS_NOTIFY
   notificationsStatus: typeof IPC.handle.NOTIFICATIONS_STATUS
   notificationsSetPreferences: typeof IPC.handle.NOTIFICATIONS_SET_PREFERENCES
+
+  // ── Conversation ────────────────────────────────────────
+  conversationInitSession: typeof IPC.handle.CONVERSATION_INIT_SESSION
+  conversationAppendMessage: typeof IPC.handle.CONVERSATION_APPEND
+  conversationCacheAppend: typeof IPC.handle.CONVERSATION_CACHE_APPEND
+  conversationFetchHistory: typeof IPC.handle.CONVERSATION_FETCH_HISTORY
 }
 
 /** @internal — Bridge send-method → IPC send channel constant mapping */
@@ -643,6 +656,13 @@ export const IPC_METHOD_REGISTRY: {
   { channel: IPC.handle.NOTIFICATIONS_NOTIFY, usesIpcResult: true, returns: "IpcResult<boolean>", rendererSees: "boolean" },
   { channel: IPC.handle.NOTIFICATIONS_STATUS, usesIpcResult: true, returns: "IpcResult<{ supported: boolean; enabled: boolean; permission: string }>", rendererSees: "{ supported: boolean; enabled: boolean; permission: string }" },
   { channel: IPC.handle.NOTIFICATIONS_SET_PREFERENCES, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+
+  // ── Conversation ────────────────────────────────────────
+  { channel: IPC.handle.CONVERSATION_INIT_SESSION, usesIpcResult: true, returns: "IpcResult<any[]>", rendererSees: "any[]" },
+  { channel: IPC.handle.CONVERSATION_APPEND, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.CONVERSATION_CACHE_APPEND, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.CONVERSATION_FETCH_HISTORY, usesIpcResult: true, returns: "IpcResult<any[]>", rendererSees: "any[]" },
+  { channel: IPC.handle.CONVERSATION_SUBSCRIBE_STREAM, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
 ]
 
 // ── Runtime Validation ───────────────────────────────────
