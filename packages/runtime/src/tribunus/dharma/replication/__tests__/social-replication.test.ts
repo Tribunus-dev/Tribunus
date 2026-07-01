@@ -1,9 +1,43 @@
 /**
  * Dharma Social Replication — Tests
  *
- * Tests the SocialReplicationManager with in-memory storage.
- * No Hypercore or filesystem dependencies.
+ * Tests the SocialReplicationManager with in-memory and Hypercore-backed modes.
+ * Hypercore mode uses mock Hypercore instances to avoid native dependencies.
  */
+
+import { mock, describe, it, expect, beforeEach } from "bun:test"
+
+/**
+ * Mock the hyperbee module before any imports that depend on it.
+ * The real hyperbee calls db.core.registerExtension which requires
+ * a real Hypercore instance — our mock avoids this.
+ */
+mock.module("hyperbee", () => ({
+  default: class MockHyperbee {
+    readonly core: any
+    private _store = new Map<string, Buffer>()
+
+    constructor(core: any, _opts?: any) {
+      this.core = core
+    }
+    async ready(): Promise<void> {}
+    async close(): Promise<void> {}
+
+    async put(key: Buffer, value: Buffer): Promise<void> {
+      this._store.set(key.toString("utf-8"), value)
+    }
+    async get(key: Buffer): Promise<{ value: Buffer } | null> {
+      const val = this._store.get(key.toString("utf-8"))
+      return val ? { value: val } : null
+    }
+    createReadStream(opts: { gte: Buffer; lt: Buffer }): any {
+      const entries = Array.from(this._store.entries())
+        .filter(([k]) => k >= opts.gte.toString("utf-8") && k < opts.lt.toString("utf-8"))
+        .sort(([a], [b]) => a.localeCompare(b))
+      return { [Symbol.asyncIterator]: async function* () { for (const [k, v] of entries) yield { key: Buffer.from(k), value: v } } }
+    }
+  },
+}))
 
 import { describe, it, expect, beforeEach } from "bun:test"
 import { SocialReplicationManager } from "../social-replication"
@@ -451,6 +485,148 @@ describe("SocialReplicationManager", () => {
       const following = await manager.getFollowing()
       expect(following.length).toBe(1)
       expect(following[0].followeeId).toBe(PEER_BOB)
+    })
+  })
+})
+
+// ── Hypercore Mode Tests ──────────────────────────────────────────────────
+//
+// Tests the Hypercore-backed storage path. Uses mock Hypercore instances
+// and a mock Hyperbee to avoid native module dependencies.
+
+// Create a mock corestore that returns in-memory cores for social methods
+interface MockCore {
+  blocks: Buffer[]
+  length: number
+  append(data: Buffer): Promise<number>
+  get(index: number): Promise<Buffer | null>
+}
+
+function makeMockCore(): MockCore {
+  return {
+    blocks: [],
+    get length() { return this.blocks.length },
+    async append(data: Buffer): Promise<number> {
+      this.blocks.push(data)
+      return this.blocks.length - 1
+    },
+    async get(index: number): Promise<Buffer | null> {
+      return this.blocks[index] ?? null
+    },
+  }
+}
+
+function makeMockCorestore() {
+  const profileCore = makeMockCore()
+  const activityCore = makeMockCore()
+  const followBeeCore = makeMockCore()
+  return {
+    getSocialProfileCore: async () => profileCore,
+    getSocialActivityCore: async () => activityCore,
+    getSocialFollowBee: async () => followBeeCore,
+    getStore: () => ({
+      replicate: () => {},
+    }),
+    // Expose cores for inspection
+    _profileCore: profileCore,
+    _activityCore: activityCore,
+    _followBeeCore: followBeeCore,
+  }
+}
+
+function makeMockSwarm() {
+  const joined: string[] = []
+  const left: string[] = []
+  return {
+    isStarted: true,
+    connectedPeers: 3,
+    joinPeer: async (id: string) => { joined.push(id) },
+    leavePeer: async (id: string) => { left.push(id) },
+    close: async () => {},
+    _joined: joined,
+    _left: left,
+  }
+}
+
+describe("SocialReplicationManager (Hypercore mode)", () => {
+  let manager: SocialReplicationManager
+  let mockCorestore: ReturnType<typeof makeMockCorestore>
+  let mockSwarm: ReturnType<typeof makeMockSwarm>
+
+  beforeEach(async () => {
+    mockCorestore = makeMockCorestore()
+    mockSwarm = makeMockSwarm()
+    manager = new SocialReplicationManager({
+      ...TEST_CONFIG,
+      corestore: mockCorestore as any,
+      socialSwarm: mockSwarm as any,
+    })
+    await manager.initialize()
+  })
+
+  describe("initialize", () => {
+    it("creates profile and writes to profile core", async () => {
+      const profile = await manager.getProfile()
+      expect(profile).not.toBeNull()
+      expect(profile!.displayName).toBe("Alice")
+      // Profile core should have one block (the initial profile)
+      expect(mockCorestore._profileCore.length).toBe(1)
+      const block = await mockCorestore._profileCore.get(0)
+      const parsed = JSON.parse(block!.toString())
+      expect(parsed.displayName).toBe("Alice")
+    })
+  })
+
+  describe("updateProfile", () => {
+    it("appends to profile core", async () => {
+      const updated = await manager.updateProfile({ displayName: "Alice V2" })
+      expect(updated.displayName).toBe("Alice V2")
+      // Profile core should now have 2 blocks (initial + update)
+      expect(mockCorestore._profileCore.length).toBe(2)
+      const block = await mockCorestore._profileCore.get(1)
+      const parsed = JSON.parse(block!.toString())
+      expect(parsed.displayName).toBe("Alice V2")
+    })
+  })
+
+  describe("appendActivity", () => {
+    it("appends to activity core", async () => {
+      await manager.appendActivity({ type: "joined", data: {} })
+      expect(mockCorestore._activityCore.length).toBe(1)
+    })
+  })
+
+  describe("follow", () => {
+    it("writes to follow bee and joins swarm", async () => {
+      await manager.follow(PEER_BOB)
+      // Swarm should have joined Bob's topic
+      expect(mockSwarm._joined).toContain(PEER_BOB)
+    })
+  })
+
+  describe("getFollowing", () => {
+    it("returns followed users", async () => {
+      await manager.follow(PEER_BOB)
+      const following = await manager.getFollowing()
+      expect(following).toHaveLength(1)
+      expect(following[0].followeeId).toBe(PEER_BOB)
+    })
+  })
+
+  describe("unfollow", () => {
+    it("leaves swarm and marks as unfollowed", async () => {
+      await manager.follow(PEER_BOB)
+      await manager.unfollow(PEER_BOB)
+      expect(mockSwarm._left).toContain(PEER_BOB)
+      const following = await manager.getFollowing()
+      expect(following).toHaveLength(0)
+    })
+  })
+
+  describe("getSyncState", () => {
+    it("returns swarm peer count when swarm is available", async () => {
+      const state = manager.getSyncState()
+      expect(state.peerCount).toBe(3)
     })
   })
 })

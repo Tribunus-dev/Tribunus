@@ -128,9 +128,14 @@ export { recoverFromCheckpoint, isRecoveryNeeded, getRecoverySummary } from "./c
 export type { DiagnosticsSource, HealthLevel } from "./diagnostics"
 export { collectDiagnostics, deriveUserStatus, assessHealth } from "./diagnostics"
 
+// Social replication
+export type { SocialReplicationConfig, SocialSyncState } from "./social-replication"
+export { SYNC_TOPIC_PREFIX, SocialReplicationManager, SocialReplicationError } from "./social-replication"
+// Social swarm
+export { SocialSwarm, deriveSocialTopic } from "./social-swarm"
+
 // Runtime
 export type { RuntimeConfig } from "./runtime"
-export { DharmaReplicationRuntime } from "./runtime"
 
 // Runtime initialization
 export type { RuntimeInitResult } from "./runtime-init"

@@ -16,6 +16,10 @@
 
 import { randomUUID } from "node:crypto"
 import type { DharmaCorestore } from "./corestore"
+import type Hypercore from "hypercore"
+import Hyperbee from "hyperbee"
+import b4a from "b4a"
+import { SocialSwarm, deriveSocialTopic } from "./social-swarm"
 import type {
   SocialProfile,
   SocialProfileUpdate,
@@ -56,6 +60,8 @@ export interface SocialReplicationConfig {
   displayName: string
   /** Optional Corestore instance (required for Hypercore-backed operation). */
   corestore?: DharmaCorestore
+  /** Optional SocialSwarm for P2P peer discovery (used when Hypercore is enabled). */
+  socialSwarm?: SocialSwarm
 }
 
 // ── Error ──────────────────────────────────────────────────────────────────
@@ -107,6 +113,10 @@ export class SocialReplicationManager {
   private lastSyncAt: string | null = null
   private peerCount = 0
   private useHypercore = false
+  private profileCore: Hypercore<unknown> | null = null
+  private activityCore: Hypercore<unknown> | null = null
+  private followBee: Hyperbee | null = null
+  private socialSwarm: SocialSwarm | null = null
 
   constructor(config: SocialReplicationConfig) {
     this.config = { ...config }
@@ -147,12 +157,17 @@ export class SocialReplicationManager {
 
     this.stores = this.createFreshStores()
 
-    if (this.useHypercore) {
-      // Future: open or create SocialCore + SocialBee via this.config.corestore
-      //   const profileCore = await this.config.corestore!.get(`social/profile/${this.config.identityId}`)
-      //   const activityCore = await this.config.corestore!.get(`social/activity/${this.config.identityId}`)
-      //   const followCore = await this.config.corestore!.get(`social/follow/${this.config.identityId}`)
-      //   this.socialBee = new Autobase(...)
+    if (this.useHypercore && this.config.corestore) {
+      const cs = this.config.corestore
+      this.profileCore = await cs.getSocialProfileCore(this.config.identityId)
+      this.activityCore = await cs.getSocialActivityCore(this.config.identityId)
+      const followBeeCore = await cs.getSocialFollowBee(this.config.identityId)
+      this.followBee = new Hyperbee(followBeeCore)
+
+      this.socialSwarm = this.config.socialSwarm ?? null
+      if (this.socialSwarm?.isStarted) {
+        await this.socialSwarm.joinPeer(this.config.identityId)
+      }
     }
 
     // Initialize profile from config
@@ -160,6 +175,11 @@ export class SocialReplicationManager {
       this.config.identityId,
       this.config.displayName,
     )
+
+    if (this.useHypercore && this.profileCore) {
+      const encoded = b4a.from(JSON.stringify(this.stores.profile))
+      await this.profileCore.append(encoded)
+    }
 
     this.initialized = true
   }
@@ -171,7 +191,13 @@ export class SocialReplicationManager {
     this.assertInitialized()
 
     if (this.useHypercore) {
-      // Future: close all open cores and the SocialBee
+      if (this.socialSwarm?.isStarted) {
+        await this.socialSwarm.leavePeer(this.config.identityId)
+      }
+      this.profileCore = null
+      this.activityCore = null
+      this.followBee = null
+      this.socialSwarm = null
     }
 
     this.stores = this.createFreshStores()
@@ -188,6 +214,11 @@ export class SocialReplicationManager {
    */
   async getProfile(): Promise<SocialProfile | null> {
     this.assertInitialized()
+    if (this.useHypercore && this.profileCore) {
+      if (this.profileCore.length === 0) return null
+      const block = await this.profileCore.get(this.profileCore.length - 1)
+      return JSON.parse(b4a.toString(block))
+    }
     return this.stores.profile ? { ...this.stores.profile } : null
   }
 
@@ -216,6 +247,10 @@ export class SocialReplicationManager {
     })
     this.stores.activities.push(activity)
 
+    if (this.useHypercore && this.profileCore) {
+      await this.profileCore.append(b4a.from(JSON.stringify(updated)))
+    }
+
     return { ...updated }
   }
 
@@ -234,6 +269,11 @@ export class SocialReplicationManager {
 
     const activity = createActivity(this.config.identityId, payload, signFn)
     this.stores.activities.push(activity)
+
+    if (this.useHypercore && this.activityCore) {
+      await this.activityCore.append(b4a.from(JSON.stringify(activity)))
+    }
+
     return { ...activity }
   }
 
@@ -242,6 +282,17 @@ export class SocialReplicationManager {
    */
   async getActivities(limit = 50, offset = 0): Promise<SocialActivity[]> {
     this.assertInitialized()
+
+    if (this.useHypercore && this.activityCore) {
+      const activities: SocialActivity[] = []
+      const start = Math.max(0, this.activityCore.length - offset - limit)
+      const end = this.activityCore.length - offset
+      for (let i = end - 1; i >= start; i--) {
+        const block = await this.activityCore.get(i)
+        activities.push(JSON.parse(b4a.toString(block)))
+      }
+      return activities
+    }
 
     const sorted = [...this.stores.activities].sort((a, b) =>
       b.timestamp.localeCompare(a.timestamp),
@@ -276,6 +327,16 @@ export class SocialReplicationManager {
     })
     this.stores.activities.push(activity)
 
+    if (this.useHypercore && this.followBee) {
+      await this.followBee.put(
+        b4a.from(`follow/${followeeId}`),
+        b4a.from(JSON.stringify(record)),
+      )
+      if (this.socialSwarm?.isStarted) {
+        await this.socialSwarm.joinPeer(followeeId)
+      }
+    }
+
     return { ...record }
   }
 
@@ -298,6 +359,18 @@ export class SocialReplicationManager {
       this.config.identityId,
       followeeId,
     )
+
+    if (this.useHypercore && this.followBee) {
+      const existing = await this.followBee.get(b4a.from(`follow/${followeeId}`))
+      if (existing) {
+        const record = JSON.parse(b4a.toString(existing.value))
+        record.status = "unfollowed"
+        await this.followBee.put(b4a.from(`follow/${followeeId}`), b4a.from(JSON.stringify(record)))
+      }
+      if (this.socialSwarm?.isStarted) {
+        await this.socialSwarm.leavePeer(followeeId)
+      }
+    }
   }
 
   /**
@@ -305,6 +378,15 @@ export class SocialReplicationManager {
    */
   async getFollowing(): Promise<FollowRecord[]> {
     this.assertInitialized()
+    if (this.useHypercore && this.followBee) {
+      const records: FollowRecord[] = []
+      const rs = this.followBee.createReadStream({ gte: b4a.from('follow/'), lt: b4a.from('follow0') })
+      for await (const { value } of rs) {
+        const record: FollowRecord = JSON.parse(b4a.toString(value))
+        if (record.status === 'active') records.push(record)
+      }
+      return records
+    }
     return getActiveFollows(this.stores.followRecords, this.config.identityId).map(
       (r) => ({ ...r }),
     )
@@ -315,6 +397,15 @@ export class SocialReplicationManager {
    */
   async getFollowers(followeeId: string): Promise<FollowRecord[]> {
     this.assertInitialized()
+    if (this.useHypercore && this.followBee) {
+      const records: FollowRecord[] = []
+      const rs = this.followBee.createReadStream({ gte: b4a.from('follow/'), lt: b4a.from('follow0') })
+      for await (const { value } of rs) {
+        const record: FollowRecord = JSON.parse(b4a.toString(value))
+        if (record.followeeId === followeeId && record.status === 'active') records.push(record)
+      }
+      return records
+    }
     return getActiveFollowers(this.stores.followRecords, followeeId).map((r) => ({
       ...r,
     }))
@@ -335,6 +426,10 @@ export class SocialReplicationManager {
         "SELF_SUBSCRIBE",
         "Cannot subscribe to your own social core",
       )
+    }
+
+    if (this.useHypercore && this.socialSwarm?.isStarted) {
+      await this.socialSwarm.joinPeer(peerIdentityId)
     }
 
     this.stores.subscribedPeers.add(peerIdentityId)
@@ -361,6 +456,9 @@ export class SocialReplicationManager {
    */
   async unsubscribeFromPeer(peerIdentityId: string): Promise<void> {
     this.assertInitialized()
+    if (this.useHypercore && this.socialSwarm?.isStarted) {
+      await this.socialSwarm.leavePeer(peerIdentityId)
+    }
     this.stores.subscribedPeers.delete(peerIdentityId)
   }
 
@@ -448,7 +546,7 @@ export class SocialReplicationManager {
    */
   getSyncState(): SocialSyncState {
     return {
-      peerCount: this.peerCount,
+      peerCount: this.socialSwarm ? this.socialSwarm.connectedPeers : this.peerCount,
       lastSyncAt: this.lastSyncAt,
       isSyncing: this.isSyncing,
     }
