@@ -65,7 +65,7 @@ function createConversationStore() {
   const listeners = new Set<Listener>()
 
   function notify() {
-    for (const fn of listeners) {
+    for (const fn of Array.from(listeners)) {
       fn(state)
     }
   }
@@ -184,8 +184,9 @@ function createConversationStore() {
 
     const oldestTimestamp = state.activeMessages[0]?.timestamp ?? Date.now()
 
-    if (bridge?.conversationFetchHistory) {
-      const result = (await bridge.conversationFetchHistory(state.sessionId, oldestTimestamp, 25)) as {
+    if (bridge?.conversationFetchHistory && state.sessionId) {
+      const sid: string = state.sessionId
+      const result = (await bridge.conversationFetchHistory(sid, oldestTimestamp, 25)) as {
         ok: boolean
         value?: ConversationMessage[]
       }

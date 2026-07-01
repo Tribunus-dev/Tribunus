@@ -297,6 +297,13 @@ export interface IpcHandleContract {
   [IPC.handle.NOTIFICATIONS_NOTIFY]: { params: [opts: { kind: string; title: string; body: string; actionRef?: string; project?: string }]; returns: Promise<boolean> }
   [IPC.handle.NOTIFICATIONS_STATUS]: { params: []; returns: Promise<{ supported: boolean; enabled: boolean; permission: string }> }
   [IPC.handle.NOTIFICATIONS_SET_PREFERENCES]: { params: [prefs: { enabled?: boolean; agentBlocked?: boolean; reviewRequired?: boolean; releaseBinderComplete?: boolean; projectActivationFailed?: boolean; sidecarFailed?: boolean }]; returns: Promise<void> }
+
+  // ── Conversation ────────────────────────────────────────
+  [IPC.handle.CONVERSATION_INIT_SESSION]: { params: [sessionId: string]; returns: Promise<{ ok: boolean; value?: unknown[]; error?: string }> }
+  [IPC.handle.CONVERSATION_APPEND]: { params: [message: { id: string; sessionId: string; role: string; content: string; timestamp: number; metadata?: unknown }]; returns: Promise<{ ok: boolean; error?: string }> }
+  [IPC.handle.CONVERSATION_CACHE_APPEND]: { params: [sessionId: string, message: { id: string; sessionId: string; role: string; content: string; timestamp: number; metadata?: unknown }]; returns: Promise<{ ok: boolean; error?: string }> }
+  [IPC.handle.CONVERSATION_FETCH_HISTORY]: { params: [sessionId: string, beforeTimestamp: number, limit: number]; returns: Promise<{ ok: boolean; value?: unknown[]; error?: string }> }
+  [IPC.handle.CONVERSATION_SUBSCRIBE_STREAM]: { params: [sessionId: string]; returns: Promise<void> }
 }
 
 // ──────────────────────────────────────────────────────────────
