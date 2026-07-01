@@ -20,6 +20,9 @@ import { validateRegisteredIpcHandlers } from "./ipc-registration"
 import { registerConversationHandlers } from "./ipc/conversation-handlers"
 let registered = false
 
+import type { PrismInferenceServer as PrismInferenceServerType } from "../../../compute-native"
+import { createRequire } from "node:module"
+
 export function registerIpcHandlers(deps: InitDeps) {
   if (registered) return
   registered = true
@@ -43,10 +46,50 @@ export function registerIpcHandlers(deps: InitDeps) {
     valkey: null,
   })
 
+  // ── Engine Generate ─────────────────────────────────────
+  ipcMain.handle(IPC.handle.CONVERSATION_ENGINE_GENERATE, async (_event, sessionId: string, prompt: string, maxTokens: number) => {
+    try {
+      const require = createRequire(import.meta.url)
+      const { PrismInferenceServer: PrismInferenceServerImpl } = require("../../../compute-native") as {
+        PrismInferenceServer: typeof PrismInferenceServerType
+      }
+
+      const server = new PrismInferenceServerImpl({
+        modelStorePath: "/tmp",
+        maxConcurrentSessions: 2,
+        maxInputTokens: 4096,
+        maxOutputTokens: 2048,
+      })
+
+      // Simple char-code tokenization — placeholder for real tokenizer
+      const inputIds = prompt.split("").map((c) => c.charCodeAt(0) % 1000)
+
+      const result = server.generate(sessionId, inputIds, maxTokens)
+      const output = result.output || ""
+
+      // Stream tokens back via push channel
+      const wins = BrowserWindow.getAllWindows()
+      for (let i = 0; i < output.length; i++) {
+        for (const win of wins) {
+          win.webContents.send(IPC.push.CONVERSATION_STREAM_TOKEN, output[i])
+        }
+        // Small delay between token pushes for streaming effect
+        const { promise, resolve } = Promise.withResolvers<void>()
+        setTimeout(resolve, 3)
+        await promise
+      }
+
+      return { ok: true as const, value: { ok: true as const } }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err ?? "Unknown error")
+      return { ok: false as const, error: { code: "ipc.internal", message, recoverable: true as const } }
+    }
+  })
+
   const issues = validateRegisteredIpcHandlers()
   if (issues.length > 0) {
     console.error("[IPC Registry] Mismatch between IPC_METHOD_REGISTRY and registered handlers:")
-    for (const issue of issues) console.error(`  • ${issue}`)
+    for (const issue of issues) console.error(`  \u2022 ${issue}`)
   }
 
   // Direct relaunch — renderer sends this to trigger app restart

@@ -304,6 +304,7 @@ export interface IpcHandleContract {
   [IPC.handle.CONVERSATION_CACHE_APPEND]: { params: [sessionId: string, message: { id: string; sessionId: string; role: string; content: string; timestamp: number; metadata?: unknown }]; returns: Promise<{ ok: boolean; error?: string }> }
   [IPC.handle.CONVERSATION_FETCH_HISTORY]: { params: [sessionId: string, beforeTimestamp: number, limit: number]; returns: Promise<{ ok: boolean; value?: unknown[]; error?: string }> }
   [IPC.handle.CONVERSATION_SUBSCRIBE_STREAM]: { params: [sessionId: string]; returns: Promise<void> }
+  [IPC.handle.CONVERSATION_ENGINE_GENERATE]: { params: [sessionId: string, prompt: string, maxTokens: number]; returns: Promise<{ ok: boolean; error?: string }> }
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -470,6 +471,7 @@ interface BridgeHandleMap {
   conversationAppendMessage: typeof IPC.handle.CONVERSATION_APPEND
   conversationCacheAppend: typeof IPC.handle.CONVERSATION_CACHE_APPEND
   conversationFetchHistory: typeof IPC.handle.CONVERSATION_FETCH_HISTORY
+  conversationEngineGenerate: typeof IPC.handle.CONVERSATION_ENGINE_GENERATE
 }
 
 /** @internal — Bridge send-method → IPC send channel constant mapping */
@@ -509,6 +511,7 @@ export interface ComplexAPIMethods {
   onPinchZoomEnabledChanged: (cb: (enabled: boolean) => void) => () => void
   onZoomFactorChanged: (cb: (factor: number) => void) => () => void
   onUpdateStatus: (cb: (status: AutoUpdateStatus) => void) => () => void
+  onConversationStreamToken: (cb: (token: string) => void) => () => void
   /** Plugin transport — dynamic channel names, cannot be statically typed by contract */
   pluginSend: (channel: string, data?: unknown) => void
   pluginOn: (channel: string, handler: PluginTransportHandler) => PluginTransportUnsub
@@ -670,6 +673,7 @@ export const IPC_METHOD_REGISTRY: {
   { channel: IPC.handle.CONVERSATION_CACHE_APPEND, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
   { channel: IPC.handle.CONVERSATION_FETCH_HISTORY, usesIpcResult: true, returns: "IpcResult<any[]>", rendererSees: "any[]" },
   { channel: IPC.handle.CONVERSATION_SUBSCRIBE_STREAM, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.CONVERSATION_ENGINE_GENERATE, usesIpcResult: true, returns: "IpcResult<{ ok: boolean; error?: string }>", rendererSees: "{ ok: boolean; error?: string }" },
 ]
 
 // ── Runtime Validation ───────────────────────────────────

@@ -72,17 +72,36 @@ export function ChatView() {
       await conversationStore.initializeSession(sid)
     }
 
+    // Send user message
     await conversationStore.appendMessage("user", text)
     setInputText("")
 
-    // Simulated agent response with streaming tokens
+    // Start listening for stream tokens before calling engine
     setIsStreaming(true)
-    const response = `Received: "${text}". [Engine reply placeholder]`
-    for (let i = 0; i < response.length; i++) {
-      await new Promise((r) => setTimeout(r, 5))
-      conversationStore.appendAgentToken(response[i])
+
+    // Register the stream token listener
+    let unsubStream: (() => void) | undefined
+    if (window.api?.onConversationStreamToken) {
+      unsubStream = window.api.onConversationStreamToken((token: string) => {
+        conversationStore.appendAgentToken(token)
+      })
     }
-    setIsStreaming(false)
+
+    // Call the engine via IPC
+    try {
+      if (window.api?.conversationEngineGenerate) {
+        const result = await window.api.conversationEngineGenerate(sid, text, 100)
+        if (!result.ok) {
+          conversationStore.appendAgentToken(" [Error: " + (result.error || "generation failed") + "]")
+        }
+      }
+    } catch (err) {
+      conversationStore.appendAgentToken(" [Error: " + String(err) + "]")
+    } finally {
+      // Clean up listener
+      unsubStream?.()
+      setIsStreaming(false)
+    }
   }
 
   function handleKeyDown(e: KeyboardEvent) {

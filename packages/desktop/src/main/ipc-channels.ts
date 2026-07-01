@@ -93,6 +93,7 @@ export const IPC = {
     CONVERSATION_CACHE_APPEND: "tribunus:conversation:cache-append",
     CONVERSATION_INIT_SESSION: "tribunus:conversation:init-session",
     CONVERSATION_SUBSCRIBE_STREAM: "tribunus:conversation:subscribe-stream",
+    CONVERSATION_ENGINE_GENERATE: "tribunus:conversation:engine-generate",
   } as const,
 
   send: {
@@ -117,6 +118,7 @@ export const IPC = {
     SESSION_DASHBOARD_UPDATE: "tribunus:session-dashboard:update",
     UPDATE_STATUS: "tribunus:update-status",
     WATCHDOG_STATUS: "tribunus:watchdog-status",
+    CONVERSATION_STREAM_TOKEN: "tribunus:conversation:stream-token",
   } as const,
 
   store: {

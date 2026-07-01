@@ -221,6 +221,10 @@ export type ElectronAPI = {
 
   /** Internal map for pluginOff() to look up the IPC listener by channel+handler key. */
   _pluginListeners: Map<string, (event: unknown, payload: { channel: string; data: unknown }) => void>
+  /** Call the inference engine to generate a response. Streams tokens via onConversationStreamToken. */
+  conversationEngineGenerate: (sessionId: string, prompt: string, maxTokens: number) => Promise<{ ok: boolean; error?: string }>
+  /** Listen for streamed tokens from an active engine generation. Returns unsubscribe. */
+  onConversationStreamToken: (cb: (token: string) => void) => () => void
   /** Plugin transport — fire-and-forget message to main process */
   pluginSend: (channel: string, data?: unknown) => void
   /** Plugin transport — subscribe to push messages from main process */

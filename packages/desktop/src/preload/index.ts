@@ -70,6 +70,15 @@ const api: ElectronAPI = {
   safeModeAction: (action: SafeModeAction) => typedInvoke(IPC.handle.SAFE_MODE_ACTION, action),
   openProject: (directory) => typedInvoke(IPC.handle.OPEN_PROJECT, directory),
 
+  // --- Engine generation ---
+  conversationEngineGenerate: (sessionId, prompt, maxTokens) =>
+    typedInvoke(IPC.handle.CONVERSATION_ENGINE_GENERATE, sessionId, prompt, maxTokens),
+  onConversationStreamToken: (cb) => {
+    const handler = (_: unknown, token: string) => cb(token)
+    ipcRenderer.on(IPC.push.CONVERSATION_STREAM_TOKEN, handler)
+    return () => ipcRenderer.removeListener(IPC.push.CONVERSATION_STREAM_TOKEN, handler)
+  },
+
   // --- Send methods (fire-and-forget) ---
   openLink: (url) => typedSend(IPC.send.OPEN_LINK, url),
   showNotification: (title, body) => typedSend(IPC.send.SHOW_NOTIFICATION, title, body),
