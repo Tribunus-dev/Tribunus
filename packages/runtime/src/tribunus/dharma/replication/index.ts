@@ -135,6 +135,22 @@ export { DharmaReplicationRuntime } from "./runtime"
 // Runtime initialization
 export type { RuntimeInitResult } from "./runtime-init"
 export { initializeRuntime } from "./runtime-init"
+// Trifecta adapters
+export type {
+  PGliteClient,
+  ValkeyCacheConfig,
+  DuckDbClient,
+  TrifectaAdapters,
+} from "./trifecta/create-trifecta"
+export {
+  createTrifectaAdapters,
+  hasPGlite,
+  hasValkey,
+  hasDuckDb,
+} from "./trifecta/create-trifecta"
+export { PGliteFederationStore } from "./trifecta/pglite-store"
+export { ReplicationValkeyCache } from "./trifecta/valkey-cache"
+export { ReplicationDuckDbLogger } from "./trifecta/duckdb-logger"
 
 // Schema
 export {

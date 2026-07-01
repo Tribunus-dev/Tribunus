@@ -51,6 +51,11 @@ import { ReplicationError, CorestoreError, SwarmError } from "./errors"
 import type { DharmaEventEnvelope, DharmaIdentity } from "../types"
 import { canonicalJson } from "../types"
 import type { IdentityVault } from "../identity"
+import type { PGliteClient, PGliteFederationStore } from "./trifecta/pglite-store"
+import type { ValkeyCacheConfig, ReplicationValkeyCache } from "./trifecta/valkey-cache"
+import type { DuckDbClient, ReplicationDuckDbLogger } from "./trifecta/duckdb-logger"
+import { createTrifectaAdapters } from "./trifecta/create-trifecta"
+import type { TrifectaAdapters } from "./trifecta/create-trifecta"
 
 // ── Runtime Configuration ---------------------------------------------------
 
@@ -63,6 +68,12 @@ export interface RuntimeConfig {
   nodeInstanceId?: string
   /** Identity vault managing device identities. */
   identityVault: IdentityVault
+  /** Optional PGlite client for durable relational storage. */
+  pglite?: PGliteClient
+  /** Optional Valkey config or pre-initialised cache for fast ephemeral state. */
+  valkey?: ValkeyCacheConfig | ReplicationValkeyCache
+  /** Optional DuckDB raw client for analytics logging. */
+  duckdb?: DuckDbClient
 }
 
 // ── Federation Runtime State -------------------------------------------------
@@ -96,6 +107,11 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
   private config: RuntimeConfig
   private started: boolean = false
   private activeIdentity: DharmaIdentity | null = null
+  private trifectaAdapters: TrifectaAdapters = {
+    pgliteStore: null,
+    valkeyCache: null,
+    duckdbLogger: null,
+  }
 
   constructor(config: RuntimeConfig) {
     const activeIdentity = config.identityVault.getActiveIdentity()
@@ -131,6 +147,8 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     // The identity was already validated in the constructor; this step
     // makes it durable in the Corestore so recovery can access it.
     await ensureIdentityCore(this.corestore, this.config.identityVault)
+    // Wire optional trifecta adapters (PGlite, Valkey, DuckDB)
+    this.trifectaAdapters = createTrifectaAdapters(this.config)
 
     this.started = true
   }
@@ -146,6 +164,10 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     if (this.corestore) {
       await this.corestore.close()
       this.corestore = null
+    }
+    // Disconnect active trifecta adapters
+    if (this.trifectaAdapters.valkeyCache) {
+      await this.trifectaAdapters.valkeyCache.disconnect()
     }
     this.started = false
   }
@@ -225,6 +247,10 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     }
 
     await federationStore.storeBootstrap(bootstrapRecord)
+    // Mirror bootstrap record into PGlite when the optional adapter is available
+    if (this.trifectaAdapters.pgliteStore) {
+      await this.trifectaAdapters.pgliteStore.storeFederation(bootstrapRecord)
+    }
 
     // Register federation in the system core for startup discovery
     await this.registerFederationInSystemCore(federationId)
@@ -453,6 +479,13 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
    */
   getActiveIdentity(): DharmaIdentity | null {
     return this.activeIdentity
+  }
+  /**
+   * Get the active trifecta adapters (PGlite, Valkey, DuckDB).
+   * Created during start() when the corresponding config fields are set.
+   */
+  getTrifectaAdapters(): TrifectaAdapters {
+    return this.trifectaAdapters
   }
 
   // ── DiagnosticsSource Implementation ──────────────────────────────────────
