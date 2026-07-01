@@ -165,3 +165,22 @@ export {
 // ── Dharma Correlation ─────────────────────────────────────────────────────────
 
 export { createCorrelation, validateCorrelation } from "./dharma-correlation"
+
+// ── Model Deployment ──────────────────────────────────────────────────────────
+
+export type { ModelDeploymentConfig, DeploymentResult } from "./model-deployment"
+export {
+  createDeploymentConfig,
+  getModelStorePath,
+  getDefaultWorkerBinaryPath,
+  createGemma2BDeployment,
+} from "./model-deployment"
+
+// ── Engine Bootstrap ──────────────────────────────────────────────────────────
+
+export type { EngineBootstrapResult } from "./engine-bootstrap"
+export {
+  createEngineBootstrap,
+  bootstrapEngine,
+  isEngineReady,
+} from "./engine-bootstrap"
