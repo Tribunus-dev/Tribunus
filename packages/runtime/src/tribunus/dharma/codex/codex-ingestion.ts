@@ -23,6 +23,7 @@ import type {
   CodexVisibilityClass,
 } from "./codex-types"
 import { createCodexEntry } from "./codex-types"
+import { corroborateEntry, type CorroborationChange } from "./codex-corroboration"
 
 // ── Ingestion Result ─────────────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ export interface IngestionResult {
   entry: CodexEntry | null
   mode: IngestionMode
   requiresCuratorApproval: boolean
+  corroborationChanges?: CorroborationChange[]
 }
 
 /** Knowledge classes that can auto-publish without a curator review. */
@@ -352,12 +354,24 @@ export function promoteCandidate(
   const dup = analyzeDuplicates(validated, existingEntries)
 
   if (dup.conclusion === "duplicate") {
-    return {
-      candidate: { ...validated, status: "duplicate_found", duplicateAnalysis: dup },
-      entry: null,
-      mode: "curator_proposed",
-      requiresCuratorApproval: true,
+    // Find most similar existing entry and corroborate it
+    const bestMatchId = dup.similarEntryIds[0]
+    const bestEntry = bestMatchId
+      ? existingEntries.find((e) => e.codexEntryId === bestMatchId)
+      : undefined
+
+    if (bestEntry) {
+      const corr = corroborateEntry(bestEntry, validated.evidenceRefs, validated.claims)
+      return {
+        candidate: { ...validated, status: "duplicate_found", duplicateAnalysis: dup },
+        entry: corr.entry,
+        mode: "automatic",
+        requiresCuratorApproval: false,
+        corroborationChanges: corr.changes,
+      }
     }
+
+    // No best match found — discard
   }
 
   const knowledgeClass = candidate.knowledgeClass

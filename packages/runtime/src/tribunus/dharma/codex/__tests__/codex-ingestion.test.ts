@@ -636,9 +636,12 @@ describe("promoteCandidate", () => {
     ]
 
     const result = promoteCandidate(candidate, existing)
-    expect(result.entry).toBeNull()
+    // Duplicates now corroborate the existing entry instead of being rejected
+    expect(result.entry).not.toBeNull()
+    expect(result.entry!.codexEntryId).toBe(existing[0].codexEntryId)
+    expect(result.entry!.quality.corroborationCount).toBe(existing[0].quality.corroborationCount + 1)
     expect(result.candidate.status).toBe("duplicate_found")
-    expect(result.requiresCuratorApproval).toBe(true)
+    expect(result.requiresCuratorApproval).toBe(false)
   })
 
   test("populates entry provenance from candidate", () => {
