@@ -16,7 +16,7 @@ import b4a from "b4a"
 import { AutobaseError } from "./errors"
 import type { WriterAdmission } from "./protocol"
 import type { DharmaEventEnvelope } from "../types"
-import { canonicalJson } from "../types"
+import { canonicalJson, sha256Hex } from "../types"
 
 // ── Types --------------------------------------------------------------------
 
@@ -224,6 +224,42 @@ export class FederationBase {
   }
 
   // ── View queries ------------------------------------------------------------
+  /**
+   * Admit a writer by its public key, storing the WriterAdmission
+   * directly in the Hyperbee view under the `writer/` prefix.
+   *
+   * This is used for direct (non-event-derived) admissions such as
+   * the genesis writer or explicit peer admission after a handshake.
+   * Returns the persisted WriterAdmission record.
+   */
+  async admitWriter(writerKey: string): Promise<WriterAdmission> {
+    if (!this.opened) {
+      throw new AutobaseError("Autobase is not open")
+    }
+    const admittedAt = new Date().toISOString()
+    const membershipEventId = `direct:${this._federationId}:${writerKey}:${admittedAt}`
+    const admissionSigPayload = canonicalJson({
+      federationId: this._federationId,
+      writerCorePublicKey: writerKey,
+      admittedAt,
+      })
+
+    const admission: WriterAdmission = {
+      federationId: this._federationId,
+      writerCorePublicKey: writerKey,
+      dharmaIdentityPublicKey: writerKey,
+      membershipEventId,
+      admittedBy: this._autobaseKey,
+      admittedAt,
+      admissionSignature: sha256Hex(admissionSigPayload),
+    }
+
+    await this.view.put(
+      `${AUTOBASE_VIEW_PREFIXES.WRITER}${writerKey}`,
+      canonicalJson(admission),
+      )
+    return admission
+  }
 
   /**
    * Retrieve a full event envelope from the view by its content-addressed ID.
@@ -354,6 +390,52 @@ export class FederationBase {
       return { signedLength, viewRootHash }
     } catch (cause: unknown) {
       throw new AutobaseError("Failed to create checkpoint", cause)
+    }
+  }
+
+  /**
+   * Retrieve the last checkpoint stored in the checkpoint core.
+   * Returns null when no checkpoint exists.
+   */
+  async getCheckpoint(): Promise<{
+    signedLength: number
+    viewRootHash: string
+    federationId: string
+    createdAt: string
+  } | null> {
+    if (!this.opened) {
+      throw new AutobaseError("Autobase is not open")
+    }
+
+    try {
+      const length: number = this.checkpointCore.length
+      if (length === 0) return null
+
+      const lastBlock = await this.checkpointCore.get(length - 1)
+      if (lastBlock === null) return null
+
+      const raw = lastBlock.toString("utf-8")
+      const parsed = JSON.parse(raw)
+
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        typeof parsed.signedLength === "number" &&
+        typeof parsed.viewRootHash === "string" &&
+        typeof parsed.federationId === "string" &&
+        typeof parsed.createdAt === "string"
+      ) {
+        return {
+          signedLength: parsed.signedLength,
+          viewRootHash: parsed.viewRootHash,
+          federationId: parsed.federationId,
+          createdAt: parsed.createdAt,
+        }
+      }
+
+      return null
+    } catch (cause: unknown) {
+      throw new AutobaseError("Failed to get checkpoint", cause)
     }
   }
 

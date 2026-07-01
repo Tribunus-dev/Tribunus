@@ -150,7 +150,7 @@ export class OutboxManager {
   /** Get pending entries ready for appending (sorted by createdAt) */
   getPendingEntries(): OutboxEntry[] {
     return Array.from(this.entries.values())
-      .filter((e) => e.state === "ready")
+      .filter((e) => e.state === "ready" || e.state === "retry_wait")
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
   }
 
@@ -160,6 +160,25 @@ export class OutboxManager {
     return Array.from(this.entries.values())
       .filter((e) => e.state === "retry_wait" && e.nextAttemptAt !== null && e.nextAttemptAt <= now)
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+  }
+
+  /** Reset a pending or retry_wait entry back to ready for re-processing.
+   *  For retry_wait entries, they transition back to ready (clearing retry metadata).
+   *  For ready entries, this is a no-op.
+   *  Used during crash recovery to replay unconfirmed entries. */
+  retry(outboxId: string): void {
+    const entry = this.getOrThrow(outboxId)
+    if (entry.state === "ready") return // already pending, nothing to do
+    if (!isValidOutboxTransition(entry.state, "ready")) {
+      throw new OutboxError(
+        `Cannot retry entry ${outboxId} from state ${entry.state}; expected retry_wait or ready`,
+      )
+  }
+    entry.state = "ready"
+    entry.attemptCount = 0
+    entry.lastError = null
+    entry.nextAttemptAt = null
+    entry.updatedAt = new Date().toISOString()
   }
 
   /** Get entry by ID */

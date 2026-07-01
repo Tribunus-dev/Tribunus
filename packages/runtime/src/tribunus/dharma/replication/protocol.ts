@@ -54,6 +54,12 @@ export const RECONNECT_BACKOFF_MAX_MS = 60_000
 
 // ── Swarm Lifecycle States ---------------------------------------------------
 
+/** Interval between DHT bootstrap refreshes in ms. */
+export const DHARMA_DHT_BOOTSTRAP_INTERVAL_MS = 30_000
+
+/** DHT connection establishment timeout in ms. */
+export const DHARMA_DHT_CONNECTION_TIMEOUT_MS = 10_000
+
 export type SwarmLifecycleState =
   | "stopped"
   | "starting"

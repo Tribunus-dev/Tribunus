@@ -21,6 +21,9 @@ import { DharmaSwarm, deriveSwarmTopic } from "./swarm"
 import type { SwarmConfig } from "./swarm"
 import { PeerTracker } from "./peer"
 import { OutboxManager } from "./outbox"
+import { recoverOutbox } from "./outbox-recovery"
+import { recoverFromCheckpoint, isRecoveryNeeded, getRecoverySummary } from "./checkpoint-recovery"
+import { ensureIdentityCore } from "./identity-core"
 import { FederationEventImporter } from "./importer"
 import { collectDiagnostics, deriveUserStatus } from "./diagnostics"
 import type { DiagnosticsSource } from "./diagnostics"
@@ -45,8 +48,9 @@ import {
 import { createHello, respondToHello, verifyWelcome, createHandshakeResult, isProtocolCompatible } from "./handshake"
 import type { HandshakeConfig } from "./handshake"
 import { ReplicationError, CorestoreError, SwarmError } from "./errors"
-import type { DharmaEventEnvelope } from "../types"
+import type { DharmaEventEnvelope, DharmaIdentity } from "../types"
 import { canonicalJson } from "../types"
+import type { IdentityVault } from "../identity"
 
 // ── Runtime Configuration ---------------------------------------------------
 
@@ -57,10 +61,8 @@ export interface RuntimeConfig {
   limits?: ReplicationLimits
   /** Node instance ID (persistent across restarts). Auto-generated if absent. */
   nodeInstanceId?: string
-  /** Device Ed25519 public key hex for handshake identity. */
-  devicePublicKey: string
-  /** Device Ed25519 private key for handshake signing. */
-  devicePrivateKey: Uint8Array
+  /** Identity vault managing device identities. */
+  identityVault: IdentityVault
 }
 
 // ── Federation Runtime State -------------------------------------------------
@@ -93,8 +95,15 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
   private federations: Map<string, FederationRuntimeState> = new Map()
   private config: RuntimeConfig
   private started: boolean = false
+  private activeIdentity: DharmaIdentity | null = null
 
   constructor(config: RuntimeConfig) {
+    const activeIdentity = config.identityVault.getActiveIdentity()
+    if (!activeIdentity) {
+      throw new Error("No active identity in vault")
+    }
+    this.activeIdentity = activeIdentity
+
     this.config = {
       ...config,
       storageRoot: config.storageRoot ?? path.join(os.homedir(), ".tribunus", "dharma"),
@@ -117,6 +126,12 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     }
     this.corestore = new DharmaCorestore(storeConfig)
     await this.corestore.open()
+
+    // Wire identity: ensure the active identity is persisted to the system core.
+    // The identity was already validated in the constructor; this step
+    // makes it durable in the Corestore so recovery can access it.
+    await ensureIdentityCore(this.corestore, this.config.identityVault)
+
     this.started = true
   }
 
@@ -168,6 +183,14 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     const federationBase = new FederationBase(baseConfig)
     await federationBase.open()
 
+    // Recover from any stored checkpoint
+    const checkpointRecovery = await recoverFromCheckpoint(federationBase)
+    if (isRecoveryNeeded(checkpointRecovery)) {
+      console.log(
+        `[dharma] ${federationId}: checkpoint recovery — resumed at order index ${checkpointRecovery.lastOrderIndex}`,
+      )
+    }
+
     const federationStore = new FederationStore(this.corestore!, federationId, "genesis")
     const swarm = new DharmaSwarm({
       federationId,
@@ -178,6 +201,14 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     })
     const peerTracker = new PeerTracker(federationId)
     const outbox = new OutboxManager(federationId)
+    // Recover any unconfirmed outbox entries from a prior crash
+    const recoveryResult = recoverOutbox(outbox)
+    if (recoveryResult.recovered) {
+      console.log(
+        `[dharma] ${federationId}: outbox recovery — ${recoveryResult.pendingEntries} pending, ` +
+        `${recoveryResult.retriedEntries} retried, ${recoveryResult.failedEntries} failed`,
+      )
+    }
     const importer = new FederationEventImporter(federationId)
 
     const bootstrapRecord: FederationBootstrapRecord = {
@@ -194,6 +225,9 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     }
 
     await federationStore.storeBootstrap(bootstrapRecord)
+
+    // Register federation in the system core for startup discovery
+    await this.registerFederationInSystemCore(federationId)
 
     this.federations.set(federationId, {
       federationBase,
@@ -240,6 +274,14 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     const federationBase = new FederationBase(baseConfig)
     await federationBase.open()
 
+    // Recover from any stored checkpoint
+    const checkpointRecovery = await recoverFromCheckpoint(federationBase)
+    if (isRecoveryNeeded(checkpointRecovery)) {
+      console.log(
+        `[dharma] ${fedId}: checkpoint recovery — resumed at order index ${checkpointRecovery.lastOrderIndex}`,
+      )
+    }
+
     const federationStore = new FederationStore(this.corestore!, fedId, "local")
     const swarm = new DharmaSwarm({
       federationId: fedId,
@@ -250,7 +292,18 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     })
     const peerTracker = new PeerTracker(fedId)
     const outbox = new OutboxManager(fedId)
+    // Recover any unconfirmed outbox entries from a prior crash
+    const recoveryResult = recoverOutbox(outbox)
+    if (recoveryResult.recovered) {
+      console.log(
+        `[dharma] ${fedId}: outbox recovery — ${recoveryResult.pendingEntries} pending, ` +
+        `${recoveryResult.retriedEntries} retried, ${recoveryResult.failedEntries} failed`,
+      )
+    }
     const importer = new FederationEventImporter(fedId)
+
+    // Register federation in the system core for startup discovery
+    await this.registerFederationInSystemCore(fedId)
 
     this.federations.set(fedId, {
       federationBase,
@@ -385,6 +438,23 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     return this.started
   }
 
+  /**
+   * Get the underlying Corestore instance.
+   * Returns null if the runtime has not been started.
+   */
+  getCorestore(): DharmaCorestore | null {
+    return this.corestore
+  }
+
+  /**
+   * Get the active identity persisted for this device.
+   * Set during construction from the identity vault.
+   * Returns null if no identity was active.
+   */
+  getActiveIdentity(): DharmaIdentity | null {
+    return this.activeIdentity
+  }
+
   // ── DiagnosticsSource Implementation ──────────────────────────────────────
 
   getLifecycleState(): SwarmLifecycleState | "inactive" {
@@ -439,6 +509,57 @@ export class DharmaReplicationRuntime implements DiagnosticsSource {
     }
 
     return collectDiagnostics(federationId, source)
+  }
+
+  // ── Federation Discovery ────────────────────────────────────────────────
+
+  /**
+   * List federation IDs that have been persisted to storage.
+   *
+   * Scans the system core for federation-registration blocks written by
+   * createFederation and joinFederation. Returns an empty array if the
+   * system core is uninitialised or no federations have been registered.
+   */
+  async listStoredFederationIds(): Promise<string[]> {
+    if (!this.corestore) {
+      return []
+    }
+    const systemCore = await this.corestore.getSystemCore()
+    const ids = new Set<string>()
+    for (let i = 0; i < systemCore.length; i++) {
+      const block = await systemCore.get(i)
+      if (block) {
+        try {
+          const decoded = new TextDecoder().decode(block as Uint8Array)
+          const parsed = JSON.parse(decoded)
+          if (parsed?.type === "federation-registration") {
+            ids.add(parsed.federationId)
+          }
+        } catch {
+          // Skip non-JSON or malformed blocks silently
+        }
+      }
+    }
+    return [...ids]
+  }
+
+  // ── Private: System Core Helpers ─────────────────────────────────────────
+
+  /**
+   * Write a federation-registration block to the system core so that
+   * listStoredFederationIds() can discover it on subsequent starts.
+   */
+  private async registerFederationInSystemCore(federationId: string): Promise<void> {
+    if (!this.corestore) return
+    const systemCore = await this.corestore.getSystemCore()
+    const entry = new TextEncoder().encode(
+      JSON.stringify({
+        type: "federation-registration",
+        federationId,
+        registeredAt: new Date().toISOString(),
+      }),
+    )
+    await systemCore.append(entry)
   }
 
   private handleConnection(federationId: string, _connection: unknown, _info: unknown): void {

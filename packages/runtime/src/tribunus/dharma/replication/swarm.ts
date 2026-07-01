@@ -51,6 +51,10 @@ export interface SwarmConfig {
   limits: ReplicationLimits
   keyPair: { publicKey: Buffer; secretKey: Buffer } | null
   onConnection: (connection: unknown, peerInfo: unknown) => void
+  /** DHT bootstrap nodes. Defaults to public Hyperswarm bootstrap servers. */
+  bootstrap?: string[]
+  /** When true, prefer IPv6. Default false. */
+  preferIPv6?: boolean
 }
 
 // ── DharmaSwarm ---------------------------------------------------------------
@@ -82,7 +86,19 @@ export class DharmaSwarm {
         ? { keyPair: this.config.keyPair }
         : undefined
 
-      this.swarm = new Hyperswarm(opts)
+      const swarmOpts = {
+        ...opts,
+        bootstrap: this.config.bootstrap ?? [
+          "bootstrap1.hyperswarm.org:49737",
+          "bootstrap2.hyperswarm.org:49737",
+          "bootstrap3.hyperswarm.org:49737",
+        ],
+      }
+      if (this.config.preferIPv6) {
+        ;(swarmOpts as Record<string, unknown>).preferIPv6 = true
+      }
+
+      this.swarm = new Hyperswarm(swarmOpts)
 
       this.topic = deriveSwarmTopic(
         this.config.federationId,
@@ -218,4 +234,19 @@ export class DharmaSwarm {
       this.state = "joining"
     }
   }
+}
+
+/** The default Hyperswarm DHT bootstrap server addresses. */
+export const DEFAULT_HYPERSWARM_BOOTSTRAP: readonly string[] = Object.freeze([
+  "bootstrap1.hyperswarm.org:49737",
+  "bootstrap2.hyperswarm.org:49737",
+  "bootstrap3.hyperswarm.org:49737",
+])
+
+/**
+ * Configure a SwarmConfig with default bootstrap servers.
+ * Accepts a config without the `bootstrap` field and fills in the defaults.
+ */
+export function withDefaultBootstrap(config: Omit<SwarmConfig, "bootstrap">): SwarmConfig {
+  return { ...config, bootstrap: [...DEFAULT_HYPERSWARM_BOOTSTRAP] }
 }

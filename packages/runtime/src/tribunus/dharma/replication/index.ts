@@ -36,6 +36,8 @@ export {
   MAX_UNRESOLVED_EVENTS,
   RECONNECT_BACKOFF_BASE_MS,
   RECONNECT_BACKOFF_MAX_MS,
+  DHARMA_DHT_BOOTSTRAP_INTERVAL_MS,
+  DHARMA_DHT_CONNECTION_TIMEOUT_MS,
   DEFAULT_REPLICATION_LIMITS,
 } from "./protocol"
 
@@ -83,7 +85,12 @@ export { PeerTracker } from "./peer"
 
 // Swarm
 export type { SwarmConfig } from "./swarm"
-export { deriveSwarmTopic, DharmaSwarm } from "./swarm"
+export {
+  deriveSwarmTopic,
+  DharmaSwarm,
+  DEFAULT_HYPERSWARM_BOOTSTRAP,
+  withDefaultBootstrap,
+} from "./swarm"
 
 // Lifecycle
 export type { SwarmAction } from "./lifecycle"
@@ -101,6 +108,9 @@ export {
   isValidOutboxTransition,
   OutboxManager,
 } from "./outbox"
+// Outbox recovery
+export type { OutboxRecoveryResult, OutboxStateCounts } from "./outbox-recovery"
+export { recoverOutbox, getOutboxState } from "./outbox-recovery"
 
 // Importer
 export type { ImportCursor, PendingDependency } from "./importer"
@@ -110,6 +120,10 @@ export { FederationEventImporter } from "./importer"
 export type { FederationCheckpoint } from "./checkpoint"
 export { verifyCheckpoint, createCheckpointRecord } from "./checkpoint"
 
+// Checkpoint recovery
+export type { CheckpointRecoveryResult } from "./checkpoint-recovery"
+export { recoverFromCheckpoint, isRecoveryNeeded, getRecoverySummary } from "./checkpoint-recovery"
+
 // Diagnostics
 export type { DiagnosticsSource, HealthLevel } from "./diagnostics"
 export { collectDiagnostics, deriveUserStatus, assessHealth } from "./diagnostics"
@@ -117,6 +131,10 @@ export { collectDiagnostics, deriveUserStatus, assessHealth } from "./diagnostic
 // Runtime
 export type { RuntimeConfig } from "./runtime"
 export { DharmaReplicationRuntime } from "./runtime"
+
+// Runtime initialization
+export type { RuntimeInitResult } from "./runtime-init"
+export { initializeRuntime } from "./runtime-init"
 
 // Schema
 export {

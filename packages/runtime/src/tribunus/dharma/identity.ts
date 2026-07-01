@@ -65,6 +65,11 @@ export class IdentityVault {
     return Array.from(this.identities.values())
   }
 
+  /** Get the first identity with status "active", or undefined */
+  getActiveIdentity(): DharmaIdentity | undefined {
+    return this.listIdentities().find((i) => i.status === "active")
+  }
+
   /** Sign data with identity's private key (decrypts key first) */
   signWithIdentity(identityId: string, data: Uint8Array): Uint8Array {
     const identity = this.identities.get(identityId)
