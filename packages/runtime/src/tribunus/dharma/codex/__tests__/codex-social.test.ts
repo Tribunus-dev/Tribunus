@@ -56,6 +56,23 @@ import {
   buildFilteredFeed,
   sfwScreenPost,
   sfwCheckContent,
+  likePost,
+  unlikePost,
+  getLikesForPost,
+  getLikeCount,
+  sharePost,
+  unsharePost,
+  getSharesForPost,
+  getShareCount,
+  createCuratedList,
+  addToList,
+  removeFromList,
+  filterPostsByLists,
+  createFeedDefinition,
+  subscribeToFeed,
+  unsubscribeFromFeed,
+  getFeedsWithSubscriber,
+  applyFeedToPosts,
 } from "../codex-social"
 import type { PostMedia } from "../codex-social"
 
@@ -706,5 +723,171 @@ describe("sfwScreenPost", () => {
   test("sfwCheckContent returns boolean", () => {
     expect(sfwCheckContent("clean content")).toBe(true)
     expect(sfwCheckContent("nsfw content")).toBe(false)
+  })
+})
+
+// ── Likes ────────────────────────────────────────────────────────────────
+
+describe("likePost", () => {
+  test("creates a like", () => {
+    const l = likePost("alice", "post-1")
+    expect(l.userId).toBe("alice")
+    expect(l.postId).toBe("post-1")
+    expect(l.likeId).toBeTruthy()
+  })
+})
+
+describe("unlikePost", () => {
+  test("removes like", () => {
+    const likes = [likePost("alice", "p1"), likePost("bob", "p1")]
+    expect(unlikePost(likes, "alice", "p1")).toHaveLength(1)
+  })
+})
+
+describe("getLikesForPost", () => {
+  test("returns likes for post", () => {
+    const likes = [likePost("a", "p1"), likePost("b", "p1"), likePost("a", "p2")]
+    expect(getLikesForPost(likes, "p1")).toHaveLength(2)
+  })
+})
+
+describe("getLikeCount", () => {
+  test("counts likes for post", () => {
+    const likes = [likePost("a", "p1"), likePost("b", "p1")]
+    expect(getLikeCount(likes, "p1")).toBe(2)
+    expect(getLikeCount(likes, "p2")).toBe(0)
+  })
+})
+
+// ── Shares ───────────────────────────────────────────────────────────────
+
+describe("sharePost", () => {
+  test("shares a post with optional message", () => {
+    const s = sharePost("alice", "post-1", "great fix")
+    expect(s.userId).toBe("alice")
+    expect(s.postId).toBe("post-1")
+    expect(s.message).toBe("great fix")
+  })
+  test("shares without message", () => {
+    const s = sharePost("alice", "post-1")
+    expect(s.message).toBe("")
+  })
+})
+
+describe("unsharePost", () => {
+  test("removes share", () => {
+    const shares = [sharePost("a", "p1"), sharePost("b", "p1")]
+    expect(unsharePost(shares, "a", "p1")).toHaveLength(1)
+  })
+})
+
+describe("getSharesForPost", () => {
+  test("returns shares for post", () => {
+    const shares = [sharePost("a", "p1"), sharePost("b", "p1")]
+    expect(getSharesForPost(shares, "p1")).toHaveLength(2)
+  })
+})
+
+describe("getShareCount", () => {
+  test("counts shares", () => {
+    const shares = [sharePost("a", "p1"), sharePost("b", "p1")]
+    expect(getShareCount(shares, "p1")).toBe(2)
+  })
+})
+
+// ── Curated Lists ────────────────────────────────────────────────────────
+
+describe("createCuratedList", () => {
+  test("creates empty list", () => {
+    const l = createCuratedList("alice", "ML Engineers")
+    expect(l.creatorId).toBe("alice")
+    expect(l.name).toBe("ML Engineers")
+    expect(l.memberIds).toEqual([])
+  })
+})
+
+describe("addToList / removeFromList", () => {
+  test("adds and removes members", () => {
+    let l = createCuratedList("alice", "Devs")
+    l = addToList(l, "bob")
+    expect(l.memberIds).toContain("bob")
+    l = addToList(l, "charlie")
+    expect(l.memberIds).toHaveLength(2)
+    l = removeFromList(l, "bob")
+    expect(l.memberIds).toHaveLength(1)
+    expect(l.memberIds).toContain("charlie")
+  })
+  test("addToList is idempotent", () => {
+    let l = addToList(createCuratedList("a", "name"), "bob")
+    l = addToList(l, "bob")
+    expect(l.memberIds).toHaveLength(1)
+  })
+})
+
+describe("filterPostsByLists", () => {
+  test("returns only posts from list members", () => {
+    let list = createCuratedList("alice", "Trusted")
+    list = addToList(list, "bob")
+    list = addToList(list, "charlie")
+    const posts = [createPost("alice", "post by list owner"), createPost("bob", "post by member"), createPost("eve", "post by non-member")]
+    const filtered = filterPostsByLists(posts, [list])
+    expect(filtered).toHaveLength(1)  // only bob is in the list
+    expect(filtered[0].authorId).toBe("bob")
+  })
+  test("includes list owner's posts when owner is in the list", () => {
+    let list = createCuratedList("alice", "Team")
+    list = addToList(list, "alice")  // owner adds themselves
+    list = addToList(list, "bob")
+    const posts = [createPost("alice", "owner post"), createPost("bob", "member post")]
+    expect(filterPostsByLists(posts, [list])).toHaveLength(2)
+  })
+  test("returns empty for empty lists", () => {
+    const posts = [createPost("a", "post")]
+    expect(filterPostsByLists(posts, [createCuratedList("a", "empty")])).toHaveLength(0)
+  })
+})
+
+// ── Custom Feeds (Bluesky-style) ─────────────────────────────────────────
+
+describe("createFeedDefinition", () => {
+  test("creates feed with filter", () => {
+    const feed = createFeedDefinition("alice", "ML Papers", { topics: ["ml", "deep-learning"], algorithm: "chronological" })
+    expect(feed.name).toBe("ML Papers")
+    expect(feed.filter.topics).toContain("ml")
+    expect(feed.filter.algorithm).toBe("chronological")
+    expect(feed.subscribedByIds).toEqual([])
+  })
+})
+
+describe("subscribeToFeed / unsubscribeFromFeed", () => {
+  test("subscribe and unsubscribe", () => {
+    let feed = createFeedDefinition("alice", "My Feed", {})
+    feed = subscribeToFeed(feed, "bob")
+    expect(feed.subscribedByIds).toContain("bob")
+    feed = subscribeToFeed(feed, "charlie")
+    expect(feed.subscribedByIds).toHaveLength(2)
+    feed = unsubscribeFromFeed(feed, "bob")
+    expect(feed.subscribedByIds).toHaveLength(1)
+    expect(feed.subscribedByIds).toContain("charlie")
+  })
+  test("subscribe is idempotent", () => {
+    let feed = subscribeToFeed(createFeedDefinition("a", "F", {}), "bob")
+    feed = subscribeToFeed(feed, "bob")
+    expect(feed.subscribedByIds).toHaveLength(1)
+  })
+})
+
+describe("getFeedsWithSubscriber", () => {
+  test("returns feeds a user is subscribed to", () => {
+    const feeds = [subscribeToFeed(createFeedDefinition("a", "F1", {}), "bob"), createFeedDefinition("a", "F2", {})]
+    expect(getFeedsWithSubscriber(feeds, "bob")).toHaveLength(1)
+  })
+})
+
+describe("applyFeedToPosts", () => {
+  test("applies feed filter to posts", () => {
+    const feed = createFeedDefinition("alice", "Tech Feed", { topics: ["tech"] })
+    const posts = [createPost("a", "#tech post"), createPost("b", "#art post")]
+    expect(applyFeedToPosts(feed, posts)).toHaveLength(1)
   })
 })

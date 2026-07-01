@@ -2,11 +2,13 @@
  * Codex — Dharma Social Network Core Types & Operations
  *
  * P2P social layer built on top of the dharma system. Every user is an
- * Ed25519 identity. No ads, no likes, no algorithmic amplification.
- * Reputation is dharma — earned from verified contributions.
+ * Ed25519 identity with absolute control over their experience.
  *
- * All types are plain objects — storage and replication are handled by
- * the social-replication module.
+ * Design: no corporate algorithmic engagement farming, no viral amplification
+ * machines, no time-spent optimization. Users choose their own feeds and
+ * algorithms — the Bluesky model of custom feeds and curated lists.
+ * Likes and shares are attribution signals, not engagement metrics.
+ * Reputation is dharma — earned from verified contributions.
  */
 
 import { randomUUID, createHash } from "node:crypto"
@@ -147,6 +149,65 @@ export interface IdentityVerification {
   challengeLocation: string  // where to publish (url, dns record, etc.)
   verifiedAt: string | null
   expiresAt: string | null
+}
+
+// ── Likes & Shares ─────────────────────────────────────────────────────
+
+export interface PostLike {
+  likeId: string
+  postId: string
+  userId: string
+  timestamp: string
+}
+
+export interface PostShare {
+  shareId: string
+  postId: string
+  userId: string
+  timestamp: string
+  message: string
+}
+
+// ── Curated Lists ──────────────────────────────────────────────────────
+
+export interface CuratedList {
+  listId: string
+  creatorId: string
+  name: string
+  description: string
+  memberIds: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CuratedListUpdate {
+  name?: string
+  description?: string
+}
+
+// ── Custom Feeds (Bluesky-style) ───────────────────────────────────────
+
+export interface FeedDefinition {
+  feedId: string
+  creatorId: string
+  name: string
+  description: string
+  filter: FeedFilter
+  subscribedByIds: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FeedDefinitionUpdate {
+  name?: string
+  description?: string
+  filter?: FeedFilter
+}
+
+export interface SubscribedFeed {
+  feedId: string
+  userId: string
+  subscribedAt: string
 }
 
 // ── Posts & Media ───────────────────────────────────────────────────────
@@ -524,6 +585,176 @@ export function sfwCheckContent(content: string): boolean {
 
 export function sfwCheckMedia(media: PostMedia): boolean {
   return sfwScreenPost("", [media]).verdict === "pass"
+}
+
+// ── Like Operations ────────────────────────────────────────────────────
+
+export function likePost(userId: string, postId: string): PostLike {
+  return {
+    likeId: randomUUID(),
+    postId,
+    userId,
+    timestamp: new Date().toISOString(),
+  }
+}
+
+export function unlikePost(likes: PostLike[], userId: string, postId: string): PostLike[] {
+  return likes.filter((l) => !(l.userId === userId && l.postId === postId))
+}
+
+export function getLikesForPost(likes: PostLike[], postId: string): PostLike[] {
+  return likes.filter((l) => l.postId === postId)
+}
+
+export function getLikeCount(likes: PostLike[], postId: string): number {
+  return getLikesForPost(likes, postId).length
+}
+
+export function getLikesByUser(likes: PostLike[], userId: string): PostLike[] {
+  return likes.filter((l) => l.userId === userId)
+}
+
+// ── Share Operations ───────────────────────────────────────────────────
+
+export function sharePost(
+  userId: string,
+  postId: string,
+  message = "",
+): PostShare {
+  return {
+    shareId: randomUUID(),
+    postId,
+    userId,
+    timestamp: new Date().toISOString(),
+    message: message.trim(),
+  }
+}
+
+export function unsharePost(shares: PostShare[], userId: string, postId: string): PostShare[] {
+  return shares.filter((s) => !(s.userId === userId && s.postId === postId))
+}
+
+export function getSharesForPost(shares: PostShare[], postId: string): PostShare[] {
+  return shares.filter((s) => s.postId === postId)
+}
+
+export function getShareCount(shares: PostShare[], postId: string): number {
+  return getSharesForPost(shares, postId).length
+}
+
+export function getSharesByUser(shares: PostShare[], userId: string): PostShare[] {
+  return shares.filter((s) => s.userId === userId)
+}
+
+// ── Curated List Operations ────────────────────────────────────────────
+
+export function createCuratedList(
+  creatorId: string,
+  name: string,
+  description = "",
+): CuratedList {
+  return {
+    listId: randomUUID(),
+    creatorId,
+    name: name.trim(),
+    description: description.trim(),
+    memberIds: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+export function updateCuratedList(list: CuratedList, update: CuratedListUpdate): CuratedList {
+  return {
+    ...list,
+    ...(update.name !== undefined ? { name: update.name.trim() } : {}),
+    ...(update.description !== undefined ? { description: update.description.trim() } : {}),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+export function addToList(list: CuratedList, memberId: string): CuratedList {
+  if (list.memberIds.includes(memberId)) return list
+  return { ...list, memberIds: [...list.memberIds, memberId], updatedAt: new Date().toISOString() }
+}
+
+export function removeFromList(list: CuratedList, memberId: string): CuratedList {
+  return {
+    ...list,
+    memberIds: list.memberIds.filter((id) => id !== memberId),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+export function getListMembers(list: CuratedList): string[] {
+  return [...list.memberIds]
+}
+
+export function getListsForUser(lists: CuratedList[], userId: string): CuratedList[] {
+  return lists.filter((l) => l.creatorId === userId)
+}
+
+/**
+ * Filter posts to only those authored by members of the given lists.
+ */
+export function filterPostsByLists(posts: Post[], lists: CuratedList[]): Post[] {
+  const allowedAuthors = new Set(lists.flatMap((l) => l.memberIds))
+  if (allowedAuthors.size === 0) return []
+  return posts.filter((p) => allowedAuthors.has(p.authorId))
+}
+
+// ── Custom Feed Operations (Bluesky-style) ─────────────────────────────
+
+export function createFeedDefinition(
+  creatorId: string,
+  name: string,
+  filter: FeedFilter,
+  description = "",
+): FeedDefinition {
+  return {
+    feedId: randomUUID(),
+    creatorId,
+    name: name.trim(),
+    description: description.trim(),
+    filter,
+    subscribedByIds: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+export function updateFeedDefinition(feed: FeedDefinition, update: FeedDefinitionUpdate): FeedDefinition {
+  return {
+    ...feed,
+    ...(update.name !== undefined ? { name: update.name.trim() } : {}),
+    ...(update.description !== undefined ? { description: update.description.trim() } : {}),
+    ...(update.filter !== undefined ? { filter: update.filter } : {}),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+export function subscribeToFeed(feed: FeedDefinition, userId: string): FeedDefinition {
+  if (feed.subscribedByIds.includes(userId)) return feed
+  return { ...feed, subscribedByIds: [...feed.subscribedByIds, userId] }
+}
+
+export function unsubscribeFromFeed(feed: FeedDefinition, userId: string): FeedDefinition {
+  return {
+    ...feed,
+    subscribedByIds: feed.subscribedByIds.filter((id) => id !== userId),
+  }
+}
+
+export function getFeedsForUser(feeds: FeedDefinition[], userId: string): FeedDefinition[] {
+  return feeds.filter((f) => f.creatorId === userId)
+}
+
+export function getFeedsWithSubscriber(feeds: FeedDefinition[], userId: string): FeedDefinition[] {
+  return feeds.filter((f) => f.subscribedByIds.includes(userId))
+}
+
+export function applyFeedToPosts(feed: FeedDefinition, posts: Post[]): Post[] {
+  return buildFilteredFeed(posts, feed.filter)
 }
 
 // ── Profile Operations ──────────────────────────────────────────────────
