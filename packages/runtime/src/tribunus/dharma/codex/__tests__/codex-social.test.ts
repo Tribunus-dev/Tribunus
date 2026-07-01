@@ -707,29 +707,28 @@ describe("sfwScreenPost", () => {
     const result = sfwScreenPost("Hello world")
     expect(result.verdict).toBe("pass")
   })
-  test("fails explicit text", () => {
-    expect(sfwScreenPost("check out this nsfw content").verdict).toBe("fail_text")
-    expect(sfwScreenPost("porn link here").verdict).toBe("fail_text")
-    expect(sfwScreenPost("mass shooter").verdict).toBe("fail_text")
-    expect(sfwScreenPost("mass shoot").verdict).toBe("fail_text")
-    expect(sfwScreenPost("school shooting").verdict).toBe("fail_text")
+
+  test("passes news discussion freely", () => {
+    expect(sfwScreenPost("mass shooting in Chicago yesterday").verdict).toBe("pass")
+    expect(sfwScreenPost("school shooting drill at my kid's school").verdict).toBe("pass")
+    expect(sfwScreenPost("article about the beheading incident").verdict).toBe("pass")
+    expect(sfwScreenPost("porn regulation debate in congress").verdict).toBe("pass")
+    expect(sfwScreenPost("nsfw content detection paper").verdict).toBe("pass")
+    expect(sfwScreenPost("drug policy reform discussion").verdict).toBe("pass")
   })
 
-  test("passes SFW media types", () => {
-    const media: PostMedia = { mediaId: "m1", type: "image", mimeType: "image/jpeg", hash: "h", sizeBytes: 100, width: null, height: null, durationMs: null, thumbnailHash: null }
-    expect(sfwScreenPost("photo", [media]).verdict).toBe("pass")
+  test("fails hate speech attacks", () => {
+    expect(sfwScreenPost("that person is a nigger").verdict).toBe("fail_text")
+    expect(sfwScreenPost("you faggot").verdict).toBe("fail_text")
   })
-  test("passes soft terms in research context", () => {
-    expect(sfwScreenPost("nsfw detection paper").verdict).toBe("pass")
-    expect(sfwScreenPost("pornographic content detection study").verdict).toBe("pass")
+
+  test("passes hate speech quoted in news context", () => {
+    expect(sfwScreenPost("news article reported the man used the n-word").verdict).toBe("pass")
   })
-  test("fails restricted media types", () => {
-    const media: PostMedia = { mediaId: "m1", type: "file", mimeType: "application/octet-stream", hash: "h", sizeBytes: 100, width: null, height: null, durationMs: null, thumbnailHash: null }
-    expect(sfwScreenPost("", [media]).verdict).toBe("fail_media")
-  })
+
   test("sfwCheckContent returns boolean", () => {
     expect(sfwCheckContent("clean content")).toBe(true)
-    expect(sfwCheckContent("nsfw content")).toBe(false)
+    expect(sfwCheckContent("that person is a nigger")).toBe(false)
   })
 })
 

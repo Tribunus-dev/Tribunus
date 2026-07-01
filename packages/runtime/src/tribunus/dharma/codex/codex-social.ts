@@ -549,94 +549,84 @@ export function buildFilteredFeed(
 //
 // No content is published without passing ALL active phases.
 //
-const MIME_TO_EXT: Record<string, string> = {
-  "image/jpeg": ".jpg", "image/png": ".png", "image/gif": ".gif",
-  "image/webp": ".webp", "image/avif": ".avif",
-  "video/mp4": ".mp4", "video/quicktime": ".mov", "video/webm": ".webm",
-}
-// Appeals go to verified peers (dharma > threshold) for review.
-
-// ── Phase 1: Comprehensive Blocklist ────────────────────────────────────
+// ── SFW Screening — Multi-Phase System ────────────────────────────────
 //
-// Organized by severity. hard = always blocked. soft = overridable by context.
-// Categories: hate_speech, extreme_violence, explicit_sexual, csam_adjacent,
-//             harassment_tools, drug_promotion, spam_bait, platform_evasion
+// Philosophy: text discussion of world events is broadly free.
+// We block hate speech attacks, CSAM, doxxing instructions, and spam.
+// Everything else — news articles about violence, sexual content research,
+// drug policy discussion — passes text screening.
+// Media (images/video) is where strict screening applies: hash DB, MIME
+// validation, extension whitelist, size limits.
+//
+// Categories: hate_speech, csam, harassment_tools, spam
 
-type Severity = "hard" | "soft"
+type Severity = "hard" | "text_soft"
 
 interface BlockEntry {
   pattern: RegExp
   severity: Severity
   category: string
   desc: string
-  contextOverrides?: string[]
+  newsOverrides?: string[]  // text context markers that allow news/reporting use
 }
 
 function buildBlocklist(): BlockEntry[] {
   const list: BlockEntry[] = []
-  const add = (pattern: RegExp, severity: Severity, category: string, desc: string, overrides?: string[]) =>
-    list.push({ pattern, severity, category, desc, contextOverrides: overrides })
+  const add = (pattern: RegExp, severity: Severity, category: string, desc: string, newsOverrides?: string[]) =>
+    list.push({ pattern, severity, category, desc, newsOverrides })
 
-  // ── HARD: Hate Speech & Slurs ──────────────────────────────────────────
-  add(/\b(?:n[i1]gg[ae3]r)\b/i, "hard", "hate_speech", "racial slur")
-  add(/\b(?:f[a4]gg[o0]t|f[a4]g)\b/i, "hard", "hate_speech", "homophobic slur")
-  add(/\b(?:tr[a4]nny|tr[a4]nn[ie])\b/i, "hard", "hate_speech", "transphobic slur")
-  add(/\b(?:r[e3]t[a4]rd)\b/i, "hard", "hate_speech", "ableist slur")
-  add(/\b(?:k[i1]k[e3]|sp[i1]c|ch[i1]nk|j[e3]w ba[i1]t)\b/i, "hard", "hate_speech", "racial/ethnic slur")
+  // ── HARD (always blocked) ───────────────────────────────────────────────
+  // CSAM: zero tolerance, no exceptions
+  add(/\b(?:child\s*porn|loli|shotacon|ptsc|pthc)\b/i, "hard", "csam", "CSAM keyword")
 
-  // ── HARD: CSAM-Adjacent ────────────────────────────────────────────────
-  add(/\b(?:child\s*porn|loli|shotacon|ptsc|pthc)\b/i, "hard", "csam_adjacent", "CSAM keyword")
+  // Doxxing instructions: publishing private info / harassment tools
+  add(/\b(?:doxx?[ing]?\s+(?:someone|people|person|user)|swat[st]?[ing]?\s+(?:someone|people|person|user))\b/i, "hard", "harassment_tools", "doxxing/harassment instructions")
 
-  // ── HARD: Extreme Violence ─────────────────────────────────────────────
-  add(/\b(?:mass\s*shoot(?:ing|er|s)?|school\s*shoot(?:ing|er|s)?|behead(?:ing|s)?|live\s*gore)\b/i, "hard", "extreme_violence", "extreme violence content")
+  // ── TEXT_SOFT: Hate speech (overridable by news/reporting context) ───────
+  add(/\b(?:n[i1]gg[ae3]r)\b/i, "text_soft", "hate_speech", "racial slur", ["news", "article", "report", "incident", "story", "coverage"])
+  add(/\b(?:f[a4]gg[o0]t|f[a4]g)\b/i, "text_soft", "hate_speech", "homophobic slur", ["news", "article", "report", "incident", "story", "coverage"])
+  add(/\b(?:tr[a4]nny|tr[a4]nn[ie])\b/i, "text_soft", "hate_speech", "transphobic slur", ["news", "article", "report", "incident", "story", "coverage"])
+  add(/\b(?:r[e3]t[a4]rd)\b/i, "text_soft", "hate_speech", "ableist slur", ["news", "article", "report", "incident", "story", "coverage"])
 
-  // ── HARD: Doxxing / Harassment Tools ───────────────────────────────────
-  add(/\b(?:doxx?[ing]?|swat[st]?[ing]?|call[ing]?\s+(?:their|his|her)\s+(?:employer|boss|school))\b/i, "hard", "harassment_tools", "harassment tool promotion")
-
-  // ── SOFT: Explicit Sexual ──────────────────────────────────────────────
-  add(/\b(?:porn|pornographic|xxx)\b/i, "soft", "explicit_sexual", "pornographic content", ["research", "study", "detection", "filter", "paper"])
-  add(/\b(?:adult\s+(?:content|video|site|entertainment))\b/i, "soft", "explicit_sexual", "adult content", ["research", "study", "paper"])
-  add(/\b(?:onlyfans|patreon-nsfw)\b/i, "soft", "explicit_sexual", "adult platform", ["research", "study"])
-  add(/\b(?:nsfw?|nsfl)\b/i, "soft", "explicit_sexual", "not safe for work label", ["detection", "filter", "research", "paper", "code"])
-
-  // ── SOFT: Drug Solicitation ────────────────────────────────────────────
-  add(/\b(?:sell[ing]?\s+(?:weed|cocaine|heroin|mdma|lsd|fentanyl|meth)|buy[ing]?\s+(?:weed|cocaine|heroin|mdma|lsd|fentanyl|meth))\b/i, "soft", "drug_promotion", "drug solicitation", ["research", "paper", "study", "pharma", "chemistry"])
-
-  // ── SOFT: Spam / Scam ─────────────────────────────────────────────────
-  add(/\b(?:free\s*(?:bitcoin|eth|nft|crypto|money)\s*(?:giveaway|claim|click|bonus))\b/i, "soft", "spam_bait", "crypto scam")
-  add(/\b(?:follow\s*(?:me\s+)?(?:back|for\s*follow)|like4like|sub4sub)\b/i, "soft", "spam_bait", "engagement bait")
-  add(/\b(?:dm\s+(?:me|for|to)\s*(?:collab|promo|sponsor|opportunity))\b/i, "soft", "spam_bait", "unsolicited promotion")
+  // ── TEXT_SOFT: Spam / Scam ──────────────────────────────────────────────
+  add(/\b(?:free\s*(?:bitcoin|eth|nft|crypto|money)\s*(?:giveaway|claim|click|bonus))\b/i, "text_soft", "spam", "crypto scam")
+  add(/\b(?:follow\s*(?:me\s+)?(?:back|for\s*follow)|like4like|sub4sub)\b/i, "text_soft", "spam", "engagement bait")
+  add(/\b(?:dm\s+(?:me|for|to)\s*(?:collab|promo|sponsor|opportunity))\b/i, "text_soft", "spam", "unsolicited promotion")
 
   return list
 }
 
-// ── Phase 2: Context Allowlist ─────────────────────────────────────────
+// ── Context Allowlist ──────────────────────────────────────────────────
 //
-// Content markers that signal safe/technical usage, softening SOFT blocks.
-// Each entry maps to context strings that matching BlockEntry.contextOverrides.
+// Content markers that signal news/reporting context, softening text_soft
+// blocks (e.g., hate speech in a news article is reporting, not attack).
 
-function buildContextAllowlist(): { pattern: RegExp; contexts: string[] }[] {
+function buildNewsContextAllowlist(): { pattern: RegExp; contexts: string[] }[] {
   return [
-    { pattern: /\b(?:paper|research|study|survey|dataset|benchmark|publication|thesis|dissertation|journal|conference)\b/i, contexts: ["research", "study", "paper"] },
-    { pattern: /\b(?:medic[al]?|clinic[al]?|health|anatomy|biology|physiology|diagnos[is|e]|treatment|surgery|patient|disease|disorder|pharma(?:cology)?|chemistry)\b/i, contexts: ["research", "study", "paper", "pharma", "chemistry"] },
-    { pattern: /\b(?:code|function|api|library|package|module|class|method|repository|commit|merge|pull|branch|issue|bugfix|debug|refactor|implement|import|export)\b/i, contexts: ["code"] },
-    { pattern: /\b(?:security|vulnerability|cve|exploit|malware|ransomware|phish[ing]?|detection|prevention|block[ing]?|filter[ing]?)\b/i, contexts: ["detection", "blocking", "filter", "research"] },
-    { pattern: /\b(?:nsfw\s*detection|content\s*moderation|harmful\s*content|toxic[ity]?|abuse\s*detection|safety\s*filter|harmful\s*content\s*detection)\b/i, contexts: ["detection", "blocking", "filter", "research"] },
+    { pattern: /\b(?:news|article|report|story|coverage|incident|event|happened|breaking|update|live\s+blog|dispatch|investigation|exclusive)\b/i, contexts: ["news", "article", "report", "incident", "story", "coverage"] },
+    { pattern: /\b(?:paper|research|study|survey|dataset|benchmark|publication|thesis|dissertation|journal|conference|academic)\b/i, contexts: ["news", "article", "report"] },
+    { pattern: /\b(?:\"|\u2018|\u201c|quote|said|according\s+to|reported|published|wrote|stated|claimed|alleged)\b/i, contexts: ["news", "article", "incident", "coverage"] },
   ]
 }
 
-// ── Phase 3: Media Hash Database ───────────────────────────────────────
+// ── Media Hash Database ────────────────────────────────────────────────
 //
 // Known NSFW content hashes. Production would load from a local DB.
 // Pluggable — updated via replication from trusted sources.
 
 const KNOWN_NSFW_HASHES = new Set<string>()
 
+const MIME_TO_EXT: Record<string, string> = {
+  "image/jpeg": ".jpg", "image/png": ".png", "image/gif": ".gif",
+  "image/webp": ".webp", "image/avif": ".avif",
+  "video/mp4": ".mp4", "video/quicktime": ".mov", "video/webm": ".webm",
+}
+
 // ── Config & Defaults ──────────────────────────────────────────────────
 
 interface SfwConfig {
   blocklist: BlockEntry[]
-  contextAllowlist: ReturnType<typeof buildContextAllowlist>
+  contextAllowlist: ReturnType<typeof buildNewsContextAllowlist>
   knownNsfwHashes: Set<string>
   gracePeriodMs: number
   minDharmaForRelax: number
@@ -647,7 +637,7 @@ interface SfwConfig {
 
 const DEFAULT_SFW_CONFIG: SfwConfig = {
   blocklist: buildBlocklist(),
-  contextAllowlist: buildContextAllowlist(),
+  contextAllowlist: buildNewsContextAllowlist(),
   knownNsfwHashes: KNOWN_NSFW_HASHES,
   gracePeriodMs: 7 * 24 * 60 * 60 * 1000,
   minDharmaForRelax: 3,
@@ -673,14 +663,18 @@ function detectSafeContexts(content: string, allowlist: SfwConfig["contextAllowl
 function screenText(content: string, blocklist: BlockEntry[], safeContexts: Set<string>, fromGracePeriod: boolean): SfwResult | null {
   for (const entry of blocklist) {
     if (!entry.pattern.test(content)) continue
+
+    // Hard: always block
     if (entry.severity === "hard") {
-      return { verdict: "fail_text", reason: `Hard block: ${entry.category} — ${entry.desc}`, details: [`Pattern: ${entry.pattern}`] }
+      return { verdict: "fail_text", reason: `Blocked: ${entry.category} — ${entry.desc}`, details: [`Pattern: ${entry.pattern}`] }
     }
-    const overridden = entry.contextOverrides && entry.contextOverrides.some((c) => safeContexts.has(c))
+    // text_soft: block unless news/reporting context overrides
+    const overridden = entry.newsOverrides && entry.newsOverrides.some((c) => safeContexts.has(c))
     if (!overridden || fromGracePeriod) {
-      return { verdict: "fail_text", reason: `Soft block: ${entry.category} — ${entry.desc}`, details: [`Pattern: ${entry.pattern}`, overridden ? "Grace period overrides context" : "No safe context detected"] }
+      return { verdict: "fail_text", reason: `Blocked: ${entry.category} — ${entry.desc}`, details: [`Pattern: ${entry.pattern}`, fromGracePeriod ? "Grace period active" : "No news/reporting context detected"] }
     }
   }
+
   return null
 }
 
