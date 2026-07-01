@@ -7,6 +7,7 @@ import { registerStoreIpcHandlers } from "./ipc-store"
 import { registerFsIpcHandlers } from "./ipc-fs"
 import { registerSessionIpcHandlers } from "./ipc-session"
 import { registerWindowIpcHandlers } from "./ipc-window"
+import { registerPrismConfigIpcHandlers } from "./ipc-prism-config"
 import { registerLocaleIpcHandlers } from "./ipc-locale"
 import { registerInitIpcHandlers } from "./ipc-init"
 import type { Deps as InitDeps } from "./ipc-init"
@@ -18,9 +19,11 @@ import { registerSecretIpcHandlers } from "./desktop-secret-store"
 import { registerNotificationIpcHandlers } from "./desktop-notification-service"
 import { validateRegisteredIpcHandlers } from "./ipc-registration"
 import { registerConversationHandlers } from "./ipc/conversation-handlers"
+import { registerSocialIpcHandlers } from "./ipc/social-handlers"
 let registered = false
 
 import type { PrismInferenceServer as PrismInferenceServerType } from "../../../compute-native"
+import type { NapiServerConfig } from "../../../compute-native"
 import { createRequire } from "node:module"
 
 export function registerIpcHandlers(deps: InitDeps) {
@@ -34,6 +37,8 @@ export function registerIpcHandlers(deps: InitDeps) {
   registerSessionIpcHandlers()
   registerWindowIpcHandlers()
   registerLocaleIpcHandlers()
+  const require = createRequire(import.meta.url)
+  registerPrismConfigIpcHandlers(require("../../../compute-native"))
   registerGithubIpcHandlers()
   registerPluginTransportIpcHandlers()
   registerCapabilitiesIpcHandlers()
@@ -46,6 +51,8 @@ export function registerIpcHandlers(deps: InitDeps) {
     valkey: null,
   })
 
+  registerSocialIpcHandlers()
+
   // ── Engine Generate ─────────────────────────────────────
   ipcMain.handle(IPC.handle.CONVERSATION_ENGINE_GENERATE, async (_event, sessionId: string, prompt: string, maxTokens: number) => {
     try {
@@ -55,10 +62,27 @@ export function registerIpcHandlers(deps: InitDeps) {
       }
 
       const server = new PrismInferenceServerImpl({
-        modelStorePath: "/tmp",
-        maxConcurrentSessions: 2,
-        maxInputTokens: 4096,
-        maxOutputTokens: 2048,
+        port: 0,
+        host: "localhost",
+        maxConcurrent: 2,
+        rateLimitPerMin: 60,
+        rateLimitTokensPerSec: 1000,
+        rateLimitBurst: 10,
+        logLevel: "info",
+        runtimeMode: "production",
+        modelPath: "/tmp",
+        autoDownload: false,
+        maxModelCacheGb: 4,
+        kvCacheTiers: 2,
+        compressionRatio: 0.5,
+        evolkvEnabled: true,
+        draftCount: 4,
+        draftLength: 128,
+        spechubEnabled: false,
+        exoEnabled: false,
+        exoPort: 0,
+        autoscaleMin: 1,
+        autoscaleMax: 4,
       })
 
       // Simple char-code tokenization — placeholder for real tokenizer

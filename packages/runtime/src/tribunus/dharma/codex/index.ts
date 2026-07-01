@@ -18,3 +18,7 @@ export * from "./codex-growth-policy"
 export * from "./codex-pattern-filter"
 export * from "./codex-dharma"
 export * from "./codex-mutual-aid"
+export * from "./codex-social"
+// Social replication
+export type { SocialReplicationConfig, SocialSyncState } from "../replication/social-replication"
+export { SYNC_TOPIC_PREFIX, SocialReplicationManager, SocialReplicationError } from "../replication/social-replication"

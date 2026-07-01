@@ -18,6 +18,7 @@
  */
 
 import { ipcRenderer } from "electron"
+import type { NapiServerConfig } from "../../../compute-native"
 import type { DesktopMenuAction } from "@tribunus/app/desktop-menu"
 import type { AutoUpdateStatus } from "./auto-updater"
 import { IPC } from "./ipc-channels"
@@ -209,7 +210,77 @@ export const CHANNELS = {
   capabilities: {
     get: IPC.handle.GET_CAPABILITIES,
   },
+  social: {
+    getProfile: IPC.handle.SOCIAL_GET_PROFILE,
+    updateProfile: IPC.handle.SOCIAL_UPDATE_PROFILE,
+    follow: IPC.handle.SOCIAL_FOLLOW,
+    unfollow: IPC.handle.SOCIAL_UNFOLLOW,
+    getFollowers: IPC.handle.SOCIAL_GET_FOLLOWERS,
+    getFollowing: IPC.handle.SOCIAL_GET_FOLLOWING,
+    getFeed: IPC.handle.SOCIAL_GET_FEED,
+    endorse: IPC.handle.SOCIAL_ENDORSE,
+    getEndorsements: IPC.handle.SOCIAL_GET_ENDORSEMENTS,
+    getBlocked: IPC.handle.SOCIAL_GET_BLOCKED,
+    blockUser: IPC.handle.SOCIAL_BLOCK_USER,
+    unblockUser: IPC.handle.SOCIAL_UNBLOCK_USER,
+    getScore: IPC.handle.SOCIAL_GET_SCORE,
+  },
 } as const
+
+// ── Social Param Types ────────────────────────────────────────
+
+export interface SocialProfileParams {
+  identityId: string
+}
+
+export interface SocialProfileUpdateParams {
+  identityId: string
+  displayName?: string
+  bio?: string
+  website?: string
+}
+
+export interface SocialFollowParams {
+  followerId: string
+  followeeId: string
+}
+
+export interface SocialUnfollowParams {
+  followerId: string
+  followeeId: string
+}
+
+export interface SocialGetFeedParams {
+  identityId: string
+  limit?: number
+  offset?: number
+}
+
+export interface SocialEndorseParams {
+  fromId: string
+  toId: string
+  forContributionId: string
+  message?: string
+}
+
+export interface SocialBlockParams {
+  blockerId: string
+  blockedId: string
+  reason?: string
+}
+
+export interface SocialUnblockParams {
+  blockerId: string
+  blockedId: string
+}
+
+export interface SocialGetEndorsementsParams {
+  identityId: string
+}
+
+export interface SocialGetScoreParams {
+  identityId: string
+}
 
 // ──────────────────────────────────────────────────────────────
 //  IpcHandleContract — ipcMain.handle / ipcRenderer.invoke channels
@@ -298,6 +369,11 @@ export interface IpcHandleContract {
   [IPC.handle.NOTIFICATIONS_STATUS]: { params: []; returns: Promise<{ supported: boolean; enabled: boolean; permission: string }> }
   [IPC.handle.NOTIFICATIONS_SET_PREFERENCES]: { params: [prefs: { enabled?: boolean; agentBlocked?: boolean; reviewRequired?: boolean; releaseBinderComplete?: boolean; projectActivationFailed?: boolean; sidecarFailed?: boolean }]; returns: Promise<void> }
 
+  // ── Prism Config ──────────────────────────────────────
+  [IPC.handle.GET_PRISM_CONFIG]: { params: []; returns: Promise<NapiServerConfig> }
+  [IPC.handle.LOAD_PRISM_CONFIG_FROM]: { params: [path: string]; returns: Promise<NapiServerConfig> }
+  [IPC.handle.GET_PRISM_CONFIG_JSON]: { params: []; returns: Promise<string> }
+
   // ── Conversation ────────────────────────────────────────
   [IPC.handle.CONVERSATION_INIT_SESSION]: { params: [sessionId: string]; returns: Promise<{ ok: boolean; value?: unknown[]; error?: string }> }
   [IPC.handle.CONVERSATION_APPEND]: { params: [message: { id: string; sessionId: string; role: string; content: string; timestamp: number; metadata?: unknown }]; returns: Promise<{ ok: boolean; error?: string }> }
@@ -305,6 +381,20 @@ export interface IpcHandleContract {
   [IPC.handle.CONVERSATION_FETCH_HISTORY]: { params: [sessionId: string, beforeTimestamp: number, limit: number]; returns: Promise<{ ok: boolean; value?: unknown[]; error?: string }> }
   [IPC.handle.CONVERSATION_SUBSCRIBE_STREAM]: { params: [sessionId: string]; returns: Promise<void> }
   [IPC.handle.CONVERSATION_ENGINE_GENERATE]: { params: [sessionId: string, prompt: string, maxTokens: number]; returns: Promise<{ ok: boolean; error?: string }> }
+  // ── Social ──────────────────────────────────────────────
+  [IPC.handle.SOCIAL_GET_PROFILE]: { params: [params: SocialProfileParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").SocialProfile | null> }
+  [IPC.handle.SOCIAL_UPDATE_PROFILE]: { params: [params: SocialProfileUpdateParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").SocialProfile> }
+  [IPC.handle.SOCIAL_FOLLOW]: { params: [params: SocialFollowParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_UNFOLLOW]: { params: [params: SocialUnfollowParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_GET_FOLLOWERS]: { params: [params: SocialProfileParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").FollowRecord[]> }
+  [IPC.handle.SOCIAL_GET_FOLLOWING]: { params: [params: SocialProfileParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").FollowRecord[]> }
+  [IPC.handle.SOCIAL_GET_FEED]: { params: [params: SocialGetFeedParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").FeedItem[]> }
+  [IPC.handle.SOCIAL_ENDORSE]: { params: [params: SocialEndorseParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_GET_ENDORSEMENTS]: { params: [params: SocialGetEndorsementsParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").Endorsement[]> }
+  [IPC.handle.SOCIAL_GET_BLOCKED]: { params: [params: SocialProfileParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").BlockEntry[]> }
+  [IPC.handle.SOCIAL_BLOCK_USER]: { params: [params: SocialBlockParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_UNBLOCK_USER]: { params: [params: SocialUnblockParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_GET_SCORE]: { params: [params: SocialGetScoreParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").DharmaSocialScore | null> }
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -472,6 +562,21 @@ interface BridgeHandleMap {
   conversationCacheAppend: typeof IPC.handle.CONVERSATION_CACHE_APPEND
   conversationFetchHistory: typeof IPC.handle.CONVERSATION_FETCH_HISTORY
   conversationEngineGenerate: typeof IPC.handle.CONVERSATION_ENGINE_GENERATE
+
+  // ── Social ──────────────────────────────────────────────
+  socialGetProfile: typeof IPC.handle.SOCIAL_GET_PROFILE
+  socialUpdateProfile: typeof IPC.handle.SOCIAL_UPDATE_PROFILE
+  socialFollow: typeof IPC.handle.SOCIAL_FOLLOW
+  socialUnfollow: typeof IPC.handle.SOCIAL_UNFOLLOW
+  socialGetFollowers: typeof IPC.handle.SOCIAL_GET_FOLLOWERS
+  socialGetFollowing: typeof IPC.handle.SOCIAL_GET_FOLLOWING
+  socialGetFeed: typeof IPC.handle.SOCIAL_GET_FEED
+  socialEndorse: typeof IPC.handle.SOCIAL_ENDORSE
+  socialGetEndorsements: typeof IPC.handle.SOCIAL_GET_ENDORSEMENTS
+  socialGetBlocked: typeof IPC.handle.SOCIAL_GET_BLOCKED
+  socialBlockUser: typeof IPC.handle.SOCIAL_BLOCK_USER
+  socialUnblockUser: typeof IPC.handle.SOCIAL_UNBLOCK_USER
+  socialGetScore: typeof IPC.handle.SOCIAL_GET_SCORE
 }
 
 /** @internal — Bridge send-method → IPC send channel constant mapping */
@@ -667,6 +772,11 @@ export const IPC_METHOD_REGISTRY: {
   { channel: IPC.handle.NOTIFICATIONS_STATUS, usesIpcResult: true, returns: "IpcResult<{ supported: boolean; enabled: boolean; permission: string }>", rendererSees: "{ supported: boolean; enabled: boolean; permission: string }" },
   { channel: IPC.handle.NOTIFICATIONS_SET_PREFERENCES, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
 
+  // ── Prism Config ────────────────────────────────────────
+  { channel: IPC.handle.GET_PRISM_CONFIG, usesIpcResult: true, returns: "IpcResult<NapiServerConfig>", rendererSees: "NapiServerConfig" },
+  { channel: IPC.handle.LOAD_PRISM_CONFIG_FROM, usesIpcResult: true, returns: "IpcResult<NapiServerConfig>", rendererSees: "NapiServerConfig" },
+  { channel: IPC.handle.GET_PRISM_CONFIG_JSON, usesIpcResult: true, returns: "IpcResult<string>", rendererSees: "string" },
+
   // ── Conversation ────────────────────────────────────────
   { channel: IPC.handle.CONVERSATION_INIT_SESSION, usesIpcResult: true, returns: "IpcResult<any[]>", rendererSees: "any[]" },
   { channel: IPC.handle.CONVERSATION_APPEND, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
@@ -674,6 +784,21 @@ export const IPC_METHOD_REGISTRY: {
   { channel: IPC.handle.CONVERSATION_FETCH_HISTORY, usesIpcResult: true, returns: "IpcResult<any[]>", rendererSees: "any[]" },
   { channel: IPC.handle.CONVERSATION_SUBSCRIBE_STREAM, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
   { channel: IPC.handle.CONVERSATION_ENGINE_GENERATE, usesIpcResult: true, returns: "IpcResult<{ ok: boolean; error?: string }>", rendererSees: "{ ok: boolean; error?: string }" },
+
+  // ── Social ────────────────────────────────────────────────
+  { channel: IPC.handle.SOCIAL_GET_PROFILE, usesIpcResult: true, returns: "IpcResult<SocialProfile | null>", rendererSees: "SocialProfile | null" },
+  { channel: IPC.handle.SOCIAL_UPDATE_PROFILE, usesIpcResult: true, returns: "IpcResult<SocialProfile>", rendererSees: "SocialProfile" },
+  { channel: IPC.handle.SOCIAL_FOLLOW, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.SOCIAL_UNFOLLOW, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.SOCIAL_GET_FOLLOWERS, usesIpcResult: true, returns: "IpcResult<FollowRecord[]>", rendererSees: "FollowRecord[]" },
+  { channel: IPC.handle.SOCIAL_GET_FOLLOWING, usesIpcResult: true, returns: "IpcResult<FollowRecord[]>", rendererSees: "FollowRecord[]" },
+  { channel: IPC.handle.SOCIAL_GET_FEED, usesIpcResult: true, returns: "IpcResult<FeedItem[]>", rendererSees: "FeedItem[]" },
+  { channel: IPC.handle.SOCIAL_ENDORSE, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.SOCIAL_GET_ENDORSEMENTS, usesIpcResult: true, returns: "IpcResult<Endorsement[]>", rendererSees: "Endorsement[]" },
+  { channel: IPC.handle.SOCIAL_GET_BLOCKED, usesIpcResult: true, returns: "IpcResult<BlockEntry[]>", rendererSees: "BlockEntry[]" },
+  { channel: IPC.handle.SOCIAL_BLOCK_USER, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.SOCIAL_UNBLOCK_USER, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.SOCIAL_GET_SCORE, usesIpcResult: true, returns: "IpcResult<DharmaSocialScore | null>", rendererSees: "DharmaSocialScore | null" },
 ]
 
 // ── Runtime Validation ───────────────────────────────────

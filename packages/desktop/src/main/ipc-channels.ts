@@ -94,6 +94,24 @@ export const IPC = {
     CONVERSATION_INIT_SESSION: "tribunus:conversation:init-session",
     CONVERSATION_SUBSCRIBE_STREAM: "tribunus:conversation:subscribe-stream",
     CONVERSATION_ENGINE_GENERATE: "tribunus:conversation:engine-generate",
+    // ── Prism Config ──────────────────────────────────────
+    GET_PRISM_CONFIG: "tribunus:get-prism-config",
+    LOAD_PRISM_CONFIG_FROM: "tribunus:load-prism-config-from",
+    GET_PRISM_CONFIG_JSON: "tribunus:get-prism-config-json",
+    // ── Social ────────────────────────────────────────────
+    SOCIAL_GET_PROFILE: "tribunus:social:get-profile",
+    SOCIAL_UPDATE_PROFILE: "tribunus:social:update-profile",
+    SOCIAL_FOLLOW: "tribunus:social:follow",
+    SOCIAL_UNFOLLOW: "tribunus:social:unfollow",
+    SOCIAL_GET_FOLLOWERS: "tribunus:social:get-followers",
+    SOCIAL_GET_FOLLOWING: "tribunus:social:get-following",
+    SOCIAL_GET_FEED: "tribunus:social:get-feed",
+    SOCIAL_ENDORSE: "tribunus:social:endorse",
+    SOCIAL_GET_ENDORSEMENTS: "tribunus:social:get-endorsements",
+    SOCIAL_GET_BLOCKED: "tribunus:social:get-blocked",
+    SOCIAL_BLOCK_USER: "tribunus:social:block-user",
+    SOCIAL_UNBLOCK_USER: "tribunus:social:unblock-user",
+    SOCIAL_GET_SCORE: "tribunus:social:get-score",
   } as const,
 
   send: {

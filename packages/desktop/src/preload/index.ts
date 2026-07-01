@@ -70,6 +70,11 @@ const api: ElectronAPI = {
   safeModeAction: (action: SafeModeAction) => typedInvoke(IPC.handle.SAFE_MODE_ACTION, action),
   openProject: (directory) => typedInvoke(IPC.handle.OPEN_PROJECT, directory),
 
+  // --- Prism Config ---
+  getPrismConfig: () => typedInvoke(IPC.handle.GET_PRISM_CONFIG),
+  loadPrismConfigFrom: (path) => typedInvoke(IPC.handle.LOAD_PRISM_CONFIG_FROM, path),
+  getPrismConfigJson: () => typedInvoke(IPC.handle.GET_PRISM_CONFIG_JSON),
+
   // --- Engine generation ---
   conversationEngineGenerate: (sessionId, prompt, maxTokens) =>
     typedInvoke(IPC.handle.CONVERSATION_ENGINE_GENERATE, sessionId, prompt, maxTokens),
@@ -156,6 +161,20 @@ const api: ElectronAPI = {
       ipcRenderer.removeListener(IPC.push.PLUGIN_PUSH, listener)
     }
   },
+  // --- Social methods ---
+  socialGetProfile: (params) => typedInvoke(IPC.handle.SOCIAL_GET_PROFILE, params),
+  socialUpdateProfile: (params) => typedInvoke(IPC.handle.SOCIAL_UPDATE_PROFILE, params),
+  socialFollow: (params) => typedInvoke(IPC.handle.SOCIAL_FOLLOW, params),
+  socialUnfollow: (params) => typedInvoke(IPC.handle.SOCIAL_UNFOLLOW, params),
+  socialGetFollowers: (params) => typedInvoke(IPC.handle.SOCIAL_GET_FOLLOWERS, params),
+  socialGetFollowing: (params) => typedInvoke(IPC.handle.SOCIAL_GET_FOLLOWING, params),
+  socialGetFeed: (params) => typedInvoke(IPC.handle.SOCIAL_GET_FEED, params),
+  socialEndorse: (params) => typedInvoke(IPC.handle.SOCIAL_ENDORSE, params),
+  socialGetEndorsements: (params) => typedInvoke(IPC.handle.SOCIAL_GET_ENDORSEMENTS, params),
+  socialGetBlocked: (params) => typedInvoke(IPC.handle.SOCIAL_GET_BLOCKED, params),
+  socialBlockUser: (params) => typedInvoke(IPC.handle.SOCIAL_BLOCK_USER, params),
+  socialUnblockUser: (params) => typedInvoke(IPC.handle.SOCIAL_UNBLOCK_USER, params),
+  socialGetScore: (params) => typedInvoke(IPC.handle.SOCIAL_GET_SCORE, params),
   pluginInvoke: (channel: string, data?: unknown) => {
     return pluginInvoke(channel, data)
   },
