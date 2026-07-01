@@ -14,6 +14,8 @@ import type {
   SessionMember,
   CommandKind,
 } from "./types"
+import type { ContributionHookContext, DharmaContributionRecord } from "./contribution-hooks"
+import { recordContributionFromCommand } from "./contribution-hooks"
 import { isGrantValid, hasCapability, isPathAllowed, isCommandAllowed, isNetworkDomainAllowed, isEnvironmentVariableAllowed, isWithinBudget } from "./session-grants"
 import { isMemberActive } from "./session-membership"
 import { isTerminalState, acceptsCommands } from "./session-lifecycle"
@@ -77,7 +79,8 @@ export function getScopeKind(commandKind: CommandKind): "path" | "command" | "ne
 export function evaluateCommandAuthority(
   context: SessionContext,
   request: SessionCommandRequest,
-): { decision: CommandDecision; reason: string | null; evaluationDigest: string } {
+  contributionCtx?: ContributionHookContext,
+): { decision: CommandDecision; reason: string | null; evaluationDigest: string; contributionRecord?: DharmaContributionRecord } {
   // 1. Session state check
   const stateCheck = checkSessionState(context, request)
   if (!stateCheck.allowed) {
@@ -147,7 +150,13 @@ export function evaluateCommandAuthority(
 
   // All checks passed
   const digest = computeDigest(["accepted", request.requestId, request.commandKind])
-  return { decision: "accepted", reason: null, evaluationDigest: digest }
+  let contributionRecord: DharmaContributionRecord | undefined
+  if (contributionCtx) {
+    const receipt = createAcceptanceReceipt(request)
+    const result = recordContributionFromCommand(contributionCtx, request, receipt)
+    contributionRecord = result.record
+  }
+  return { decision: "accepted", reason: null, evaluationDigest: digest, contributionRecord }
 }
 
 /**

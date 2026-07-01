@@ -42,6 +42,8 @@ export type {
   DharmaSessionAggregate,
   SessionEventType,
   SessionAuditEventType,
+  DharmaContributionRecord,
+  ContributionClass,
 } from "./types"
 export {
   ALL_CAPABILITIES,
@@ -183,6 +185,22 @@ export {
   computeAuthorityDigest,
   getEffectiveGrantsForMember,
 } from "./session-controller"
+
+// Contributions
+export type { ContributionHookContext } from "./contribution-hooks"
+export type { ContributionSummary } from "./contribution-hooks"
+export {
+  commandKindToContributionClass,
+  createContributionHookContext,
+  recordContributionFromCommand,
+  acceptContributionRecord,
+  getSessionSummary,
+} from "./contribution-hooks"
+export {
+  getEarnedProfile,
+  getRequiredContributionsForProfile,
+  CONTRIBUTION_THRESHOLDS,
+} from "./contribution-grants"
 
 // Aggregate
 export {
