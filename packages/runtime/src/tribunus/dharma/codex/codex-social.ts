@@ -589,7 +589,15 @@ function buildBlocklist(): BlockEntry[] {
   add(/\b(?:r[e3]t[a4]rd)\b/i, "text_soft", "hate_speech", "ableist slur", ["news", "article", "report", "incident", "story", "coverage"])
 
   // ── TEXT_SOFT: Spam / Scam ──────────────────────────────────────────────
+  // Engagement bait — artificial interaction farming
+  add(/\bday\s+\d+\s+of\s+posting\b/i, "text_soft", "spam", "engagement bait chain")
+  add(/\blike\s+(?:if|for)\s+(?:yes|agree|this)\s*[,;.]*\s*(?:share|comment|tag)/i, "text_soft", "spam", "engagement bait interaction")
+  add(/\btag\s+\d+\s+(?:people|friends|followers|connections)\b/i, "text_soft", "spam", "engagement bait tagging")
+
+  // Crypto / money scams
   add(/\b(?:free\s*(?:bitcoin|eth|nft|crypto|money)\s*(?:giveaway|claim|click|bonus))\b/i, "text_soft", "spam", "crypto scam")
+
+  // Follow/subscribe bait
   add(/\b(?:follow\s*(?:me\s+)?(?:back|for\s*follow)|like4like|sub4sub)\b/i, "text_soft", "spam", "engagement bait")
   add(/\b(?:dm\s+(?:me|for|to)\s*(?:collab|promo|sponsor|opportunity))\b/i, "text_soft", "spam", "unsolicited promotion")
 

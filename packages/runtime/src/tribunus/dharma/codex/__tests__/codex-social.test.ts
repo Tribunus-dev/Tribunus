@@ -726,6 +726,16 @@ describe("sfwScreenPost", () => {
     expect(sfwScreenPost("news article reported the man used the n-word").verdict).toBe("pass")
   })
 
+  test("fails mechanical engagement bait", () => {
+    expect(sfwScreenPost("Day 7 of posting until someone notices me").verdict).toBe("fail_text")
+    expect(sfwScreenPost("Like if agree, share if you don't").verdict).toBe("fail_text")
+    expect(sfwScreenPost("Tag 5 people who need to see this").verdict).toBe("fail_text")
+    expect(sfwScreenPost("Like for yes, comment for no").verdict).toBe("fail_text")
+  })
+
+  test("passes genuine developer announcements", () => {
+    expect(sfwScreenPost("Excited to share my new open source project after 2 years of work").verdict).toBe("pass")
+  })
   test("sfwCheckContent returns boolean", () => {
     expect(sfwCheckContent("clean content")).toBe(true)
     expect(sfwCheckContent("that person is a nigger")).toBe(false)
