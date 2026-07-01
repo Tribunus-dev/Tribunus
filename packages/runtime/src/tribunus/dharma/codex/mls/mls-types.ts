@@ -56,6 +56,10 @@ export interface CodexMlsGroupDescriptor {
   createdAtLogicalTime: string
 }
 
+// ── Re-exports for Lease Authority ──────────────────────────────────────────
+
+/** Re-exported from mls-leases for use by the external lease authority. */
+export type { DecryptionLease, LeasePurpose } from "./mls-leases"
 // ── MLS Policy ──────────────────────────────────────────────────────────────
 
 export interface CodexMlsPolicy {
