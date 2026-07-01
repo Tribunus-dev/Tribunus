@@ -393,8 +393,7 @@ describe("signSnapshotRoot + verifySnapshotSignature", () => {
     )
 
     const signature = signSnapshotRoot(snapshot, privateKey)
-    const tampered = "00" + signature.slice(2)
-    const valid = verifySnapshotSignature(snapshot, tampered, publicKey)
+    const valid = verifySnapshotSignature(snapshot, "00" + "00".repeat(63), publicKey)  // all-zeros "signature"
 
     expect(valid).toBe(false)
   })
