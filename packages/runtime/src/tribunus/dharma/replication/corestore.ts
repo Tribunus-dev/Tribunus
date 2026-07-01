@@ -46,6 +46,20 @@ function privateInboxCoreName(federationId: string): string {
   return `${FEDERATION_PREFIX}/${federationId}/private-inbox`
 }
 
+const SOCIAL_PROFILE_PREFIX = "social/profile"
+const SOCIAL_ACTIVITY_PREFIX = "social/activity"
+const SOCIAL_FOLLOW_PREFIX = "social/follow"
+
+function socialProfileCoreName(identityId: string): string {
+  return `${SOCIAL_PROFILE_PREFIX}/${identityId}`
+}
+function socialActivityCoreName(identityId: string): string {
+  return `${SOCIAL_ACTIVITY_PREFIX}/${identityId}`
+}
+function socialFollowBeeName(identityId: string): string {
+  return `${SOCIAL_FOLLOW_PREFIX}/${identityId}`
+}
+
 /**
  * Exported name helpers — useful for tests and external consumers that
  * need to predict or inspect core names without instantiating a store.
@@ -56,6 +70,9 @@ export const CoreName = {
   view: viewCoreName,
   checkpoint: checkpointCoreName,
   privateInbox: privateInboxCoreName,
+  socialProfile: socialProfileCoreName,
+  socialActivity: socialActivityCoreName,
+  socialFollow: socialFollowBeeName,
 } as const
 
 // ── DharmaCorestore ----------------------------------------------------------
@@ -137,6 +154,21 @@ export class DharmaCorestore {
     return this.getCore(SYSTEM_CORE_NAME)
   }
 
+  /** Get or create the social profile core for a given identity. */
+  async getSocialProfileCore(identityId: string): Promise<Hypercore<any>> {
+    return this.getCore(socialProfileCoreName(identityId))
+  }
+
+  /** Get or create the social activity core for a given identity. */
+  async getSocialActivityCore(identityId: string): Promise<Hypercore<any>> {
+    return this.getCore(socialActivityCoreName(identityId))
+  }
+
+  /** Get or create the social follow bee core for a given identity. */
+  async getSocialFollowBee(identityId: string): Promise<Hypercore<any>> {
+    return this.getCore(socialFollowBeeName(identityId))
+  }
+
   // ── Queries ----------------------------------------------------------
 
   /** Return all opened federation cores for replication (used by swarm). */
@@ -144,6 +176,9 @@ export class DharmaCorestore {
     const result: Hypercore[] = []
     for (const [name, core] of this.cores) {
       if (name.startsWith(FEDERATION_PREFIX)) {
+        result.push(core)
+      }
+      if (name.startsWith(SOCIAL_PROFILE_PREFIX) || name.startsWith(SOCIAL_ACTIVITY_PREFIX) || name.startsWith(SOCIAL_FOLLOW_PREFIX)) {
         result.push(core)
       }
     }
