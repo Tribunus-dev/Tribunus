@@ -28,66 +28,7 @@ const ACTIVITY_ICONS: Record<ActivityType, string> = {
   endorsed: "\uD83D\uDC4D",
   joined: "+",
   profile_updated: "\u270E",
-}
-
-/* ── Sample data helpers ──────────────────────────────────── */
-
-function sampleProfile(id: string, name: string, bio = ""): SocialProfile {
-  return {
-    profileId: id,
-    displayName: name,
-    bio,
-    avatarHash: null,
-    website: "",
-    joinedAt: new Date(Date.now() - 86400000 * Math.floor(Math.random() * 365)).toISOString(),
-    profileVersion: 1,
-  }
-}
-
-function sampleActivity(
-  actorId: string,
-  payload: SocialActivity["payload"],
-  minutesAgo: number,
-): SocialActivity {
-  return {
-    activityId: `act-${Math.random().toString(36).slice(2, 10)}`,
-    actorId,
-    timestamp: new Date(Date.now() - minutesAgo * 60000).toISOString(),
-    payload,
-    signature: null,
-  }
-}
-
-function sampleFeedItem(profile: SocialProfile, payload: SocialActivity["payload"], minutesAgo: number): FeedItem {
-  return {
-    activity: sampleActivity(profile.profileId, payload, minutesAgo),
-    profile,
-  }
-}
-
-const SAMPLE_PROFILES: SocialProfile[] = [
-  sampleProfile("did:trib:alice", "Alice Chen", "Building decentralized systems"),
-  sampleProfile("did:trib:bob", "Bob Martinez", "Quantum computing researcher"),
-  sampleProfile("did:trib:carol", "Carol Williams", "Open source contributor"),
-  sampleProfile("did:trib:dave", "Dave Kim", "Protocol engineer"),
-  sampleProfile("did:trib:eve", "Eve Johnson", "Knowledge graph curator"),
-  sampleProfile("did:trib:frank", "Frank Ortega", "Dharma advocate"),
-]
-
-const ALL_SAMPLE_ITEMS: FeedItem[] = [
-  sampleFeedItem(SAMPLE_PROFILES[0], { type: "accepted_proposal", data: { requestId: "r1", proposalId: "p1", title: "Enhanced reputation scoring" } }, 5),
-  sampleFeedItem(SAMPLE_PROFILES[1], { type: "earned_dharma", data: { amount: 42, resolutionId: "res1", reason: "Code review contributions" } }, 12),
-  sampleFeedItem(SAMPLE_PROFILES[2], { type: "codex_entry", data: { entryId: "e1", title: "Zero-knowledge proofs in consensus", knowledgeClass: "research" } }, 30),
-  sampleFeedItem(SAMPLE_PROFILES[3], { type: "followed", data: { followeeId: "did:trib:carol" } }, 45),
-  sampleFeedItem(SAMPLE_PROFILES[4], { type: "endorsed", data: { toId: "did:trib:alice", contributionId: "c1", message: "Excellent protocol design work" } }, 90),
-  sampleFeedItem(SAMPLE_PROFILES[5], { type: "joined", data: {} }, 120),
-  sampleFeedItem(SAMPLE_PROFILES[0], { type: "profile_updated", data: {} }, 150),
-  sampleFeedItem(SAMPLE_PROFILES[1], { type: "accepted_proposal", data: { requestId: "r2", proposalId: "p2", title: "P2P identity verification" } }, 200),
-  sampleFeedItem(SAMPLE_PROFILES[2], { type: "earned_dharma", data: { amount: 128, resolutionId: "res2", reason: "Research publication" } }, 300),
-  sampleFeedItem(SAMPLE_PROFILES[3], { type: "codex_entry", data: { entryId: "e2", title: "Byzantine fault tolerance survey", knowledgeClass: "literature" } }, 360),
-  sampleFeedItem(SAMPLE_PROFILES[4], { type: "followed", data: { followeeId: "did:trib:bob" } }, 420),
-  sampleFeedItem(SAMPLE_PROFILES[5], { type: "endorsed", data: { toId: "did:trib:dave", contributionId: "c2", message: "Solid engineering work" } }, 500),
-]
+  };
 
 const PAGE_SIZE = 5
 
@@ -337,6 +278,42 @@ export class SocialFeedPanel extends Panel {
       color: var(--color-error, #ea5455);
       font-size: var(--font-size-sm, 13px);
     }
+
+    .post-composer {
+      display: flex;
+      gap: var(--spacing-sm, 8px);
+      padding: var(--spacing-md, 16px);
+      border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+      align-items: flex-start;
+    }
+
+    .post-input {
+      flex: 1;
+      background: var(--color-surface-raised, rgba(255, 255, 255, 0.04));
+      border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+      border-radius: var(--radius-sm, 4px);
+      color: var(--color-text, #e0e0e0);
+      font-family: var(--font-sans, system-ui, sans-serif);
+      font-size: var(--font-size-sm, 13px);
+      padding: var(--spacing-sm, 8px);
+      resize: vertical;
+      min-height: 36px;
+    }
+
+    .post-submit-btn {
+      background: var(--color-accent, #4a9eff);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm, 4px);
+      padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+      font-size: var(--font-size-sm, 13px);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .post-submit-btn:hover {
+      opacity: 0.9;
+    }
   `
 
   static override properties = {
@@ -368,8 +345,8 @@ export class SocialFeedPanel extends Panel {
   /** Sentinel element reference for intersection detection. */
   private _sentinelRef: HTMLDivElement | null = null
 
-  /** Total available items (from sample data). */
-  private _totalItems = ALL_SAMPLE_ITEMS.length
+  /** Whether more pages may be available after the current page. */
+  private _hasMore = true
 
   override connectedCallback(): void {
     super.connectedCallback()
@@ -395,25 +372,29 @@ export class SocialFeedPanel extends Panel {
 
   /** Load the next page of feed items. */
   loadMore(): void {
-    if (this._loading) return
-    const nextPage = this._page + 1
-    if (nextPage * PAGE_SIZE >= this._totalItems) return
-    this._loadPage(nextPage)
+    if (this._loading || !this._hasMore) return
+    this._loadPage(this._page + 1)
   }
 
-  private _loadPage(page: number): void {
+  private async _loadPage(page: number): Promise<void> {
     this._loading = true
     this._page = page
-    const start = page * PAGE_SIZE
-    const end = Math.min(start + PAGE_SIZE, this._totalItems)
-    const pageItems = ALL_SAMPLE_ITEMS.slice(start, end)
-
-    // Defer to simulate async loading
-    setTimeout(() => {
-      this._feed = [...this._feed, ...pageItems]
+    try {
+      const items = await window.api.socialGetFeed({
+        identityId: "local",
+        limit: PAGE_SIZE,
+        offset: page * PAGE_SIZE,
+      })
+      this._feed = page === 0 ? items : [...this._feed, ...items]
+      if (items.length < PAGE_SIZE) {
+        this._hasMore = false
+      }
+    } catch (e: unknown) {
+      this._error = e instanceof Error ? e.message : "Failed to load feed"
+    } finally {
       this._loading = false
       this.requestUpdate()
-    }, 200)
+    }
   }
 
   private _setupObserver(): void {
@@ -456,6 +437,26 @@ export class SocialFeedPanel extends Panel {
     }))
   }
 
+  private async _handleSubmitPost(): Promise<void> {
+    const textarea = this.shadowRoot?.querySelector('.post-input') as HTMLTextAreaElement | null
+    if (!textarea || !textarea.value.trim()) return
+    try {
+      const result = await window.api.socialCreatePost({
+        identityId: "local",
+        content: textarea.value.trim(),
+      })
+      if (result.ok && result.value?.ok) {
+        textarea.value = ''
+        this._feed = []
+        this._page = 0
+        this._hasMore = true
+        this._loadPage(0)
+      }
+    } catch (e: unknown) {
+      this._error = e instanceof Error ? e.message : "Failed to create post"
+    }
+  }
+
   override render(): TemplateResult {
     const hasItems = this._feed.length > 0
 
@@ -480,6 +481,10 @@ export class SocialFeedPanel extends Panel {
       </div>
 
       <div class="panel-body" part="body">
+        <div class="post-composer">
+          <textarea class="post-input" placeholder="Share something..."></textarea>
+          <button class="post-submit-btn" @click=${this._handleSubmitPost}>Post</button>
+        </div>
         ${this._error
           ? html`<div class="feed-error">${this._error}</div>`
           : hasItems

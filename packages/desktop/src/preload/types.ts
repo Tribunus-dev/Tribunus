@@ -1,7 +1,7 @@
 import type { DesktopMenuAction } from "@tribunus/app/desktop-menu"
 import type { AutoUpdateStatus } from "../main/auto-updater"
 import type { NapiServerConfig } from "../../../compute-native"
-import type { SocialProfileParams, SocialProfileUpdateParams, SocialFollowParams, SocialUnfollowParams, SocialGetFeedParams, SocialEndorseParams, SocialGetEndorsementsParams, SocialBlockParams, SocialUnblockParams, SocialGetScoreParams } from "../main/ipc-contract"
+import type { SocialProfileParams, SocialProfileUpdateParams, SocialFollowParams, SocialUnfollowParams, SocialGetFeedParams, SocialEndorseParams, SocialGetEndorsementsParams, SocialBlockParams, SocialUnblockParams, SocialGetScoreParams, IpcResult, SocialCreatePostParams, SocialCreatePostResult, SocialLikePostParams, SocialSharePostParams, SocialCommentParams } from "../main/ipc-contract"
 import type { SocialProfile, SocialProfileUpdate, FollowRecord, FeedItem, Endorsement, BlockEntry, DharmaSocialScore } from "@tribunus/runtime/tribunus/dharma/codex/codex-social"
 
 export type InitStep =
@@ -252,4 +252,8 @@ export type ElectronAPI = {
   socialBlockUser: (params: SocialBlockParams) => Promise<void>
   socialUnblockUser: (params: SocialUnblockParams) => Promise<void>
   socialGetScore: (params: SocialGetScoreParams) => Promise<DharmaSocialScore | null>
+  socialCreatePost: (params: SocialCreatePostParams) => Promise<IpcResult<SocialCreatePostResult>>
+  socialLikePost: (params: SocialLikePostParams) => Promise<IpcResult<void>>
+  socialSharePost: (params: SocialSharePostParams) => Promise<IpcResult<void>>
+  socialComment: (params: SocialCommentParams) => Promise<IpcResult<void>>
 }

@@ -11,29 +11,7 @@
 import { Panel } from "./panel"
 import { LitElement, html, css, type TemplateResult } from "lit"
 import type { SocialProfile, DharmaSocialScore } from "@tribunus/runtime/tribunus/dharma/codex/codex-social"
-
-/* ── Sample Data ────────────────────────────────────────── */
-
-const SAMPLE_PROFILE: SocialProfile = {
-  profileId: "identity-0x1a2b",
-  displayName: "Dharma Builder",
-  bio: "Building decentralized governance and reputation systems. Contributor to multiple codex proposals.",
-  avatarHash: "",
-  website: "https://dharma.example.com",
-  joinedAt: "2025-03-15T10:30:00Z",
-  profileVersion: 2,
-}
-
-const SAMPLE_SCORE: DharmaSocialScore = {
-  identityId: "identity-0x1a2b",
-  dharmaEarned: 1240,
-  proposalsAccepted: 3,
-  codexEntriesCredited: 5,
-  endorsementsReceived: 34,
-  followers: 89,
-  following: 42,
-  endorsementsGiven: 15,
-}
+import type { ElectronAPI } from "../preload/types"
 
 /* ── Component ──────────────────────────────────────────── */
 
@@ -326,12 +304,31 @@ export class SocialProfilePanel extends Panel {
     ...Panel.properties,
     profile: { type: Object },
     editing: { type: Boolean },
+    error: { type: String },
   }
 
   override title = "Social Profile"
-  profile: SocialProfile = SAMPLE_PROFILE
-  score: DharmaSocialScore = SAMPLE_SCORE
+  profile: SocialProfile = {
+    profileId: "",
+    displayName: "",
+    bio: "",
+    avatarHash: "",
+    website: "",
+    joinedAt: "",
+    profileVersion: 0,
+  }
+  score: DharmaSocialScore = {
+    identityId: "",
+    dharmaEarned: 0,
+    proposalsAccepted: 0,
+    codexEntriesCredited: 0,
+    endorsementsReceived: 0,
+    followers: 0,
+    following: 0,
+    endorsementsGiven: 0,
+  }
   editing = false
+  error = ""
 
   /* ── Edit draft buffers ──────────────────────────────── */
 
@@ -341,9 +338,9 @@ export class SocialProfilePanel extends Panel {
 
   /* ── Lifecycle ───────────────────────────────────────── */
 
-  override connectedCallback(): void {
+  override async connectedCallback(): Promise<void> {
     super.connectedCallback()
-    this._syncEditBuffers()
+    await this._loadProfile()
   }
 
   /* ── Edit handlers ───────────────────────────────────── */
@@ -369,14 +366,50 @@ export class SocialProfilePanel extends Panel {
     }
   }
 
-  private _saveEditing(): void {
-    this.profile = {
-      ...this.profile,
-      displayName: this._editDisplayName,
-      bio: this._editBio,
-      website: this._editWebsite,
+  /* ── IPC data loading ─────────────────────────────── */
+
+  private async _loadProfile(): Promise<void> {
+    try {
+      const api = window.api as unknown as ElectronAPI
+      const profile = await api.socialGetProfile({ identityId: "local" })
+      if (profile) {
+        this.profile = profile
+      }
+      const score = await api.socialGetScore({ identityId: "local" })
+      if (score) {
+        this.score = score
+      }
+      this._syncEditBuffers()
+    } catch (e: unknown) {
+      this.error = e instanceof Error ? e.message : String(e)
     }
-    this.editing = false
+    this.requestUpdate()
+  }
+
+  private async _handleSave(): Promise<void> {
+    try {
+      const api = window.api as unknown as ElectronAPI
+      const updated = await api.socialUpdateProfile({
+        identityId: "local",
+        displayName: this._editDisplayName,
+        bio: this._editBio,
+      })
+      this.profile = updated
+      this.editing = false
+    } catch (e: unknown) {
+      this.error = e instanceof Error ? e.message : String(e)
+    }
+    this.requestUpdate()
+  }
+
+  private async _handleFollow(identityId: string): Promise<void> {
+    try {
+      const api = window.api as unknown as ElectronAPI
+      await api.socialFollow({ followerId: "local", followeeId: identityId })
+    } catch (e: unknown) {
+      this.error = e instanceof Error ? e.message : String(e)
+    }
+    this.requestUpdate()
   }
 
   private _syncEditBuffers(): void {
@@ -502,7 +535,7 @@ export class SocialProfilePanel extends Panel {
         <div class="actions">
           ${editing
             ? html`
-                <button class="btn btn-primary" @click=${this._saveEditing}>Save</button>
+                <button class="btn btn-primary" @click=${this._handleSave}>Save</button>
                 <button class="btn btn-secondary" @click=${this._cancelEditing}>Cancel</button>
               `
             : html`

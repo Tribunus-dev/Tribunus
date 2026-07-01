@@ -112,6 +112,10 @@ export const IPC = {
     SOCIAL_BLOCK_USER: "tribunus:social:block-user",
     SOCIAL_UNBLOCK_USER: "tribunus:social:unblock-user",
     SOCIAL_GET_SCORE: "tribunus:social:get-score",
+    SOCIAL_CREATE_POST: "tribunus:social:create-post",
+    SOCIAL_LIKE_POST: "tribunus:social:like-post",
+    SOCIAL_SHARE_POST: "tribunus:social:share-post",
+    SOCIAL_COMMENT: "tribunus:social:comment",
   } as const,
 
   send: {

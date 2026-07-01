@@ -1,15 +1,17 @@
 /**
  * SocialNetworkPanel — shows connected peers, replication status, and local identity info.
  *
- * Placeholder implementation with hardcoded sample data. Extends Panel base class
+ * Loads data from IPC through the preload bridge. Extends Panel base class
  * for header/toolbar/content slot patterns.
  *
  * Uses static `properties` instead of decorators for compat with the project's
  * TypeScript config (experimental decorators).
  */
 
-import { LitElement, html, css, type TemplateResult } from "lit"
+import { html, css, type TemplateResult } from "lit"
 import { Panel } from "./panel"
+import type { ElectronAPI } from "../preload/types"
+import type { SocialProfile, DharmaSocialScore, FollowRecord } from "@tribunus/runtime/tribunus/dharma/codex/codex-social"
 
 /* ── Types ──────────────────────────────────────────────── */
 
@@ -189,6 +191,14 @@ export class SocialNetworkPanel extends Panel {
     ...Panel.properties,
     peers: { type: Array },
     replicationStatus: { type: String },
+    _dharmaScore: { type: Number },
+    _followerCount: { type: Number },
+    _followingCount: { type: Number },
+    _identityId: { type: String },
+    _displayName: { type: String },
+    _joinedAt: { type: String },
+    _error: { type: String },
+    _isDiscovering: { type: Boolean },
   }
 
   title = "Network"
@@ -196,36 +206,70 @@ export class SocialNetworkPanel extends Panel {
   peers: PeerInfo[] = []
   replicationStatus: ReplicationStatus = "offline"
 
-  /* ── Sample Data (hardcoded placeholder) ─────────────── */
+  /* ── IPC-driven state ────────────────────────────────── */
 
-  private readonly _localIdentity: LocalIdentity = {
-    identityId: "did:key:z6Mkp9ZkM1kZpR9xHtNqQ3wLvK5JcFn7YmGpBs2DvX4rT8aW",
-    displayName: "Local Identity",
-    joinedAt: "2025-11-15T10:30:00Z",
+  private _dharmaScore = 0
+  private _followerCount = 0
+  private _followingCount = 0
+  private _identityId = ""
+  private _displayName = "Local Identity"
+  private _joinedAt = ""
+  private _error: string | null = null
+  private _isDiscovering = false
+
+  override async connectedCallback(): Promise<void> {
+    super.connectedCallback()
+    await this._loadNetworkData()
   }
 
-  private readonly _samplePeers: PeerInfo[] = [
-    { peerId: "peer-1", displayName: "Alice", connectionStatus: "connected" },
-    { peerId: "peer-2", displayName: "Bob", connectionStatus: "syncing" },
-    { peerId: "peer-3", displayName: "Charlie", connectionStatus: "offline" },
-  ]
+  /* ── Data Loading ────────────────────────────────────── */
 
-  override connectedCallback(): void {
-    super.connectedCallback()
-    this.peers = this._samplePeers
-    this.replicationStatus = "connected"
+  private async _loadNetworkData(): Promise<void> {
+    try {
+      const api = window.api as unknown as ElectronAPI
+
+      // Load score for dharma/follower/following counts
+      const score = await api.socialGetScore({ identityId: "local" })
+      if (score) {
+        this._dharmaScore = score.dharmaEarned
+        this._followerCount = score.followers
+        this._followingCount = score.following
+      }
+
+      // Load profile for identity display info
+      const profile = await api.socialGetProfile({ identityId: "local" })
+      if (profile) {
+        this._identityId = profile.profileId
+        this._displayName = profile.displayName
+        this._joinedAt = profile.joinedAt
+      }
+
+      // Load following list for peers
+      const following = await api.socialGetFollowing({ identityId: "local" })
+      this.peers = following.map((record: FollowRecord) => ({
+        peerId: record.followeeId,
+        displayName: record.followeeId.slice(0, 12),
+        connectionStatus: "offline" as const,
+      }))
+
+      this.replicationStatus = "connected"
+    } catch (e: unknown) {
+      this._error = e instanceof Error ? e.message : String(e)
+      this.replicationStatus = "offline"
+    }
     this.requestUpdate()
   }
 
   /* ── Event Handlers ──────────────────────────────────── */
 
-  private _onDiscoverPeers(): void {
-    this.dispatchEvent(
-      new CustomEvent("discover-peers", {
-        bubbles: true,
-        composed: true,
-      }),
-    )
+  private async _onDiscoverPeers(): Promise<void> {
+    this._isDiscovering = true
+    // Stub: in production this would trigger Hyperswarm peer discovery
+    const { promise, resolve } = Promise.withResolvers<void>()
+    setTimeout(resolve, 1000)
+    await promise
+    this._isDiscovering = false
+    this.requestUpdate()
   }
 
   /* ── Render ──────────────────────────────────────────── */
@@ -264,8 +308,8 @@ export class SocialNetworkPanel extends Panel {
 
       <!-- Discover Peers Button -->
       <div class="action-row">
-        <button class="btn" @click=${this._onDiscoverPeers}>
-          Discover Peers
+        <button class="btn" @click=${this._onDiscoverPeers} ?disabled=${this._isDiscovering}>
+          ${this._isDiscovering ? "Discovering..." : "Discover Peers"}
         </button>
       </div>
 
@@ -296,15 +340,20 @@ export class SocialNetworkPanel extends Panel {
         <h3 class="section-title">Local Identity</h3>
         <div class="identity-grid">
           <span class="identity-label">Identity</span>
-          <span class="identity-value identity-value--truncated">${truncId(this._localIdentity.identityId)}</span>
+          <span class="identity-value identity-value--truncated">${truncId(this._identityId)}</span>
 
           <span class="identity-label">Name</span>
-          <span class="identity-value">${this._localIdentity.displayName}</span>
+          <span class="identity-value">${this._displayName}</span>
 
           <span class="identity-label">Joined</span>
-          <span class="identity-value">${fmtDate(this._localIdentity.joinedAt)}</span>
+          <span class="identity-value">${fmtDate(this._joinedAt)}</span>
+
+          <span class="identity-label">Dharma</span>
+          <span class="identity-value">${this._dharmaScore}</span>
         </div>
       </div>
+
+      ${this._error ? html`<div class="section" style="color: #ef4444; font-size: var(--font-size-xs, 11px);">${this._error}</div>` : ""}
     `
   }
 }

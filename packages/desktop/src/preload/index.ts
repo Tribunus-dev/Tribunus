@@ -175,6 +175,10 @@ const api: ElectronAPI = {
   socialBlockUser: (params) => typedInvoke(IPC.handle.SOCIAL_BLOCK_USER, params),
   socialUnblockUser: (params) => typedInvoke(IPC.handle.SOCIAL_UNBLOCK_USER, params),
   socialGetScore: (params) => typedInvoke(IPC.handle.SOCIAL_GET_SCORE, params),
+  socialCreatePost: (params) => typedInvoke(IPC.handle.SOCIAL_CREATE_POST, params),
+  socialLikePost: (params) => typedInvoke(IPC.handle.SOCIAL_LIKE_POST, params),
+  socialSharePost: (params) => typedInvoke(IPC.handle.SOCIAL_SHARE_POST, params),
+  socialComment: (params) => typedInvoke(IPC.handle.SOCIAL_COMMENT, params),
   pluginInvoke: (channel: string, data?: unknown) => {
     return pluginInvoke(channel, data)
   },

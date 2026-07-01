@@ -224,6 +224,10 @@ export const CHANNELS = {
     blockUser: IPC.handle.SOCIAL_BLOCK_USER,
     unblockUser: IPC.handle.SOCIAL_UNBLOCK_USER,
     getScore: IPC.handle.SOCIAL_GET_SCORE,
+    createPost: IPC.handle.SOCIAL_CREATE_POST,
+    likePost: IPC.handle.SOCIAL_LIKE_POST,
+    sharePost: IPC.handle.SOCIAL_SHARE_POST,
+    comment: IPC.handle.SOCIAL_COMMENT,
   },
 } as const
 
@@ -280,6 +284,36 @@ export interface SocialGetEndorsementsParams {
 
 export interface SocialGetScoreParams {
   identityId: string
+}
+
+export interface SocialCreatePostParams {
+  identityId: string
+  content: string
+  visibility?: "public" | "followers" | "direct"
+}
+
+export interface SocialCreatePostResult {
+  ok: boolean
+  postId?: string
+  error?: string
+}
+
+export interface SocialLikePostParams {
+  userId: string
+  postId: string
+}
+
+export interface SocialSharePostParams {
+  userId: string
+  postId: string
+  message?: string
+}
+
+export interface SocialCommentParams {
+  postId: string
+  authorId: string
+  content: string
+  parentCommentId?: string | null
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -395,6 +429,10 @@ export interface IpcHandleContract {
   [IPC.handle.SOCIAL_BLOCK_USER]: { params: [params: SocialBlockParams]; returns: Promise<void> }
   [IPC.handle.SOCIAL_UNBLOCK_USER]: { params: [params: SocialUnblockParams]; returns: Promise<void> }
   [IPC.handle.SOCIAL_GET_SCORE]: { params: [params: SocialGetScoreParams]; returns: Promise<import("@tribunus/runtime/tribunus/dharma/codex/codex-social").DharmaSocialScore | null> }
+  [IPC.handle.SOCIAL_CREATE_POST]: { params: [params: SocialCreatePostParams]; returns: Promise<SocialCreatePostResult> }
+  [IPC.handle.SOCIAL_LIKE_POST]: { params: [params: SocialLikePostParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_SHARE_POST]: { params: [params: SocialSharePostParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_COMMENT]: { params: [params: SocialCommentParams]; returns: Promise<void> }
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -412,6 +450,10 @@ export interface IpcSendContract {
   [IPC.send.RENDERER_READY]: { params: [] }
   [IPC.send.REQUEST_COORDINATION_RESYNC]: { params: [] }
   [IPC.send.PUSH_SESSION_DASHBOARD_DATA]: { params: [data: SessionDashboardData] }
+  [IPC.handle.SOCIAL_CREATE_POST]: { params: [params: SocialCreatePostParams]; returns: Promise<SocialCreatePostResult> }
+  [IPC.handle.SOCIAL_LIKE_POST]: { params: [params: SocialLikePostParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_SHARE_POST]: { params: [params: SocialSharePostParams]; returns: Promise<void> }
+  [IPC.handle.SOCIAL_COMMENT]: { params: [params: SocialCommentParams]; returns: Promise<void> }
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -577,6 +619,10 @@ interface BridgeHandleMap {
   socialBlockUser: typeof IPC.handle.SOCIAL_BLOCK_USER
   socialUnblockUser: typeof IPC.handle.SOCIAL_UNBLOCK_USER
   socialGetScore: typeof IPC.handle.SOCIAL_GET_SCORE
+  socialCreatePost: typeof IPC.handle.SOCIAL_CREATE_POST
+  socialLikePost: typeof IPC.handle.SOCIAL_LIKE_POST
+  socialSharePost: typeof IPC.handle.SOCIAL_SHARE_POST
+  socialComment: typeof IPC.handle.SOCIAL_COMMENT
 }
 
 /** @internal — Bridge send-method → IPC send channel constant mapping */
@@ -658,6 +704,10 @@ export function pluginSend(channel: string, data?: unknown): void {
  */
 export function pluginInvoke(channel: string, data?: unknown): Promise<unknown> {
   return typedInvoke(IPC.handle.PLUGIN_INVOKE, channel, data)
+  socialCreatePost: typeof IPC.handle.SOCIAL_CREATE_POST
+  socialLikePost: typeof IPC.handle.SOCIAL_LIKE_POST
+  socialSharePost: typeof IPC.handle.SOCIAL_SHARE_POST
+  socialComment: typeof IPC.handle.SOCIAL_COMMENT
 }
 
 
@@ -799,6 +849,10 @@ export const IPC_METHOD_REGISTRY: {
   { channel: IPC.handle.SOCIAL_BLOCK_USER, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
   { channel: IPC.handle.SOCIAL_UNBLOCK_USER, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
   { channel: IPC.handle.SOCIAL_GET_SCORE, usesIpcResult: true, returns: "IpcResult<DharmaSocialScore | null>", rendererSees: "DharmaSocialScore | null" },
+  { channel: IPC.handle.SOCIAL_CREATE_POST, usesIpcResult: true, returns: "IpcResult<SocialCreatePostResult>", rendererSees: "SocialCreatePostResult" },
+  { channel: IPC.handle.SOCIAL_LIKE_POST, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.SOCIAL_SHARE_POST, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
+  { channel: IPC.handle.SOCIAL_COMMENT, usesIpcResult: true, returns: "IpcResult<void>", rendererSees: "void" },
 ]
 
 // ── Runtime Validation ───────────────────────────────────

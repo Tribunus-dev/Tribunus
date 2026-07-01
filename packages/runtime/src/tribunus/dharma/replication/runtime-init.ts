@@ -6,8 +6,9 @@
  *  2. Start the runtime (opens Corestore, wires identity)
  *  3. Discover stored federations from the system core
  *  4. Recover checkpoints and outboxes for each stored federation
+ *  5. Initialize the SocialReplicationManager (non-fatal)
  *
- * Returns a RuntimeInitResult with per-federation recovery details.
+ * Returns a RuntimeInitResult with per-federation recovery and social init details.
  */
 
 import { DharmaReplicationRuntime } from "./runtime"
@@ -20,6 +21,9 @@ import { recoverFromCheckpoint } from "./checkpoint-recovery"
 import { recoverOutbox } from "./outbox-recovery"
 import type { CheckpointRecoveryResult } from "./checkpoint-recovery"
 import type { OutboxRecoveryResult } from "./outbox-recovery"
+import * as os from "node:os"
+import * as path from "node:path"
+import { initSocialManager } from "../../social-bridge"
 
 // ── Result Type ──────────────────────────────────────────────────────────────
 
@@ -73,7 +77,8 @@ function emptyOutboxResult(): OutboxRecoveryResult {
  *  3. Enumerate stored federations from the system core.
  *  4. For each stored federation, open a temporary FederationBase,
  *     recover the checkpoint, run outbox recovery, then close.
- *  5. Return an aggregate RuntimeInitResult.
+ *  5. Initialize the SocialReplicationManager (non-fatal).
+ *  6. Return an aggregate RuntimeInitResult.
  *
  * If any step fails the error field is populated and the partially
  * initialised runtime is returned so callers can decide how to proceed.
@@ -96,6 +101,18 @@ export async function initializeRuntime(config: RuntimeConfig): Promise<RuntimeI
     // Step 4: Recover checkpoints and outboxes for each stored federation
     for (const federationId of storedFederationIds) {
       await recoverSingleFederation(runtime, federationId, checkpointResults, outboxResults)
+    }
+
+    // Step 5: Initialize social replication (non-fatal)
+    try {
+      const identity = runtime.getActiveIdentity()
+      await initSocialManager({
+        storagePath: path.join(config.storageRoot ?? path.join(os.homedir(), ".tribunus", "dharma"), "social"),
+        identityId: identity?.identityId ?? "unknown",
+        displayName: identity?.identityId.slice(0, 12) ?? "unknown",
+      })
+    } catch (socialErr) {
+      console.warn("[dharma] Social replication init failed (non-fatal):", socialErr instanceof Error ? socialErr.message : String(socialErr))
     }
 
     // An identity is considered "created" (first run) when no prior
