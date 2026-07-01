@@ -710,11 +710,18 @@ describe("sfwScreenPost", () => {
   test("fails explicit text", () => {
     expect(sfwScreenPost("check out this nsfw content").verdict).toBe("fail_text")
     expect(sfwScreenPost("porn link here").verdict).toBe("fail_text")
-    expect(sfwScreenPost("gore warning").verdict).toBe("fail_text")
+    expect(sfwScreenPost("mass shooter").verdict).toBe("fail_text")
+    expect(sfwScreenPost("mass shoot").verdict).toBe("fail_text")
+    expect(sfwScreenPost("school shooting").verdict).toBe("fail_text")
   })
+
   test("passes SFW media types", () => {
     const media: PostMedia = { mediaId: "m1", type: "image", mimeType: "image/jpeg", hash: "h", sizeBytes: 100, width: null, height: null, durationMs: null, thumbnailHash: null }
     expect(sfwScreenPost("photo", [media]).verdict).toBe("pass")
+  })
+  test("passes soft terms in research context", () => {
+    expect(sfwScreenPost("nsfw detection paper").verdict).toBe("pass")
+    expect(sfwScreenPost("pornographic content detection study").verdict).toBe("pass")
   })
   test("fails restricted media types", () => {
     const media: PostMedia = { mediaId: "m1", type: "file", mimeType: "application/octet-stream", hash: "h", sizeBytes: 100, width: null, height: null, durationMs: null, thumbnailHash: null }
