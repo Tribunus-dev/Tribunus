@@ -28,6 +28,7 @@ import type {
   DatasetProjectionClass,
   PrivacyReview,
 } from "./codex-types"
+import { cryptographicallyVerifyAuthorization, getRootPublicKey } from "./crypto/codex-export-crypto"
 
 // ── Eligibility ───────────────────────────────────────────────────────────────
 
@@ -215,10 +216,14 @@ export function verifyExportAuthorization(auth: FullDatasetExportAuthorization):
   if (!auth.sourceSnapshot) return false
   if (!auth.sourceSnapshot.autobaseHeads || auth.sourceSnapshot.autobaseHeads.length === 0) return false
   if (!auth.releasePolicyDigest) return false
-  if (!auth.rootAuthoritySignature) return false
   if (!auth.issuedAtLogicalTime) return false
   if (!auth.expiresAtLogicalTime) return false
   if (new Date(auth.expiresAtLogicalTime).getTime() < Date.now()) return false
+
+  // Cryptographic check: verify the Ed25519 signature against the pinned root key
+  const cryptoResult = cryptographicallyVerifyAuthorization(auth, getRootPublicKey())
+  if (!cryptoResult.valid) return false
+
   return true
 }
 

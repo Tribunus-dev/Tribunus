@@ -6,7 +6,10 @@
  * createReleaseManifest, computeManifestDigest.
  */
 
-import { describe, test, expect } from "bun:test"
+import { describe, test, expect, beforeAll } from "bun:test"
+import { generateKeyPair } from "../../crypto"
+import { initializeRootKey, buildAuthPayload } from "../crypto/codex-export-crypto"
+import { sign } from "../../crypto"
 import type {
   CodexEntry,
   CodexVisibilityClass,
@@ -121,7 +124,7 @@ function makeGrant(
 function makeFullAuth(
   overrides: Partial<FullDatasetExportAuthorization> = {},
 ): FullDatasetExportAuthorization {
-  return {
+  const auth: FullDatasetExportAuthorization = {
     authorizationId: "auth-1",
     requestedBy: "user-1",
     exportManifestDigest: "digest-abc",
@@ -134,9 +137,22 @@ function makeFullAuth(
     recipientBinding: undefined,
     issuedAtLogicalTime: "2025-01-01T00:00:00.000Z",
     expiresAtLogicalTime: "2099-12-31T23:59:59.999Z",
-    rootAuthoritySignature: "root-sig-abc",
+    rootAuthoritySignature: "",
     ...overrides,
   }
+
+  // Skip signing if caller explicitly provided a signature override
+  if ("rootAuthoritySignature" in overrides) {
+    return auth
+  }
+
+  // Sign the auth payload with the test root key
+  const keyPair = _testRootKey
+  const payload = buildAuthPayload(auth)
+  const signature = Buffer.from(sign(keyPair.privateKey, Buffer.from(payload, "utf-8")))
+  auth.rootAuthoritySignature = signature.toString("base64")
+
+  return auth
 }
 
 function makeScopedRequest(
@@ -162,6 +178,16 @@ function makeFullExportRequest(
     ...overrides,
   }
 }
+
+// ── Test Root Key Setup ──────────────────────────────────────────────────────
+
+let _testRootKey: { publicKey: Buffer; privateKey: Buffer }
+
+beforeAll(() => {
+  _testRootKey = generateKeyPair()
+  // Wrap in Buffer for safe base64 encoding in Bun
+  initializeRootKey(Buffer.from(_testRootKey.publicKey).toString("base64"))
+})
 
 // ── Tests: Eligibility ───────────────────────────────────────────────────────
 
