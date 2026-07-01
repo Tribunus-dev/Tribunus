@@ -15,8 +15,13 @@
  * This prevents redundant work and ensures diverse approaches.
  */
 
-import { randomUUID } from "node:crypto"
+import { randomUUID, createHash } from "node:crypto"
 import type { CodexClaim, EvidenceRef, ScopeDescriptor } from "./codex-types"
+import { createCodexEntry } from "./codex-types"
+import { createBugResolution, verifyResolution, earnDharmaFromResolution, createBugResolutionBenefitPolicy } from "./codex-dharma"
+import type { CodexEntry, BenefitPolicy, KnowledgeClass } from "./codex-types"
+import type { BenefitStore } from "./codex-benefits"
+import type { DharmaLedger } from "./codex-dharma"
 
 // ── Debug Request ─────────────────────────────────────────────────────
 
@@ -369,6 +374,121 @@ export function getNovelProposals(store: DebugStore, requestId: string): DebugPr
   return getProposalsByRequest(store, requestId).filter((p) => p.status !== "rejected_duplicate")
 }
 
+
+// ── Proposal → Codex Promotion ──────────────────────────────────────────
+
+export interface ProposalPromotionResult {
+codexEntry: CodexEntry
+resolution: import("./codex-dharma").BugResolution
+dharmaResult: import("./codex-dharma").DharmaAccountResult
+}
+
+/**
+ * Promote an accepted debug proposal to a Codex entry and earn dharma
+ * for the contributor.
+ *
+ * Flow:
+ * 1. Create CodexEntry from the proposal's claims, evidence, and scope
+ * 2. Create BugResolution linking the request to the fix
+ * 3. Verify the resolution as confirmed_fixed
+ * 4. Earn dharma for the contributor
+ * 5. Return the complete promotion result
+ */
+export function promoteAcceptedProposal(
+proposal: DebugProposal,
+request: DebugRequest,
+verifier: string,
+verificationReceiptDigest: string,
+benefitPolicy: BenefitPolicy,
+benefitStore: BenefitStore,
+dharmaLedger: DharmaLedger,
+): ProposalPromotionResult {
+if (proposal.status !== "accepted") {
+    throw new Error(`Cannot promote proposal with status ${proposal.status}. Must be "accepted".`)
+}
+
+// 1. Determine knowledge class from bug category
+const knowledgeClass = categoryToKnowledgeClass(request.category)
+
+// 2. Create CodexEntry from proposal
+const title = proposal.title || `Fix for: ${request.title}`
+const abstract = proposal.description.slice(0, 200)
+const entry = createCodexEntry(proposal.proposalId, title, knowledgeClass, "contributor", proposal.claims)
+
+// Fill in entry fields from the proposal
+const canonicalContentDigest = createHash("sha256")
+    .update(proposal.claims.map((c) => c.statement).join("|"))
+    .digest("hex")
+
+const now = new Date().toISOString()
+
+entry.sourceContributionIds = [proposal.proposedBy]
+entry.evidenceRefs = proposal.evidenceRefs
+entry.canonicalContentDigest = canonicalContentDigest
+entry.quality.evidenceQuality = "medium"
+entry.quality.corroborationCount = 1
+entry.provenance.authoredBy = [proposal.proposedBy]
+entry.provenance.createdFromReceiptIds = proposal.evidenceRefs.map((r) => r.receiptDigest)
+entry.provenance.createdAtLogicalTime = now
+entry.lineage.relatedEntryIds = proposal.codexPatternIds
+
+// Map proposal scope to entry claims
+for (const claim of entry.claims) {
+    claim.scope = proposal.scope
+}
+
+// 3. Create and verify bug resolution
+const resolution = createBugResolution(
+    entry.codexEntryId,
+    proposal.proposedBy,
+    `debug:${request.requestId}`,
+    request.title,
+    "direct_pattern_match",
+)
+const verified = verifyResolution(resolution, "confirmed_fixed", verificationReceiptDigest, verifier)
+
+// 4. Earn dharma for the proposal author
+const contributors = [proposal.proposedBy]
+if (proposal.evidenceRefs.length > 0) {
+    // Also credit evidence contributors
+    const evidenceContributors = [...new Set(proposal.evidenceRefs.map((r) => r.contributionId))]
+    for (const c of evidenceContributors) {
+      if (!contributors.includes(c)) contributors.push(c)
+}
+}
+
+const dharmaResult = earnDharmaFromResolution(
+    verified,
+    entry,
+    proposal.proposalId,
+    benefitPolicy,
+    benefitStore,
+    dharmaLedger,
+    contributors,
+)
+
+return {
+    codexEntry: entry,
+    resolution: verified,
+    dharmaResult,
+}
+}
+
+/**
+ * Map a debug request category to a Codex knowledge class.
+ */
+function categoryToKnowledgeClass(category: string): KnowledgeClass {
+const map: Record<string, string> = {
+    crash: "failure_mode",
+    hang: "failure_mode",
+    data_loss: "failure_mode",
+    incorrect_output: "debugging_finding",
+    performance: "performance_evidence",
+    compatibility: "compatibility_fact",
+    regression: "debugging_finding",
+}
+return map[category] ?? "debugging_finding"
+}
 export function getAcceptedProposal(store: DebugStore, requestId: string): DebugProposal | undefined {
   return getProposalsByRequest(store, requestId).find((p) => p.status === "accepted")
 }
