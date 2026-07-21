@@ -9,7 +9,7 @@ jobs:
     name: Rust metadata validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
         with:
           submodules: recursive
       - uses: dtolnay/rust-toolchain@stable
@@ -22,7 +22,7 @@ jobs:
     name: macOS MLX backend lifecycle
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
         with:
           submodules: recursive
       - uses: dtolnay/rust-toolchain@stable
