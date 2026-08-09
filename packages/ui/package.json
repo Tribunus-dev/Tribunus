@@ -59,7 +59,7 @@
     "@solidjs/meta": "catalog:",
     "@solidjs/router": "catalog:",
     "diff": "catalog:",
-    "dompurify": "3.4.11",
+    "dompurify": "3.4.13",
     "fuzzysort": "catalog:",
     "katex": "0.16.27",
     "lit": "3.2.1",
